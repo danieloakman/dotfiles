@@ -158,7 +158,7 @@
       fzf
       neovim
       gh
-      logkeys
+      # logkeys # Was testing whether I could log laptop buttons or not
 
       # Desktop only:
       gnome.gnome-tweaks
