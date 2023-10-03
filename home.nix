@@ -80,6 +80,7 @@
         "thefuck"
         "sudo"
         "z"
+        "web-search"
         # "google"
       ];
       theme = "robbyrussell";
