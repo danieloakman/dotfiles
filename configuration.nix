@@ -142,6 +142,8 @@
   environment = {
     shells = with pkgs; [ zsh ];
 
+    localBinInPath = true;
+
     systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
       git
@@ -155,12 +157,14 @@
       bat
       thefuck
       lazygit
-      xclip
       cargo
       rustup
       fzf
       neovim
       gh
+      dmenu-wayland
+      # xclip # Don't need because this config is on wayland
+      wl-clipboard
       # logkeys # Was testing whether I could log laptop buttons or not
 
       # Desktop only:
