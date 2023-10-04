@@ -69,24 +69,35 @@
   };
 
   # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
   programs = {
-
-  programs.zsh = {
-    enable = true;
-    enableAutosuggestions = true;
-    enableCompletion = true;
-    oh-my-zsh = {
+    home-manager.enable = true;
+    
+    zsh = {
       enable = true;
-      plugins = [
-        "git"
-        "thefuck"
-        "sudo"
-        "z"
-        "web-search"
-        # "google"
-      ];
-      theme = "robbyrussell";
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      oh-my-zsh = {
+        enable = true;
+        plugins = [
+          "git"
+          "thefuck"
+          "sudo"
+          "z"
+          "web-search"
+          # "google"
+        ];
+        theme = "robbyrussell";
+      };
+    };
+
+    password-store.enable = true;
+  };
+
+  services = {
+    password-store-sync = {
+      enable = true;
+      # frequency = "1";
     };
   };
+
 }
