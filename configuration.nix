@@ -151,6 +151,8 @@
       btop
       neofetch
       pass
+      # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
+      # rofi-pass
       pinentry-curses
       pinentry-qt
       rtx
