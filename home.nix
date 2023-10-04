@@ -34,6 +34,7 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+    pkgs.passff-host
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -49,6 +50,7 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+    ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
   };
 
   # You can also manage environment variables but you will have to manually
@@ -68,6 +70,7 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs = {
 
   programs.zsh = {
     enable = true;

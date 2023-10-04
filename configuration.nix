@@ -152,6 +152,7 @@
       neofetch
       pass
       pinentry-curses
+      pinentry-qt
       rtx
       eza
       bat
