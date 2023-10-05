@@ -165,6 +165,8 @@
       fzf
       neovim
       gh
+      unzip
+      zip
       dmenu-wayland
       # xclip # Don't need because this config is on wayland
       wl-clipboard
