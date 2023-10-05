@@ -91,6 +91,20 @@
     };
 
     password-store.enable = true;
+
+    rtx = {
+      enable = true;
+      enableZshIntegration = true;
+      settings = {
+        settings = {
+          experimental = true;
+        };
+        tools = {
+          node = "20";
+          pnpm = "latest";
+        };
+      };
+    };
   };
 
   services = {
