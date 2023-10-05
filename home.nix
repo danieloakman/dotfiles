@@ -100,8 +100,9 @@
           experimental = true;
         };
         tools = {
-          node = "20";
+          node = "latest";
           pnpm = "latest";
+          bun = "latest";
         };
       };
     };
