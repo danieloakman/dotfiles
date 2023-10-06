@@ -76,6 +76,13 @@
       enable = true;
       enableAutosuggestions = true;
       enableCompletion = true;
+      syntaxHighlighting.enable = true;
+      initExtra = ''
+        # Put at the bottom of ".zshrc":
+        if [ -f "$HOME/repos/personal/dotfiles/.main_shell" ]; then
+          source "$HOME/repos/personal/dotfiles/.main_shell"
+        fi
+      '';
       oh-my-zsh = {
         enable = true;
         plugins = [
@@ -84,7 +91,7 @@
           "sudo"
           "z"
           "web-search"
-          # "google"
+          "git-auto-fetch"
         ];
         theme = "robbyrussell";
       };
@@ -105,6 +112,24 @@
           bun = "latest";
         };
       };
+    };
+
+    gh = {
+      enable = true;
+      settings = {
+        git_protocol = "ssh";
+      };
+      extensions = [
+        pkgs.gh-dash
+        # pkgs.gh-switch-user
+      ];
+    };
+
+    gh-dash.enable = true;
+
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
     };
   };
 

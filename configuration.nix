@@ -165,9 +165,14 @@
       fzf
       neovim
       gh
+      gh-dash
       unzip
       zip
+      libgccjit
+      gnumake
+      nodejs_20
       dmenu-wayland
+      starship
       # xclip # Don't need because this config is on wayland
       wl-clipboard
       # logkeys # Was testing whether I could log laptop buttons or not
