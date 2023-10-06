@@ -172,7 +172,9 @@
       gnumake
       nodejs_20
       dmenu-wayland
+      bun
       starship
+      curl
       # xclip # Don't need because this config is on wayland
       wl-clipboard
       # logkeys # Was testing whether I could log laptop buttons or not
