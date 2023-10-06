@@ -132,9 +132,8 @@
       settings = {
         git_protocol = "ssh";
       };
-      extensions = [
-        pkgs.gh-dash
-        # pkgs.gh-switch-user
+      extensions = with pkgs; [
+        gh-dash
       ];
     };
 
