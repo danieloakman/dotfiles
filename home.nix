@@ -120,9 +120,9 @@
           experimental = true;
         };
         tools = {
-          node = "latest";
+          # node = "latest";
           pnpm = "latest";
-          bun = "latest";
+          # bun = "latest";
         };
       };
     };
