@@ -83,6 +83,12 @@
           source "$HOME/repos/personal/dotfiles/.main_shell"
         fi
       '';
+      shellAliases = {
+        nixos-switch = "sudo nixos-rebuild switch --flake ./#myNixos";
+        nixos-boot = "sudo nixos-rebuild boot --flake ./#myNixos";
+        nixos-test = "sudo nixos-rebuild test --flake ./#myNixos";
+        nixos-build = "sudo nixos-rebuild build --flake ./#myNixos";
+      };
       oh-my-zsh = {
         enable = true;
         plugins = [
