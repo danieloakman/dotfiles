@@ -171,12 +171,12 @@
       libgccjit
       gnumake
       nodejs_20
-      dmenu-wayland
       bun
+      dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
       # xclip # Don't need because this config is on wayland
-      wl-clipboard
+      wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
 
       # Desktop only:
