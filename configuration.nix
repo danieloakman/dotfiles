@@ -196,6 +196,7 @@
     # started in user sessions.
     # mtr.enable = true;
     gnupg.agent = {
+      # TODO: ask for passphrase once a day
       enable = true;
       # enableSSHSupport = true;
     };
