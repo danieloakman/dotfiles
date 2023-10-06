@@ -50,6 +50,8 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
+    # Set up passff-host for firefox password management with "Pass"
     ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
   };
 
@@ -67,6 +69,11 @@
     # EDITOR = "emacs";
     # EDITOR = "nvim";
   };
+
+  # TODO enable a gtk theme:
+  # gtk = {
+  #   enable = true;
+  # };
 
   # Let Home Manager install and manage itself.
   programs = {
@@ -137,6 +144,11 @@
       enable = true;
       enableZshIntegration = true;
     };
+
+    # TODO enable firefox
+    # firefox = {
+    #   enable = true;
+    # };
   };
 
   services = {
@@ -152,5 +164,4 @@
       maxCacheTtl = 604800;
     };
   };
-
 }
