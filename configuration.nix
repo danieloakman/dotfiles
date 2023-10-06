@@ -202,6 +202,9 @@
     };
   };
 
+  fonts.packages = with pkgs; [
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+  ];
 
   # List services that you want to enable:
 
