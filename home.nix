@@ -144,6 +144,13 @@
       enable = true;
       # frequency = "1";
     };
+
+    gpg-agent = {
+      enable = true;
+      enableZshIntegration = true;
+      defaultCacheTtl = 604800; # 1 week
+      maxCacheTtl = 604800;
+    };
   };
 
 }
