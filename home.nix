@@ -91,10 +91,10 @@
         fi
       '';
       shellAliases = {
-        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/#myNixos";
-        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/#myNixos";
-        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/#myNixos";
-        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/#myNixos";
+        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#myNixos";
+        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#myNixos";
+        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#myNixos";
+        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#myNixos";
       };
       oh-my-zsh = {
         enable = true;
