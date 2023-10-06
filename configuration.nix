@@ -192,14 +192,11 @@
 
   programs = {
     zsh.enable = true;
+
+    gnupg.agent.enable = true;
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
-    gnupg.agent = {
-      # TODO: ask for passphrase once a day
-      enable = true;
-      # enableSSHSupport = true;
-    };
   };
 
   fonts.packages = with pkgs; [
