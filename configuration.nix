@@ -108,7 +108,7 @@
 
   # Exclude particular gnome specific packages
   environment.gnome.excludePackages = (with pkgs; [
-    gnome-photos
+    # gnome-photos
     gnome-tour
     # gnome-connections
     orca
