@@ -86,6 +86,9 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  # Prevents overheating and works well with intel CPUs;
+  services.thermald.enable = true;
+
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
