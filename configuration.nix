@@ -192,6 +192,7 @@
       guake
       chromium
       home-manager
+      discord
     ];
   };
 
