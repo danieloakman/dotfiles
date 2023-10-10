@@ -198,7 +198,7 @@
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
-      # xclip # Don't need because this config is on wayland
+      # xclip # TODO actually may need this along with wl-clipboard
       wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
 
