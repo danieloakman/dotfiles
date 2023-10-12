@@ -163,5 +163,7 @@
       maxCacheTtl = 604800;
       pinentryFlavor = "curses";
     };
+
+    gnome-keyring.enable = true;
   };
 }
