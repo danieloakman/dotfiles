@@ -53,6 +53,42 @@
 
     # Set up passff-host for firefox password management with "Pass"
     ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
+
+    ".gitconfig".text = ''
+[user]
+	name = Daniel Oakman
+	email = 42539848+danieloakman@users.noreply.github.com
+	signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
+[credential]
+	helper = cache --timeout 604800
+[includeIf "gitdir/i:~/repos/tiny/"]
+	path = ~/.gitconfig-tiny
+[commit]
+	gpgsign = true
+[init]
+	defaultBranch = main
+[gpg]
+	program = gpg
+[pull]
+	ff = true
+[core]
+	editor = code
+[credential "https://github.com"]
+	helper = 
+	helper = !/run/current-system/sw/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/run/current-system/sw/bin/gh auth git-credential
+    '';
+
+    ".gitconfig-tiny".text = ''
+[user]
+	name = Daniel Oakman
+	email = daniel.oakman@tiny.cloud
+	signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
+[commit]
+	gpgsign = true
+    '';
   };
 
   # You can also manage environment variables but you will have to manually
@@ -78,7 +114,7 @@
   # Let Home Manager install and manage itself.
   programs = {
     home-manager.enable = true;
-    
+
     zsh = {
       enable = true;
       enableAutosuggestions = true;
@@ -127,17 +163,17 @@
       };
     };
 
-    gh = {
-      enable = true;
-      settings = {
-        git_protocol = "ssh";
-      };
-      extensions = with pkgs; [
-        gh-dash
-      ];
-    };
-
-    gh-dash.enable = true;
+    # Some github cli extensions weren't available, so don't enalbe in home-manager for now
+    # gh = {
+    #   enable = true;
+    #   settings = {
+    #     git_protocol = "ssh";
+    #   };
+    #   extensions = with pkgs; [
+    #     gh-dash
+    #   ];
+    # };
+    # gh-dash.enable = true;
 
     starship = {
       enable = true;
@@ -151,9 +187,15 @@
   };
 
   services = {
-    password-store-sync = {
+    git-sync = {
       enable = true;
-      # frequency = "1";
+      repositories = {
+        "password-store" = {
+          interval = 60;
+          path = "/home/dano/.local/share/password-store";
+          uri = "git@github.com:danieloakman/pwd-store.git";
+        };
+      };
     };
 
     gpg-agent = {
