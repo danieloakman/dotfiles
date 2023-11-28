@@ -214,7 +214,7 @@
       firefox
       google-drive-ocamlfuse
       guake
-      chromium
+      google-chrome
       home-manager
       discord
       zoom-us
