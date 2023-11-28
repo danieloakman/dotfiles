@@ -78,7 +78,7 @@
   # Let Home Manager install and manage itself.
   programs = {
     home-manager.enable = true;
-    
+
     zsh = {
       enable = true;
       enableAutosuggestions = true;
@@ -137,8 +137,7 @@
     #     gh-dash
     #   ];
     # };
-
-    gh-dash.enable = true;
+    # gh-dash.enable = true;
 
     starship = {
       enable = true;
