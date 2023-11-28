@@ -188,7 +188,8 @@
       fzf
       neovim
       gh
-      gh-dash
+      # gh-dash
+      # gh-profile # isn't available in nix-pkgs atm, so just install gh exts manually
       unzip
       zip
       libgccjit

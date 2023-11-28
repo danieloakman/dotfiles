@@ -127,15 +127,16 @@
       };
     };
 
-    gh = {
-      enable = true;
-      settings = {
-        git_protocol = "ssh";
-      };
-      extensions = with pkgs; [
-        gh-dash
-      ];
-    };
+    # Some github cli extensions weren't available, so don't enalbe in home-manager for now
+    # gh = {
+    #   enable = true;
+    #   settings = {
+    #     git_protocol = "ssh";
+    #   };
+    #   extensions = with pkgs; [
+    #     gh-dash
+    #   ];
+    # };
 
     gh-dash.enable = true;
 
@@ -151,9 +152,15 @@
   };
 
   services = {
-    password-store-sync = {
+    git-sync = {
       enable = true;
-      # frequency = "1";
+      repositories = {
+        "password-store" = {
+          interval = 60;
+          path = "/home/dano/.local/share/password-store";
+          uri = "git@github.com:danieloakman/pwd-store.git";
+        };
+      };
     };
 
     gpg-agent = {
