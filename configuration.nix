@@ -205,6 +205,7 @@
       wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
       chromedriver
+      inputs.openvpn24.legacyPackages.${system}.openvpn_24
 
       # Desktop only:
       gnome.gnome-tweaks
