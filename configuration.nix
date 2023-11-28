@@ -178,7 +178,7 @@
       # rofi-pass
       pinentry-curses
       pinentry-qt
-      rtx
+      # rtx # Couldn't get this to work in nixos, now installing the binaries it supports through nixpkgs
       eza
       bat
       thefuck
@@ -189,13 +189,15 @@
       neovim
       gh
       # gh-dash
-      # gh-profile # isn't available in nix-pkgs atm, so just install gh exts manually
       unzip
       zip
       libgccjit
       gnumake
-      nodejs_20
+      nodejs_18
+      yarn
+      nodePackages_latest.pnpm
       bun
+      python3
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
@@ -214,6 +216,8 @@
       chromium
       home-manager
       discord
+      zoom-us
+      slack
     ];
   };
 

@@ -148,20 +148,21 @@
 
     password-store.enable = true;
 
-    rtx = {
-      enable = true;
-      enableZshIntegration = true;
-      settings = {
-        settings = {
-          experimental = true;
-        };
-        tools = {
-          # node = "latest";
-          pnpm = "latest";
-          # bun = "latest";
-        };
-      };
-    };
+    # Couldn't get certain binaries to install through rtx, there isn't much support for it in nix
+    # rtx = {
+    #   enable = true;
+    #   enableZshIntegration = true;
+    #   settings = {
+    #     settings = {
+    #       experimental = true;
+    #     };
+    #     tools = {
+    #       # node = "latest";
+    #       pnpm = "latest";
+    #       # bun = "latest";
+    #     };
+    #   };
+    # };
 
     # Some github cli extensions weren't available, so don't enalbe in home-manager for now
     # gh = {
