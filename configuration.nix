@@ -204,6 +204,7 @@
       # xclip # TODO actually may need this along with wl-clipboard
       wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
+      chromedriver
 
       # Desktop only:
       gnome.gnome-tweaks
