@@ -206,6 +206,9 @@
       # logkeys # Was testing whether I could log laptop buttons or not
       chromedriver
       inputs.openvpn24.legacyPackages.${system}.openvpn_24
+      networkmanager
+      networkmanagerapplet
+      gnome.networkmanager-openvpn
 
       # Desktop only:
       gnome.gnome-tweaks
@@ -243,7 +246,8 @@
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.trustedInterfaces = [ "tun0" "tun" ];
+  networking.firewall.allowedUDPPorts = [ 443 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
