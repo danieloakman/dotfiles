@@ -246,8 +246,8 @@
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
-  networking.firewall.trustedInterfaces = [ "tun0" "tun" ];
-  networking.firewall.allowedUDPPorts = [ 443 ];
+  networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
+  networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
