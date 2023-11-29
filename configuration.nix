@@ -210,6 +210,7 @@
       networkmanager
       networkmanagerapplet
       gnome.networkmanager-openvpn
+      awscli2
 
       # Desktop only:
       gnome.gnome-tweaks
