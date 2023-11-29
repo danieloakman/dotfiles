@@ -198,6 +198,7 @@
       nodePackages_latest.pnpm
       bun
       python3
+      python311Packages.pip
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
