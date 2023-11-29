@@ -106,10 +106,10 @@
     # EDITOR = "nvim";
   };
 
-  # TODO enable a gtk theme:
-  # gtk = {
-  #   enable = true;
-  # };
+  # todo enable more gtk stuff
+  gtk = {
+    enable = true;
+  };
 
   # Let Home Manager install and manage itself.
   programs = {
