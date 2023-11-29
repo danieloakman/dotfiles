@@ -126,6 +126,10 @@
           source "$HOME/repos/personal/dotfiles/.main_shell"
         fi
       '';
+      envExtra = ''
+        fpath=(/home/dano/.dgranted/zsh_autocomplete/assume/ $fpath)
+        fpath=(/home/dano/.dgranted/zsh_autocomplete/granted/ $fpath)
+      '';
       shellAliases = {
         nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#myNixos";
         nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#myNixos";
