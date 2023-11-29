@@ -198,7 +198,8 @@
       nodePackages_latest.pnpm
       bun
       python3
-      python311Packages.pip
+      python311Packages.pip # TODO Need a better way of handling pip, pipx and pip packages, maybe just use nix-env and install non declaratively
+      python311Packages.pipx
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
@@ -206,11 +207,12 @@
       wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
       chromedriver
-      inputs.openvpn24.legacyPackages.${system}.openvpn_24
+      inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       networkmanager
-      networkmanagerapplet
+      networkmanagerapplet # Provides `nmi-connection-editor` command
       gnome.networkmanager-openvpn
       awscli2
+      granted # Used for the `assume` command, for fetching AWS creds
 
       # Desktop only:
       gnome.gnome-tweaks
