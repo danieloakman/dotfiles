@@ -191,7 +191,8 @@
       # gh-dash
       unzip
       zip
-      libgccjit
+      gnat13
+      # libgcc # Unsure why this gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nodejs_18
       yarn
