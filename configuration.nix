@@ -217,6 +217,7 @@
 
       # Desktop only:
       gnome.gnome-tweaks
+      gnomeExtensions.appindicator
       thunderbird
       tailscale
       vscode
