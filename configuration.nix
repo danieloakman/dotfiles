@@ -229,6 +229,7 @@
       discord
       zoom-us
       slack
+      spotify
     ];
   };
 
