@@ -28,15 +28,13 @@
       djo-personal-laptop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs system; };
         modules = [
-          ./configuration.nix
-          ./hardware/djo-personal-laptop.nix
+          ./hosts/djo-personal-laptop/configuration.nix
         ];
       };
       djo-tiny-laptop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs system; };
         modules = [
-          ./configuration.nix
-          ./hardware/djo-tiny-laptop.nix
+          ./hosts/djo-tiny-laptop/configuration.nix
         ];
       };
     };
