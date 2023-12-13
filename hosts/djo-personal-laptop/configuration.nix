@@ -16,7 +16,7 @@
   boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
 
-  networking.hostName = "djo-personal-laptop"; # Define your hostname.
+  networking.hostName = "djo-personal-laptop"; # Define your hostname. `echo $HOST`
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
