@@ -112,7 +112,7 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
-      dano = import ./home.nix;
+      dano = import ../../home.nix;
     };
   };
 
