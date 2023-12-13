@@ -25,10 +25,18 @@
   in
   {
     nixosConfigurations = {
-      myNixos = nixpkgs.lib.nixosSystem {
+      djo-personal-laptop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs system; };
         modules = [
           ./configuration.nix
+          ./hardware/djo-personal-laptop.nix
+        ];
+      };
+      djo-tiny-laptop = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs system; };
+        modules = [
+          ./configuration.nix
+          ./hardware/djo-tiny-laptop.nix
         ];
       };
     };

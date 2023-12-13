@@ -7,7 +7,7 @@
 {
   imports = [
     # Include the results of the hardware scan.
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
@@ -191,6 +191,7 @@
       # gh-dash
       unzip
       zip
+      nixpkgs-fmt # A formatter for .nix files.
       gnat13 # Provides gcc, g++, etc
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
