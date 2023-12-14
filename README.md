@@ -4,10 +4,9 @@ Now that the etc/nixos/configuration.nix file has been moved to ~/nixos AND it's
 ```bash
 sudo nixos-rebuild switch --flake ./#CONFIG_NAME
 # Or
-nixos-switch # If already ran a nixos rebuild before and this alias has been setup.
+nixos-switch # If the alias is available.
 ```
 
 * Note the *#CONFIG_NAME*, this references the name of the config in `nixosConfigurations` within *~/nixos/flake.nix*
 
 You can run `man home-configuration.nix` to get a list of useful home-manager settings and configurations.
- 
