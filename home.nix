@@ -84,7 +84,7 @@
     ".gitconfig-tiny".text = ''
 [user]
 	name = Daniel Oakman
-	email = daniel.oakman@tiny.cloud
+	email = 141111365+danoaky-tiny@users.noreply.github.com
 	signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
 [commit]
 	gpgsign = true
