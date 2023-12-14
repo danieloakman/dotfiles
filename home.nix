@@ -89,6 +89,11 @@
 [commit]
 	gpgsign = true
     '';
+
+    ".config/lazygit/config.yml".text = ''
+git:
+  overrideGpg: true
+    '';
   };
 
   # You can also manage environment variables but you will have to manually
