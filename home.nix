@@ -131,10 +131,10 @@
         fpath=(/home/dano/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
       shellAliases = {
-        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#myNixos";
-        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#myNixos";
-        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#myNixos";
-        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#myNixos";
+        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#$HOST";
+        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#$HOST";
+        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
+        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
       };
       oh-my-zsh = {
         enable = true;
