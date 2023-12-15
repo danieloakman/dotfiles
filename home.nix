@@ -3,112 +3,115 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "dano";
-  home.homeDirectory = "/home/dano";
+  home = {
+    username = "dano";
+    homeDirectory = "/home/dano";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "22.11"; # Please read the comment before changing.
+    # This value determines the Home Manager release that your configuration is
+    # compatible with. This helps avoid breakage when a new Home Manager release
+    # introduces backwards incompatible changes.
+    # You should not change this value, even if you update Home Manager. If you do
+    # want to update the value, then make sure to first check the Home Manager
+    # release notes.
+    stateVersion = "22.11"; # Please read the comment before changing.
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
-  home.packages = [
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
+    # The packages option allows you to install Nix packages into your
+    # environment.
+    packages = [
+      # # Adds the 'hello' command to your environment. It prints a friendly
+      # # "Hello, world!" when run.
+      # pkgs.hello
 
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+      # # It is sometimes useful to fine-tune packages, for example, by applying
+      # # overrides. You can do that directly here, just don't forget the
+      # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
+      # # fonts?
+      # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
-    pkgs.passff-host
-  ];
+      # # You can also create simple shell scripts directly inside your
+      # # configuration. For example, this adds a command 'my-hello' to your
+      # # environment:
+      # (pkgs.writeShellScriptBin "my-hello" ''
+      #   echo "Hello, ${config.home.username}!"
+      # '')
+      pkgs.passff-host
+    ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
+    # Home Manager is pretty good at managing dotfiles. The primary way to manage
+    # plain files is through 'home.file'.
+    file = {
+      # # Building this configuration will create a copy of 'dotfiles/screenrc' in
+      # # the Nix store. Activating the configuration will then make '~/.screenrc' a
+      # # symlink to the Nix store copy.
+      # ".screenrc".source = dotfiles/screenrc;
 
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
+      # # You can also set the file content immediately.
+      # ".gradle/gradle.properties".text = ''
+      #   org.gradle.console=verbose
+      #   org.gradle.daemon.idletimeout=3600000
+      # '';
 
-    # Set up passff-host for firefox password management with "Pass"
-    ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
+      # Set up passff-host for firefox password management with "Pass"
+      ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
-    ".gitconfig".text = ''
-[user]
-	name = Daniel Oakman
-	email = 42539848+danieloakman@users.noreply.github.com
-	signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
-[credential]
-	helper = cache --timeout 604800
-[includeIf "gitdir/i:~/repos/tiny/"]
-	path = ~/.gitconfig-tiny
-[commit]
-	gpgsign = true
-[init]
-	defaultBranch = main
-[gpg]
-	program = gpg
-[pull]
-	ff = true
-[core]
-	editor = code
-[credential "https://github.com"]
-	helper = 
-	helper = !/run/current-system/sw/bin/gh auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/run/current-system/sw/bin/gh auth git-credential
-    '';
+      ".gitconfig".text = ''
+        [user]
+          name = Daniel Oakman
+          email = 42539848+danieloakman@users.noreply.github.com
+          signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
+        [credential]
+          helper = cache --timeout 604800
+        [includeIf "gitdir/i:~/repos/tiny/"]
+          path = ~/.gitconfig-tiny
+        [commit]
+          gpgsign = true
+        [init]
+          defaultBranch = main
+        [gpg]
+          program = gpg
+        [pull]
+          ff = true
+        [core]
+          editor = code
+        [credential "https://github.com"]
+          helper = 
+          helper = !/run/current-system/sw/bin/gh auth git-credential
+        [credential "https://gist.github.com"]
+          helper = 
+          helper = !/run/current-system/sw/bin/gh auth git-credential
+      '';
 
-    ".gitconfig-tiny".text = ''
-[user]
-	name = Daniel Oakman
-	email = 141111365+danoaky-tiny@users.noreply.github.com
-	signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
-[commit]
-	gpgsign = true
-    '';
+      ".gitconfig-tiny".text = ''
+        [user]
+          name = Daniel Oakman
+          email = 141111365+danoaky-tiny@users.noreply.github.com
+          signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
+        [commit]
+          gpgsign = true
+      '';
 
-    ".config/lazygit/config.yml".text = ''
-git:
-  overrideGpg: true
-    '';
-  };
+      ".config/lazygit/config.yml".text = ''
+        git:
+          overrideGpg: true
+      '';
+    };
 
-  # You can also manage environment variables but you will have to manually
-  # source
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/dano/etc/profile.d/hm-session-vars.sh
-  #
-  # if you don't want to manage your shell through Home Manager.
-  home.sessionVariables = {
-    # EDITOR = "emacs";
-    # EDITOR = "nvim";
+    # You can also manage environment variables but you will have to manually
+    # source
+    #
+    #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+    #
+    # or
+    #
+    #  /etc/profiles/per-user/dano/etc/profile.d/hm-session-vars.sh
+    #
+    # if you don't want to manage your shell through Home Manager.
+    sessionVariables = {
+      # EDITOR = "emacs";
+      # EDITOR = "nvim";
+    };
+
+    sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
   };
 
   # todo enable more gtk stuff
