@@ -112,6 +112,7 @@
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
+    # TODO: symlink `google-chrome-stable` to `google-chrome` so chromedriver can find it. This symlink must be in the PATH, maybe in ~/bin.
   };
 
   # todo enable more gtk stuff
