@@ -1,3 +1,5 @@
+# Home manager setup for 'dano' user
+
 { config, pkgs, ... }:
 
 {

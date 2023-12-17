@@ -1,3 +1,5 @@
+# Gnome configuration
+
 { config, lib, pkgs, modulesPath, ... }:
 {
   # Enable the GNOME Desktop Environment.

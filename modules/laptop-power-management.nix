@@ -1,6 +1,7 @@
+# Power management adjustments for laptop.
+
 { config, lib, pkgs, modulesPath, ... }:
 {
-  # Power management adjustments for laptop:
   services = {
     # Better scheduling for CPU cycles:
     system76-scheduler.settings.cfsProfiles.enable = true;
