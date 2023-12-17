@@ -111,6 +111,7 @@
       nodePackages_latest.pnpm
       bun
       python3
+      # python312 # TODO upgrade to python 3.12 
       python311Packages.pip # TODO Need a better way of handling pip, pipx and pip packages, maybe just use nix-env and install non declaratively
       python311Packages.pipx
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
