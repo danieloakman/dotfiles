@@ -111,8 +111,8 @@
       nodePackages_latest.pnpm
       bun
       python312
-      python312Packages.pip # TODO Need a better way of handling pip, pipx and pip packages, maybe just use nix-env and install non declaratively
-      python312Packages.pipx
+      # python312Packages.pip # TODO Need a better way of handling pip, pipx and pip packages, maybe just use nix-env and install non declaratively
+      # python312Packages.pipx
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
