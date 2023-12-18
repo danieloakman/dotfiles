@@ -5,6 +5,7 @@
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
+    devenv.url = "github:cachix/devenv";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -12,7 +13,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: 
+  outputs = { self, nixpkgs, devenv, ... }@inputs: 
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
