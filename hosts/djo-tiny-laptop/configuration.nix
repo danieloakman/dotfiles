@@ -12,6 +12,7 @@
     ../../modules/user.nix
     ../../modules/gnome.nix
     ../../modules/laptop-power-management.nix
+    ../../modules/fingerprint.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
