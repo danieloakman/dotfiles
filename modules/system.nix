@@ -124,6 +124,7 @@
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       awscli2
       granted # Used for the `assume` command, for fetching AWS creds
+      cachix # For using with `devenv`
 
       # Desktop only
       # thunderbird
