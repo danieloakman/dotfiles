@@ -200,6 +200,12 @@
     # firefox = {
     #   enable = true;
     # };
+
+    direnv = {
+      enable = true;
+      enableZshIntegration = true; # see note on other shells below
+      nix-direnv.enable = true;
+    };
   };
 
   services = {
