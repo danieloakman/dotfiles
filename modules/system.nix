@@ -117,6 +117,9 @@
         black
         pytest
         mypy
+        boto
+        boto3
+        urllib3
         (
           buildPythonPackage rec {
             pname = "aws-sso-util";
@@ -130,6 +133,7 @@
             propagatedBuildInputs = [
               # Specify dependencies
               pkgs.python311Packages.poetry-core
+              pkgs.python311Packages.boto
               pkgs.python311Packages.boto3
               (
                 buildPythonPackage rec {
@@ -143,7 +147,23 @@
                   };
                   propagatedBuildInputs = [
                     pkgs.python311Packages.poetry-core
-                    # TODO: fix: No module named 'aws_sso_lib' error
+                    pkgs.python311Packages.pyyaml
+                    (
+                      buildPythonPackage rec {
+                        pname = "aws-sso-lib";
+                        version = "1.14.0";
+                        format = "pyproject";
+                        doCheck = false;
+                        src = fetchurl {
+                          url = "https://files.pythonhosted.org/packages/3d/df/302bafc5e7182212eec091269c4731bb4469041a1db5e6c3643d089d135d/aws_sso_lib-1.14.0.tar.gz";
+                          sha256 = "sha256-sCA6ZMy2a6ePme89DrZpr/57wyP2q5yqyX81whoDzqU=";
+                        };
+                        propagatedBuildInputs = [
+                          pkgs.python311Packages.poetry-core
+                          pkgs.python311Packages.jsonschema
+                        ];
+                      }
+                    )
                   ];
                 }
               )
