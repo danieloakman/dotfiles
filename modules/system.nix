@@ -110,9 +110,30 @@
       yarn
       nodePackages_latest.pnpm
       bun
-      python312
-      # python312Packages.pip # TODO Need a better way of handling pip, pipx and pip packages, maybe just use nix-env and install non declaratively
-      # python312Packages.pipx
+      python3
+      (python3.withPackages(ps: with ps; [
+        pip
+        pipx
+        black
+        pytest
+        mypy
+        (
+          buildPythonPackage rec {
+            pname = "aws-sso-util";
+            version = "4.32.0";
+            src = fetchurl {
+              url = "https://github.com/benkehoe/aws-sso-util/releases/download/cli-v4.32/aws_sso_util-4.32.0.tar.gz";
+              sha256 = "sha256-Jknc88WUhRoMVe1uvy33AgXR3r1uWOJjc4Qw1HA4kOw=";
+            };
+            format = "pyproject";
+            doCheck = false;
+            propagatedBuildInputs = [
+              # Specify dependencies
+              pkgs.python311Packages.poetry-core
+            ];
+          }
+        )
+      ]))
       dmenu-wayland # TODO get passmenu working with dmenu, all that shit
       starship
       curl
