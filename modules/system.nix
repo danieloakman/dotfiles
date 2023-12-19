@@ -130,6 +130,23 @@
             propagatedBuildInputs = [
               # Specify dependencies
               pkgs.python311Packages.poetry-core
+              pkgs.python311Packages.boto3
+              (
+                buildPythonPackage rec {
+                  pname = "aws-error-util";
+                  version = "2.7.0";
+                  format = "pyproject";
+                  doCheck = false;
+                  src = fetchurl {
+                    url = "https://github.com/benkehoe/aws-error-utils/releases/download/v2.7/aws_error_utils-2.7.0.tar.gz";
+                    sha256 = "sha256-BxB68qLCZwbNlSW3/77UPy0HtQ0n45+ekVbBGy6ZPJc=";
+                  };
+                  propagatedBuildInputs = [
+                    pkgs.python311Packages.poetry-core
+                    # TODO: fix: No module named 'aws_sso_lib' error
+                  ];
+                }
+              )
             ];
           }
         )
