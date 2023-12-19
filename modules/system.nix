@@ -182,7 +182,6 @@
       inputs.devenv.packages.${system}.devenv
       awscli2
       granted # Used for the `assume` command, for fetching AWS creds
-      # cachix # For using with `devenv`, may enable again later if I need `devenv`
 
       # Desktop only
       # thunderbird
