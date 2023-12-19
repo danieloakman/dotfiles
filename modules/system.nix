@@ -182,6 +182,7 @@
       inputs.devenv.packages.${system}.devenv
       awscli2
       granted # Used for the `assume` command, for fetching AWS creds
+      mprocs
 
       # Desktop only
       # thunderbird
