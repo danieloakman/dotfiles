@@ -13,7 +13,11 @@
   users.users.dano = {
     isNormalUser = true;
     description = "Daniel Oakman";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "adbusers" # Allows access to using `adb`
+    ];
     shell = pkgs.zsh;
     # User specific packages:
     # packages = with pkgs; [ ];

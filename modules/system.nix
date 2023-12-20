@@ -111,7 +111,7 @@
       nodePackages_latest.pnpm
       bun
       python3
-      (python3.withPackages(ps: with ps; [
+      (python3.withPackages (ps: with ps; [
         pip
         pipx
         black
@@ -183,6 +183,8 @@
       awscli2
       granted # Used for the `assume` command, for fetching AWS creds
       mprocs
+      android-studio
+      android-tools
 
       # Desktop only
       # thunderbird
@@ -202,8 +204,9 @@
 
   programs = {
     zsh.enable = true;
-
     gnupg.agent.enable = true;
+    adb.enable = true;
+
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
