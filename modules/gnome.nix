@@ -6,10 +6,10 @@
   services.xserver = {
     displayManager = {
       gdm.enable = true;
-      autoLogin = {
-        enable = true;
-        user = "dano";
-      };
+      # autoLogin = {
+      #   enable = true;
+      #   user = "dano";
+      # };
     };
     desktopManager.gnome.enable = true;
   };
