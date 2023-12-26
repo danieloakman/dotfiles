@@ -124,6 +124,7 @@
           buildPythonPackage rec {
             pname = "aws-sso-util";
             version = "4.32.0";
+            # Can use `nurl` next time to use `fetchFromGithub`
             src = fetchurl {
               url = "https://github.com/benkehoe/aws-sso-util/releases/download/cli-v4.32/aws_sso_util-4.32.0.tar.gz";
               sha256 = "sha256-Jknc88WUhRoMVe1uvy33AgXR3r1uWOJjc4Qw1HA4kOw=";
