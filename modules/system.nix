@@ -172,7 +172,11 @@
           }
         )
       ]))
-      dmenu-wayland # TODO get passmenu working with dmenu, all that shit
+
+      # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
+      # dmenu-wayland
+      # ydotool
+  
       starship
       curl
       xclip
