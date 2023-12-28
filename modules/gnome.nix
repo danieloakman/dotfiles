@@ -52,6 +52,7 @@
       gnome.networkmanager-openvpn
       gnome.gnome-tweaks
       gnomeExtensions.appindicator
+      gnomeExtensions.tailscale-status
     ];
   };
 }
