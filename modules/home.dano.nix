@@ -147,7 +147,7 @@
         nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
         nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
         nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
-        # nixos-update = "nix flake update ~/repos/personal/nixos" # TODO: test this works
+        nixos-update = "sudo nix flake update ~/repos/personal/nixos";
       };
       oh-my-zsh = {
         enable = true;
