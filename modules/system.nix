@@ -240,7 +240,7 @@
   services.tailscale.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
   # Or disable the firewall altogether.
