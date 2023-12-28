@@ -204,6 +204,7 @@
       zoom-us
       slack
       spotify
+      vlc # For video playback
     ];
   };
 
