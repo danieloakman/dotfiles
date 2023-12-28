@@ -53,6 +53,7 @@
       gnome.gnome-tweaks
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
+      gnome-frog # OCR tool
     ];
   };
 }
