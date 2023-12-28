@@ -44,8 +44,19 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable experimental nix features:
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix = {
+    # Enable experimental nix features:
+    settings.experimental-features = [ "nix-command" "flakes" ];
+    # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
+    optimise.automatic = true;
+    # Run garbage collection automatically
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+  };
+
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -176,7 +187,7 @@
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       # dmenu-wayland
       # ydotool
-  
+
       starship
       curl
       xclip
