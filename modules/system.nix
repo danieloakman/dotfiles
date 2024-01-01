@@ -233,16 +233,23 @@
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
 
-  # List services that you want to enable:
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  # Enable the OpenSSH daemon:
+  services.openssh = {
+    enable = true;
+    # These commented out settings would force public key authentication, but we don't need that for now as we're using
+    # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
+    # settings.PasswordAuthentication = false;
+    # settings.KbdInteractiveAuthentication = false;
+  };
+  # Allow OpenSSH to be accessed through the firewall:
+  networking.firewall.allowedTCPPorts = [ 22 ];
 
   services.tailscale.enable = true;
 
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  # Open ports in the firewall for tiny.work:
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
+
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 }
