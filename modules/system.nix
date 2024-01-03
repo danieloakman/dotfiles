@@ -117,6 +117,8 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
+      go
+      gopls
       nodejs_20
       yarn
       nodePackages_latest.pnpm
