@@ -117,12 +117,18 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
+
+      # Go related packages:
       go
       gopls
+      delve
+
+      # Node and Javascript related packages:
       nodejs_20
       yarn
       nodePackages_latest.pnpm
       bun
+
       python3
       (python3.withPackages (ps: with ps; [
         pip
