@@ -135,10 +135,16 @@
         pipx
         black
         pytest
+        pylint
         mypy
+        mypy-extensions
         boto
         boto3
         urllib3
+        more-itertools
+        numpy
+        certifi
+        typing-extensions
         (
           buildPythonPackage rec {
             pname = "aws-sso-util";
