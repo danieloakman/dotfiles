@@ -54,8 +54,9 @@
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
-      # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       gnomeExtensions.touch-x
+      # The following all didn't work on nixos or was not compatible with gnome v45
+      # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       # gnomeExtensions.gjs-osk
       # gnomeExtensions.simple-monitor # TODO: try this out
     ];
