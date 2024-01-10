@@ -56,7 +56,7 @@
       gnome-frog # OCR tool
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       gnomeExtensions.touch-x
-      gnomeExtensions.gjs-osk
+      # gnomeExtensions.gjs-osk
       # gnomeExtensions.simple-monitor # TODO: try this out
     ];
   };
