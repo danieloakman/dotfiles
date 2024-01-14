@@ -134,70 +134,71 @@
       (python3.withPackages (ps: with ps; [
         # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
         pip
-        pipx
-        black
-        pytest
-        pylint
-        mypy
-        mypy-extensions
-        boto
-        boto3
-        urllib3
-        more-itertools
-        numpy
-        certifi
-        typing-extensions
-        (
-          buildPythonPackage rec {
-            pname = "aws-sso-util";
-            version = "4.32.0";
-            # Can use `nurl` next time to use `fetchFromGithub`
-            src = fetchurl {
-              url = "https://github.com/benkehoe/aws-sso-util/releases/download/cli-v4.32/aws_sso_util-4.32.0.tar.gz";
-              sha256 = "sha256-Jknc88WUhRoMVe1uvy33AgXR3r1uWOJjc4Qw1HA4kOw=";
-            };
-            format = "pyproject";
-            doCheck = false;
-            propagatedBuildInputs = [
-              # Specify dependencies
-              pkgs.python311Packages.poetry-core
-              pkgs.python311Packages.boto
-              pkgs.python311Packages.boto3
-              (
-                buildPythonPackage rec {
-                  pname = "aws-error-util";
-                  version = "2.7.0";
-                  format = "pyproject";
-                  doCheck = false;
-                  src = fetchurl {
-                    url = "https://github.com/benkehoe/aws-error-utils/releases/download/v2.7/aws_error_utils-2.7.0.tar.gz";
-                    sha256 = "sha256-BxB68qLCZwbNlSW3/77UPy0HtQ0n45+ekVbBGy6ZPJc=";
-                  };
-                  propagatedBuildInputs = [
-                    pkgs.python311Packages.poetry-core
-                    pkgs.python311Packages.pyyaml
-                    (
-                      buildPythonPackage rec {
-                        pname = "aws-sso-lib";
-                        version = "1.14.0";
-                        format = "pyproject";
-                        doCheck = false;
-                        src = fetchurl {
-                          url = "https://files.pythonhosted.org/packages/3d/df/302bafc5e7182212eec091269c4731bb4469041a1db5e6c3643d089d135d/aws_sso_lib-1.14.0.tar.gz";
-                          sha256 = "sha256-sCA6ZMy2a6ePme89DrZpr/57wyP2q5yqyX81whoDzqU=";
-                        };
-                        propagatedBuildInputs = [
-                          pkgs.python311Packages.poetry-core
-                          pkgs.python311Packages.jsonschema
-                        ];
-                      }
-                    )
-                  ];
-                }
-              )
-            ];
-          }
-        )
+        # pipx
+        # black
+        # pytest
+        # pylint
+        # mypy
+        # mypy-extensions
+        # boto
+        # boto3
+        # urllib3
+        # more-itertools
+        # numpy
+        # certifi
+        # typing-extensions
+        # (
+        #   buildPythonPackage rec {
+        #     pname = "aws-sso-util";
+        #     version = "4.32.0";
+        #     # Can use `nurl` next time to use `fetchFromGithub`
+        #     src = fetchurl {
+        #       url = "https://github.com/benkehoe/aws-sso-util/releases/download/cli-v4.32/aws_sso_util-4.32.0.tar.gz";
+        #       sha256 = "sha256-Jknc88WUhRoMVe1uvy33AgXR3r1uWOJjc4Qw1HA4kOw=";
+        #     };
+        #     format = "pyproject";
+        #     doCheck = false;
+        #     propagatedBuildInputs = [
+        #       # Specify dependencies
+        #       pkgs.python311Packages.poetry-core
+        #       pkgs.python311Packages.boto
+        #       pkgs.python311Packages.boto3
+        #       (
+        #         buildPythonPackage rec {
+        #           pname = "aws-error-util";
+        #           version = "2.7.0";
+        #           format = "pyproject";
+        #           doCheck = false;
+        #           src = fetchurl {
+        #             url = "https://github.com/benkehoe/aws-error-utils/releases/download/v2.7/aws_error_utils-2.7.0.tar.gz";
+        #             sha256 = "sha256-BxB68qLCZwbNlSW3/77UPy0HtQ0n45+ekVbBGy6ZPJc=";
+        #           };
+        #           propagatedBuildInputs = [
+        #             pkgs.python311Packages.poetry-core
+        #             pkgs.python311Packages.pyyaml
+        #             (
+        #               buildPythonPackage rec {
+        #                 pname = "aws-sso-lib";
+        #                 version = "1.14.0";
+        #                 format = "pyproject";
+        #                 doCheck = false;
+        #                 src = fetchurl {
+        #                   url = "https://files.pythonhosted.org/packages/3d/df/302bafc5e7182212eec091269c4731bb4469041a1db5e6c3643d089d135d/aws_sso_lib-1.14.0.tar.gz";
+        #                   sha256 = "sha256-sCA6ZMy2a6ePme89DrZpr/57wyP2q5yqyX81whoDzqU=";
+        #                 };
+        #                 propagatedBuildInputs = [
+        #                   pkgs.python311Packages.poetry-core
+        #                   pkgs.python311Packages.jsonschema
+        #                   pkgs.python311Packages.boto3
+        #                 ];
+        #               }
+        #             )
+        #           ];
+        #         }
+        #       )
+        #     ];
+        #   }
+        # )
       ]))
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
