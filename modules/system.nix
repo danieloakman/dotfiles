@@ -104,8 +104,6 @@
       bat
       thefuck
       lazygit
-      cargo
-      rustup
       fzf
       neovim
       gh
@@ -118,6 +116,10 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
+
+      # Rust:
+      cargo
+      rustup
 
       # Go related packages:
       go
