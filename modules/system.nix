@@ -233,6 +233,7 @@
       slack
       spotify
       vlc # For video playback
+      gimp
     ];
   };
 
