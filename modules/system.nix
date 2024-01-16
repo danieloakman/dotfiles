@@ -121,18 +121,18 @@
       # Node can stay as it's needed for running scripts
 
       # Rust:
-      cargo
-      rustup
+      # cargo
+      # rustup
 
       # Go related packages:
-      go
-      gopls
-      delve
-      go-tools
+      # go
+      # gopls
+      # delve
+      # go-tools
 
       # Node and Javascript related packages:
       nodejs_20
-      yarn
+      # yarn
       nodePackages_latest.pnpm
       bun
 
