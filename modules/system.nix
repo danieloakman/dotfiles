@@ -216,11 +216,11 @@
       xclip
       wl-clipboard # TODO setup an alias for clip
       # logkeys # Was testing whether I could log laptop buttons or not
-      chromedriver
+      # chromedriver
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       inputs.devenv.packages.${system}.devenv
       awscli2
-      granted # Used for the `assume` command, for fetching AWS creds
+      # granted # Used for the `assume` command, for fetching AWS creds
       mprocs
       android-studio
       android-tools
