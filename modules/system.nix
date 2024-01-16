@@ -128,6 +128,7 @@
       go
       gopls
       delve
+      go-tools
 
       # Node and Javascript related packages:
       nodejs_20
