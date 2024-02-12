@@ -276,4 +276,13 @@
 
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
+  system.activationScripts.binbash = {
+    deps = [ "binsh" ];
+    # /bin/sh is apparently bash, or at least can dynamically swap between bash and sh depending on command used at argv[0]
+    text = ''
+      ln -s /bin/sh /bin/bash
+    '';
+  };
 }
