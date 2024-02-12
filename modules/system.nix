@@ -282,7 +282,11 @@
     deps = [ "binsh" ];
     # /bin/sh is apparently bash, or at least can dynamically swap between bash and sh depending on command used at argv[0]
     text = ''
-      ln -s /bin/sh /bin/bash
+      # Check if /bin/bash is already a symlink to /bin/sh
+      if [ ! -L /bin/bash ]; then
+        # If not, then create the symlink
+        ln -s /bin/sh /bin/bash
+      fi
     '';
   };
 }
