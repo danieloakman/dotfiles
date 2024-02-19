@@ -232,4 +232,16 @@
 
     gnome-keyring.enable = true;
   };
+
+  xdg.desktopEntries = {
+    "org.dano.move-mouse.desktop" = {
+      name = "Move Mouse";
+      comment = "Move the mouse to prevent auto suspension";
+      exec = "/user/local/bin/move-mouse";
+      type = "Application";
+      terminal = true;
+      categories = [ "Utility" ];
+      # startupNotify = "false";
+    };
+  };
 }
