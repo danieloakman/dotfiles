@@ -17,6 +17,7 @@
       "networkmanager"
       "wheel"
       "adbusers" # Allows access to using `adb`
+      "uinput"
     ];
     shell = pkgs.zsh;
     # User specific packages:

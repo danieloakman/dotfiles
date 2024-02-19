@@ -209,7 +209,7 @@
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       # dmenu-wayland
-      # ydotool
+      ydotool
 
       starship
       curl
