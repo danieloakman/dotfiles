@@ -26,6 +26,12 @@
   in
   {
     nixosConfigurations = {
+      djo-personal-desktop = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs system; };
+        modules = [
+          ./hosts/djo-personal-desktop/configuration.nix
+        ];
+      };
       djo-personal-laptop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs system; };
         modules = [
