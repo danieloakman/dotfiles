@@ -1,5 +1,3 @@
-# Power management adjustments for laptop.
-
 { config, lib, pkgs, modulesPath, ... }:
 {
   services = {

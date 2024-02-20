@@ -11,7 +11,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Enalbe bluetooth
+  # Enable bluetooth
   hardware.bluetooth.enable = true;
 
   # Set your time zone.
