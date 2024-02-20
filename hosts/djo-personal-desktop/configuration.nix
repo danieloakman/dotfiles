@@ -11,6 +11,7 @@
     ../../modules/system.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
+    ../../modules/desktop-power-management.nix
     inputs.home-manager.nixosModules.home-manager
   ];
 
