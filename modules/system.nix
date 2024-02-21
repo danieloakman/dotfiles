@@ -240,6 +240,7 @@
       spotify
       vlc # For video playback
       gimp
+      # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
     ];
   };
 
