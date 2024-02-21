@@ -29,7 +29,14 @@
 
   networking.hostName = "djo-personal-desktop"; # Define your hostname.
 
-  hardware.enableRedistributableFirmware = true;
+  hardware = {
+    enableRedistributableFirmware = true;
+    opengl = {
+      enable = true;
+      driSupport = true;
+      driSupport32Bit = true;
+    };
+  };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
