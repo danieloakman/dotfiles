@@ -117,16 +117,21 @@
     };
 
     activation = {
-      myActivationAction = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         function symlink() {
           if [ ! -L "$2" ]; then
             ln -s "$1" "$2"
           fi
         }
+
+        # Create ~/bin if it doesn't exist
+        if [ ! -d "$HOME/bin" ]; then
+          mkdir "$HOME/bin"
+        fi
+
         symlink $HOME/gdrive/Music $HOME/Music/gdrive
+        symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
       '';
-        # run ln -s $VERBOSE_ARG \
-        #   ${builtins.toPath ./link-me-directly} $HOME
     };
 
     # You can also manage environment variables but you will have to manually
@@ -145,7 +150,6 @@
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
-    # TODO: symlink `google-chrome-stable` to `google-chrome` so chromedriver can find it. This symlink must be in the PATH, maybe in ~/bin.
   };
 
   # todo enable more gtk stuff
