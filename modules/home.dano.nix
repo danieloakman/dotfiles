@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -114,6 +114,19 @@
           ControlPersist yes
           ServerAliveInterval 30
       '';
+    };
+
+    activation = {
+      myActivationAction = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        function symlink() {
+          if [ ! -L "$2" ]; then
+            ln -s "$1" "$2"
+          fi
+        }
+        symlink $HOME/gdrive/Music $HOME/Music/gdrive
+      '';
+        # run ln -s $VERBOSE_ARG \
+        #   ${builtins.toPath ./link-me-directly} $HOME
     };
 
     # You can also manage environment variables but you will have to manually
