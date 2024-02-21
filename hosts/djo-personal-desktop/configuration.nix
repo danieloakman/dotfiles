@@ -15,9 +15,17 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # Bootloader
+  boot.loader = {
+    # systemd-boot.enable = true; # TODO: remove this line and remove the already existing boot loader that this option creates.
+    efi.canTouchEfiVariables = true;
+    grub = {
+      device = "nodev";
+      enable = true;
+      efiSupport = true;
+      useOSProber = true;
+    };
+  };
 
   networking.hostName = "djo-personal-desktop"; # Define your hostname.
 
