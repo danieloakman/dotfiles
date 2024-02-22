@@ -13,44 +13,39 @@
     };
   };
 
-  outputs = { self, nixpkgs, devenv, ... }@inputs: 
-  let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
+  outputs = { self, nixpkgs, devenv, ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
 
-      config = {
-        allowUnfree = true;
+        config = {
+          allowUnfree = true;
+        };
       };
+    in
+    {
+      nixosConfigurations = {
+        djo-personal-desktop = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs system; };
+          modules = [
+            ./hosts/djo-personal-desktop/configuration.nix
+          ];
+        };
+        djo-personal-laptop = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs system; };
+          modules = [
+            ./hosts/djo-personal-laptop/configuration.nix
+          ];
+        };
+        djo-tiny-laptop = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs system; };
+          modules = [
+            ./hosts/djo-tiny-laptop/configuration.nix
+          ];
+        };
+      };
+      # packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
+      # packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
     };
-  in
-  {
-    nixosConfigurations = {
-      djo-personal-desktop = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs system; };
-        modules = [
-          ./hosts/djo-personal-desktop/configuration.nix
-        ];
-      };
-      djo-personal-laptop = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs system; };
-        modules = [
-          ./hosts/djo-personal-laptop/configuration.nix
-        ];
-      };
-      djo-tiny-laptop = nixpkgs.lib.nixosSystem {
-        # options = import ./modules/test.nix { isLaptop = true;};
-        specialArgs = 
-        let
-          isLaptop = true;
-        in
-        { inherit inputs system isLaptop; };
-        modules = [
-          ./hosts/djo-tiny-laptop/configuration.nix
-        ];
-      };
-    };
-    # packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-    # packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-  };
 }
