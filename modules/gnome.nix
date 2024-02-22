@@ -40,7 +40,6 @@
     gnome-maps
     gnome-weather
     sushi
-    yelp
     gnome-calendar
   ]);
   services.gnome.games.enable = false; # Disable all games
