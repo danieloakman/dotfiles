@@ -36,6 +36,13 @@
       # (pkgs.writeShellScriptBin "my-hello" ''
       #   echo "Hello, ${config.home.username}!"
       # '')
+
+      # Check first if destination exists, if not, then create it
+      (pkgs.writeShellScriptBin "symlink" ''
+          if [ ! -L "$2" ]; then
+            ln -s "$1" "$2"
+          fi
+        # '')
       pkgs.passff-host
     ];
 
