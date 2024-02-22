@@ -13,7 +13,7 @@
     ../../modules/user.nix
     ../../modules/gnome.nix
     # ../../modules/laptop-power-management.nix
-    ../../modules/test.nix
+    (import ../../modules/test.nix { isLaptop = true; inherit pkgs; })
     inputs.home-manager.nixosModules.home-manager
   ];
 
