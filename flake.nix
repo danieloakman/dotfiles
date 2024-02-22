@@ -39,7 +39,12 @@
         ];
       };
       djo-tiny-laptop = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs system; };
+        # options = import ./modules/test.nix { isLaptop = true;};
+        specialArgs = 
+        let
+          isLaptop = true;
+        in
+        { inherit inputs system isLaptop; };
         modules = [
           ./hosts/djo-tiny-laptop/configuration.nix
         ];
