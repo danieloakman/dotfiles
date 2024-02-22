@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, config, lib, pkgs, modulesPath, ... }:
+{ inputs, config, lib, pkgs, isOnWayland, ... }:
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -209,12 +209,12 @@
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       # dmenu-wayland
-      ydotool
+      (if isOnWayland then ydotool else xdotool)
 
       starship
       curl
       xclip
-      wl-clipboard # TODO setup an alias for clip
+      wl-clipboard # TODO remove this if not on wayland
       # logkeys # Was testing whether I could log laptop buttons or not
       # chromedriver
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work

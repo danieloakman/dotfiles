@@ -5,12 +5,13 @@
 { lib, inputs, config, pkgs, helpers, ... }:
 let
   isLaptop = true;
+  isOnWayland = true;
 in
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ../../modules/system.nix
+    (import ../../modules/system.nix { inherit lib inputs config pkgs isLaptop isOnWayland; })
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit helpers isLaptop; })
