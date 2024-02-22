@@ -11,7 +11,7 @@
     ../../modules/system.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
-    ../../modules/desktop-power-management.nix
+    (import ../../modules/power-management.nix { isLaptop = false; inherit helpers; })
     inputs.home-manager.nixosModules.home-manager
   ];
 

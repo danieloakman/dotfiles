@@ -2,9 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, ... }:
-# lib.mkMerge [
-# (import ../../modules/test.nix { isLaptop = true; })
+{ lib, inputs, config, pkgs, helpers, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -12,8 +10,7 @@
     ../../modules/system.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
-    # ../../modules/laptop-power-management.nix
-    (import ../../modules/test.nix { isLaptop = true; inherit pkgs; })
+    (import ../../modules/power-management.nix { isLaptop = true; inherit helpers; })
     inputs.home-manager.nixosModules.home-manager
   ];
 

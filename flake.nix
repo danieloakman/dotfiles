@@ -23,23 +23,28 @@
           allowUnfree = true;
         };
       };
+
+      # Nix function helpers:
+      helpers = {
+        not = bool: if bool then false else true;
+      };
     in
     {
       nixosConfigurations = {
         djo-personal-desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs = { inherit inputs system helpers; };
           modules = [
             ./hosts/djo-personal-desktop/configuration.nix
           ];
         };
         djo-personal-laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs = { inherit inputs system helpers; };
           modules = [
             ./hosts/djo-personal-laptop/configuration.nix
           ];
         };
         djo-tiny-laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs = { inherit inputs system helpers; };
           modules = [
             ./hosts/djo-tiny-laptop/configuration.nix
           ];
