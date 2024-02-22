@@ -3,6 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { inputs, config, pkgs, helpers, ... }:
+let
+  isLaptop = true;
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -10,7 +13,7 @@
     ../../modules/system.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
-    (import ../../modules/power-management.nix { isLaptop = true; inherit helpers; })
+    (import ../../modules/power-management.nix { inherit helpers isLaptop; })
     inputs.home-manager.nixosModules.home-manager
   ];
 
