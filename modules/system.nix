@@ -110,6 +110,7 @@
       # gh-dash
       unzip
       zip
+      jq
       rsync
       nixpkgs-fmt # A formatter for .nix files.
       gnat13 # Provides gcc, g++, etc
