@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, config, lib, pkgs, isOnWayland, ... }:
+{ inputs, config, lib, pkgs, env, ... }:
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -210,7 +210,7 @@
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       # dmenu-wayland
-      (if isOnWayland then ydotool else xdotool)
+      (if env.isOnWayland then ydotool else xdotool)
 
       starship
       curl

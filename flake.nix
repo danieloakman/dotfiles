@@ -25,6 +25,7 @@
       };
 
       # Nix function helpers:
+      # TODO: remove `helpers` probably as I found you can just do `!` instead of `not`
       helpers = {
         not = bool: if bool then false else true;
       };

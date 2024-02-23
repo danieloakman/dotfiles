@@ -4,17 +4,19 @@
 
 { lib, inputs, config, pkgs, helpers, ... }:
 let
-  isLaptop = true;
-  isOnWayland = false;
+  env = {
+    isLaptop = true;
+    isOnWayland = false;
+  };
 in
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/system.nix { inherit lib inputs config pkgs isLaptop isOnWayland; })
+    (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/user.nix
     ../../modules/gnome.nix
-    (import ../../modules/power-management.nix { inherit helpers isLaptop; })
+    (import ../../modules/power-management.nix { inherit helpers env; })
     inputs.home-manager.nixosModules.home-manager
   ];
 
