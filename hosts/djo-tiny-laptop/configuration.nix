@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, helpers, ... }:
+{ lib, inputs, config, pkgs, ... }:
 let
   env = {
     isLaptop = true;
@@ -16,7 +16,7 @@ in
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/user.nix
     ../../modules/gnome.nix
-    (import ../../modules/power-management.nix { inherit helpers env; })
+    (import ../../modules/power-management.nix { inherit env; })
     inputs.home-manager.nixosModules.home-manager
   ];
 
