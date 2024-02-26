@@ -249,7 +249,12 @@
     zsh.enable = true;
     gnupg.agent.enable = true;
     adb.enable = true;
-
+    nix-ld.dev = {
+      enable = true;
+      libraries = with pkgs; [
+        # Add any missing dynamic libraries for unpackaged programs here:
+      ];
+    };
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
