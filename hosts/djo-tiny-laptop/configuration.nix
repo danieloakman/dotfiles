@@ -36,7 +36,18 @@ in
     };
   };
 
-  hardware.enableRedistributableFirmware = true;
+  # Enable Linux vendor firmware service: https://fwupd.org/
+  # Use use `fwupdmgr` to perform updates. 
+  services.fwupd.enable = true;
+
+  hardware = {
+    enableRedistributableFirmware = true;
+    opengl = {
+      enable = true;
+      driSupport = true;
+      driSupport32Bit = true;
+    };
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -46,4 +57,3 @@ in
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
 }
-# ]
