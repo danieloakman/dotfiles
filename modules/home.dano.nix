@@ -107,13 +107,13 @@
       ".ssh/config".text = ''
         # Recommended to edit for actual device in use
         Host github github.com 100.100.254.2 djo-desktop tail9f1d8
-          # AddKeysToAgent yes
           IdentityFile ~/.ssh/djo-personal
           IdentitiesOnly yes
         Host gh-tiny # github github.com
-          # HostName github.com
-          # AddKeysToAgent yes
           IdentityFile ~/.ssh/djo-tiny
+          IdentitiesOnly yes
+        Host bitbucket.org
+          IdentityFile ~/.ssh/djo-auxilis
           IdentitiesOnly yes
         host github github.com stash
           ControlPath ~/.ssh/control-%h-%p-%r
