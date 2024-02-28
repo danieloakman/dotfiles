@@ -209,7 +209,7 @@
       ]))
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
-      # dmenu-wayland
+      (if env.isOnWayland then dmenu-wayland else dmenu)
       (if env.isOnWayland then ydotool else xdotool)
 
       starship
@@ -217,11 +217,9 @@
       xclip
       wl-clipboard # TODO remove this if not on wayland
       # logkeys # Was testing whether I could log laptop buttons or not
-      # chromedriver
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       inputs.devenv.packages.${system}.devenv
       awscli2
-      # granted # Used for the `assume` command, for fetching AWS creds
       mprocs
       android-studio
       android-tools
