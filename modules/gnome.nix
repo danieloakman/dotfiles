@@ -50,6 +50,7 @@
       networkmanagerapplet # Provides `nmi-connection-editor` command
       gnome.networkmanager-openvpn
       gnome.gnome-tweaks
+      gnome.gnome-terminal
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
