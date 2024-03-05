@@ -185,6 +185,7 @@
 
     activation = {
       createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        # Create symlinks safely:
         function symlink() {
           if [ ! -L "$2" ]; then
             ln -s "$1" "$2"
