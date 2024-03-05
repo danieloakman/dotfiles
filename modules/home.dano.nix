@@ -72,6 +72,8 @@
           helper = cache --timeout 604800
         [includeIf "gitdir/i:~/repos/tiny/"]
           path = ~/.gitconfig-tiny
+        [includeIf "gitdir/i:~/repos/auxilis/"]
+          path = ~/.gitconfig-auxilis
         [commit]
           gpgsign = true
         [init]
@@ -97,6 +99,15 @@
           signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
         [commit]
           gpgsign = true
+      '';
+
+      ".gitconfig-auxilis".text = ''
+        [user]
+          name = Daniel Oakman
+          email = daniel.oakman@auxilis.com.au
+          # signingkey = "" # TODO: create auxilis gpg key or some other way to verify commits on bitbucket
+        [commit]
+          gpgsign = false
       '';
 
       ".config/lazygit/config.yml".text = ''
