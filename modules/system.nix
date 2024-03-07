@@ -117,6 +117,7 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
+      dotnet-sdk_8
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
@@ -248,10 +249,12 @@
     zsh.enable = true;
     gnupg.agent.enable = true;
     adb.enable = true;
-    nix-ld.dev = {
-      enable = true;
+    nix-ld = {
+      enable = false;
       libraries = with pkgs; [
-        # Add any missing dynamic libraries for unpackaged programs here:
+        # Add any missing dynamic libraries for unpackaged programs
+        # here, NOT in environment.systemPackages
+        # TODO: move stuff from auxilis FHS shell to here, probably.
       ];
     };
     # Some programs need SUID wrappers, can be configured further or are
