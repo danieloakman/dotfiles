@@ -13,12 +13,23 @@ in
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    inputs.sops-nix.nixosModules.sops
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
     inputs.home-manager.nixosModules.home-manager
   ];
+
+  sops = {
+    defaultSopsFile = ../../secrets/secrets.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = /home/dano/.config/sops/age/keys.txt;
+
+    secrets.root_password = {
+      owner = config.users.users.dano.name;
+    };
+  };
 
   # Bootloader
   boot.loader = {
