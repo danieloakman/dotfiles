@@ -1,6 +1,8 @@
 {
   description = "Main NixOS Flake";
 
+  # See https://lazamar.co.uk/nix-versions/ for specific hashes to nixpkgs commits
+  # Look for another website like this if this doesn't work
   inputs = {
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
