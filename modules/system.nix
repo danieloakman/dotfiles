@@ -117,7 +117,7 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
-      dotnet-sdk_8
+      dust
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
