@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, config, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should

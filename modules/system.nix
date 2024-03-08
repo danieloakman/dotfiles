@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, config, lib, pkgs, env, ... }:
+{ inputs, pkgs, env, ... }:
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
