@@ -119,6 +119,7 @@
       nurl
       dust
       nil # Nix LSP
+      tldr
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
