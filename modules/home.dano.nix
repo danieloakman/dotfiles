@@ -103,7 +103,7 @@
 
       ".gitconfig-auxilis".text = ''
         [user]
-          name = Daniel Oakman
+          name = daniel.oakman
           email = daniel.oakman@auxilis.com.au
           # signingkey = "" # TODO: create auxilis gpg key or some other way to verify commits on bitbucket
         [commit]
