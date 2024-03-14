@@ -276,8 +276,8 @@
     # settings.PasswordAuthentication = false;
     # settings.KbdInteractiveAuthentication = false;
   };
-  # Allow OpenSSH to be accessed through the firewall:
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  # Allow OpenSSH and other dev related ports accessible through firewall
+  networking.firewall.allowedTCPPorts = [ 22 3000 3001 8000 8010 5173 ];
 
   services.tailscale.enable = true;
 
