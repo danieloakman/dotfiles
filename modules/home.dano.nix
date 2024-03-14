@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, config, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -103,7 +103,7 @@
 
       ".gitconfig-auxilis".text = ''
         [user]
-          name = Daniel Oakman
+          name = daniel.oakman
           email = daniel.oakman@auxilis.com.au
           # signingkey = "" # TODO: create auxilis gpg key or some other way to verify commits on bitbucket
         [commit]
@@ -113,6 +113,13 @@
       ".config/lazygit/config.yml".text = ''
         git:
           overrideGpg: true
+      '';
+
+      ".config/nixpkgs/config.nix".text = ''
+        { ... }:
+        {
+          allowUnfree = true;
+        }
       '';
 
       ".ssh/config".text = ''

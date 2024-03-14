@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, config, lib, pkgs, env, ... }:
+{ inputs, pkgs, env, ... }:
 {
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -94,12 +94,11 @@
       wget
       btop
       neofetch
-      pass-wayland
+      (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
       # rofi-pass
       pinentry-curses
       pinentry-qt
-      # rtx # Couldn't get this to work in nixos, now installing the binaries it supports through nixpkgs
       eza
       bat
       thefuck
@@ -119,6 +118,9 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl
+      dust
+      nil # Nix LSP
+      tldr
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
@@ -250,10 +252,12 @@
     zsh.enable = true;
     gnupg.agent.enable = true;
     adb.enable = true;
-    nix-ld.dev = {
-      enable = true;
+    nix-ld = {
+      enable = false;
       libraries = with pkgs; [
-        # Add any missing dynamic libraries for unpackaged programs here:
+        # Add any missing dynamic libraries for unpackaged programs
+        # here, NOT in environment.systemPackages
+        # TODO: move stuff from auxilis FHS shell to here, probably.
       ];
     };
     # Some programs need SUID wrappers, can be configured further or are
@@ -273,8 +277,8 @@
     # settings.PasswordAuthentication = false;
     # settings.KbdInteractiveAuthentication = false;
   };
-  # Allow OpenSSH to be accessed through the firewall:
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  # Allow OpenSSH and other dev related ports accessible through firewall
+  networking.firewall.allowedTCPPorts = [ 22 3000 3001 8000 8010 5173 ];
 
   services.tailscale.enable = true;
 

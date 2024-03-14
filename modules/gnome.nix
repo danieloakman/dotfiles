@@ -1,6 +1,6 @@
 # Gnome configuration
 
-{ config, lib, pkgs, modulesPath, ... }:
+{ pkgs, ... }:
 {
   # Enable the GNOME Desktop Environment.
   services.xserver = {

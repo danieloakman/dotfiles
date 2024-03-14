@@ -1,6 +1,6 @@
 # Configurations for all users and their home-manager setups:
 
-{ inputs, config, lib, pkgs, modulesPath, ... }:
+{ inputs, pkgs, ... }:
 {
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
