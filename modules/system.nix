@@ -99,7 +99,6 @@
       # rofi-pass
       pinentry-curses
       pinentry-qt
-      # rtx # Couldn't get this to work in nixos, now installing the binaries it supports through nixpkgs
       eza
       bat
       thefuck
