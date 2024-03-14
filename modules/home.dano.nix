@@ -115,6 +115,13 @@
           overrideGpg: true
       '';
 
+      ".config/nixpkgs/config.nix".text = ''
+        { ... }:
+        {
+          allowUnfree = true;
+        }
+      '';
+
       ".ssh/config".text = ''
         # Recommended to edit for actual device in use
         Host github github.com 100.100.254.2 djo-desktop tail9f1d8
