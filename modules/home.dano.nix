@@ -342,7 +342,7 @@
       enableZshIntegration = true;
       defaultCacheTtl = 604800; # 1 week
       maxCacheTtl = 604800;
-      pinentryFlavor = "curses";
+      # pinentryPackage = pkgs.pinentry;
     };
 
     gnome-keyring.enable = true;
