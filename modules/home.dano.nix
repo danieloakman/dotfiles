@@ -130,14 +130,22 @@
         Host gh-tiny # github github.com
           IdentityFile ~/.ssh/djo-tiny
           IdentitiesOnly yes
-        Host bitbucket.org
-          IdentityFile ~/.ssh/djo-auxilis
-          IdentitiesOnly yes
         host github github.com stash
           ControlPath ~/.ssh/control-%h-%p-%r
           ControlMaster auto
           ControlPersist yes
           ServerAliveInterval 30
+        Host bitbucket.org
+          IdentityFile ~/.ssh/djo-auxilis
+          IdentitiesOnly yes
+        Host macstadium.jump.tiny.work
+          HostName macstadium.jump.tiny.work
+          User tiny
+          IdentityFile ~/.ssh/macstadium-jump
+        Host atl-m1-bnode-01 # Add other nodes as needed. There's 01, 02, 03, 04
+          HostName %h.tiny.work
+          User tiny
+          ProxyJump macstadium.jump.tiny.work
       '';
 
       ".config/guake/prefs".text = ''
