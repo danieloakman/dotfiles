@@ -347,6 +347,7 @@
     gnome-keyring.enable = true;
   };
 
+  # TODO: look into why this doesn't do anything
   xdg.desktopEntries = {
     "org.dano.move-mouse.desktop" = {
       name = "Move Mouse";
