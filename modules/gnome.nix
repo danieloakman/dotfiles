@@ -40,7 +40,7 @@
     gnome-maps
     gnome-weather
     sushi
-    gnome-calendar
+    gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
   ]);
   services.gnome.games.enable = false; # Disable all games
 
