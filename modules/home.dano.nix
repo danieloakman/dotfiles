@@ -141,7 +141,7 @@
         Host macstadium.jump.tiny.work
           HostName macstadium.jump.tiny.work
           User tiny
-          IdentityFile ~/.ssh/macstadium-jump
+          IdentityFile ~/.ssh/macstadium-jump # TODO: probably should add these ssh keys to sops secrets
         Host atl-m1-bnode-01 # Add other nodes as needed. There's 01, 02, 03, 04
           HostName %h.tiny.work
           User tiny
