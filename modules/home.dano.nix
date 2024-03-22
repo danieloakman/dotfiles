@@ -199,6 +199,7 @@
     };
 
     activation = {
+      # TODO: this should be `"...".source = "...";`
       createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         function symlink() {
           if [ ! -L "$2" ]; then
