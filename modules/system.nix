@@ -158,8 +158,6 @@
       inputs.devenv.packages.${system}.devenv
       awscli2
       mprocs
-      android-studio
-      android-tools
 
       # Desktop only
       # thunderbird
@@ -186,7 +184,6 @@
   programs = {
     zsh.enable = true;
     gnupg.agent.enable = true;
-    adb.enable = true;
     nix-ld = {
       enable = false;
       libraries = with pkgs; [
