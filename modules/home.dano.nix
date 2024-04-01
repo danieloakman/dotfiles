@@ -270,7 +270,7 @@
         nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
         nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
         nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
-        nixos-update = "sudo nix flake update ~/repos/personal/nixos --commit-lock-file";
+        nixos-update = "sudo nix flake update ~/repos/personal/nixos";
         nixos-search = "nix search nixpkgs";
       };
       oh-my-zsh = {
