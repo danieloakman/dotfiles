@@ -251,7 +251,8 @@
 
     zsh = {
       enable = true;
-      autosuggestion.enable = true;
+      # autosuggestion.enable = true;
+      enableAutosuggestions = true;
       enableCompletion = true;
       syntaxHighlighting.enable = true;
       initExtra = ''
