@@ -19,7 +19,7 @@ in
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
-    ../../modules/games.nix
+    # ../../modules/games.nix
   ];
 
   # Bootloader
