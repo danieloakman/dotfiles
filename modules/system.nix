@@ -111,6 +111,7 @@
       zip
       jq
       rsync
+      rclone
       nixpkgs-fmt # A formatter for .nix files.
       gnat13 # Provides gcc, g++, etc
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
