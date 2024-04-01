@@ -51,10 +51,12 @@
       gnome.networkmanager-openvpn
       gnome.gnome-tweaks
       gnome.gnome-terminal
+      gnome.pomodoro
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
       gnomeExtensions.touch-x
+      gnomeExtensions.system-monitor-next
       # The following all didn't work on nixos or was not compatible with gnome v45
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       # gnomeExtensions.gjs-osk
