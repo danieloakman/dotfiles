@@ -120,7 +120,7 @@
       dust
       nil # Nix LSP
       tldr
-      gcalcli #TOOD: get gcalcli working, since I think it'll speed up creating events a lot
+      gcalcli
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
