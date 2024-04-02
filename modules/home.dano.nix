@@ -197,16 +197,20 @@
         palette-name='Tango'
       '';
 
-      ".config/rclone/rclone.conf".text = ''
-        [gdrive]
-        type = drive
-        client_id = 336312788532-rr6rslp7tjcmou515a2tfruq5c6sv0fc.apps.googleusercontent.com
-        client_secret = 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
-        scope = drive
-        token = {"access_token":"ya29.a0Ad52N39DDXHjRTDnUXORTMDJerdD0lvvU-WkYGzG9SDnaSzQhw8rldIGeP6jNDrOsN01--GJekXRcxQJL4an2IFYZk5RB9_G7kolSr64gTuWHTn8Sdgjnai-RyrM-nWPzOjEdBVV5SSS4bZsXtiW-HnadFp5ZOm75vgjaCgYKAaMSARISFQHGX2Mie4EUQx1A7DuatQsw9ZUGxQ0171","token_type":"Bearer","refresh_token":"1//0gkjL-XAaTFyMCgYIARAAGBASNgF-L9Ir4tlol43QRU_LXz0v8E5a2QRd9zcnCUakv6G2SCKOSdMGyxsMM5s4GMFazWvv140WFw","expiry":"2024-04-02T11:15:25.372792772+11:00"}
-        team_drive = 
-        skip_gdocs = true
-      '';
+      ".config/rclone/rclone.conf" = {
+        # TODO: this should just copy instead of symlink. So move it to a createDotFile function in activation or something.
+        enable = false;
+        text = ''
+          [gdrive]
+          type = drive
+          client_id = 336312788532-rr6rslp7tjcmou515a2tfruq5c6sv0fc.apps.googleusercontent.com
+          client_secret = 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
+          scope = drive
+          token = {"access_token":"ya29.a0Ad52N39DDXHjRTDnUXORTMDJerdD0lvvU-WkYGzG9SDnaSzQhw8rldIGeP6jNDrOsN01--GJekXRcxQJL4an2IFYZk5RB9_G7kolSr64gTuWHTn8Sdgjnai-RyrM-nWPzOjEdBVV5SSS4bZsXtiW-HnadFp5ZOm75vgjaCgYKAaMSARISFQHGX2Mie4EUQx1A7DuatQsw9ZUGxQ0171","token_type":"Bearer","refresh_token":"1//0gkjL-XAaTFyMCgYIARAAGBASNgF-L9Ir4tlol43QRU_LXz0v8E5a2QRd9zcnCUakv6G2SCKOSdMGyxsMM5s4GMFazWvv140WFw","expiry":"2024-04-02T11:15:25.372792772+11:00"}
+          team_drive = 
+          skip_gdocs = true
+        '';
+      };
     };
 
     activation = {
