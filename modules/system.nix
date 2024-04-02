@@ -177,6 +177,7 @@
       vlc # For video playback
       gimp
       obsidian
+      dropbox
       # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
       # foot # Maybe can use this for quick to load terminal that's a replacement for dmenu in gnome wayland
     ] ++ (if env.isOnWayland then [
