@@ -111,7 +111,7 @@
       zip
       jq
       rsync
-      rclone
+      # rclone # Don't need anymore as it was just used for Obsidian syncing
       nixpkgs-fmt # A formatter for .nix files.
       gnat13 # Provides gcc, g++, etc
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
