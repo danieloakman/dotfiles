@@ -21,7 +21,6 @@
     # gnome-connections
     orca
   ]) ++ (with pkgs.gnome; [
-    cheese # webcam tool
     gnome-music
     # gedit # text editor
     epiphany # web browser
@@ -52,6 +51,7 @@
       gnome.gnome-tweaks
       gnome.gnome-terminal
       gnome.pomodoro
+      # gnome.cheese # Web cam tool
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
