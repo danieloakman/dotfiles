@@ -303,8 +303,6 @@
       };
     };
 
-    password-store.enable = true;
-
     # Couldn't get certain binaries to install through rtx, there isn't much support for it in nix
     # rtx = {
     #   enable = true;
