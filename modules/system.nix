@@ -116,7 +116,7 @@
       gnat13 # Provides gcc, g++, etc
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
-      nurl
+      nurl # Generates nix fetcher urls
       dust
       nil # Nix LSP
       tldr
