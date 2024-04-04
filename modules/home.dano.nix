@@ -250,6 +250,8 @@
     sessionVariables = {
       # EDITOR = "emacs";
       # EDITOR = "nvim";
+      # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
+      PASSWORD_STORE_DIR = "/home/dano/.local/share/password-store";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
