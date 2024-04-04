@@ -94,6 +94,12 @@
       wget
       btop
       neofetch
+      ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
+        pass-otp
+        pass-update
+        pass-checkup
+        pass-audit
+      ]))
       (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
       # rofi-pass
