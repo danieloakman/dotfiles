@@ -94,6 +94,7 @@
       wget
       btop
       neofetch
+      # TODO: restart PC and test if passmenu still works
       ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
         pass-otp
         pass-update
