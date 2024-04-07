@@ -268,8 +268,8 @@
 
     zsh = {
       enable = true;
-      # autosuggestion.enable = true;
-      enableAutosuggestions = true;
+      autosuggestion.enable = true;
+      # enableAutosuggestions = true; # TODO remove this
       enableCompletion = true;
       syntaxHighlighting.enable = true;
       initExtra = ''
