@@ -45,8 +45,11 @@
   services.printing.enable = true;
 
   nix = {
-    # Enable experimental nix features:
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings ={
+      # Enable experimental nix features:
+      experimental-features = [ "nix-command" "flakes" ];
+      trusted-users = [ "root" "@wheel" ];
+    };
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
     # Run garbage collection automatically
