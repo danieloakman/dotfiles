@@ -19,7 +19,7 @@
     # gnome-photos
     gnome-tour
     # gnome-connections
-    orca
+    orca # Screen reader
   ]) ++ (with pkgs.gnome; [
     gnome-music
     # gedit # text editor
