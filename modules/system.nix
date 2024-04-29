@@ -227,6 +227,9 @@
   services.tailscale.enable = true;
 
   networking.firewall = {
+    # Or disable the firewall altogether.
+    # enable = false;
+
     # Allow OpenSSH and other dev related ports accessible through firewall
     allowedTCPPorts = [ 22 3000 3001 8000 8010 8090 5173 ];
 
@@ -236,9 +239,6 @@
 
     checkReversePath = false;
   };
-
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {
