@@ -232,7 +232,7 @@
   # Open ports in the firewall for tiny.work:
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
-  networking.firewall.checkReversePath = false;
+  # networking.firewall.checkReversePath = false;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {
