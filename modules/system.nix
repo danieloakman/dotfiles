@@ -227,8 +227,7 @@
   services.tailscale.enable = true;
 
   networking.firewall = {
-    # Or disable the firewall altogether.
-    # enable = false;
+    enable = true;
 
     # Allow OpenSSH and other dev related ports accessible through firewall
     allowedTCPPorts = [ 22 3000 3001 8000 8010 8090 5173 ];
