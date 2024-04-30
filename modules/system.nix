@@ -229,7 +229,7 @@
   networking.firewall.enable = true;
   # Allow OpenSSH and other dev related ports accessible through firewall
   networking.firewall.allowedTCPPorts = [ 22 3000 3001 8000 8010 8090 5173 ];
-    # Open ports in the firewall for tiny.work:
+  # Open ports in the firewall for tiny.work:
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
   networking.firewall.checkReversePath = false;
