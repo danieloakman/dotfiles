@@ -84,6 +84,8 @@
           ff = true
         [core]
           editor = code
+        [http]
+	        postBuffer = 524288000
         [credential "https://github.com"]
           helper = 
           helper = !/run/current-system/sw/bin/gh auth git-credential
