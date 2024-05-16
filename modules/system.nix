@@ -96,7 +96,7 @@
       git
       wget
       btop
-      neofetch
+      fastfetch
       ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
         pass-otp
         pass-update
