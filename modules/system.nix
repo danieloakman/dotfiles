@@ -146,7 +146,7 @@
       # go-tools
 
       # Node and Javascript related packages:
-      nodejs_20
+      nodejs_22
       # yarn
       nodePackages_latest.pnpm
       bun
