@@ -131,6 +131,7 @@
       tldr
       gcalcli
       zbar # Can scan QR & bar codes using this
+      lf # Terminal file system manager
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
