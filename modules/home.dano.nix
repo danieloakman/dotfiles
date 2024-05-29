@@ -83,7 +83,7 @@
         [pull]
           ff = true
         [core]
-          editor = code
+          editor = nano
         [http]
 	        postBuffer = 524288000
         [credential "https://github.com"]
