@@ -191,6 +191,7 @@
       # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
       # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
       # foot # Maybe can use this for quick to load terminal that's a replacement for dmenu in gnome wayland
+      # testdisk # For recovering lost partitions and files. Used this for recovering jpg files on an sd card once.
     ] ++ (if env.isOnWayland then [
       wl-clipboard
     ] else []);
