@@ -12,7 +12,21 @@
   networking.networkmanager.enable = true;
 
   # Enable bluetooth
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    # This was here to try and get bluetooth tethering working, but it didn't work.
+    # settings = {
+    #   General = {
+    #     Name = "Hello";
+    #     ControllerMode = "dual";
+    #     FastConnectable = "true";
+    #     Experimental = "true";
+    #   };
+    #   Policy = {
+    #     AutoEnable = "true";
+    #   };
+    # };
+  };
 
   # Set your time zone.
   time.timeZone = "Australia/Sydney";
@@ -188,6 +202,7 @@
       vlc # For video playback
       gimp
       obsidian
+      # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
       # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
       # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
       # foot # Maybe can use this for quick to load terminal that's a replacement for dmenu in gnome wayland
