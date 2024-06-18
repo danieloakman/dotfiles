@@ -115,6 +115,11 @@
       ".config/lazygit/config.yml".text = ''
         git:
           overrideGpg: true
+        customCommands:
+          - key: 'F'
+            command: 'git fetch --prune'
+            context: 'localBranches'
+            stream: true
       '';
 
       ".config/nixpkgs/config.nix".text = ''
