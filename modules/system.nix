@@ -149,7 +149,7 @@
       # Node and Javascript related packages:
       nodejs_22
       # yarn
-      nodePackages_latest.pnpm
+      pnpm
       bun
 
       python3
