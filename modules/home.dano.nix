@@ -264,6 +264,8 @@
     enable = true;
   };
 
+  # TODO: store Private internet access config in sops and load here somewhere
+
   # Let Home Manager install and manage itself.
   programs = {
     home-manager.enable = true;
