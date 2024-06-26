@@ -164,6 +164,7 @@
       nodejs_22
       # yarn
       pnpm
+      pnpm-shell-completion
       bun
 
       python3
