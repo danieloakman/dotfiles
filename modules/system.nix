@@ -187,6 +187,54 @@
       awscli2
       mprocs
 
+      # Nix shells:
+      (pkgs.buildFHSEnv {
+        name = "shfhs";
+        targetPkgs = pkgs: (with pkgs; [
+          tesseract
+          python310
+          python310Packages.pip
+          python310Packages.virtualenv
+          swig
+          glibc
+          glib.dev
+          libffi
+          ffmpeg
+          libsmf
+          libGL
+          libz
+          libzip
+          libgcc
+          zlib
+          pango
+          fontconfig
+          libstdcxx5
+          opencv
+          cmake
+          pixman
+          cairo
+          libjpeg
+          giflib
+          librsvg
+          # cairomm_1_16
+
+          # Needed for prisma:
+          openssl
+          prisma-engines 
+        ]) ++ (with pkgs.xorg; [
+          libX11
+          libXext
+          libSM
+        ]);
+        nativeBuildInputs = pkgs: (with pkgs; [
+          pkg-config
+        ]);
+        multiPkgs = pkgs: (with pkgs; [
+          # Nothing for now
+        ]);
+        runScript = "zsh";
+      })
+
       # Desktop only
       # thunderbird
       tailscale
