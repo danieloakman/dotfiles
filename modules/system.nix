@@ -191,6 +191,7 @@
       (pkgs.buildFHSEnv {
         name = "shfhs";
         targetPkgs = pkgs: (with pkgs; [
+          # More or less copied from the auxilis FHS shell
           tesseract
           python310
           python310Packages.pip
