@@ -189,7 +189,7 @@
 
       # Nix shells:
       (pkgs.buildFHSEnv {
-        name = "shfhs";
+        name = "sh-fhs";
         targetPkgs = pkgs: (with pkgs; [
           # More or less copied from the auxilis FHS shell
           tesseract
