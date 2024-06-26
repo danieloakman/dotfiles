@@ -228,6 +228,9 @@
         # python310Packages.pip
         # python310Packages.virtualenv
         # swig
+        stdenv
+        stdenv.cc.cc
+        stdenv.cc.cc.lib
         glibc
         glib.dev
         libffi
