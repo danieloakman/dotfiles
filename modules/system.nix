@@ -215,15 +215,44 @@
   programs = {
     zsh.enable = true;
     gnupg.agent.enable = true;
-    # nix-ld = {
-    #   enable = false;
-    #   libraries = with pkgs; [
-    #     # Add any missing dynamic libraries for unpackaged programs
-    #     # here, NOT in environment.systemPackages
-    #     # TODO: move stuff from auxilis FHS shell to here, probably.
-    #     # TODO: put stuff in here that's needed to install playwright
-    #   ];
-    # };
+    nix-ld = {
+      enable = true;
+      libraries = (with pkgs; [
+        # Add any missing dynamic libraries for unpackaged programs
+        # here, NOT in environment.systemPackages
+        # TODO: move stuff from auxilis FHS shell to here, probably.
+        # TODO: put stuff in here that's needed to install playwright
+        # tesseract
+        # python310
+        # python310Packages.pip
+        # python310Packages.virtualenv
+        # swig
+        glibc
+        glib.dev
+        libffi
+        # ffmpeg
+        libsmf
+        libGL
+        libz
+        libzip
+        libgcc
+        zlib
+        pango
+        fontconfig
+        libstdcxx5
+        opencv
+        cmake
+        pixman
+        cairo
+        libjpeg
+        giflib
+        librsvg
+      ]) ++ (with pkgs.xorg; [
+        libX11
+        libXext
+        libSM
+      ]);
+    };
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
