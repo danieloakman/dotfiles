@@ -243,6 +243,7 @@
       firefox
       google-drive-ocamlfuse
       guake
+      warp-terminal # TODO: trying out, remove if not better than guake
       google-chrome
       home-manager
       discord
