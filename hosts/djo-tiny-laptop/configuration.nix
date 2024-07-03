@@ -44,8 +44,9 @@ in
     enableRedistributableFirmware = true;
     opengl = {
       enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
+      # Removed these as it complained they do nothing now
+      # driSupport = true;
+      # driSupport32Bit = true;
     };
   };
 
