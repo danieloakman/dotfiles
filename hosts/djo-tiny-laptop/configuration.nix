@@ -42,11 +42,9 @@ in
 
   hardware = {
     enableRedistributableFirmware = true;
-    opengl = {
+    graphics = {
       enable = true;
-      # Removed these as it complained they do nothing now
-      # driSupport = true;
-      # driSupport32Bit = true;
+      enable32Bit = true;
     };
   };
 
