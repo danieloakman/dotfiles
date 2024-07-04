@@ -6,7 +6,8 @@
 let
   env = {
     isLaptop = true;
-    isOnWayland = true;
+    # Just had so much trouble with Gnome + Wayland that I'm swapping to x11 for now.
+    isOnWayland = false;
   };
 in
 {
