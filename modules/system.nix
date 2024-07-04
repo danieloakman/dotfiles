@@ -242,8 +242,8 @@
       vscode
       firefox
       google-drive-ocamlfuse
-      guake
-      warp-terminal # TODO: trying out, remove if not better than guake
+      # guake # Using warp-terminal for now over instead of guake
+      warp-terminal
       google-chrome
       home-manager
       discord
