@@ -41,7 +41,7 @@ in
     graphics.enable = true;
     graphics.enable32Bit = true;
     nvidia.modesetting.enable = true;
-    nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+    nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
