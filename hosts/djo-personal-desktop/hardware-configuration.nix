@@ -8,9 +8,9 @@
   ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "nvidia" ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/0725ce27-35ca-4988-9ee3-007127d7db15";
@@ -20,6 +20,7 @@
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/395D-FC06";
     fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
   };
 
   swapDevices = [ ];

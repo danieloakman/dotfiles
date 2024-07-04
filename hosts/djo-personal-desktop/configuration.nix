@@ -38,10 +38,10 @@ in
 
   hardware = {
     enableRedistributableFirmware = true;
-    graphics = {
-      enable = true;
-      # enable32Bit = true;
-    };
+    graphics.enable = true;
+    graphics.enable32Bit = true;
+    nvidia.modesetting.enable = true;
+    nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
