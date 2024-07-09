@@ -47,7 +47,7 @@
   };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  services.xserver.enable = !env.isOnWayland;
 
   # Configure keymap in X11
   services.xserver.xkb = {
