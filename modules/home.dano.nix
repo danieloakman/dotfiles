@@ -378,8 +378,6 @@
       maxCacheTtl = 604800;
       # pinentryPackage = pkgs.pinentry;
     };
-
-    gnome-keyring.enable = true;
   };
 
   # TODO: look into why this doesn't do anything

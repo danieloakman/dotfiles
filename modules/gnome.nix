@@ -45,6 +45,7 @@
 
   environment = {
     systemPackages = with pkgs; [
+      # TODO: Probably move this stuff to system.nix:
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
       gnome.networkmanager-openvpn
@@ -63,5 +64,9 @@
       # gnomeExtensions.gjs-osk
       # gnomeExtensions.simple-monitor # TODO: try this out
     ];
+  };
+
+  home-manager.users.dano = {
+    services.gnome-keyring.enable = true;
   };
 }
