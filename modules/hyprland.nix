@@ -40,6 +40,9 @@ in
       waybar
       dunst
       swww
+
+      networkmanager
+      networkmanagerapplet # Provides `nmi-connection-editor` command
     ];
   };
 
@@ -75,7 +78,7 @@ in
 
         "$mod" = "SUPER";
         bind = [
-          "$mod, F, exec, rofi -show drun -show-icons"
+          "$mod, S, exec, rofi -show drun -show-icons"
           "$mod, Q, exec, kitty"
           # "$mod, Q, exec, guake-toggle"
         ]
