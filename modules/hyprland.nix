@@ -32,7 +32,6 @@ in
     waybar
     dunst
     swww
-    nmtui # Network manager (TUI version)
   ];
 
   programs.hyprland = {
