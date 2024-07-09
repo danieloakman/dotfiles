@@ -1,6 +1,6 @@
 # Taken from https://github.com/jankaifer/nixos/blob/ab01ecbc451d3d0400a6e6da90f492b2272389bc/machines/oldbox/default.nix#L802-L844
 # I think I would need docker to get this to work.
-{ pkgs, config, ...}:
+{ pkgs, config, ... }:
 let
   coolify = { port = 8008; };
 in
