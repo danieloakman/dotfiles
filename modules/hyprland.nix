@@ -62,10 +62,16 @@ in
       settings = {
         exec-once = ''${startupScript}/bin/start'';
 
-        # TODO: set monitor to not be so zoomed in, i.e. properly
-        monitor="DP-1, 1920x1200, 0x0, 1.25";
+        "$mod" = "SUPER";
 
-        natural_scroll=true;
+        # TODO: set monitor to not be so zoomed in, i.e. properly
+        monitor="DP-1, 1920x1200, 0x0, 1.5";
+        input = {
+          natural_scroll = true;
+          touchpad = {
+            natural_scroll = true;
+          };
+        };
 
         "plugin:borders-plus-plus" = {
           add_borders = 1; # 0 - 9
