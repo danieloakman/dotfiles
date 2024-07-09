@@ -6,6 +6,9 @@ let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.swww}/bin/swww init &
+    ${pkgs.dunst}/bin/dunst &
+    ${pkgs.rofi-wayland}/bin/rofi -show drun -show-icons &
+    ${pkgs.kitty}/bin/kitty &
 
     sleep 1
   '';
@@ -58,6 +61,7 @@ in
 
       settings = {
         exec-once = ''${startupScript}/bin/start'';
+
         "plugin:borders-plus-plus" = {
           add_borders = 1; # 0 - 9
 
