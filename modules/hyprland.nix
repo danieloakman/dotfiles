@@ -64,8 +64,9 @@ in
 
         "$mod" = "SUPER";
 
-        # TODO: set monitor to not be so zoomed in, i.e. properly
+        # TODO: This monitor is specific to the tiny laptop, will need to move this to that specific config.
         monitor="eDP-1, 1920x1200, 0x0, 1.0";
+
         input = {
           natural_scroll = true;
           touchpad = {

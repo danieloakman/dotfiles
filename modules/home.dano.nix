@@ -379,6 +379,8 @@
       # pinentryPackage = pkgs.pinentry;
     };
 
+    # This keyring can be used across any window manager, not just gnome.
+    # It's pretty good, not much trouble with it so, I'll continue with it.
     gnome-keyring.enable = true;
   };
 
