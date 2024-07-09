@@ -242,8 +242,9 @@
       vscode
       firefox
       google-drive-ocamlfuse
-      # guake # Using warp-terminal for now over instead of guake
-      warp-terminal
+      guake
+      # Was trying this out for a week or two. I think guake is just overall a better choice. `pass` autocomplete no longer worked for one. And making the terminal a paid subscription gave me the ick.
+      # warp-terminal
       google-chrome
       home-manager
       discord
