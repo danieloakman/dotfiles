@@ -230,9 +230,9 @@
         nativeBuildInputs = pkgs: (with pkgs; [
           pkg-config
         ]);
-        multiPkgs = pkgs: (with pkgs; [
-          # Nothing for now
-        ]);
+        # multiPkgs = pkgs: (with pkgs; [
+        #   # Nothing for now
+        # ]);
         runScript = "zsh";
       })
 
