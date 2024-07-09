@@ -65,8 +65,4 @@
       # gnomeExtensions.simple-monitor # TODO: try this out
     ];
   };
-
-  home-manager.users.dano = {
-    services.gnome-keyring.enable = true;
-  };
 }

@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, ... }:
+{ lib, pkgs, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -378,6 +378,8 @@
       maxCacheTtl = 604800;
       # pinentryPackage = pkgs.pinentry;
     };
+
+    gnome-keyring.enable = true;
   };
 
   # TODO: look into why this doesn't do anything
