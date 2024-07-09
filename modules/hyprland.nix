@@ -37,9 +37,14 @@ in
     swww
   ];
 
-  programs.hyprland = {
-    enable = true;
-    package = hyprPkgs.hyprland;
+  programs = {
+    hyprland = {
+      enable = true;
+      package = hyprPkgs.hyprland;
+    };
+    waybar = {
+      enable = true;
+    };
   };
 
   xdg.portal = {
