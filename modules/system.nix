@@ -261,6 +261,11 @@
       # testdisk # For recovering lost partitions and files. Used this for recovering jpg files on an sd card once.
     ] ++ (if env.isOnWayland then [
       wl-clipboard
+      # TODO: need to install when on hyprland only:
+      rofi-wayland
+      waybar
+      dunst
+      swww
     ] else []);
   };
 

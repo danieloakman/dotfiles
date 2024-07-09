@@ -9,6 +9,8 @@ let
 
     sleep 1
   '';
+  hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
+  hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
   # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
 in
 {
@@ -20,17 +22,24 @@ in
 
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+    package = hyprPkgs.hyprland;
+  };
+
+  xdg.portal = {
+    enable = true;
+    # extraPortals = [
+    #   hyprPkgs.xdg-desktop
+    # ];
   };
 
   home-manager.users.dano = {
     wayland.windowManager.hyprland = {
       enable = true;
-      package = inputs.hyprland.packages."${pkgs.system}".hyprland;
+      package = hyprPkgs.hyprland;
       # systemd.variables = ["--all"];
 
       plugins = [
-        inputs.hyprland-plugins.packages."${pkgs.system}".borders-plus-plus
+        hyprPlugins.borders-plus-plus
       ];
 
       settings = {
