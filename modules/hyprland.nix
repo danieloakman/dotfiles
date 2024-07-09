@@ -9,9 +9,9 @@ let
 
     sleep 1
   '';
+  # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
   hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
-  # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
 in
 {
   # Enable cachix for hyprland, otherwise hyprland will be built from source:
@@ -19,6 +19,21 @@ in
     substituters = ["https://hyprland.cachix.org"];
     trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
   };
+
+  environment.systemPackages = with pkgs; [
+    # pyprland
+    hyprpicker
+    hyprcursor
+    hyprlock
+    hypridle
+    # hyprpaper
+    kitty
+    rofi-wayland
+    waybar
+    dunst
+    swww
+    nmtui # Network manager (TUI version)
+  ];
 
   programs.hyprland = {
     enable = true;
