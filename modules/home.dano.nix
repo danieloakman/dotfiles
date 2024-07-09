@@ -1,7 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, ... }:
-
+{ lib, pkgs, env, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -296,6 +295,7 @@
         nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#$HOST";
         nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
         nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
+        nixos-dry-build = "sudo nixos-rebuild dry-build --flake ~/repos/personal/nixos/#$HOST";
         nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
         nixos-update = "sudo nix flake update ~/repos/personal/nixos";
         nixos-search = "nix search nixpkgs";
