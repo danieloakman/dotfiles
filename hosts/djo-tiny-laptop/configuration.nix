@@ -14,10 +14,11 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
-    ../../modules/user.nix
-    ../../modules/gnome.nix
-    (import ../../modules/power-management.nix { inherit env; })
     inputs.home-manager.nixosModules.home-manager
+    ../../modules/user.nix
+    (import ../../modules/power-management.nix { inherit env; })
+    ../../modules/hyprland.nix
+    # ../../modules/gnome.nix
   ];
 
   # Bootloader.
