@@ -62,6 +62,8 @@ in
       settings = {
         exec-once = ''${startupScript}/bin/start'';
 
+        # TODO: set monitor to not be so zoomed in, i.e. properly
+
         "plugin:borders-plus-plus" = {
           add_borders = 1; # 0 - 9
 
