@@ -65,7 +65,7 @@ in
         "$mod" = "SUPER";
 
         # TODO: set monitor to not be so zoomed in, i.e. properly
-        monitor="DP-1, 1920x1200, 0x0, 1.5";
+        monitor="DP-1, 1920x1200, 0x0, 1.0";
         input = {
           natural_scroll = true;
           touchpad = {
