@@ -59,7 +59,7 @@
   services.printing.enable = true;
 
   nix = {
-    settings ={
+    settings = {
       # Enable experimental nix features:
       experimental-features = [ "nix-command" "flakes" ];
       trusted-users = [ "root" "@wheel" ];
@@ -221,7 +221,7 @@
 
           # Needed for prisma:
           openssl
-          prisma-engines 
+          prisma-engines
         ]) ++ (with pkgs.xorg; [
           libX11
           libXext
@@ -230,9 +230,9 @@
         nativeBuildInputs = pkgs: (with pkgs; [
           pkg-config
         ]);
-        multiPkgs = pkgs: (with pkgs; [
-          # Nothing for now
-        ]);
+        # multiPkgs = pkgs: (with pkgs; [
+        #   # Nothing for now
+        # ]);
         runScript = "zsh";
       })
 
@@ -261,7 +261,7 @@
       # testdisk # For recovering lost partitions and files. Used this for recovering jpg files on an sd card once.
     ] ++ (if env.isOnWayland then [
       wl-clipboard
-    ] else []);
+    ] else [ ]);
   };
 
   programs = {
@@ -330,7 +330,7 @@
   networking.firewall.enable = true;
   # Allow OpenSSH and other dev related ports accessible through firewall
   networking.firewall.allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
-  networking.firewall.allowedTCPPortRanges = [ { from = 3000; to = 3005; } { from = 8000; to = 8100; } ];
+  networking.firewall.allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
   # Open ports in the firewall for tiny.work:
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
