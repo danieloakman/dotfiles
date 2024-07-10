@@ -94,6 +94,7 @@ in
         "$mod" = "SUPER";
         bind = [
           "$mod, S, exec, rofi -show drun -show-icons"
+          "alt, F4, killactive"
           "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           # "$mod, Q, exec, guake-toggle"
