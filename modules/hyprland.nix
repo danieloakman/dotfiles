@@ -98,6 +98,9 @@ in
           "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           # "$mod, Q, exec, guake-toggle"
+
+          "SUPER_SHIFT, right, movetoworkspace, +1"
+          "SUPER_SHIFT, left, movetoworkspace, -1"
         ]
         ++ (
           # workspaces
