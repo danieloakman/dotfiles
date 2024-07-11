@@ -7,6 +7,12 @@ let
   env = {
     isLaptop = false;
     isOnWayland = false;
+    hyprland = {
+      monitor = [
+        "DP-1, 1920x1080, 0x0, 1.0"
+        # TODO: other monitors
+      ];
+    };
   };
 in
 {
@@ -15,10 +21,11 @@ in
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
-    ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
     (import ../../modules/games.nix { inherit pkgs; })
+    ../../modules/hyprland.nix
+    # ../../modules/gnome.nix
   ];
 
   # Bootloader

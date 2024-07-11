@@ -1,7 +1,7 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, env, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
@@ -124,7 +124,8 @@ in
         );
 
         # TODO: This monitor is specific to the tiny laptop, will need to move this to that specific config.
-        monitor = "eDP-1, 1920x1200, 0x0, 1.0";
+        # monitor = "eDP-1, 1920x1200, 0x0, 1.0";
+        monitor = env.hyprland.monitor;
 
         input = {
           natural_scroll = true;

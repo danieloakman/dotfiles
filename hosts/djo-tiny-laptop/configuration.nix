@@ -7,6 +7,11 @@ let
   env = {
     isLaptop = true;
     isOnWayland = true;
+    hyprland = {
+      monitor = [
+        "eDP-1, 1920x1200, 0x0, 1.0"
+      ];
+    };
   };
 in
 {
