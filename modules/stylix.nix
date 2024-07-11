@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   stylix = {
     # base16Scheme = { };
