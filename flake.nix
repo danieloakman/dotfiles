@@ -42,7 +42,7 @@
           };
         };
       });
-      commonImports = ({ lib, inputs, config, pkgs, env, ... }: {
+      commonImports = ({ ... }: {
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
@@ -61,7 +61,7 @@
           modules = [
             ./hosts/djo-personal-desktop/configuration.nix
             commonImports
-            { inherit inputs system; }
+            { }
             createNixCache
             { }
           ];
@@ -71,7 +71,7 @@
           modules = [
             ./hosts/djo-personal-laptop/configuration.nix
             commonImports
-            { inherit inputs system; }
+            { }
             createNixCache
             { }
           ];
@@ -81,7 +81,7 @@
           modules = [
             ./hosts/djo-tiny-laptop/configuration.nix
             commonImports
-            { inherit inputs system; }
+            { }
             createNixCache
             { }
           ];
