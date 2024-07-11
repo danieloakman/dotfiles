@@ -15,9 +15,7 @@ in
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
-    ../../modules/user.nix
     (import ../../modules/power-management.nix { inherit env; })
-    inputs.home-manager.nixosModules.home-manager
     ../../modules/hyprland.nix
     # ../../modules/gnome.nix
   ];

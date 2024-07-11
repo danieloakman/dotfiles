@@ -1,4 +1,4 @@
-# This module is for adding general desktop, system level packages:
+# This module is for adding general desktop, system level packages. Stuff that has a GUI:
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
