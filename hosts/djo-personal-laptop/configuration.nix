@@ -14,6 +14,7 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
+    ../../modules/desktop-pkgs.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })

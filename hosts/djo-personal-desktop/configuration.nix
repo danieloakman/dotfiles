@@ -14,11 +14,14 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     inputs.sops-nix.nixosModules.sops
+    inputs.home-manager.nixosModules.home-manager
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
+    ../../modules/desktop-pkgs.nix
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
-    inputs.home-manager.nixosModules.home-manager
+    ../../modules/mobile-dev.nix
+    (import ../../modules/games.nix { inherit pkgs; })
   ];
 
   sops = {
@@ -47,11 +50,10 @@ in
 
   hardware = {
     enableRedistributableFirmware = true;
-    opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
-    };
+    graphics.enable = true;
+    graphics.enable32Bit = true;
+    nvidia.modesetting.enable = true;
+    nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];

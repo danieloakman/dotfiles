@@ -83,7 +83,9 @@
         [pull]
           ff = true
         [core]
-          editor = code
+          editor = nano
+        [http]
+          postBuffer = 524288000
         [credential "https://github.com"]
           helper = 
           helper = !/run/current-system/sw/bin/gh auth git-credential
@@ -113,6 +115,11 @@
       ".config/lazygit/config.yml".text = ''
         git:
           overrideGpg: true
+        customCommands:
+          - key: 'F'
+            command: 'git fetch --prune'
+            context: 'localBranches'
+            stream: true
       '';
 
       ".config/nixpkgs/config.nix".text = ''
@@ -130,14 +137,22 @@
         Host gh-tiny # github github.com
           IdentityFile ~/.ssh/djo-tiny
           IdentitiesOnly yes
-        Host bitbucket.org
-          IdentityFile ~/.ssh/djo-auxilis
-          IdentitiesOnly yes
         host github github.com stash
           ControlPath ~/.ssh/control-%h-%p-%r
           ControlMaster auto
           ControlPersist yes
           ServerAliveInterval 30
+        Host bitbucket.org
+          IdentityFile ~/.ssh/djo-auxilis
+          IdentitiesOnly yes
+        Host macstadium.jump.tiny.work
+          HostName macstadium.jump.tiny.work
+          User tiny
+          IdentityFile ~/.ssh/macstadium-jump # TODO: probably should add these ssh keys to sops secrets
+        Host atl-m1-bnode-01 # Add other nodes as needed. There's 01, 02, 03, 04
+          HostName %h.tiny.work
+          User tiny
+          ProxyJump macstadium.jump.tiny.work
       '';
 
       ".config/guake/prefs".text = ''
@@ -188,9 +203,25 @@
         palette='#000000000000:#cccc00000000:#4e4e9a9a0606:#c4c4a0a00000:#34346565a4a4:#757550507b7b:#060698209a9a:#d3d3d7d7cfcf:#555557575353:#efef29292929:#8a8ae2e23434:#fcfce9e94f4f:#72729f9fcfcf:#adad7f7fa8a8:#3434e2e2e2e2:#eeeeeeeeecec:#ffffffffffff:#000000000000'
         palette-name='Tango'
       '';
+
+      ".config/rclone/rclone.conf" = {
+        # TODO: this should just copy instead of symlink. So move it to a createDotFile function in activation or something.
+        enable = false;
+        text = ''
+          [gdrive]
+          type = drive
+          client_id = 336312788532-rr6rslp7tjcmou515a2tfruq5c6sv0fc.apps.googleusercontent.com
+          client_secret = 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
+          scope = drive
+          token = {"access_token":"ya29.a0Ad52N39DDXHjRTDnUXORTMDJerdD0lvvU-WkYGzG9SDnaSzQhw8rldIGeP6jNDrOsN01--GJekXRcxQJL4an2IFYZk5RB9_G7kolSr64gTuWHTn8Sdgjnai-RyrM-nWPzOjEdBVV5SSS4bZsXtiW-HnadFp5ZOm75vgjaCgYKAaMSARISFQHGX2Mie4EUQx1A7DuatQsw9ZUGxQ0171","token_type":"Bearer","refresh_token":"1//0gkjL-XAaTFyMCgYIARAAGBASNgF-L9Ir4tlol43QRU_LXz0v8E5a2QRd9zcnCUakv6G2SCKOSdMGyxsMM5s4GMFazWvv140WFw","expiry":"2024-04-02T11:15:25.372792772+11:00"}
+          team_drive = 
+          skip_gdocs = true
+        '';
+      };
     };
 
     activation = {
+      # TODO: this should be `"...".source = "...";`
       createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         # Create symlinks safely:
         function symlink() {
@@ -227,6 +258,8 @@
     sessionVariables = {
       # EDITOR = "emacs";
       # EDITOR = "nvim";
+      # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
+      PASSWORD_STORE_DIR = "/home/dano/.local/share/password-store";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
@@ -237,13 +270,16 @@
     enable = true;
   };
 
+  # TODO: store Private internet access config in sops and load here somewhere
+
   # Let Home Manager install and manage itself.
   programs = {
     home-manager.enable = true;
 
     zsh = {
       enable = true;
-      enableAutosuggestions = true;
+      autosuggestion.enable = true;
+      # enableAutosuggestions = true; # TODO remove this
       enableCompletion = true;
       syntaxHighlighting.enable = true;
       initExtra = ''
@@ -263,6 +299,7 @@
         nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
         nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
         nixos-update = "sudo nix flake update ~/repos/personal/nixos";
+        nixos-search = "nix search nixpkgs";
       };
       oh-my-zsh = {
         enable = true;
@@ -277,8 +314,6 @@
         theme = "robbyrussell";
       };
     };
-
-    password-store.enable = true;
 
     # Couldn't get certain binaries to install through rtx, there isn't much support for it in nix
     # rtx = {
@@ -348,6 +383,7 @@
     gnome-keyring.enable = true;
   };
 
+  # TODO: look into why this doesn't do anything
   xdg.desktopEntries = {
     "org.dano.move-mouse.desktop" = {
       name = "Move Mouse";

@@ -12,7 +12,21 @@
   networking.networkmanager.enable = true;
 
   # Enable bluetooth
-  hardware.bluetooth.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    # This was here to try and get bluetooth tethering working, but it didn't work.
+    # settings = {
+    #   General = {
+    #     Name = "Hello";
+    #     ControllerMode = "dual";
+    #     FastConnectable = "true";
+    #     Experimental = "true";
+    #   };
+    #   Policy = {
+    #     AutoEnable = "true";
+    #   };
+    # };
+  };
 
   # Set your time zone.
   time.timeZone = "Australia/Sydney";
@@ -45,8 +59,11 @@
   services.printing.enable = true;
 
   nix = {
-    # Enable experimental nix features:
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings = {
+      # Enable experimental nix features:
+      experimental-features = [ "nix-command" "flakes" ];
+      trusted-users = [ "root" "@wheel" ];
+    };
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
     # Run garbage collection automatically
@@ -93,12 +110,18 @@
       git
       wget
       btop
-      neofetch
+      fastfetch
+      ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
+        pass-otp
+        pass-update
+        pass-checkup
+        pass-audit
+      ]))
       (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
       # rofi-pass
-      pinentry-curses
-      pinentry-qt
+      # pinentry-curses
+      # pinentry-qt
       eza
       bat
       thefuck
@@ -113,14 +136,18 @@
       zip
       jq
       rsync
+      # rclone # Don't need anymore as it was just used for Obsidian syncing
       nixpkgs-fmt # A formatter for .nix files.
       gnat13 # Provides gcc, g++, etc
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
-      nurl
+      nurl # Generates nix fetcher urls
       dust
       nil # Nix LSP
       tldr
+      gcalcli
+      zbar # Can scan QR & bar codes using this
+      lf # Terminal file system manager
 
       # TODO: remove dev related things like go and rust to a devenv instead.
       # Node can stay as it's needed for running scripts
@@ -136,9 +163,10 @@
       # go-tools
 
       # Node and Javascript related packages:
-      nodejs_20
+      nodejs_22
       # yarn
-      nodePackages_latest.pnpm
+      pnpm
+      pnpm-shell-completion
       bun
 
       python3
@@ -160,42 +188,103 @@
       inputs.devenv.packages.${system}.devenv
       awscli2
       mprocs
-      android-studio
-      android-tools
 
-      # Desktop only
-      # thunderbird
-      tailscale
-      vscode
-      firefox
-      google-drive-ocamlfuse
-      guake
-      google-chrome
-      home-manager
-      discord
-      zoom-us
-      slack
-      spotify
-      vlc # For video playback
-      gimp
-      # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
-      # foot # Maybe can use this for quick to load terminal that's a replacement for dmenu in gnome wayland
+      # Nix shells:
+      (pkgs.buildFHSEnv {
+        name = "sh-fhs";
+        targetPkgs = pkgs: (with pkgs; [
+          # More or less copied from the auxilis FHS shell
+          tesseract
+          python310
+          python310Packages.pip
+          python310Packages.virtualenv
+          swig
+          glibc
+          glib.dev
+          libffi
+          ffmpeg
+          libsmf
+          libGL
+          libz
+          libzip
+          libgcc
+          zlib
+          pango
+          fontconfig
+          libstdcxx5
+          opencv
+          cmake
+          pixman
+          cairo
+          libjpeg
+          giflib
+          librsvg
+          # cairomm_1_16
+
+          # Needed for prisma:
+          openssl
+          prisma-engines
+        ]) ++ (with pkgs.xorg; [
+          libX11
+          libXext
+          libSM
+        ]);
+        nativeBuildInputs = pkgs: (with pkgs; [
+          pkg-config
+        ]);
+        # multiPkgs = pkgs: (with pkgs; [
+        #   # Nothing for now
+        # ]);
+        runScript = "zsh";
+      })
     ] ++ (if env.isOnWayland then [
       wl-clipboard
-    ] else []);
+    ] else [ ]);
   };
 
   programs = {
     zsh.enable = true;
     gnupg.agent.enable = true;
-    adb.enable = true;
     nix-ld = {
-      enable = false;
-      libraries = with pkgs; [
+      enable = true;
+      libraries = (with pkgs; [
         # Add any missing dynamic libraries for unpackaged programs
         # here, NOT in environment.systemPackages
         # TODO: move stuff from auxilis FHS shell to here, probably.
-      ];
+        # TODO: put stuff in here that's needed to install playwright
+        # tesseract
+        # python310
+        # python310Packages.pip
+        # python310Packages.virtualenv
+        # swig
+        stdenv
+        stdenv.cc.cc
+        stdenv.cc.cc.lib
+        glibc
+        glib.dev
+        libffi
+        # ffmpeg
+        libsmf
+        libGL
+        libz
+        libzip
+        libgcc
+        zlib
+        pango
+        fontconfig
+        libstdcxx5
+        opencv
+        cmake
+        pixman
+        cairo
+        libjpeg
+        giflib
+        librsvg
+      ]) ++ (with pkgs.xorg; [
+        libX11
+        libXext
+        libSM
+      ]);
     };
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
@@ -214,17 +303,16 @@
     # settings.PasswordAuthentication = false;
     # settings.KbdInteractiveAuthentication = false;
   };
-  # Allow OpenSSH and other dev related ports accessible through firewall
-  networking.firewall.allowedTCPPorts = [ 22 3000 3001 8000 8010 5173 ];
-
   services.tailscale.enable = true;
 
+  networking.firewall.enable = true;
+  # Allow OpenSSH and other dev related ports accessible through firewall
+  networking.firewall.allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
+  networking.firewall.allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
   # Open ports in the firewall for tiny.work:
   networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
   networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
-
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  # networking.firewall.checkReversePath = false;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {

@@ -18,6 +18,7 @@
       "wheel"
       "adbusers" # Allows access to using `adb`
       "uinput"
+      "video" # Possible fix for djo-laptop-tiny cam not working
     ];
     shell = pkgs.zsh;
     # User specific packages:
