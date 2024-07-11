@@ -17,7 +17,18 @@ nixos-switch # If the alias is available.
 
 ## Secrets
 
-TODO
+#### See https://www.youtube.com/watch?v=G5f6GC7SnhU for more info if needed.
+Secrets file is located at *./secrets/secret.yaml* and it's encrypted.
+- To edit: `sops secrets/secret.yaml`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
+- Access to secrets in builds is done like:
+```nix
+text = ''
+  echo ${config.sops.secrets.mySecret.path}
+  # or
+  echo ${config.sops.secrets."path/to/secret".path}
+'';
+```
+
 
 ## Notes
 
