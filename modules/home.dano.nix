@@ -305,7 +305,7 @@
         enable = true;
         plugins = [
           "git"
-          "thefuck"
+          # "thefuck" # TODO: Re-enable when `thefuck` builds
           "sudo"
           "z"
           "web-search"
