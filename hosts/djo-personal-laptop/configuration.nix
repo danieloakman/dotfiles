@@ -18,7 +18,6 @@ in
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
-    inputs.home-manager.nixosModules.home-manager
   ];
 
   # Bootloader.
