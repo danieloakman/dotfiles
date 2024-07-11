@@ -9,11 +9,15 @@ sudo nixos-rebuild switch --flake ./#HOST_NAME
 nixos-switch # If the alias is available.
 ```
 
-# Development or making changes
+## Development or making changes
 
 - When updating the flake, i.e. the `flake.lock` file, always make a new branch for those changes.
 - Small changes can be made directly to the `main` branch.
 - Otherwise large features should have a new branch.
+
+## Secrets
+
+TODO
 
 ## Notes
 
