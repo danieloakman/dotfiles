@@ -117,7 +117,7 @@
         pass-otp
         pass-update
         pass-checkup
-        pass-audit
+        # pass-audit # TODO
       ]))
       (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
@@ -126,7 +126,7 @@
       # pinentry-qt
       eza
       bat
-      thefuck
+      # thefuck # TODO:
       lazygit
       fzf
       neovim
