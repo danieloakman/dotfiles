@@ -20,26 +20,26 @@
     gnome-tour
     # gnome-connections
     orca # Screen reader
+    epiphany # web browser
+    geary # email reader
+    yelp # Help view
+    totem
+    evince
+    sushi
+    gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
   ]) ++ (with pkgs.gnome; [
     gnome-music
     # gedit # text editor
-    epiphany # web browser
-    geary # email reader
     gnome-characters
     tali # poker game
     iagno # go game
     hitori # sudoku game
     atomix # puzzle game
-    yelp # Help view
     gnome-contacts
     gnome-initial-setup
-    totem
     atomix
-    evince
     gnome-maps
     gnome-weather
-    sushi
-    gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
   ]);
   services.gnome.games.enable = false; # Disable all games
 
@@ -48,9 +48,9 @@
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
       gnome.networkmanager-openvpn
-      gnome.gnome-tweaks
-      gnome.gnome-terminal
-      gnome.pomodoro
+      gnome-tweaks
+      gnome-terminal
+      pomodoro
       # gnome.cheese # Web cam tool
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
