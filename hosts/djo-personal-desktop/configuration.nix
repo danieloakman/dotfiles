@@ -24,7 +24,7 @@ in
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
     (import ../../modules/games.nix { inherit pkgs; })
-    ../../modules/hyprland.nix
+    (import ../../modules/hyprland.nix { inherit lib inputs config pkgs env; })
     # ../../modules/gnome.nix
   ];
 
