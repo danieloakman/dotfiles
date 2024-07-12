@@ -85,7 +85,7 @@ in
       # systemd.variables = ["--all"];
 
       plugins = [
-        hyprPlugins.borders-plus-plus
+        # hyprPlugins.borders-plus-plus
       ];
 
       settings = {
@@ -123,8 +123,6 @@ in
             10)
         );
 
-        # TODO: This monitor is specific to the tiny laptop, will need to move this to that specific config.
-        # monitor = "eDP-1, 1920x1200, 0x0, 1.0";
         monitor = env.hyprland.monitor;
 
         input = {
