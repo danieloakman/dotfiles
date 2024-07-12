@@ -193,13 +193,14 @@ in
         #   warp_on_change_workspace = true; # for -git or Hyprland >v0.41.1
         # };
 
-        group = {
-          col.border_active = "$color15";
+        # TODO:
+        # group = {
+        #   col.border_active = "$color15";
 
-          groupbar = {
-            col.active = "$color0";
-          };
-        };
+        #   groupbar = {
+        #     col.active = "$color0";
+        #   };
+        # };
 
         misc = {
           disable_hyprland_logo = true;
