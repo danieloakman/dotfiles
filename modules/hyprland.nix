@@ -123,6 +123,83 @@ in
             10)
         );
 
+        dwindle = {
+          pseudotile = true;
+          preserve_split = true;
+          special_scale_factor = 0.8;
+        };
+
+        master = {
+          new_status = "master";
+          new_on_top = 1;
+          mfact = 0.5;
+        };
+
+        general = {
+          sensitivity = 1.00;
+          border_size = 2;
+          apply_sens_to_raw = 1;
+          gaps_in = 6;
+          gaps_out = 8;
+
+          resize_on_border = true;
+
+          # col.active_border = $color12;
+          # col.inactive_border = $backgroundCol;
+
+          layout = "dwindle";
+        };
+
+        decoration = {
+          rounding = 10;
+
+          active_opacity = 1.0;
+          inactive_opacity = 0.9;
+          fullscreen_opacity = 1.0;
+
+          dim_inactive = true;
+          dim_strength = 0.1;
+          dim_special = 0.8;
+
+          drop_shadow = true;
+          shadow_range = 6;
+          shadow_render_power = 1;
+          # col.shadow = $color12;
+          # col.shadow_inactive = "0x50000000";
+
+          blur = {
+            enabled = true;
+            size = 6;
+            passes = 2;
+            ignore_opacity = true;
+            new_optimizations = true;
+            special = true;
+          };
+        };
+
+
+        animations = {
+          enabled = true;
+
+          bezier = [
+            "wind, 0.05, 0.9, 0.1, 1.05"
+            "winIn, 0.1, 1.1, 0.1, 1.1"
+            "winOut, 0.3, -0.3, 0, 1"
+            "liner, 1, 1, 1, 1"
+          ];
+
+          animation = [
+            "windows, 1, 6, wind, slide"
+            "windowsIn, 1, 6, winIn, slide"
+            "windowsOut, 1, 5, winOut, slide"
+            "windowsMove, 1, 5, wind, slide"
+            "border, 1, 1, liner"
+            "borderangle, 1, 180, liner, loop" #used by rainbow borders and rotating colors
+            "fade, 1, 10, default"
+            "workspaces, 1, 5, wind"
+          ];
+        };
+
         binds = {
           workspace_back_and_forth = true;
           allow_workspace_cycles = true;
@@ -217,6 +294,7 @@ in
           no_direct_scanout = true; # for fullscreen games
           initial_workspace_tracking = 0;
         };
+
         # "plugin:borders-plus-plus" = {
         #   add_borders = 1; # 0 - 9
 
