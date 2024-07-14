@@ -7,6 +7,8 @@ let
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.swww}/bin/swww init &
     ${pkgs.dunst}/bin/dunst &
+    ${pkgs.pyprland}/bin/pypr &
+
     ${pkgs.kitty}/bin/kitty &
 
     sleep 1
@@ -44,7 +46,7 @@ in
       GUAKE_ENABLE_WAYLAND = 1;
     };
     systemPackages = with pkgs; [
-      # pyprland
+      pyprland
       hyprpicker
       hyprcursor
       hyprlock
@@ -98,6 +100,7 @@ in
           "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           # "$mod, Q, exec, guake-toggle"
+          "CTRL, `, exec, pypr toggle term"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
