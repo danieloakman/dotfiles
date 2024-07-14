@@ -60,6 +60,7 @@ in
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
+      xfce.thunar # File explorer
     ];
   };
 
@@ -94,13 +95,17 @@ in
         exec-once = ''${startupScript}/bin/start'';
 
         "$mod" = "SUPER";
+        "$files" = "thunar";
+        "$term" = "kitty";
+
         bind = [
           "$mod, S, exec, rofi -show drun -show-icons"
           "alt, F4, killactive"
-          "$mod, Q, exec, kitty"
+          # "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           # "$mod, Q, exec, guake-toggle"
           "CTRL, `, exec, pypr toggle term"
+          "$mod, T, exec, $files"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
