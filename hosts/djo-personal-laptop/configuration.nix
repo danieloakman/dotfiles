@@ -6,7 +6,7 @@
 let
   env = {
     isLaptop = true;
-    isOnWayland = false;
+    isOnWayland = true;
   };
 in
 {
