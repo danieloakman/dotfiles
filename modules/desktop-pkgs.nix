@@ -5,6 +5,7 @@
     # thunderbird
     tailscale
     vscode
+    # zed-editor # Trying this out as an alternative to vscode
     firefox
     google-drive-ocamlfuse
     guake
