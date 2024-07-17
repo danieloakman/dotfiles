@@ -95,9 +95,9 @@
       settings = {
         devices = {
           "S22" = {
-            name = "Dano's Samsung Galaxy S22";
+            name = "Samsung Galaxy S22";
             id = "UVQTGOE-NWABVGC-GIKEUPN-Y2LWRLU-3IXXPUH-4PTLHSW-OTX3D7U-EDQBIQ2";
-            # autoAcceptFolders = true;
+            autoAcceptFolders = true;
           };
         };
         folders = {
@@ -106,6 +106,12 @@
             id = "snqde-mxdrc";
             path = "/home/dano/Documents/obsidian-vault";
             label = "Obsidian Vault";
+          };
+          "general-sync" = {
+            enable = true;
+            id = "jvfnw-u7jgi";
+            path = "/home/dano/Sync";
+            label = "General Sync";
           };
         };
       };
