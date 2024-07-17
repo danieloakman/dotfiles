@@ -6,7 +6,7 @@
 let
   env = {
     isLaptop = true;
-    isOnWayland = false;
+    isOnWayland = true;
   };
 in
 {
@@ -18,13 +18,14 @@ in
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
-    inputs.home-manager.nixosModules.home-manager
   ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/sda";
+    useOSProber = true;
+  };
 
   networking.hostName = "djo-personal-laptop"; # Define your hostname. `echo $HOST`
 

@@ -131,7 +131,7 @@
 
       ".ssh/config".text = ''
         # Recommended to edit for actual device in use
-        Host github github.com 100.100.254.2 djo-desktop tail9f1d8
+        Host github github.com 100.100.254.2 djo-personal-desktop djo-personal-laptop djo-tiny-laptop tail9f1d8
           IdentityFile ~/.ssh/djo-personal
           IdentitiesOnly yes
         Host gh-tiny # github github.com

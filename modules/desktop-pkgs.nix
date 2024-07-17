@@ -1,10 +1,11 @@
-# This module is for adding general desktop, system level packages:
+# This module is for adding general desktop, system level packages. Stuff that has a GUI:
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
     # thunderbird
     tailscale
     vscode
+    # zed-editor # Trying this out as an alternative to vscode
     firefox
     google-drive-ocamlfuse
     guake
