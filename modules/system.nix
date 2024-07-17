@@ -95,6 +95,14 @@
             # autoAcceptFolders = true;
           };
         };
+        folders = {
+          "obsidian-vault" = {
+            enable = true;
+            id = "snqde-mxdrc";
+            path = "/home/dano/Documents/obsidian-vault";
+            label = "Obsidian Vault";
+          };
+        };
       };
     };
   };
