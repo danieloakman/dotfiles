@@ -14,7 +14,6 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     inputs.sops-nix.nixosModules.sops
-    inputs.home-manager.nixosModules.home-manager
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
     ../../modules/gnome.nix
