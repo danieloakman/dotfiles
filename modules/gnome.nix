@@ -57,6 +57,7 @@
       gnome-frog # OCR tool
       gnomeExtensions.touch-x
       gnomeExtensions.system-monitor-next
+      gnomeExtensions.syncthing-indicator
       # The following all didn't work on nixos or was not compatible with gnome v45
       # gnomeExtensions.valent
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
