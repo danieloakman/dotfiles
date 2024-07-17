@@ -14,8 +14,11 @@
       # url = "https://wallpaper.forfun.com/fetch/d8/d805db11e6dcb9262194536e29e44079.jpeg";
       # sha256 = "sha256-wI0jwjkNiQk3DWURM4AA2KBSxxn6Wc/5PaewlNNOojM=";
       # Starfield ship looking up:
-      url = "https://pixeldrain.com/api/file/CWZC2L9b";
-      sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
+      # url = "https://pixeldrain.com/api/file/CWZC2L9b";
+      # sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
+      # Skyrim with stars and landscape with constellations (dark):
+      url = "https://images5.alphacoders.com/131/1315219.jpeg";
+      sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
     };
 
     cursor = {
