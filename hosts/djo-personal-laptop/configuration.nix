@@ -21,9 +21,11 @@ in
   ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/sda";
+    useOSProber = true;
+  };
 
   networking.hostName = "djo-personal-laptop"; # Define your hostname. `echo $HOST`
 
