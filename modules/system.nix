@@ -90,7 +90,7 @@
       settings = {
         devices = {
           "S22" = {
-            name = "Obsidian Vault";
+            name = "Dano's Samsung Galaxy S22";
             id = "UVQTGOE-NWABVGC-GIKEUPN-Y2LWRLU-3IXXPUH-4PTLHSW-OTX3D7U-EDQBIQ2";
             # autoAcceptFolders = true;
           };
