@@ -90,6 +90,8 @@
       openDefaultPorts = true;
       overrideDevices = true;
       overrideFolders = true;
+      dataDir = "/home/dano/sync";
+      configDir = "/home/dano/.config/syncthing";
       settings = {
         devices = {
           "S22" = {
