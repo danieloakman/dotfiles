@@ -93,7 +93,7 @@
       dataDir = "/home/dano/sync";
       configDir = "/home/dano/.config/syncthing";
       settings = {
-        options.urAccepted = "-1"; # Do not allow anonymous diagnostics to be sent
+        options.urAccepted = -1; # Do not allow anonymous diagnostics to be sent
         devices = {
           "S22" = {
             name = "Samsung Galaxy S22";
