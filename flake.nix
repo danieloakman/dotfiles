@@ -46,10 +46,8 @@
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
-          inputs.stylix.nixosModules.stylix
           # This requires env, which is currently defined in the host/configuration.nix, so it can't be imported here (for now).
           # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
-          ./modules/stylix.nix
           ./modules/user.nix
         ];
       };

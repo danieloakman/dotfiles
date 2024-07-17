@@ -7,6 +7,10 @@ let
   env = {
     isLaptop = true;
     isOnWayland = true;
+    wallpaper = pkgs.fetchurl {
+      url= "https://pixeldrain.com/api/file/UELyHDVS";
+      sha256 = ""; # TODO: put this in
+    };
   };
 in
 {
@@ -18,6 +22,8 @@ in
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
+    inputs.stylix.nixosModules.stylix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 
   # Bootloader.

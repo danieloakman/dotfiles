@@ -7,6 +7,10 @@ let
   env = {
     isLaptop = false;
     isOnWayland = false;
+    wallpaper = pkgs.fetchurl {
+      url = "https://images5.alphacoders.com/131/1315219.jpeg";
+      sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
+    };
   };
 in
 {
@@ -19,6 +23,8 @@ in
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
     (import ../../modules/games.nix { inherit pkgs; })
+    inputs.stylix.nixosModules.stylix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 
   # Bootloader
