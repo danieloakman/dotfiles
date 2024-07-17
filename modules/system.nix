@@ -63,7 +63,7 @@
     xserver = {
       # Enable the X11 windowing system.
       # This is apparently needed on wayland systems as well. Quite strange. It's worth trying to disable it in the future
-  # to see if it works without it.
+      # to see if it works without it.
       enable = true;
       # Configure keymap in X11
       xkb = {
