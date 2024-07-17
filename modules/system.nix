@@ -15,7 +15,7 @@
     firewall = {
       enable = true;
       # Allow OpenSSH and other dev related ports accessible through firewall
-      allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
+      allowedTCPPorts = [ 22 5173 4173 4200 4000 8384 ];
       allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
       # Open ports in the firewall for tiny.work:
       trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
@@ -87,6 +87,9 @@
       enable = true;
       user = "dano";
       systemService = true;
+      openDefaultPorts = true;
+      overrideDevices = true;
+      overrideFolders = true;
       settings = {
         devices = {
           "S22" = {
