@@ -20,6 +20,7 @@
     vlc # For video playback
     gimp
     obsidian
+    syncthing
     # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
     # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
     # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from

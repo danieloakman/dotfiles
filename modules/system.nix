@@ -71,6 +71,32 @@
     };
     # Enable CUPS to print documents.
     printing.enable = true;
+
+    # Enable the OpenSSH daemon:
+    openssh = {
+      enable = true;
+      # These commented out settings would force public key authentication, but we don't need that for now as we're using
+      # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
+      settings.PasswordAuthentication = false;
+      settings.KbdInteractiveAuthentication = false;
+    };
+
+    tailscale.enable = true;
+
+    syncthing = {
+      enable = true;
+      user = "dano";
+      systemService = true;
+      settings = {
+        devices = {
+          "S22" = {
+            name = "Obsidian Vault";
+            id = "UVQTGOE-NWABVGC-GIKEUPN-Y2LWRLU-3IXXPUH-4PTLHSW-OTX3D7U-EDQBIQ2";
+            # autoAcceptFolders = true;
+          };
+        };
+      };
+    };
   };
 
   nix = {
@@ -307,16 +333,6 @@
   fonts.packages = with pkgs; [
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
-
-  # Enable the OpenSSH daemon:
-  services.openssh = {
-    enable = true;
-    # These commented out settings would force public key authentication, but we don't need that for now as we're using
-    # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
-    settings.PasswordAuthentication = false;
-    settings.KbdInteractiveAuthentication = false;
-  };
-  services.tailscale.enable = true;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {
