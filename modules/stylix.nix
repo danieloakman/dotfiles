@@ -25,7 +25,7 @@
     };
 
     # Force dark theme:
-    # polarity = "dark";
+    polarity = "dark";
 
     # fonts = {};
   };
