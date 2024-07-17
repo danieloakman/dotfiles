@@ -1,7 +1,7 @@
 # Neovim configuration:
 # See: https://www.youtube.com/watch?v=YZAnJ0rwREA
 # TODO
-{}:
+_:
 {
   programs.neovim = {
     enable = true;

@@ -2,14 +2,27 @@
 
 { inputs, pkgs, env, ... }:
 {
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  networking = {
+    # Enable networking
+    networkmanager.enable = true;
+    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    # Configure network proxy if necessary
+    # proxy.default = "http://user:password@proxy:port/";
+    # proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+    firewall = {
+      enable = true;
+      # Allow OpenSSH and other dev related ports accessible through firewall
+      allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
+      allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
+      # Open ports in the firewall for tiny.work:
+      trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
+      allowedUDPPorts = [ 443 ]; # For tiny.work VPN
+      # checkReversePath = false;
+    };
+  };
 
   # Enable bluetooth
   hardware.bluetooth = {
@@ -46,19 +59,21 @@
     LC_TIME = "en_AU.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  # This is apparently needed on wayland systems as well. Quite strange. It's worth trying to disable it in the future
+  services = {
+    xserver = {
+      # Enable the X11 windowing system.
+      # This is apparently needed on wayland systems as well. Quite strange. It's worth trying to disable it in the future
   # to see if it works without it.
-  services.xserver.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
+      enable = true;
+      # Configure keymap in X11
+      xkb = {
+        layout = "us";
+        variant = "";
+      };
+    };
+    # Enable CUPS to print documents.
+    printing.enable = true;
   };
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
 
   nix = {
     settings = {
@@ -300,19 +315,10 @@
     enable = true;
     # These commented out settings would force public key authentication, but we don't need that for now as we're using
     # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
-    # settings.PasswordAuthentication = false;
-    # settings.KbdInteractiveAuthentication = false;
+    settings.PasswordAuthentication = false;
+    settings.KbdInteractiveAuthentication = false;
   };
   services.tailscale.enable = true;
-
-  networking.firewall.enable = true;
-  # Allow OpenSSH and other dev related ports accessible through firewall
-  networking.firewall.allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
-  networking.firewall.allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
-  # Open ports in the firewall for tiny.work:
-  networking.firewall.trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
-  networking.firewall.allowedUDPPorts = [ 443 ]; # For tiny.work VPN
-  # networking.firewall.checkReversePath = false;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {

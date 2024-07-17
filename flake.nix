@@ -30,7 +30,7 @@
       #     allowUnfree = true;
       #   };
       # };
-      createNixCache = ({ ... }: {
+      createNixCache = _: {
         nix = {
           registry = {
             nixpkgs.flake = nixpkgs;
@@ -46,8 +46,8 @@
             ];
           };
         };
-      });
-      commonImports = ({ ... }: {
+      };
+      commonImports = { ... }: {
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
@@ -57,7 +57,7 @@
           ./modules/stylix.nix
           ./modules/user.nix
         ];
-      });
+      };
     in
     {
       nixosConfigurations = {
