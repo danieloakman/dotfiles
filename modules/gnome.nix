@@ -2,48 +2,51 @@
 
 { pkgs, ... }:
 {
-  # Enable the GNOME Desktop Environment.
-  services.xserver = {
-    displayManager = {
-      gdm.enable = true;
-      # autoLogin = {
-      #   enable = true;
-      #   user = "dano";
-      # };
+  services = {
+    xserver = {
+      # Enable the GNOME Desktop Environment.
+      displayManager = {
+        gdm.enable = true;
+        # autoLogin = {
+        #   enable = true;
+        #   user = "dano";
+        # };
+      };
+      desktopManager.gnome.enable = true;
     };
-    desktopManager.gnome.enable = true;
+
+    gnome.games.enable = false; # Disable all games
   };
 
-  # Exclude particular gnome specific packages
-  environment.gnome.excludePackages = (with pkgs; [
-    # gnome-photos
-    gnome-tour
-    # gnome-connections
-    orca # Screen reader
-  ]) ++ (with pkgs.gnome; [
-    gnome-music
-    # gedit # text editor
-    epiphany # web browser
-    geary # email reader
-    gnome-characters
-    tali # poker game
-    iagno # go game
-    hitori # sudoku game
-    atomix # puzzle game
-    yelp # Help view
-    gnome-contacts
-    gnome-initial-setup
-    totem
-    atomix
-    evince
-    gnome-maps
-    gnome-weather
-    sushi
-    gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
-  ]);
-  services.gnome.games.enable = false; # Disable all games
-
   environment = {
+    # Exclude particular gnome specific packages
+    gnome.excludePackages = (with pkgs; [
+      # gnome-photos
+      gnome-tour
+      # gnome-connections
+      orca # Screen reader
+    ]) ++ (with pkgs.gnome; [
+      gnome-music
+      # gedit # text editor
+      epiphany # web browser
+      geary # email reader
+      gnome-characters
+      tali # poker game
+      iagno # go game
+      hitori # sudoku game
+      atomix # puzzle game
+      yelp # Help view
+      gnome-contacts
+      gnome-initial-setup
+      totem
+      atomix
+      evince
+      gnome-maps
+      gnome-weather
+      sushi
+      gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
+    ]);
+
     systemPackages = with pkgs; [
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
