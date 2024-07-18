@@ -50,13 +50,13 @@
       gnome.networkmanager-openvpn
       gnome.gnome-tweaks
       gnome.gnome-terminal
-      gnome.pomodoro
+      # gnome.pomodoro # Not updated
       # gnome.cheese # Web cam tool
       gnomeExtensions.appindicator
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
-      gnomeExtensions.touch-x
-      gnomeExtensions.system-monitor-next
+      # gnomeExtensions.touch-x Not updated
+      # gnomeExtensions.system-monitor-next # "System Monitor" is better for now
       gnomeExtensions.syncthing-indicator
       # The following all didn't work on nixos or was not compatible with gnome v45
       # gnomeExtensions.valent
