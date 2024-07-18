@@ -18,13 +18,12 @@
   outputs = { self, nixpkgs, devenv, ... }@inputs:
     let
       system = "x86_64-linux";
-      # pkgs = import nixpkgs {
-      #   inherit system;
-
-      #   config = {
-      #     allowUnfree = true;
-      #   };
-      # };
+      pkgs = import nixpkgs { # Just used for pkgs.fetchurl for now
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
       createNixCache = _: {
         nix = {
           registry = {
@@ -62,7 +61,7 @@
                 user = "dano";
                 isLaptop = false;
                 isOnWayland = false;
-                wallpaper = nixpkgs.fetchurl {
+                wallpaper = pkgs.fetchurl {
                   url = "https://images5.alphacoders.com/131/1315219.jpeg";
                   sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
                 };
@@ -84,7 +83,7 @@
                 user = "dano";
                 isLaptop = true;
                 isOnWayland = false;
-                wallpaper = nixpkgs.fetchurl {
+                wallpaper = pkgs.fetchurl {
                   url = "https://pixeldrain.com/api/file/UELyHDVS";
                   sha256 = ""; # TODO: put this in
                 };
@@ -106,7 +105,7 @@
                 user = "dano";
                 isLaptop = true;
                 isOnWayland = true;
-                wallpaper = nixpkgs.fetchurl {
+                wallpaper = pkgs.fetchurl {
                   url = "https://pixeldrain.com/api/file/CWZC2L9b";
                   sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
                 };

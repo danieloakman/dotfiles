@@ -3,7 +3,7 @@
 { inputs, pkgs, env, ... }:
 {
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs env; };
     users = {
       ${env.user} = import ./home.${env.user}.nix;
     };
@@ -12,7 +12,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${env.user} = {
     isNormalUser = true;
-    description = "Daniel Oakman"; 
+    description = "Daniel Oakman";
     extraGroups = [
       "networkmanager"
       "wheel"
