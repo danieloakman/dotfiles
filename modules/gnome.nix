@@ -9,7 +9,7 @@
         gdm.enable = true;
         # autoLogin = {
         #   enable = true;
-        #   user = "dano";
+        #   user = env.user;
         # };
       };
       desktopManager.gnome.enable = true;

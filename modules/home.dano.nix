@@ -1,13 +1,13 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, ... }:
+{ lib, pkgs, env, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = {
-    username = "dano";
-    homeDirectory = "/home/dano";
+    username = env.user;
+    homeDirectory = "/home/${env.user}";
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -258,7 +258,7 @@
       # EDITOR = "emacs";
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
-      PASSWORD_STORE_DIR = "/home/dano/.local/share/password-store";
+      PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
@@ -288,8 +288,8 @@
         fi
       '';
       envExtra = ''
-        fpath=(/home/dano/.dgranted/zsh_autocomplete/assume/ $fpath)
-        fpath=(/home/dano/.dgranted/zsh_autocomplete/granted/ $fpath)
+        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
+        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
       shellAliases = {
         nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#$HOST";
@@ -365,7 +365,7 @@
       repositories = {
         "password-store" = {
           interval = 60;
-          path = "/home/dano/.local/share/password-store";
+          path = "/home/${env.user}/.local/share/password-store";
           uri = "git@github.com:danieloakman/pwd-store.git";
         };
       };
@@ -384,7 +384,7 @@
 
   # TODO: look into why this doesn't do anything
   xdg.desktopEntries = {
-    "org.dano.move-mouse.desktop" = {
+    "org.${env.user}.move-mouse.desktop" = {
       name = "Move Mouse";
       comment = "Move the mouse to prevent auto suspension";
       exec = "/user/local/bin/move-mouse";

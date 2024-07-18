@@ -85,13 +85,13 @@
 
     syncthing = {
       enable = true;
-      user = "dano";
+      user = env.user;
       systemService = true;
       openDefaultPorts = true;
       overrideDevices = true;
       overrideFolders = true;
-      dataDir = "/home/dano/sync";
-      configDir = "/home/dano/.config/syncthing";
+      dataDir = "/home/${env.user}/sync";
+      configDir = "/home/${env.user}/.config/syncthing";
       settings = {
         options.urAccepted = -1; # Do not allow anonymous diagnostics to be sent
         devices = {
@@ -105,13 +105,13 @@
           "obsidian-vault" = {
             enable = true;
             id = "snqde-mxdrc";
-            path = "/home/dano/Documents/obsidian-vault";
+            path = "/home/${env.user}/Documents/obsidian-vault";
             label = "Obsidian Vault";
           };
           "general-sync" = {
             enable = true;
             id = "jvfnw-u7jgi";
-            path = "/home/dano/Sync";
+            path = "/home/${env.user}/Sync";
             label = "General Sync";
           };
         };

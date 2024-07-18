@@ -2,17 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, ... }:
-let
-  env = {
-    isLaptop = false;
-    isOnWayland = false;
-    wallpaper = pkgs.fetchurl {
-      url = "https://images5.alphacoders.com/131/1315219.jpeg";
-      sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
-    };
-  };
-in
+{ lib, inputs, config, pkgs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
