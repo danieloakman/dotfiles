@@ -357,6 +357,17 @@
       enableZshIntegration = true; # see note on other shells below
       nix-direnv.enable = true;
     };
+
+    lf = {
+      enable = true;
+      # TODO: add keybind for shift D to delete a file
+      # See https://github.com/gokcehan/lf/blob/master/doc.md#options
+      settings = {
+        hidden = true;
+        info = [ "size" "time" ];
+        icons = true;
+      };
+    };
   };
 
   services = {
