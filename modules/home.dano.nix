@@ -360,12 +360,14 @@
 
     lf = {
       enable = true;
-      # TODO: add keybind for shift D to delete a file
+      keybindings = {
+        "D" = "delete";
+        "~" = "cd ~";
+      };
       # See https://github.com/gokcehan/lf/blob/master/doc.md#options
       settings = {
         hidden = true;
         info = [ "size" "time" ];
-        icons = true;
       };
     };
   };
