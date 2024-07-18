@@ -18,7 +18,8 @@
   outputs = { self, nixpkgs, devenv, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { # Just used for pkgs.fetchurl for now
+      pkgs = import nixpkgs {
+        # Just used for pkgs.fetchurl for now
         inherit system;
         config = {
           allowUnfree = true;

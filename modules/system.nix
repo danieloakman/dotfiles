@@ -85,7 +85,7 @@
 
     syncthing = {
       enable = true;
-      user = env.user;
+      inherit (env) user;
       systemService = true;
       openDefaultPorts = true;
       overrideDevices = true;
