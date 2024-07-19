@@ -22,13 +22,13 @@
   outputs = { self, nixpkgs, devenv, ... }@inputs:
     let
       system = "x86_64-linux";
-      # pkgs = import nixpkgs {
-      #   inherit system;
-
-      #   config = {
-      #     allowUnfree = true;
-      #   };
-      # };
+      pkgs = import nixpkgs {
+        # Just used for pkgs.fetchurl for now
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
       createNixCache = _: {
         nix = {
           registry = {
@@ -50,18 +50,29 @@
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
-          inputs.stylix.nixosModules.stylix
           # This requires env, which is currently defined in the host/configuration.nix, so it can't be imported here (for now).
           # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
-          ./modules/stylix.nix
           ./modules/user.nix
         ];
       };
+      createEnv = { user, isLaptop, isOnWayland, wallpaper }: { inherit user isLaptop isOnWayland wallpaper; };
     in
     {
       nixosConfigurations = {
         djo-personal-desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs =
+            let
+              env = createEnv {
+                user = "dano";
+                isLaptop = false;
+                isOnWayland = false;
+                wallpaper = pkgs.fetchurl {
+                  url = "https://images5.alphacoders.com/131/1315219.jpeg";
+                  sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
+                };
+              };
+            in
+            { inherit inputs system env; };
           modules = [
             ./hosts/djo-personal-desktop/configuration.nix
             commonImports
@@ -71,7 +82,19 @@
           ];
         };
         djo-personal-laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs =
+            let
+              env = createEnv {
+                user = "dano";
+                isLaptop = true;
+                isOnWayland = false;
+                wallpaper = pkgs.fetchurl {
+                  url = "https://pixeldrain.com/api/file/UELyHDVS";
+                  sha256 = ""; # TODO: put this in
+                };
+              };
+            in
+            { inherit inputs system env; };
           modules = [
             ./hosts/djo-personal-laptop/configuration.nix
             commonImports
@@ -81,7 +104,19 @@
           ];
         };
         djo-tiny-laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system; };
+          specialArgs =
+            let
+              env = createEnv {
+                user = "dano";
+                isLaptop = true;
+                isOnWayland = true;
+                wallpaper = pkgs.fetchurl {
+                  url = "https://pixeldrain.com/api/file/CWZC2L9b";
+                  sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
+                };
+              };
+            in
+            { inherit inputs system env; };
           modules = [
             ./hosts/djo-tiny-laptop/configuration.nix
             commonImports

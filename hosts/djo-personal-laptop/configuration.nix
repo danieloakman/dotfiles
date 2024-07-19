@@ -2,13 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, ... }:
-let
-  env = {
-    isLaptop = true;
-    isOnWayland = true;
-  };
-in
+{ lib, inputs, config, pkgs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -18,6 +12,8 @@ in
     ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
+    inputs.stylix.nixosModules.stylix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 
   # Bootloader.

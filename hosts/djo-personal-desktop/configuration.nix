@@ -2,13 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, ... }:
-let
-  env = {
-    isLaptop = false;
-    isOnWayland = false;
-  };
-in
+{ lib, inputs, config, pkgs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -20,6 +14,8 @@ in
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
     (import ../../modules/games.nix { inherit pkgs; })
+    inputs.stylix.nixosModules.stylix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 
   sops = {
