@@ -1,9 +1,11 @@
 { pkgs, env, ... }:
 {
   home-manager.users.${env.user} = {
-    packages = with pkgs; [
-      kitty
-    ];
+    home = {
+      packages = with pkgs; [
+        kitty
+      ];
+    };
 
     programs.kitty = {
       enable = true;
