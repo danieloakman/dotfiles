@@ -393,18 +393,24 @@
     };
 
     gnome-keyring.enable = true;
+
+    # Enable sxhkd daemon for keybindings:
+    sxhkd = {
+      enable = true;
+      keybindings."ctrl + q" = "zsh -c 'passmenu'";
+    };
   };
 
   # TODO: look into why this doesn't do anything
-  xdg.desktopEntries = {
-    "org.${env.user}.move-mouse.desktop" = {
-      name = "Move Mouse";
-      comment = "Move the mouse to prevent auto suspension";
-      exec = "/user/local/bin/move-mouse";
-      type = "Application";
-      terminal = true;
-      categories = [ "Utility" ];
-      # startupNotify = "false";
-    };
-  };
+  # xdg.desktopEntries = {
+  #   "org.${env.user}.move-mouse.desktop" = {
+  #     name = "Move Mouse";
+  #     comment = "Move the mouse to prevent auto suspension";
+  #     exec = "/user/local/bin/move-mouse";
+  #     type = "Application";
+  #     terminal = true;
+  #     categories = [ "Utility" ];
+  #     # startupNotify = "false";
+  #   };
+  # };
 }
