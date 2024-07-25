@@ -15,7 +15,7 @@
     (import ../../modules/games.nix { inherit pkgs; })
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
-    ../../kitty.nix
+    ../../modules/kitty.nix
   ];
 
   # Bootloader
