@@ -395,11 +395,12 @@
 
     gnome-keyring.enable = true;
 
+    # TODO use xremap or some cross wayland xorg key mapping/remapping tool
     # Enable sxhkd daemon for keybindings:
-    sxhkd = {
-      enable = true;
-      keybindings."ctrl + q" = "zsh -c 'passmenu'";
-    };
+    # sxhkd = {
+    #   enable = true;
+    #   keybindings."ctrl + q" = "zsh -c 'passmenu'";
+    # };
   };
 
   # TODO: look into why this doesn't do anything

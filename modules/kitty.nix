@@ -1,9 +1,11 @@
+# Kitty terminal config
 { pkgs, env, ... }:
 {
   home-manager.users.${env.user} = {
     home = {
       packages = with pkgs; [
         kitty
+        tdrop
       ];
     };
 
@@ -17,5 +19,7 @@
         enabled_layouts = "splits";
       };
     };
+    # This could use xremap instead.
+    # services.sxhkd.keybindings."super + `" = ''tdrop -ma -w -4 -y "500" -s dropdown kitty'';
   };
 }
