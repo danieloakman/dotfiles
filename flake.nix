@@ -2,7 +2,8 @@
   description = "Main NixOS Flake";
 
   # See https://lazamar.co.uk/nix-versions/ for specific hashes to nixpkgs commits
-  # Look for another website like this if this doesn't work
+  # Look for another website like this if this doesn't work like: 
+  # https://www.nixhub.io/packages/
   inputs = {
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -13,6 +14,7 @@
     devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
     stylix.url = "github:danth/stylix";
+    guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # 3.9.0, 3.10 doesn't seem to appear in path or desktop apps.
   };
 
   outputs = { self, nixpkgs, devenv, ... }@inputs:

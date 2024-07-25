@@ -336,6 +336,22 @@
         "type": "github"
       }
     },
+    "guake": {
+      "locked": {
+        "lastModified": 1714750952,
+        "narHash": "sha256-oOUdvPrO8CbupgDSaPou+Jv6GL+uQA2QlE33D7OLzkM=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5fd8536a9a5932d4ae8de52b7dc08d92041237fc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5fd8536a9a5932d4ae8de52b7dc08d92041237fc",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -638,6 +654,7 @@
     "root": {
       "inputs": {
         "devenv": "devenv",
+        "guake": "guake",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs_3",
         "openvpn24": "openvpn24",
