@@ -85,10 +85,10 @@
               env = createEnv {
                 user = "dano";
                 isLaptop = true;
-                isOnWayland = false;
+                isOnWayland = true;
                 wallpaper = pkgs.fetchurl {
                   url = "https://pixeldrain.com/api/file/UELyHDVS";
-                  sha256 = ""; # TODO: put this in
+                  sha256 = "sha256-1PVA1OhbAA3GT9eG3ZzybI8xBljqyq3TaMyMKwpbTLk";
                 };
               };
             in
