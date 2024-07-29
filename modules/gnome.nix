@@ -31,7 +31,7 @@
       totem
       evince
       sushi
-      gnome-calendar # TODO: look into making the calendar settings declarative. As in, I want the same calendar settings as google calendar.
+      gnome-calendar # Thunderbird has a calendar option
     ]) ++ (with pkgs.gnome; [
       gnome-music
       # gedit # text editor

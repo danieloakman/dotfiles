@@ -2,7 +2,7 @@
 { pkgs, inputs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    # thunderbird
+    thunderbird # Email client and also has calendar
     tailscale
     vscode
     # zed-editor # Trying this out as an alternative to vscode
