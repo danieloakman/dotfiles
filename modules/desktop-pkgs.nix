@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     thunderbird # Email client and also has calendar
+    birdtray # Thunderbird tray icon
     tailscale
     vscode
     # zed-editor # Trying this out as an alternative to vscode
