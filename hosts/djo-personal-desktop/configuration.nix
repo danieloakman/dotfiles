@@ -34,10 +34,17 @@
 
   hardware = {
     enableRedistributableFirmware = true;
-    # graphics.enable = true;
-    # graphics.enable32Bit = true;
-    nvidia.modesetting.enable = true;
-    nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
+
+    # This might not be needed, as it's to do with cpu graphics, which this system doesn't have. Leave it for now.
+    graphics.enable = true;
+    graphics.enable32Bit = true;
+
+    # See https://nixos.wiki/wiki/Nvidia for more information.
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true; # Fix for issues after waking from suspend
+      package = config.boot.kernelPackages.nvidiaPackages.production;
+    };
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
