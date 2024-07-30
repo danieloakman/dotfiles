@@ -34,8 +34,8 @@
 
   hardware = {
     enableRedistributableFirmware = true;
-    graphics.enable = true;
-    graphics.enable32Bit = true;
+    # graphics.enable = true;
+    # graphics.enable32Bit = true;
     nvidia.modesetting.enable = true;
     nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
   };
