@@ -176,7 +176,7 @@
         pass-otp
         pass-update
         pass-checkup
-        # pass-audit # TODO Re-enable when it builds again
+        pass-audit
       ]))
       (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
@@ -185,7 +185,7 @@
       # pinentry-qt
       eza
       bat
-      # thefuck # TODO: Re-enable when `thefuck` builds again
+      thefuck
       lazygit
       fzf
       neovim
