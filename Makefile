@@ -6,5 +6,6 @@ fmt:
 lint:
 	nix shell nixpkgs\#statix -c statix check .
 
-edit-secrets:
-	nix shell nixpkgs\#sops -c sops secrets/secret.yaml
+# FIXME: error: "error loading config: no matching creation rules found"
+# edit-secrets:
+# 	nix shell nixpkgs\#sops -c sops ~/repos/personal/nixos/secrets/secret.yaml
