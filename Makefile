@@ -5,3 +5,6 @@ fmt:
 
 lint:
 	nix shell nixpkgs\#statix -c statix check .
+
+edit-secrets:
+	nix shell nixpkgs\#sops -c sops secrets/secret.yaml
