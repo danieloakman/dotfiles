@@ -7,7 +7,6 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    inputs.sops-nix.nixosModules.sops
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
     ../../modules/gnome.nix
@@ -16,18 +15,9 @@
     (import ../../modules/games.nix { inherit pkgs; })
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
+    ../../modules/secrets.nix
     # ../../modules/ulauncher.nix
   ];
-
-  sops = {
-    defaultSopsFile = ../../secrets/secrets.yaml;
-    defaultSopsFormat = "yaml";
-    age.keyFile = /home/dano/.config/sops/age/keys.txt;
-
-    secrets.root_password = {
-      owner = config.users.users.dano.name;
-    };
-  };
 
   # Bootloader
   boot.loader = {
