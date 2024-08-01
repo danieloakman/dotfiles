@@ -266,7 +266,6 @@
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
   };
 
-  # todo enable more gtk stuff
   gtk = {
     enable = true;
   };
@@ -280,7 +279,6 @@
     zsh = {
       enable = true;
       autosuggestion.enable = true;
-      # enableAutosuggestions = true; # TODO remove this
       enableCompletion = true;
       syntaxHighlighting.enable = true;
       initExtra = ''
@@ -306,7 +304,7 @@
         enable = true;
         plugins = [
           "git"
-          # "thefuck" # TODO: Re-enable when `thefuck` builds
+          "thefuck"
           "sudo"
           "z"
           "web-search"
