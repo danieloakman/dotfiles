@@ -149,7 +149,7 @@
         Host macstadium.jump.tiny.work
           HostName macstadium.jump.tiny.work
           User tiny
-          IdentityFile ~/.ssh/macstadium-jump # TODO: probably should add these ssh keys to sops secrets
+          IdentityFile ~/.ssh/macstadium-jump
         Host atl-m1-bnode-01 # Add other nodes as needed. There's 01, 02, 03, 04
           HostName %h.tiny.work
           User tiny
@@ -224,6 +224,7 @@
     activation = {
       # TODO: this should be `"...".source = "...";`
       createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        # Create symlinks safely:
         function symlink() {
           if [ ! -L "$2" ]; then
             ln -s "$1" "$2"
@@ -265,7 +266,6 @@
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
   };
 
-  # todo enable more gtk stuff
   gtk = {
     enable = true;
   };
@@ -279,7 +279,6 @@
     zsh = {
       enable = true;
       autosuggestion.enable = true;
-      # enableAutosuggestions = true; # TODO remove this
       enableCompletion = true;
       syntaxHighlighting.enable = true;
       initExtra = ''

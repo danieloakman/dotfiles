@@ -11,6 +11,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
     stylix.url = "github:danth/stylix";
@@ -51,6 +55,7 @@
           # This requires env, which is currently defined in the host/configuration.nix, so it can't be imported here (for now).
           # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
           ./modules/user.nix
+          ./modules/secrets.nix
         ];
       };
       createEnv = { user, isLaptop, isOnWayland, wallpaper }: { inherit user isLaptop isOnWayland wallpaper; };

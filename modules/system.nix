@@ -189,6 +189,8 @@
       lazygit
       fzf
       neovim
+      sops
+      age
       gh
       # gh-dash
       unzip
