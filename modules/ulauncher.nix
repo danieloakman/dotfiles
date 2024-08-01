@@ -11,7 +11,7 @@
       pint
       simpleeval
       parsedatetime
-      pytz
+      pytz # TODO: Ulauncher extension "Calculate anything" doesn't start because it can't find pytz module. Need to fix before using.
       babel
     ]))
   ];
