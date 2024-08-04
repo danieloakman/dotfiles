@@ -291,15 +291,8 @@
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
-      shellAliases = {
-        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#$HOST";
-        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#$HOST";
-        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
-        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
-        nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
-        nixos-update = "sudo nix flake update ~/repos/personal/nixos";
-        nixos-search = "nix search nixpkgs";
-      };
+      # shellAliases = {
+      # };
       oh-my-zsh = {
         enable = true;
         plugins = [
