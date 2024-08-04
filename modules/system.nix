@@ -166,11 +166,6 @@
 
     localBinInPath = true;
 
-    sessionVariables = {
-      # This is how `nh` is able to find the flake for this host's configuration.
-      FLAKE = "/home/${env.user}/repos/personal/nixos";
-    };
-
     systemPackages = with pkgs; [
       #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
       git

@@ -261,6 +261,8 @@
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
       PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
+      # This is how `nh` is able to find the flake for this host's configuration.
+      FLAKE = "/home/${env.user}/repos/personal/nixos";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
