@@ -1,19 +1,22 @@
 { pkgs, ... }:
+let
+  ulauncher = pkgs.ulauncher.overrideAttrs
+    (oldAttrs: {
+      propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ (with pkgs; [
+        python3
+        python3Packages.pip
+        python3Packages.requests
+        python3Packages.pint
+        python3Packages.simpleeval
+        python3Packages.parsedatetime
+        python3Packages.pytz
+        python3Packages.babel
+      ]);
+    });
+in
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     ulauncher
-
-    # Required for ulauncher extensions:
-    python3
-    (python3.withPackages (ps: with ps; [
-      pip
-      requests
-      pint
-      simpleeval
-      parsedatetime
-      pytz # TODO: Ulauncher extension "Calculate anything" doesn't start because it can't find pytz module. Need to fix before using.
-      babel
-    ]))
   ];
 
   systemd.user.services.ulauncher = {
