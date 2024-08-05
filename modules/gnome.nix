@@ -31,7 +31,7 @@
       totem
       evince
       sushi
-      gnome-calendar # Thunderbird has a calendar option
+      gnome-calendar # We use evolution instead
     ]) ++ (with pkgs.gnome; [
       gnome-music
       # gedit # text editor
@@ -66,5 +66,15 @@
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       # gnomeExtensions.gjs-osk
     ];
+  };
+
+  programs = {
+    # This seemes to be the best all round email and calendar app for gnome.
+    evolution = {
+      enable = true;
+      plugins = with pkgs; [
+        evolution-ews # This https://kb.iu.edu/d/bghs was the only way I found to get connecting to my frogco email working, i.e. office365
+      ];
+    };
   };
 }
