@@ -31,4 +31,6 @@ in
     # TODO: probably should move ulauncher.nix to be a gnome dependent module
     after = [ "gnome-session-monitor.service" ];
   };
+
+  # TODO: move ~/.config/ulauncher files to home-manager
 }
