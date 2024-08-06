@@ -3,6 +3,9 @@
 { lib, pkgs, env, ... }:
 
 {
+  # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
+  nixpkgs.config.allowUnfree = true;
+
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = {

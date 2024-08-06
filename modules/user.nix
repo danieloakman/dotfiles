@@ -16,7 +16,6 @@
     extraGroups = [
       "networkmanager"
       "wheel"
-      "adbusers" # Allows access to using `adb`
       "uinput"
       "video" # Possible fix for djo-laptop-tiny cam not working
     ];

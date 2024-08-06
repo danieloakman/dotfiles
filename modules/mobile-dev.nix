@@ -1,5 +1,5 @@
 # Development stuff for mobile dev:
-{ pkgs, ... }:
+{ env, pkgs, ... }:
 {
   programs = {
     # Enable Android Debug Bridge:
@@ -9,4 +9,23 @@
     android-studio
     android-tools
   ];
+  home-manager.users.${env.user} = { lib, env, pkgs, ... }: {
+    home = {
+      activation = {
+        createAndroidHome = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          mkdir -r /home/${env.user}/Android/Sdk
+        '';
+      };
+
+      sessionVariables = {
+        ANDROID_HOME = "/home/${env.user}/Android/Sdk";
+        CAPACITOR_ANDROID_STUDIO_PATH = "${pkgs.android-studio}/bin/android-studio";
+      };
+    };
+  };
+  users.users.${env.user} = {
+    extraGroups = [
+      "adbusers" # Allows access to using `adb`
+    ];
+  };
 }
