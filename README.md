@@ -6,7 +6,7 @@ Now that the etc/nixos/configuration.nix file has been moved to ~/nixos AND it's
 ```bash
 sudo nixos-rebuild switch --flake ./#HOST_NAME
 # Or
-nixos-switch # If the alias is available.
+nh os swtich # If the command is available and the $FLAKE variable is set.
 ```
 
 ## Development or making changes
