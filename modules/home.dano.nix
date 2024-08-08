@@ -401,16 +401,24 @@
     # };
   };
 
-  # TODO: look into why this doesn't do anything
-  # xdg.desktopEntries = {
-  #   "org.${env.user}.move-mouse.desktop" = {
-  #     name = "Move Mouse";
-  #     comment = "Move the mouse to prevent auto suspension";
-  #     exec = "/user/local/bin/move-mouse";
-  #     type = "Application";
-  #     terminal = true;
-  #     categories = [ "Utility" ];
-  #     # startupNotify = "false";
+  # TODO: Still doesn't work, for some reason:
+  # xdg = {
+  #   enable = true;
+  #   desktopEntries = {
+  #     "org.${env.user}.move-mouse.desktop" = {
+  #       name = "Move Mouse";
+  #       comment = "Move the mouse to prevent auto suspension";
+  #       exec = "move-mouse";
+  #       type = "Application";
+  #       terminal = true;
+  #       categories = [ "Utility" ];
+  #       # startupNotify = "false";
+  #     };
   #   };
+  #   # configFile = {
+  #   #   "test123/a".text = ''
+  #   #     something
+  #   #   '';
+  #   # };
   # };
 }
