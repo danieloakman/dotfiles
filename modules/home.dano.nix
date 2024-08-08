@@ -118,7 +118,7 @@
           format = ssh
       '';
 
-      ".config/lazygit/config.yml".source = "../files/home/.config/lazygit/config.yml";
+      ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
       ".config/nixpkgs/config.nix".text = ''
         { ... }:
@@ -127,9 +127,9 @@
         }
       '';
 
-      ".ssh/config".source = "../files/home/.ssh/config";
+      ".ssh/config".source = ../files/home/.ssh/config;
 
-      ".config/git/allowed_signers".source = "../files/home/.config/git/allowed_signers";
+      ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
 
       ".config/guake/prefs".text = ''
         [general]
@@ -195,7 +195,7 @@
         '';
       };
 
-      ".npmrc".source = "../files/home/.npmrc";
+      ".npmrc".source = ../files/home/.npmrc;
     };
 
     activation = {
