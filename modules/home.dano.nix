@@ -194,6 +194,8 @@
           skip_gdocs = true
         '';
       };
+
+      ".npmrc".source = "../files/home/.npmrc";
     };
 
     activation = {
