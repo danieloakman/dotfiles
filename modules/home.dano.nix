@@ -91,7 +91,7 @@
         [http]
           postBuffer = 524288000
         [gpg "ssh"]
-          allowedSignersFile = ~/.config/git/allowed-signers
+          allowedSignersFile = ~/.config/git/allowed_signers
         [credential "https://github.com"]
           helper = 
           helper = !/run/current-system/sw/bin/gh auth git-credential
