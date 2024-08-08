@@ -153,12 +153,7 @@
           IdentitiesOnly yes
       '';
 
-      ".config/git/allowed_signers".text = ''
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCivErxg4ddykeH3M+hk1hK4ZQX4j5kZCuwBP5ZXsb83uybIApwVOnR/+PEwn+0T2HIUXqSTCZH43TCtvKZFJOLeMFUD7ZeCOspFGUtcm7/b9/dHuwrlbFvI6PZt+mrl713YwMrVWy/7QKcjeOHZIWg4DwMM1/XfYy7sArVFV7L+sHa9GRU7dwrzjD8Q8568OhbjE8xv1mmCcGSMZxUxGkTfh4QoCTGrHgdcXuKsx6qxG+Mt17QdSLgGvNv4cAesLCp/t+1k1eeEFPhplqLdZFgYvAdtOeT/anCmLyKRVBkbuF2agdX7QkxCxqHLzaiI76ipjNmdd2cIIodJIl7+cW32AbH01BUJKsApnDemh/9Hd1UFO0JpFMDYu8f0lGdZWO1ubIjrAqgLomXM9yv0ZPAGfTs/fiAYiuTObsnuSs19w0G8sixm5v60MRxe/xIIGXw+TW/SbFJYds5ITJy67Q6mgfNPeyqnAE1AoSNp0chKFEcm/9GuCiC0w7NeIFxlti3SBrwOyAS6QDLXGkRNFMK3dbcawY+E1oLwM7gQPBDmTPuL07bcYZ/oAE+VXKp/HtxPw/Ec0WrU/JFvg7XvIPp1kT5XeBZPfD+jRLtMTs1R7CC3cguhYtO5QwV7veVMcj6qoTgkQw+JAOLkRjWH+QfvpuP66lLTiMlhd4fKycvFQ== daniel.oakman@auxilis.com.au
-        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILEBLbSD9MCQWRVslpMNVI57u2K03AEp1Qvk9UTqo3jv doakman94@gmail.com
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKtml+TR41P3J1GdbGLH0uQM2owojMBTFzPYMFxKH3WEIMaHKKnSXrPsEsMhQE+JybCvmeNlCZlQNSYvMO61mpdTPb8Wf5wvon8ns4w/Vs4M5JmCB9RJRajeNDG2k0zPcfzpYK5m/HuGeavTdT4NrAGXAaSDAAWn1PnxVIQ4tEafV8vGctzzJ6SKSCRKkJAwLhXzsLz3lDIpnd4u0QPV3Pmvsyh5nElgURxAI3o9bApjkFohIelIJ4cU9samEFGXNj/P4EeXrGjtLu66Rf0gPQt+b+XIGBzAN+vjaSCyYTPqZZ5oH/qfnSkjsrdqOlwkjXg4Q9ehXwoIDqAXofGJb3w3qLzkKLvjoUtZnJ8SjXXsRdrH/kCDfh5UAPBgr/s7xLm9wTYE8lC/PfNOCrFOa0pLM72rkfK6KLcqz2gjR4IEdWT3iCKOKRYXjnoVD19J1Nkv+rwz7gKyXaBmlAzCFHTBMc/a5MTyZ9c5hT7U8OjAZ9Ng8JozrqAhcoXsCjsTE= daniel.oakman@tiny.cloud
-        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIINo8NImIdDm7NxYhJLfp3pYNYmUNEUMqZIi3nIeMUir d.oakman@frogco.live
-      '';
+      ".config/git/allowed_signers".source = "../files/home/.config/git/allowed_signers";
 
       ".config/guake/prefs".text = ''
         [general]
