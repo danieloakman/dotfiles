@@ -118,15 +118,7 @@
           format = ssh
       '';
 
-      ".config/lazygit/config.yml".text = ''
-        git:
-          overrideGpg: true
-        customCommands:
-          - key: 'F'
-            command: 'git fetch --prune'
-            context: 'localBranches'
-            stream: true
-      '';
+      ".config/lazygit/config.yml".source = "../files/home/.config/lazygit/config.yml";
 
       ".config/nixpkgs/config.nix".text = ''
         { ... }:
@@ -135,23 +127,7 @@
         }
       '';
 
-      ".ssh/config".text = ''
-        # Recommended to edit for actual device in use
-        Host github github.com 100.100.254.2 djo-personal-desktop djo-personal-laptop djo-tiny-laptop tail9f1d8
-          IdentityFile ~/.ssh/djo-personal
-          IdentitiesOnly yes
-        host github github.com stash
-          ControlPath ~/.ssh/control-%h-%p-%r
-          ControlMaster auto
-          ControlPersist yes
-          ServerAliveInterval 30
-        Host bitbucket.org
-          IdentityFile ~/.ssh/djo-auxilis
-          IdentitiesOnly yes
-        host gitlab gitlab.com
-          IdentityFile ~/.ssh/frogco
-          IdentitiesOnly yes
-      '';
+      ".ssh/config".source = "../files/home/.ssh/config";
 
       ".config/git/allowed_signers".source = "../files/home/.config/git/allowed_signers";
 
