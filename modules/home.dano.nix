@@ -282,6 +282,35 @@
         ];
         theme = "robbyrussell";
       };
+
+      # git = {
+      #   enable = true;
+      #   userName = "Daniel Oakman";
+      #   userEmail = "42539848+danieloakman@users.noreply.github.com";
+      #   signing = {
+      #     gpgPath = "gpg";
+      #     key = "8FB975523F3FEB6113801C04368C0A3C6913D768";
+      #     signByDefault = true;
+      #   };
+      #   extraConfig = {
+      #     credential = {
+      #       helper = "cache --timeout 604800";
+      #     };
+      #     init = {
+      #       defaultBranch = "main";
+      #     };
+      #     pull = {
+      #       ff = true;
+      #     };
+      #     core = {
+      #       editor = "nano";
+      #     };
+      #     http = {
+      #       postbuffer = "524288000"; 
+      #     };
+      #     "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
+      #   };
+      # };
     };
 
     # Couldn't get certain binaries to install through rtx, there isn't much support for it in nix
