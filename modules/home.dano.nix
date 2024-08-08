@@ -391,6 +391,9 @@
       # pinentryPackage = pkgs.pinentry;
     };
 
+    # Starts the ssh-agent
+    # ssh-agent.enable = true;
+
     gnome-keyring.enable = true;
 
     # TODO use xremap or some cross wayland xorg key mapping/remapping tool
