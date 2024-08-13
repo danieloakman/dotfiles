@@ -78,4 +78,10 @@
       ];
     };
   };
+
+  networking.firewall = {
+    # Open required ports for gsconnect:
+    allowedTCPPortRanges = [{ from = 1716; to = 1764; }];
+    allowedUDPPortRanges = [{ from = 1716; to = 1764; }];
+  };
 }
