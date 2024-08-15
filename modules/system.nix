@@ -204,7 +204,8 @@
       # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
       gnumake
       nurl # Generates nix fetcher urls
-      dust
+      dust # A better `du` command. Just prints out size of directories in the CWD
+      ncdu # Similar to `dust`, but provides a UI to delete directories
       nil # Nix LSP
       tldr
       gcalcli
