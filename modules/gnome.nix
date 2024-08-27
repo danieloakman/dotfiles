@@ -32,9 +32,7 @@
       evince
       sushi
       gnome-calendar # We use evolution instead
-    ]) ++ (with pkgs.gnome; [
       gnome-music
-      # gedit # text editor
       gnome-characters
       tali # poker game
       iagno # go game
@@ -42,7 +40,6 @@
       atomix # puzzle game
       gnome-contacts
       gnome-initial-setup
-      atomix
       gnome-maps
       gnome-weather
     ]);
