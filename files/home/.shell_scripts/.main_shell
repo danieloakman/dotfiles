@@ -75,7 +75,7 @@ export AWSCONFIG=$HOME/.aws/config
 export DJO_DESKTOP_IP="100.100.254.2"
 export DJO_TINY_LAPTOP_IP="100.106.191.23"
 export DJO_S22_IP="100.109.1.86"
-export DOTFILES="$HOME/repos/personal/dotfiles"
+export SHELL_SCRIPTS="$HOME/repos/personal/dotfiles/files/home/.shell_scripts"
 
 ### Aliases ###
 # Check if exa is installed:
@@ -168,8 +168,8 @@ function numTerminalsOpen() {
 }
 
 # Source all files in the home directory that end in _shell, except for the current script:
-for file in "$DOTFILES"/.*_shell; do
-  if [[ "$file" -ef "$DOTFILES/.main_shell" ]]; then
+for file in "$SHELL_SCRIPTS"/.*; do
+  if [[ "$file" -ef "$SHELL_SCRIPTS/.main_shell" ]]; then
     continue
   elif [ -f "$file" ]; then
     source "$file"
