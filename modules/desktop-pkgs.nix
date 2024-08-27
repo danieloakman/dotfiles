@@ -22,7 +22,7 @@
     gimp
     obsidian
     syncthing
-    libreoffice
+    libreoffice # Just so we can open docx files and things
     # rambox # A single app that contains all sorts of web apps. The free version only allows 1 current computer session at a time though
     # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
     # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
