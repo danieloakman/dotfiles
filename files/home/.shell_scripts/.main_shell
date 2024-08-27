@@ -113,6 +113,7 @@ alias pnpx="pnpm exec"
 alias rmzerobytes="find . -size 0 -delete"
 # Finds libraries needed by dynamically linked executables:
 alias nix-alien-find-libs="nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- "
+alias gfl="git fetch && git pull"
 
 ### Functions ###
 
