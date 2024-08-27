@@ -1,0 +1,204 @@
+#### Master shell script for aliases, functions, etc, used across both WSL and linux desktops. ####
+
+### Add to path ###
+
+# Add Fly.io CLI to path:
+FLYCTL_INSTALL="$HOME/.fly"
+PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+# Add cargo cli tools to path:
+PATH="$HOME/.cargo/bin:$PATH"
+
+# Add SST ion to PATH:
+PATH="$HOME/.sst/bin:$PATH"
+
+if [ -d "/usr/local/bin" ]; then
+  PATH="/usr/local/bin:$PATH"
+fi
+
+if [ -d "$HOME/bin" ]; then
+  PATH="$HOME/bin:$PATH"
+fi
+
+if command -v pnpm &> /dev/null
+then
+  export PNPM_HOME="/home/dano/.local/share/pnpm"
+  case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
+fi
+
+if command -v go &> /dev/null
+then
+  PATH="$(which go):$PATH"
+fi
+
+### Setup Misc services, ssh agent, etc ###
+
+eval "$(starship init zsh)"
+
+# # May not need this anymore as I've gotten multiple github ssh keys setup and working
+# # that doesn't add them to the agent. See https://www.freecodecamp.org/news/how-to-manage-multiple-ssh-keys/
+# SSH_ENV="$HOME/.ssh/agent-environment"
+# function start_agent {
+#   echo "Initialising new SSH agent..."
+#   /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+#   echo Succeeded
+#   chmod 600 "${SSH_ENV}"
+#   . "${SSH_ENV}" > /dev/null
+#   /usr/bin/ssh-add;
+# }
+# # Source SSH settings, if applicable
+# if [ -f "${SSH_ENV}" ]; then
+#   . "${SSH_ENV}" > /dev/null
+#   #ps ${SSH_AGENT_PID} doesn't work under cywgin
+#   ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+#     start_agent;
+#   }
+# else
+#   start_agent;
+# fi
+
+if command -v mise &> /dev/null
+then
+  eval "$(mise activate zsh)"
+fi
+
+### Environment variables ###
+
+export GDRIVE=$HOME/gdrive
+export ENV=$HOME/.env
+export AWSCREDS=$HOME/.aws/credentials
+export AWSCONFIG=$HOME/.aws/config
+# export TRASH=$HOME/.local/share/Trash # Doesn't actually have a Trash on WSL
+export DJO_DESKTOP_IP="100.100.254.2"
+export DJO_TINY_LAPTOP_IP="100.106.191.23"
+export DJO_S22_IP="100.109.1.86"
+export DOTFILES="$HOME/repos/personal/dotfiles"
+
+### Aliases ###
+# Check if exa is installed:
+exa="exa"
+if command -v eza &> /dev/null
+then
+  exa="eza"
+fi
+alias ll="$exa -alF"
+alias la="$exa -aF"
+alias l="$exa -F"
+alias lt="$exa . -a -T -L"
+alias zshreload='exec zsh'
+alias awscreds="code $AWSCREDS $AWSCONFIG"
+alias awsconfig="code $AWSCREDS $AWSCONFIG"
+alias lg="lazygit"
+alias aliasg="alias | grep"
+alias wanip="curl ifconfig.me"
+alias lanip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+alias passgl="pass git pull"
+alias passgp="pass git push"
+alias passgf="pass git fetch"
+alias tsn="node --require ts-node/register"
+alias tsnd="tsn --inspect"
+alias tsn-esm="tsn --loader ts-node/esm"
+alias tsnd-esm="tsn-esm --inspect"
+if command -v rtx &> /dev/null
+then
+  alias python2="$HOME/.local/share/rtx/installs/python/2/bin/python"
+  alias python3="$HOME/.local/share/rtx/installs/python/3/bin/python"
+fi
+# alias chromedriver="$WINC/chromedriver/chromedriver.exe"
+alias googler="python $HOME/repos/other/googler/googler"
+alias pnpx="pnpm exec"
+alias rmzerobytes="find . -size 0 -delete"
+# Finds libraries needed by dynamically linked executables:
+alias nix-alien-find-libs="nix run "github:thiagokokada/nix-alien#nix-alien-find-libs" -- "
+
+### Functions ###
+
+# Git commit all & git push
+function gcagp() {
+  git add .
+  git commit -m "$1"
+  git push
+}
+
+# Git branch, checkout & push
+function gbcp() {
+  git branch "$1"
+  git checkout "$1"
+  git push --set-upstream origin "$1"
+}
+
+function nalai() {
+  sudo nala install "$1" -y
+}
+
+function zcode() {
+  z "$1" && code . && cd -
+}
+
+# Pass create
+function passc() {
+  pass generate "$1"
+  pass edit "$1"
+}
+
+function passlg() {
+  z $PASSWORD_STORE_DIR && lazygit && cd -
+}
+
+# Safely create a symlink, no exit error.
+function symlink() {
+  if [ ! -L "$2" ]; then
+    ln -s "$1" "$2"
+  fi
+}
+
+function isOnWSL() {
+  if [ -f "/proc/sys/fs/binfmt_misc/WSLInterop" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+function numTerminalsOpen() {
+  ps a | awk '{print $2}' | grep -vi "tty*" | uniq | wc -l
+}
+
+# Source all files in the home directory that end in _shell, except for the current script:
+for file in "$DOTFILES"/.*_shell; do
+  if [[ "$file" -ef "$DOTFILES/.main_shell" ]]; then
+    continue
+  elif [ -f "$file" ]; then
+    source "$file"
+  fi
+done
+
+# Check if there are shells in HOME:
+files=("$HOME"/.*_shell(N))
+if (($#files != 0)); then
+  for file in "$HOME"/.*_shell; do
+    # Then source them:
+    source "$file"
+  done
+fi
+
+# Run neofetch if numTerminalsOpen is 1:
+if [ "$(numTerminalsOpen)" -eq 1 ]; then
+  # check if fastfetch is installed:
+  if command -v fastfetch &> /dev/null
+  then
+    fastfetch
+  # Check if neofetch is installed:
+  elif command -v neofetch &> /dev/null
+  then
+    neofetch
+  fi
+fi
+
+# Check if GH_TOKEN is set, if not, set it with personal token:
+if [ -z "$GH_TOKEN" ]; then
+  export GH_TOKEN=$(pass github_tokens/personal)
+fi

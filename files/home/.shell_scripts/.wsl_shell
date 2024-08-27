@@ -1,0 +1,56 @@
+if ! isOnWSL; then
+  return
+fi
+
+#### Variables, functions, aliases and anything else to do with WSL ####
+
+### Export variables ###
+
+# Vars for using a windows browser from WSL:
+export BROWSER_CHROME="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+# export BROWSER="$BROWSER_CHROME"
+export BROWSER_FIREFOX="/mnt/c/Program Files/Mozilla Firefox/firefox.exe"
+#export BROWSER="$BROWSER_FIREFOX"
+export BROWSER="$HOME/chrome"
+
+export WIN=$(wslpath "$(wslvar USERPROFILE)") # Windows home directory
+export WIN_USER="$(basename $WIN)" # Windows username
+export WINC="/mnt/c"
+if [ -d "$WIN/GDrive" ]; then
+  export GDRIVE="$WIN/GDrive"
+else
+  export GDRIVE="$WIN/Google Drive"
+fi
+
+### Aliases ###
+
+alias wsl="wsl.exe"
+alias clip="/mnt/c/Windows/System32/clip.exe"
+alias xclip="clip"
+alias ts="/mnt/c/Program\ Files/Tailscale/tailscale.exe"
+alias 7z="/mnt/c/Program\ Files/7-Zip/7z.exe"
+# alias mklink=". $HOME/bin/mklink.sh"
+# TODO: Run `ln -s` for chrome and firefox to $HOME, if those exes exist
+alias chrome="$HOME/chrome"
+alias firefox="$HOME/firefox"
+alias synctime="sudo hwclock -s" # Sync time with windows because of annoying time out of sync issues with WSL and Windows.
+
+### Functions ###
+
+function win-notify() {
+  wsl-notify-send.exe --category $WSL_DISTRO_NAME "${@}";
+}
+
+### Add to path ###
+
+# Add vscode's `code` to PATH
+# PATH="$WIN/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
+
+# Add yarn bin to path:
+PATH="$HOME/.yarn/bin:$PATH"
+
+# Add nvim to path:
+PATH="$HOME/nvim-linux64/bin:$PATH"
+
+# Add windows related exes to path:
+PATH="/mnt/c/Users/$WIN_USER/bin:$PATH"
