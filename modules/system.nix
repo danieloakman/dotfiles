@@ -236,6 +236,10 @@
       (python3.withPackages (ps: with ps; [
         # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
         pip
+        requests
+        black
+        urllib3
+        virtualenv
         # pipx
       ]))
 
@@ -258,9 +262,9 @@
         targetPkgs = pkgs: (with pkgs; [
           # More or less copied from the auxilis FHS shell
           tesseract
-          python310
-          python310Packages.pip
-          python310Packages.virtualenv
+          python3
+          python3Packages.pip
+          python3Packages.virtualenv
           swig
           glibc
           glib.dev
