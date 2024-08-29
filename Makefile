@@ -8,7 +8,7 @@ lint:
 
 # FIXME: error: "error loading config: no matching creation rules found"
 # edit-secrets:
-# 	nix shell nixpkgs\#sops -c sops ~/repos/personal/nixos/secrets/secret.yaml
+# 	nix shell nixpkgs\#sops -c sops ~/repos/personal/dotfiles/secrets/secret.yaml
 
 update:
-	sudo nix flake update ~/repos/personal/nixos
+	sudo nix flake update ~/repos/personal/dotfiles
