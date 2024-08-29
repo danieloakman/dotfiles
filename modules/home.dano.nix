@@ -263,8 +263,8 @@
       syntaxHighlighting.enable = true;
       initExtra = ''
         # Put at the bottom of ".zshrc":
-        if [ -f "$HOME/repos/personal/dotfiles/.main_shell" ]; then
-          source "$HOME/repos/personal/dotfiles/.main_shell"
+        if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
+          source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
         fi
       '';
       envExtra = ''

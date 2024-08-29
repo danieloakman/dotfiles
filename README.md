@@ -1,4 +1,10 @@
-# NixOS
+# Dotfiles
+
+My NixOS configuration files and dotfiles.
+
+General dotfiles are kept in the *files/home* directory. *files/\** is for other files outside of the home directory.
+
+See the [shell script readme](files/home/.shell_scripts/README.md) file for more information on utilising the shell scripts.
 
 ## Intro
 
