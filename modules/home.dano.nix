@@ -240,6 +240,7 @@
       PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
       # This is how `nh` is able to find the flake for this host's configuration.
       FLAKE = "/home/${env.user}/repos/personal/nixos";
+      GRANTED_ALIAS_CONFIGURED = "true";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
@@ -370,6 +371,11 @@
         hidden = true;
         info = [ "size" "time" ];
       };
+    };
+
+    granted = {
+      enable = true;
+      enableZshIntegration = true;
     };
   };
 
