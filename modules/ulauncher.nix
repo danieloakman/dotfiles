@@ -1,4 +1,4 @@
-{ pkgs, env, ... }:
+{ pkgs, ... }:
 let
   ulauncher = pkgs.ulauncher.overrideAttrs
     (oldAttrs: {
@@ -32,21 +32,23 @@ in
     after = [ "gnome-session-monitor.service" ];
   };
 
-  home-manager.users.${env.user}.home = {
-    # "hotkey-show-app" has been unset because <Super>space doesn't seem to work. So we're just setting the hotkey in gnome (imperatively) instead.
-    file.".config/ulauncher/settings.json".text = ''
-      {
-        "hotkey-show-app": "",
-        "blacklisted-desktop-dirs": "/usr/share/locale:/usr/share/app-install:/usr/share/kservices5:/usr/share/fk5:/usr/share/kservicetypes5:/usr/share/applications/screensavers:/usr/share/kde4:/usr/share/mimelnk",
-        "clear-previous-query": true,
-        "disable-desktop-filters": false,
-        "grab-mouse-pointer": false,
-        "render-on-screen": "mouse-pointer-monitor",
-        "show-indicator-icon": true,
-        "show-recent-apps": "0",
-        "terminal-command": "",
-        "theme-name": "dark"
-      }
-    '';
-  };
+  # Turned off since some extensions read and modify the settings.json file, which cause them to crash on startup.
+  # TODO: modify it using a startup script ins`tead.
+  # home-manager.users.${env.user}.home = {
+  #   # "hotkey-show-app" has been unset because <Super>space doesn't seem to work. So we're just setting the hotkey in gnome (imperatively) instead.
+  #   file.".config/ulauncher/settings.json".text = ''
+  #     {
+  #       "hotkey-show-app": "",
+  #       "blacklisted-desktop-dirs": "/usr/share/locale:/usr/share/app-install:/usr/share/kservices5:/usr/share/fk5:/usr/share/kservicetypes5:/usr/share/applications/screensavers:/usr/share/kde4:/usr/share/mimelnk",
+  #       "clear-previous-query": true,
+  #       "disable-desktop-filters": false,
+  #       "grab-mouse-pointer": false,
+  #       "render-on-screen": "mouse-pointer-monitor",
+  #       "show-indicator-icon": true,
+  #       "show-recent-apps": "0",
+  #       "terminal-command": "",
+  #       "theme-name": "dark"
+  #     }
+  #   '';
+  # };
 }
