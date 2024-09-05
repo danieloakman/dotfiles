@@ -69,7 +69,7 @@
 
         # Needed for prisma:
         openssl
-        prisma-engines # FIXME: doesn't build
+        prisma-engines
       ]) ++ (with pkgs.xorg; [
         libX11
         libXext
