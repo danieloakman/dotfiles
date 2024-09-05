@@ -197,51 +197,11 @@
       zip
       jq
       rsync
-      # rclone # Don't need anymore as it was just used for Obsidian syncing
-      nixpkgs-fmt # A formatter for .nix files.
-      nh # Nix helper
-      gnat13 # Provides gcc, g++, etc
-      # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
-      gnumake
-      nurl # Generates nix fetcher urls
-      dust # A better `du` command. Just prints out size of directories in the CWD
-      ncdu # Similar to `dust`, but provides a UI to delete directories
+
+      # Nix specific:
       nil # Nix LSP
-      tldr
-      gcalcli
-      zbar # Can scan QR & bar codes using this
-      lf # Terminal file system manager
-
-      # TODO: remove dev related things like go and rust to a devenv instead.
-      # Node can stay as it's needed for running scripts
-
-      # Rust:
-      # cargo
-      # rustup
-
-      # Go related packages:
-      # go
-      # gopls
-      # delve
-      # go-tools
-
-      # Node and Javascript related packages:
-      nodejs_22
-      # yarn
-      pnpm
-      pnpm-shell-completion
-      bun
-
-      python3
-      (python3.withPackages (ps: with ps; [
-        # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
-        pip
-        requests
-        black
-        urllib3
-        virtualenv
-        # pipx
-      ]))
+      nh # Nix helper
+      nixpkgs-fmt # A formatter for .nix files.
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       (if env.isOnWayland then dmenu-wayland else dmenu)
@@ -253,57 +213,6 @@
       # logkeys # Was testing whether I could log laptop buttons or not
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       inputs.devenv.packages.${system}.devenv
-      awscli2
-      mprocs
-
-      # Nix shells:
-      (pkgs.buildFHSEnv {
-        name = "sh-fhs";
-        targetPkgs = pkgs: (with pkgs; [
-          # More or less copied from the auxilis FHS shell
-          tesseract
-          python3
-          python3Packages.pip
-          python3Packages.virtualenv
-          swig
-          glibc
-          glib.dev
-          libffi
-          ffmpeg
-          libsmf
-          libGL
-          libz
-          libzip
-          libgcc
-          zlib
-          pango
-          fontconfig
-          libstdcxx5
-          opencv
-          cmake
-          pixman
-          cairo
-          libjpeg
-          giflib
-          librsvg
-          # cairomm_1_16
-
-          # Needed for prisma:
-          openssl
-          # prisma-engines # FIXME: doesn't build
-        ]) ++ (with pkgs.xorg; [
-          libX11
-          libXext
-          libSM
-        ]);
-        nativeBuildInputs = pkgs: (with pkgs; [
-          pkg-config
-        ]);
-        # multiPkgs = pkgs: (with pkgs; [
-        #   # Nothing for now
-        # ]);
-        runScript = "zsh";
-      })
     ] ++ (if env.isOnWayland then [
       wl-clipboard
     ] else [ ]);

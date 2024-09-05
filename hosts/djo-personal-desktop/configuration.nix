@@ -16,6 +16,7 @@
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
     ../../modules/ulauncher.nix
+    ../../modules/dev.nix
   ];
 
   # Bootloader
