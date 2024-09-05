@@ -62,7 +62,7 @@
     in
     {
       nixosConfigurations = {
-        djo-personal-desktop = nixpkgs.lib.nixosSystem {
+        akatosh = nixpkgs.lib.nixosSystem {
           specialArgs =
             let
               env = createEnv {
@@ -77,14 +77,14 @@
             in
             { inherit inputs system env; };
           modules = [
-            ./hosts/djo-personal-desktop/configuration.nix
+            ./hosts/akatosh/configuration.nix
             commonImports
             { }
             createNixCache
             { }
           ];
         };
-        djo-personal-laptop = nixpkgs.lib.nixosSystem {
+        azura = nixpkgs.lib.nixosSystem {
           specialArgs =
             let
               env = createEnv {
@@ -99,7 +99,7 @@
             in
             { inherit inputs system env; };
           modules = [
-            ./hosts/djo-personal-laptop/configuration.nix
+            ./hosts/azura/configuration.nix
             commonImports
             { }
             createNixCache

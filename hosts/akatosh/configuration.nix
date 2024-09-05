@@ -9,22 +9,46 @@
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
-    ../../modules/user.nix
     ../../modules/gnome.nix
     (import ../../modules/power-management.nix { inherit env; })
+    ../../modules/mobile-dev.nix
+    (import ../../modules/games.nix { inherit pkgs; })
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
+    ../../modules/ulauncher.nix
     ../../modules/dev.nix
   ];
 
-  # Bootloader.
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda";
-    useOSProber = true;
+  # Bootloader
+  boot.loader = {
+    # systemd-boot.enable = true; # TODO: remove this line and remove the already existing boot loader that this option creates.
+    efi.canTouchEfiVariables = true;
+    grub = {
+      device = "nodev";
+      enable = true;
+      efiSupport = true;
+      useOSProber = true;
+    };
   };
 
-  networking.hostName = "djo-personal-laptop"; # Define your hostname. `echo $HOST`
+  networking.hostName = "akatosh"; # Define your hostname.
+
+  hardware = {
+    enableRedistributableFirmware = true;
+
+    # This might not be needed, as it's to do with cpu graphics, which this system doesn't have. Leave it for now.
+    graphics.enable = true;
+    graphics.enable32Bit = true;
+
+    # See https://nixos.wiki/wiki/Nvidia for more information.
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true; # Fix for issues after waking from suspend
+      package = config.boot.kernelPackages.nvidiaPackages.production;
+    };
+  };
+
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -32,5 +56,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "23.11"; # Did you read the comment?
+
 }
