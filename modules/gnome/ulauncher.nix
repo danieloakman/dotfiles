@@ -28,7 +28,6 @@ in
     documentation = [ "https://github.com/Ulauncher/Ulauncher/blob/f0905b9a9cabb342f9c29d0e9efd3ba4d0fa456e/contrib/systemd/ulauncher.service" ];
     # `systemctl --user --type target,service` to see what's available
     wantedBy = [ "graphical-session.target" "default.target" ];
-    # TODO: probably should move ulauncher.nix to be a gnome dependent module
     after = [ "gnome-session-monitor.service" ];
   };
 

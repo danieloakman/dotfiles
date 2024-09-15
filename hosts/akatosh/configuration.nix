@@ -9,13 +9,12 @@
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
-    ../../modules/gnome.nix
+    ../../modules/gnome
     (import ../../modules/power-management.nix { inherit env; })
     ../../modules/mobile-dev.nix
     (import ../../modules/games.nix { inherit pkgs; })
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
-    ../../modules/ulauncher.nix
     ../../modules/dev.nix
   ];
 

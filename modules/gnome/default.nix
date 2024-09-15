@@ -2,6 +2,10 @@
 
 { pkgs, ... }:
 {
+  imports = [
+    ./ulauncher.nix
+  ];
+
   services = {
     xserver = {
       # Enable the GNOME Desktop Environment.
