@@ -139,6 +139,10 @@ function zcode() {
   z "$1" && code . && cd -
 }
 
+function zcursor() {
+  z "$1" && cursor . && cd -
+}
+
 # Pass create
 function passc() {
   pass generate "$1"
