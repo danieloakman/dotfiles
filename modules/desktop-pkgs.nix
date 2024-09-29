@@ -6,6 +6,7 @@
     # birdtray # Thunderbird tray icon
     tailscale
     vscode
+    code-cursor
     # zed-editor # Trying this out as an alternative to vscode
     firefox
     google-drive-ocamlfuse
