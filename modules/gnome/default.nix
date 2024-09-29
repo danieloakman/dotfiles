@@ -51,7 +51,7 @@
     systemPackages = with pkgs; [
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
-      gnome.networkmanager-openvpn
+      networkmanager-openvpn
       gnome-tweaks
       gnome-terminal
       # gnome.pomodoro # Not updated
