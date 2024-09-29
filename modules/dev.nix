@@ -65,6 +65,7 @@
         libjpeg
         giflib
         librsvg
+        pkg-config
         # cairomm_1_16
 
         # Needed for prisma:
@@ -75,9 +76,9 @@
         libXext
         libSM
       ]);
-      nativeBuildInputs = pkgs: (with pkgs; [
-        pkg-config
-      ]);
+      # nativeBuildInputs = pkgs: (with pkgs; [
+      #   pkg-config
+      # ]);
       # multiPkgs = pkgs: (with pkgs; [
       #   # Nothing for now
       # ]);
