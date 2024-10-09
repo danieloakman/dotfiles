@@ -26,7 +26,7 @@
 
   environment = {
     # Exclude particular gnome specific packages
-    gnome.excludePackages = (with pkgs; [
+    gnome.excludePackages = with pkgs; [
       # gnome-photos
       gnome-tour
       # gnome-connections
@@ -48,7 +48,7 @@
       gnome-initial-setup
       gnome-maps
       gnome-weather
-    ]);
+    ];
 
     systemPackages = with pkgs; [
       networkmanager
