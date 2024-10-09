@@ -1,5 +1,7 @@
 # Gnome configuration
 
+# TODO: findout why gnome isn't smooth anymore
+
 { pkgs, ... }:
 {
   imports = [
