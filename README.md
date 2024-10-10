@@ -35,6 +35,13 @@ text = ''
 '';
 ```
 
+## Nix-darwin
+
+### Setup
+
+1. Install nix https://nix.dev/install-nix
+2. TODO
+
 
 ## Notes
 
