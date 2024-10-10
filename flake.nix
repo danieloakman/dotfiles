@@ -7,6 +7,10 @@
   inputs = {
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # TODO: find a way to use these along with the linux ones:
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
+    # nix-darwin.url = "github:LnL7/nix-darwin";
+    # nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -127,6 +131,15 @@
             createNixCache
             { }
           ];
+        };
+      };
+
+      # TODO: 
+      darwinConfigurations = {
+        meridia = {
+          nix-darwin.lib.darwinSystem {
+            modules = [ ./hosts/meridia/default.nix ];
+          };
         };
       };
       # packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
