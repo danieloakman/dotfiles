@@ -9,7 +9,6 @@
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
-    ../../modules/user.nix
     ../../modules/gnome
     (import ../../modules/power-management.nix { inherit env; })
     inputs.stylix.nixosModules.stylix
