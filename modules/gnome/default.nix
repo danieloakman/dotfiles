@@ -5,7 +5,7 @@
 { pkgs, ... }:
 {
   imports = [
-    ./ulauncher.nix
+    # ./ulauncher.nix
   ];
 
   services = {
