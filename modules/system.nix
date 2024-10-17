@@ -219,7 +219,6 @@
   };
 
   programs = {
-    zsh.enable = true;
     gnupg.agent.enable = true;
     nix-ld = {
       enable = true;
