@@ -238,7 +238,6 @@
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
       PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
-      PASSWORD_STORE_ENABLE_EXTENSIONS = "true"; # This enables included pass extensions in the password store itself (/.extension dir)
       # This is how `nh` is able to find the flake for this host's configuration.
       FLAKE = "/home/${env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
@@ -267,6 +266,9 @@
         if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
           source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
         fi
+
+        # This enables included pass extensions in the password store itself (/.extension dir). For some reason this has to go here since putting it in the `sessionVariables` env var doesn't work.
+        export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
       '';
       envExtra = ''
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
