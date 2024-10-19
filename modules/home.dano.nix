@@ -214,6 +214,7 @@
         fi
 
         symlink $HOME/gdrive/Music $HOME/Music/gdrive
+        symlink $HOME/Sync/music $HOME/Music/Sync`
         symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
       '';
 
