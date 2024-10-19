@@ -238,6 +238,7 @@
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
       PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
+      PASSWORD_STORE_ENABLE_EXTENSIONS = "true"; # This enables included pass extensions in the password store itself (/.extension dir)
       # This is how `nh` is able to find the flake for this host's configuration.
       FLAKE = "/home/${env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
