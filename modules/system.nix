@@ -252,7 +252,6 @@
         zlib
         pango
         fontconfig
-        libstdcxx5
         opencv
         cmake
         pixman
