@@ -153,6 +153,10 @@ function passlg() {
   z $PASSWORD_STORE_DIR && lazygit && cd -
 }
 
+function passsync() {
+  pass git pull && pass git push
+}
+
 # Safely create a symlink, no exit error.
 function symlink() {
   if [ ! -L "$2" ]; then
