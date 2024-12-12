@@ -214,6 +214,7 @@
         fi
 
         symlink $HOME/gdrive/Music $HOME/Music/gdrive
+        symlink $HOME/Sync/music $HOME/Music/Sync
         symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
       '';
 
@@ -266,6 +267,9 @@
         if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
           source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
         fi
+
+        # This enables included pass extensions in the password store itself (/.extension dir). For some reason this has to go here since putting it in the `sessionVariables` env var doesn't work.
+        export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
       '';
       envExtra = ''
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)

@@ -19,7 +19,11 @@
       allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
       # Open ports in the firewall for tiny.work:
       trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
-      allowedUDPPorts = [ 443 ]; # For tiny.work VPN
+      allowedUDPPorts = [
+        443 # tiny.work VPN
+        1197 # For PIA VPN
+        1198 # For PIA VPN
+      ];
       # checkReversePath = false;
     };
   };

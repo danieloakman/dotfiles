@@ -4,7 +4,7 @@
 {
   imports = [
     # TODO: having problems setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
-    # It's not even that useful, compared to raycast. Maybe I'll try out dunst instead.
+    # It's not even that useful, compared to raycast. Maybe I'll try out rofi instead.
     # ./ulauncher.nix
   ];
 
