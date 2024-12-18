@@ -69,7 +69,7 @@
 
       ".gitconfig".text = ''
         [user]
-          name = Daniel Oakman
+          name = Daniel Brown
           email = 42539848+danieloakman@users.noreply.github.com
           signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
         [credential]
@@ -111,7 +111,7 @@
 
       ".gitconfig-frogco".text = ''
         [user]
-          name = Daniel Oakman
+          name = Daniel Brown
           email = d.oakman@frogco.live
           signingkey = ~/.ssh/frogco.pub
         [gpg]
@@ -292,7 +292,7 @@
 
       # git = {
       #   enable = true;
-      #   userName = "Daniel Oakman";
+      #   userName = "Daniel Brown";
       #   userEmail = "42539848+danieloakman@users.noreply.github.com";
       #   signing = {
       #     gpgPath = "gpg";

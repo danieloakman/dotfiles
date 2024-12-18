@@ -12,7 +12,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${env.user} = {
     isNormalUser = true;
-    description = "Daniel Oakman";
+    description = "Daniel Brown";
     extraGroups = [
       "networkmanager"
       "wheel"
