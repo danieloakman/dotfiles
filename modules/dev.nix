@@ -57,7 +57,7 @@
         zlib
         pango
         fontconfig
-        libstdcxx5
+        # libstdcxx5 Apparently outdated
         opencv
         cmake
         pixman

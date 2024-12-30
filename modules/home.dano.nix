@@ -27,12 +27,6 @@
       # # "Hello, world!" when run.
       # pkgs.hello
 
-      # # It is sometimes useful to fine-tune packages, for example, by applying
-      # # overrides. You can do that directly here, just don't forget the
-      # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-      # # fonts?
-      # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
       # # You can also create simple shell scripts directly inside your
       # # configuration. For example, this adds a command 'my-hello' to your
       # # environment:
@@ -69,7 +63,7 @@
 
       ".gitconfig".text = ''
         [user]
-          name = Daniel Oakman
+          name = Daniel Brown
           email = 42539848+danieloakman@users.noreply.github.com
           signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
         [credential]
@@ -111,7 +105,7 @@
 
       ".gitconfig-frogco".text = ''
         [user]
-          name = Daniel Oakman
+          name = Daniel Brown
           email = d.oakman@frogco.live
           signingkey = ~/.ssh/frogco.pub
         [gpg]
@@ -292,7 +286,7 @@
 
       # git = {
       #   enable = true;
-      #   userName = "Daniel Oakman";
+      #   userName = "Daniel Brown";
       #   userEmail = "42539848+danieloakman@users.noreply.github.com";
       #   signing = {
       #     gpgPath = "gpg";
