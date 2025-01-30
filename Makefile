@@ -11,4 +11,4 @@ lint:
 # 	nix shell nixpkgs\#sops -c sops ~/repos/personal/dotfiles/secrets/secret.yaml
 
 update:
-	sudo nix flake update ~/repos/personal/dotfiles
+	sudo nix flake update --flake ~/repos/personal/dotfiles
