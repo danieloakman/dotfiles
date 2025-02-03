@@ -69,6 +69,7 @@
       # gnomeExtensions.valent
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       # gnomeExtensions.gjs-osk
+      gnomeExtensions.docker
     ];
   };
 
