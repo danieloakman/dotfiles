@@ -39,7 +39,4 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-  # Enable for GPU pass-through support on things like Docker conainters:
-  hardware.nvidia-container-toolkit.enable = true;
 }
