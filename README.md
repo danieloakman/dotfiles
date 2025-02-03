@@ -43,3 +43,4 @@ text = ''
 * When making new nix files, **make sure to commit them first**, otherwise nix will not be able to find them.
 * */boot/kernels* may occasionally fill up with unused linux kernels and need to be manually cleaned up, i.e. `sudo rm /boot/kernels/*6.6.33*`
 * Nix caches build results, so if no files have changed, running a build again will produce the same output or error. Keep this in mine when trying to fix an error like the */boot* disk space issue.
+* Make sure a new derivation is actually made to the boot list. Doing `nh os boot` from within a devenv shell or other container will not make a new derivation.
