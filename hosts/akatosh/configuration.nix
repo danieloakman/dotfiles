@@ -16,7 +16,7 @@
     inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
     ../../modules/dev.nix
-    ../../modules/docker.nix
+    (import ../../modules/docker.nix { inherit env pkgs; })
   ];
 
   # Bootloader
