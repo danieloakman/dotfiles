@@ -34,6 +34,7 @@
 
     awscli2
     mprocs
+    pet # CLI tool for keeping a list of commands and executing them later
 
     # Nix shells:
     (pkgs.buildFHSEnv {
