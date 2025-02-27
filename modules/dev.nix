@@ -40,11 +40,13 @@
     (pkgs.buildFHSEnv {
       name = "sh-fhs";
       targetPkgs = pkgs: (with pkgs; [
-        # More or less copied from the auxilis FHS shell
         tesseract
         python3
-        python3Packages.pip
-        python3Packages.virtualenv
+        (python3.withPackages (ps: with ps; [
+          pip
+          virtualenv
+          # pipx
+        ]))
         swig
         glibc
         glib.dev
@@ -83,6 +85,11 @@
       # multiPkgs = pkgs: (with pkgs; [
       #   # Nothing for now
       # ]);
+      profile = ''
+        # Required for prisma:
+        export PRISMA_QUERY_ENGINE_BINARY=/usr/bin/query-engine;
+        export PRISMA_SCHEMA_ENGINE_BINARY=/usr/bin/schema-engine;
+      '';
       runScript = "zsh";
     })
   ];
