@@ -128,6 +128,7 @@
       # Enable experimental nix features:
       experimental-features = [ "nix-command" "flakes" ];
       trusted-users = [ "root" "@wheel" ];
+      auto-optimise-store = true;
     };
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
