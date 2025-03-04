@@ -137,6 +137,7 @@
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 14d";
+      persistent = true; # Default is true, but just to be explicit.
     };
   };
 
