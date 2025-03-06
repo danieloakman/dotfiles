@@ -6,6 +6,8 @@
     # TODO: having problems setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
     # It's not even that useful, compared to raycast. Maybe I'll try out rofi instead.
     # ./ulauncher.nix
+    # Not using anymore. I just prefer to use gmail in the browser:
+    # ./evolution.nix
   ];
 
   services = {
@@ -71,16 +73,6 @@
       # gnomeExtensions.gjs-osk
       gnomeExtensions.docker
     ];
-  };
-
-  programs = {
-    # This seemes to be the best all round email and calendar app for gnome.
-    evolution = {
-      enable = true;
-      plugins = with pkgs; [
-        evolution-ews # This https://kb.iu.edu/d/bghs was the only way I found to get connecting to my frogco email working, i.e. office365
-      ];
-    };
   };
 
   networking.firewall = {
