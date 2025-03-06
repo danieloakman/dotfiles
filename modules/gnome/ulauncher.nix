@@ -32,7 +32,7 @@ in
   };
 
   # Turned off since some extensions read and modify the settings.json file, which cause them to crash on startup.
-  # TODO: modify it using a startup script ins`tead.
+  # TODO: modify it using a startup script instead.
   # home-manager.users.${env.user}.home = {
   #   # "hotkey-show-app" has been unset because <Super>space doesn't seem to work. So we're just setting the hotkey in gnome (imperatively) instead.
   #   file.".config/ulauncher/settings.json".text = ''

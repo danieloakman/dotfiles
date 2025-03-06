@@ -17,6 +17,7 @@
     (import ../../modules/stylix.nix { inherit pkgs env; })
     ../../modules/dev.nix
     ../../modules/docker.nix
+    ../../modules/rofi.nix
   ];
 
   # Bootloader
