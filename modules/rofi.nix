@@ -12,8 +12,6 @@
       theme = "Nord";
       font = "Iosevka 14";
       location = "center";
-      width = 100;
-      height = 30;
       cycle = true;
       pass = {
         enable = true;
