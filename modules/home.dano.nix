@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, ... }:
+{ lib, pkgs, env, inputs, system, ... }:
 
 {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
@@ -42,6 +42,7 @@
         # '')
       pkgs.passff-host
       pkgs.sxhkd
+      inputs.zen-browser.packages."${system}".default
     ];
 
     # Home Manager is pretty good at managing dotfiles. The primary way to manage

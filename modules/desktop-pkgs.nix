@@ -1,5 +1,5 @@
 # This module is for adding general desktop, system level packages. Stuff that has a GUI:
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, system, ... }:
 {
   environment.systemPackages = with pkgs; [
     # thunderbird # Email client and also has calendar
