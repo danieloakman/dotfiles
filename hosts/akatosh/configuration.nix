@@ -46,6 +46,7 @@
       modesetting.enable = true;
       powerManagement.enable = true; # Fix for issues after waking from suspend
       package = config.boot.kernelPackages.nvidiaPackages.production;
+      open = true;
     };
   };
 
