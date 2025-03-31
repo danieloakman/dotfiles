@@ -31,18 +31,17 @@
   # Enable bluetooth
   hardware.bluetooth = {
     enable = true;
-    # This was here to try and get bluetooth tethering working, but it didn't work.
-    # settings = {
-    #   General = {
-    #     Name = "Hello";
-    #     ControllerMode = "dual";
-    #     FastConnectable = "true";
-    #     Experimental = "true";
-    #   };
-    #   Policy = {
-    #     AutoEnable = "true";
-    #   };
-    # };
+    settings = {
+      General = {
+        Name = "Hello";
+        ControllerMode = "dual";
+        FastConnectable = "true";
+        Experimental = "true";
+      };
+      Policy = {
+        AutoEnable = "true";
+      };
+    };
   };
 
   # Set your time zone.
