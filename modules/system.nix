@@ -92,7 +92,7 @@
       systemService = true;
       openDefaultPorts = true;
       overrideDevices = true;
-      overrideFolders = true;
+      overrideFolders = false; # Cannot have as true when autoAcceptFolders is true for S22
       dataDir = "/home/${env.user}/sync";
       configDir = "/home/${env.user}/.config/syncthing";
       settings = {
