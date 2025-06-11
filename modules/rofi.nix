@@ -7,7 +7,21 @@
       cycle = true;
       pass = {
         enable = true;
+        stores = [
+          "home/${env.user}/.local/share/password-store"
+        ];
       };
+      modes = [
+        "drun"
+        "emoji"
+        "filebrowser"
+        "run"
+        "screenshot"
+        "ssh"
+        "window"
+        "combi"
+        "calc"
+      ];
       plugins = with pkgs; [
         rofi-pass
         rofi-calc
