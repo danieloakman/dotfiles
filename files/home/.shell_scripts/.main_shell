@@ -29,6 +29,11 @@ then
   esac
 fi
 
+if command -v bun &> /dev/null
+then
+  PATH="$HOME/.bun/bin:$PATH"
+fi
+
 if command -v go &> /dev/null
 then
   PATH="$(which go):$PATH"

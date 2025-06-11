@@ -132,12 +132,13 @@
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
     # Run garbage collection automatically
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 14d";
-      persistent = true; # Default is true, but just to be explicit.
-    };
+    # Disable to not conflict with `programs.nh.clean`
+    # gc = {
+    #   automatic = true;
+    #   dates = "weekly";
+    #   options = "--delete-older-than 14d";
+    #   persistent = true; # Default is true, but just to be explicit.
+    # };
   };
 
 
@@ -190,7 +191,6 @@
       # pinentry-qt
       eza
       bat
-      thefuck
       lazygit
       fzf
       neovim
@@ -270,6 +270,13 @@
     localsend = {
       enable = true;
       openFirewall = true;
+    };
+
+    nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--keep-since 14d --keep 3";
+      flake = "/home/${env.user}/repos/personal/dotfiles";
     };
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.

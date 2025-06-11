@@ -4,4 +4,4 @@ customCommands:
   - key: 'F'
     command: 'git fetch --prune'
     context: 'localBranches'
-    stream: true
+    output: log

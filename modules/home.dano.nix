@@ -63,7 +63,7 @@
 
       ".gitconfig".text = ''
         [user]
-          name = Daniel Brown
+          name = Daniel (Oakman) Brown
           email = 42539848+danieloakman@users.noreply.github.com
           signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
         [credential]
@@ -105,7 +105,7 @@
 
       ".gitconfig-frogco".text = ''
         [user]
-          name = Daniel Brown
+          name = Daniel (Oakman) Brown
           email = d.oakman@frogco.live
           signingkey = ~/.ssh/frogco.pub
         [gpg]
@@ -234,7 +234,7 @@
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
       PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
       # This is how `nh` is able to find the flake for this host's configuration.
-      FLAKE = "/home/${env.user}/repos/personal/dotfiles";
+      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
     };
 
@@ -256,7 +256,7 @@
       autosuggestion.enable = true;
       enableCompletion = true;
       syntaxHighlighting.enable = true;
-      initExtra = ''
+      initContent = ''
         # Put at the bottom of ".zshrc":
         if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
           source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
@@ -275,7 +275,6 @@
         enable = true;
         plugins = [
           "git"
-          "thefuck"
           "sudo"
           "z"
           "web-search"

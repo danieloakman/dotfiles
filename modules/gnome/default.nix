@@ -3,7 +3,7 @@
 { pkgs, ... }:
 {
   imports = [
-    # TODO: having problems setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
+    # Was having problems with uluancher and setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
     # It's not even that useful, compared to raycast. Maybe I'll try out rofi instead.
     # ./ulauncher.nix
     # Not using anymore. I just prefer to use gmail in the browser:
@@ -11,17 +11,15 @@
   ];
 
   services = {
-    xserver = {
-      # Enable the GNOME Desktop Environment.
-      displayManager = {
-        gdm.enable = true;
-        # autoLogin = {
-        #   enable = true;
-        #   user = env.user;
-        # };
-      };
-      desktopManager.gnome.enable = true;
+    # Enable the GNOME Desktop Environment.
+    displayManager = {
+      gdm.enable = true;
+      # autoLogin = {
+      #   enable = true;
+      #   user = env.user;
+      # };
     };
+    desktopManager.gnome.enable = true;
 
     gnome.games.enable = false; # Disable all games
   };
@@ -64,7 +62,7 @@
       gnomeExtensions.tailscale-status
       gnome-frog # OCR tool
       # gnomeExtensions.touch-x Not updated
-      # gnomeExtensions.system-monitor-next # "System Monitor" is better for now
+      gnomeExtensions.system-monitor-next # "System Monitor" is better for now
       gnomeExtensions.syncthing-indicator
       gnomeExtensions.gsconnect
       # The following all didn't work on nixos or was not compatible with gnome v45

@@ -15,11 +15,16 @@
     lf # Terminal file system manager
 
     # Node and Javascript related packages:
-    nodejs_22
+    nodejs_24
     # yarn
     pnpm
     pnpm-shell-completion
     bun
+
+    # Golang & related tools:
+    go
+    gopls
+    delve
 
     python3
     (python3.withPackages (ps: with ps; [

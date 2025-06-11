@@ -14,6 +14,8 @@
     };
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ config.boot.kernelPackages.nvidiaPackages.production ];
+    # Limit the number of generations to 3
+    # loader.grub.configurationLimit = 3;
   };
 
   fileSystems."/" = {
