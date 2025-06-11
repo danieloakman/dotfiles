@@ -12,3 +12,6 @@ lint:
 
 update:
 	sudo nix flake update --flake ~/repos/personal/dotfiles
+
+list-generations:
+	nixos-rebuild list-generations
