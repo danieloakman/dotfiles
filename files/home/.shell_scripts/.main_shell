@@ -89,7 +89,7 @@ if command -v eza &> /dev/null
 then
   exa="eza"
 fi
-alias ll="$exa -alF"
+alias ll="$exa -alF --sort=modified --reverse"
 alias la="$exa -aF"
 alias l="$exa -F"
 alias lt="$exa . -a -T -L"
