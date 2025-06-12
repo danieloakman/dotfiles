@@ -24,8 +24,21 @@
   environment.systemPackages = with pkgs; [
     # Specify this in gnome keyboard shortcuts or some other shortcut manager.
     (writeShellScriptBin "rofi-google-search" ''
-      query=$(echo "" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
+      # Create history file if it doesn't exist
+      HISTORY_FILE="$HOME/.local/share/rofi-google-search-history"
+      mkdir -p "$(dirname "$HISTORY_FILE")"
+      touch "$HISTORY_FILE"
+
+      # Display history and get user input
+      query=$(cat "$HISTORY_FILE" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
+
       if [ -n "$query" ]; then
+        # Add query to history file (if it's not already there)
+        if ! grep -Fxq "$query" "$HISTORY_FILE"; then
+          echo "$query" >> "$HISTORY_FILE"
+        fi
+
+        # Perform the search
         encoded_query=$(echo "$query" | sed 's/ /+/g')
         ${xdg-utils}/bin/xdg-open "https://www.google.com/search?q=$encoded_query"
       fi
