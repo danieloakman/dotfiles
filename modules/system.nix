@@ -128,6 +128,8 @@
       experimental-features = [ "nix-command" "flakes" ];
       trusted-users = [ "root" "@wheel" ];
       auto-optimise-store = true;
+      # Enable distributed builds and use substitutes:
+      builders-use-substitutes = true;
     };
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
