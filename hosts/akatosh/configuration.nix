@@ -2,19 +2,19 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, env, ... }:
+{ inputs, config, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
+    ../../modules/system.nix
     ../../modules/desktop-pkgs.nix
     ../../modules/gnome
-    (import ../../modules/power-management.nix { inherit env; })
+    ../../modules/power-management.nix
     ../../modules/mobile-dev.nix
-    (import ../../modules/games.nix { inherit pkgs; })
+    ../../modules/games.nix
     inputs.stylix.nixosModules.stylix
-    (import ../../modules/stylix.nix { inherit pkgs env; })
+    ../../modules/stylix.nix
     ../../modules/dev.nix
     ../../modules/docker.nix
     ../../modules/rofi.nix
