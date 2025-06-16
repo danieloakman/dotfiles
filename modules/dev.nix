@@ -26,6 +26,9 @@
     gopls
     delve
 
+    # OpenJDK 21 (as of time of this comment):
+    zulu
+
     python3
     (python3.withPackages (ps: with ps; [
       # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
