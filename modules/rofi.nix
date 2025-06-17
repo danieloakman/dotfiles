@@ -13,6 +13,7 @@
       };
       modes = [
         "emoji"
+        "drun"
       ];
       plugins = with pkgs; [
         rofi-emoji
