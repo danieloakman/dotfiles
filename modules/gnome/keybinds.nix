@@ -22,7 +22,7 @@ let
     }
     {
       name = "Search Passwords";
-      command = "gnome-terminal -- \"passs -c\"";
+      command = "zsh -c \"source ~/.zshrc && gnome-terminal -- passs -c\"";
       binding = "<Super>q";
     }
     {
