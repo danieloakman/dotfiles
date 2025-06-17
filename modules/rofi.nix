@@ -43,5 +43,18 @@
         ${xdg-utils}/bin/xdg-open "https://www.google.com/search?q=$encoded_query"
       fi
     '')
+
+    (writeShellScriptBin "kill-processes" ''
+      # Get all running processes with CPU and memory usage, sorted by memory usage
+      processes=$(ps -eo pid,pcpu,pmem,comm | sort -k3 -nr | awk '{printf "%-6s %5.1f%% %5.1f%% %s\n", $1, $2, $3, $4}')
+
+      # Display processes in rofi
+      selected_pid=$(echo "$processes" | ${rofi}/bin/rofi -dmenu -p "Kill Process: " | awk '{print $1}')
+
+      # Kill the selected process
+      if [ -n "$selected_pid" ]; then
+        kill -9 "$selected_pid"
+      fi
+    '')
   ];
 }
