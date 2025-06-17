@@ -15,6 +15,21 @@ let
       command = "rofi-google-search";
       binding = "<Super>s";
     }
+    {
+      name = "Rofi Run";
+      command = "rofi -show combi -combi-modi \"window,drun,run\" -modi combi";
+      binding = "<Super>space";
+    }
+    {
+      name = "Search Passwords";
+      command = "gnome-terminal -- \"passs -c\"";
+      binding = "<Super>q";
+    }
+    {
+      name = "Search & Kill Process";
+      command = "kill-processes";
+      binding = "<Super>k";
+    }
   ];
 in
 {
