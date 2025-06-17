@@ -11,6 +11,9 @@
           "home/${env.user}/.local/share/password-store"
         ];
       };
+      modes = [
+        "emoji"
+      ];
       plugins = with pkgs; [
         rofi-emoji
         # rofi-pass # Unmaintained. Using passmenu instead.
