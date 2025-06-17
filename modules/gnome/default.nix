@@ -8,6 +8,7 @@
     # ./ulauncher.nix
     # Not using anymore. I just prefer to use gmail in the browser:
     # ./evolution.nix
+    ./keybinds.nix
   ];
 
   services = {
