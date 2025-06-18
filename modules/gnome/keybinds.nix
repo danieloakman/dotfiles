@@ -32,7 +32,7 @@ let
     }
     {
       name = "Toggle Open/Close Guake";
-      command = "guake-toggle";
+      command = "zsh -c \"guake-toggle\"";
       binding = "<Ctrl>`";
     }
   ];
