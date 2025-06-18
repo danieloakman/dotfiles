@@ -30,6 +30,11 @@ let
       command = "kill-processes";
       binding = "<Super>k";
     }
+    {
+      name = "Toggle Open/Close Guake";
+      command = "guake-toggle";
+      binding = "<Ctrl>`";
+    }
   ];
 in
 {
