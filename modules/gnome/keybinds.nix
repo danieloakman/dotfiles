@@ -39,7 +39,7 @@ let
     {
       name = "Toggle Open/Close Guake";
       command = "zsh -c \"guake-toggle\"";
-      binding = "<Ctrl>`";
+      binding = "<Control>`";
     }
   ] else [ ]);
 in
