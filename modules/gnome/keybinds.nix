@@ -32,7 +32,7 @@ let
     }
     {
       name = "Move Mouse";
-      command = "move-mouse";
+      command = "zsh -c \"source ~/.zshrc && gnome-terminal -- move-mouse\"";
       binding = "<Super><Alt>m";
     }
   ] ++ (if env.isOnWayland then [
