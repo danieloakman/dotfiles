@@ -374,18 +374,19 @@
     };
 
     ssh = {
+      enable = true;
+      addKeysToAgent = "yes";
+      controlMaster = "auto";
+      controlPath = "~/.ssh/control-%h-%p-%r";
+      controlPersist = "yes";
       matchBlocks = {
         "djo-personal" = {
           match = "github github.com akatosh azura tail9f1d8";
           identityFile = "~/.ssh/djo-personal";
           identitiesOnly = true;
-          addKeysToAgent = true;
         };
         "github-control-path" = {
           match = "github github.com stash";
-          controlPath = "~/.ssh/control-%h-%p-%r";
-          controlMaster = "auto";
-          controlPersist = true;
           serverAliveInterval = 30;
         };
         # "bitbucket.org" = {
