@@ -30,12 +30,13 @@ let
       command = "kill-processes";
       binding = "<Super>k";
     }
+  ] ++ (if env.isOnWayland then [
     {
       name = "Toggle Open/Close Guake";
       command = "zsh -c \"guake-toggle\"";
       binding = "<Ctrl>`";
     }
-  ];
+  ] else [ ]);
 in
 {
   home-manager.users.${env.user}.dconf.settings = {
