@@ -6,6 +6,7 @@ let
   # Declare keybinds here:
   keybinds = [
     {
+      # TODO: figure out why these rofi commands don't work on wayland
       name = "Emoji Picker";
       command = "rofi -show emoji";
       binding = "<Super>g";
@@ -39,7 +40,7 @@ let
     {
       name = "Toggle Open/Close Guake";
       command = "zsh -c \"guake-toggle\"";
-      binding = "<Control>`";
+      binding = "<Control>grave";
     }
   ] else [ ]);
 in
@@ -59,8 +60,13 @@ in
     home.packages = [
       # A script to reload the keybinds without a restart/logout-login
       (pkgs.writeShellScriptBin "reload-keybinds" ''
-        dconf reset -f /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/
-        dconf load /org/gnome/settings-daemon/plugins/media-keys/ < ~/.config/dconf/keybinds.ini
+        dconf reset -f /${customKeybindings}/
+        dconf load /${mediaKeys}/ < ~/.config/dconf/keybinds.ini
+      '')
+      # Lists all custom keybinds and their settings. Useful for debugging and adding new keybinds.
+      # Create a new keybind through the gnome custom keybinds interface, then run this script to get the settings and how the binding is set.
+      (pkgs.writeShellScriptBin "list-custom-keybinds" ''
+        for i in {0..7}; do echo "=== custom$i ==="; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/name; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/command; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/binding; echo; done
       '')
     ];
   };
