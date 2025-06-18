@@ -121,8 +121,6 @@
         }
       '';
 
-      ".ssh/config".source = ../files/home/.ssh/config;
-
       ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
 
       ".config/guake/prefs".text = ''
@@ -373,6 +371,32 @@
     granted = {
       enable = true;
       enableZshIntegration = true;
+    };
+
+    ssh = {
+      matchBlocks = {
+        "github github.com akatosh azura tail9f1d8" = {
+          identityFile = "~/.ssh/djo-personal";
+          identitiesOnly = true;
+          addKeysToAgent = true;
+        };
+        "github github.com stash" = {
+          controlPath = "~/.ssh/control-%h-%p-%r";
+          controlMaster = "auto";
+          controlPersist = true;
+          serverAliveInterval = 30;
+        };
+        # "bitbucket.org" = {
+        #   identityFile = "~/.ssh/djo-auxilis";
+        #   identitiesOnly = true;
+        #   addKeysToAgent = true;
+        # };
+        # "gitlab gitlab.com" = {
+        #   identityFile = "~/.ssh/frogco";
+        #   identitiesOnly = true;
+        #   addKeysToAgent = true;
+        # };
+      };
     };
   };
 
