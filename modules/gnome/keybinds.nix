@@ -30,6 +30,11 @@ let
       command = "kill-processes";
       binding = "<Super>k";
     }
+    {
+      name = "Move Mouse";
+      command = "move-mouse";
+      binding = "<Super><Alt>m";
+    }
   ] ++ (if env.isOnWayland then [
     {
       name = "Toggle Open/Close Guake";
