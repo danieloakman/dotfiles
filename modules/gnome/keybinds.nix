@@ -59,8 +59,8 @@ in
     home.packages = [
       # A script to reload the keybinds without a restart/logout-login
       (pkgs.writeShellScriptBin "reload-keybinds" ''
-        dconf reset -f /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/
-        dconf load /org/gnome/settings-daemon/plugins/media-keys/ < ~/.config/dconf/keybinds.ini
+        dconf reset -f /${customKeybindings}/
+        dconf load /${mediaKeys}/ < ~/.config/dconf/keybinds.ini
       '')
     ];
   };
