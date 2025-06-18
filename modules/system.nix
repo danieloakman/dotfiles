@@ -205,6 +205,9 @@
       jq
       rsync
 
+      # Network utilities
+      wakeonlan
+
       # Nix specific:
       nil # Nix LSP
       nh # Nix helper

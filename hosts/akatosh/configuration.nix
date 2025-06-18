@@ -34,6 +34,12 @@
 
   networking.hostName = "akatosh"; # Define your hostname.
 
+  # Wake-on-LAN configuration for ethernet interface
+  networking.interfaces.enp0s31f6 = {
+    useDHCP = true;
+    wakeOnLan.enable = true;
+  };
+
   hardware = {
     enableRedistributableFirmware = true;
 
