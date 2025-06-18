@@ -1,5 +1,5 @@
 # This module is used to set the keybinds for the gnome desktop environment.
-{ lib, env, ... }:
+{ lib, env, pkgs, ... }:
 let
   mediaKeys = "org/gnome/settings-daemon/plugins/media-keys";
   customKeybindings = "${mediaKeys}/custom-keybindings";
@@ -44,14 +44,25 @@ let
   ] else [ ]);
 in
 {
-  home-manager.users.${env.user}.dconf.settings = {
-    ${mediaKeys} = {
-      custom-keybindings = lib.imap1 (i: keybind: "/${customKeybindings}/custom${toString i}/") keybinds;
-    };
-  } // lib.listToAttrs (lib.imap1
-    (i: keybind: {
-      name = "${customKeybindings}/custom${toString i}";
-      value = keybind;
-    })
-    keybinds);
+  home-manager.users.${env.user} = {
+    dconf.settings = {
+      ${mediaKeys} = {
+        custom-keybindings = lib.imap1 (i: keybind: "/${customKeybindings}/custom${toString i}/") keybinds;
+      };
+    } // lib.listToAttrs (lib.imap1
+      (i: keybind: {
+        name = "${customKeybindings}/custom${toString i}";
+        value = keybind;
+      })
+      keybinds);
+
+    home.packages = [
+      # A script to reload the keybinds without a restart/logout-login
+      (pkgs.writeShellScriptBin "reload-keybinds" ''
+        dconf reset -f /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/
+        dconf load /org/gnome/settings-daemon/plugins/media-keys/ < ~/.config/dconf/keybinds.ini
+      '')
+    ];
+  };
+
 }
