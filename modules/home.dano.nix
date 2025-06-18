@@ -375,12 +375,14 @@
 
     ssh = {
       matchBlocks = {
-        "github github.com akatosh azura tail9f1d8" = {
+        "djo-personal" = {
+          match = "github github.com akatosh azura tail9f1d8";
           identityFile = "~/.ssh/djo-personal";
           identitiesOnly = true;
           addKeysToAgent = true;
         };
-        "github github.com stash" = {
+        "github-control-path" = {
+          match = "github github.com stash";
           controlPath = "~/.ssh/control-%h-%p-%r";
           controlMaster = "auto";
           controlPersist = true;
