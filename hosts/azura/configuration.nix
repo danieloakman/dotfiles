@@ -43,4 +43,11 @@
     supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     mandatoryFeatures = [ ];
   }];
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 8192; # MB
+    }
+  ];
 }
