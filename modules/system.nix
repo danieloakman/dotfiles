@@ -207,6 +207,9 @@
 
       # Network utilities
       wakeonlan
+      (pkgs.writeShellScriptBin "wake-akatosh" ''
+        wakeonlan 4c:ed:fb:96:ee:3d
+      '')
 
       # Nix specific:
       nil # Nix LSP
