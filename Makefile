@@ -4,6 +4,9 @@
 update:
 	sudo nix flake update --flake ~/repos/personal/dotfiles
 
+build:
+  nh os build
+
 # Create a new generation. Must reboot PC to switch to it.
 boot:
 	nh os boot
