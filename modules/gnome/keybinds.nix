@@ -6,6 +6,7 @@ let
   # Declare keybinds here:
   keybinds = [
     {
+      # TODO: figure out why these rofi commands don't work on wayland
       name = "Emoji Picker";
       command = "rofi -show emoji";
       binding = "<Super>g";
