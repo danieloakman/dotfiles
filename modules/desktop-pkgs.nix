@@ -8,12 +8,10 @@
     vscode
     code-cursor
     # zed-editor # Trying this out as an alternative to vscode
-    firefox
     google-drive-ocamlfuse
     inputs.guake.legacyPackages.${system}.guake
     # Was trying this out for a week or two. I think guake is just overall a better choice. `pass` autocomplete no longer worked for one. And making the terminal a paid subscription gave me the ick.
     # warp-terminal
-    google-chrome
     home-manager
     discord
     zoom-us
@@ -24,8 +22,14 @@
     obsidian
     syncthing
     libreoffice # Just so we can open docx files and things
-    inputs.zen-browser.packages."${system}".default
     teams-for-linux
+
+    # Web browser(s)
+    firefox
+    google-chrome
+    vivaldi
+    inputs.zen-browser.packages."${system}".default
+
     # rambox # A single app that contains all sorts of web apps. The free version only allows 1 current computer session at a time though
     # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
     # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
