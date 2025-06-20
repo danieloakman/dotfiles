@@ -28,6 +28,7 @@
 
     # OpenJDK 21 (as of time of this comment):
     zulu
+    jre8
 
     # Fly.io control:
     flyctl
