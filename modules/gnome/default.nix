@@ -1,6 +1,6 @@
 # Gnome configuration
 
-{ pkgs, ... }:
+{ pkgs, env, ... }:
 {
   imports = [
     # Was having problems with uluancher and setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
@@ -78,5 +78,9 @@
     # Open required ports for gsconnect:
     allowedTCPPortRanges = [{ from = 1716; to = 1764; }];
     allowedUDPPortRanges = [{ from = 1716; to = 1764; }];
+  };
+
+  home-manager.users.${env.user} = {
+    services.gnome-keyring.enable = true;
   };
 }

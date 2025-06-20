@@ -400,8 +400,6 @@
 
     # Starts the ssh-agent
     # ssh-agent.enable = true;
-
-    gnome-keyring.enable = true;
   };
 
   # TODO: Still doesn't work, for some reason:
