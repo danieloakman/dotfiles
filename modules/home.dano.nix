@@ -41,7 +41,6 @@
           fi
         # '')
       pkgs.passff-host
-      pkgs.sxhkd
     ];
 
     # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -406,13 +405,6 @@
     # ssh-agent.enable = true;
 
     gnome-keyring.enable = true;
-
-    # TODO use xremap or some cross wayland xorg key mapping/remapping tool
-    # Enable sxhkd daemon for keybindings:
-    # sxhkd = {
-    #   enable = true;
-    #   keybindings."ctrl + q" = "zsh -c 'passmenu'";
-    # };
   };
 
   # TODO: Still doesn't work, for some reason:
