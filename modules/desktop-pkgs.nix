@@ -25,10 +25,10 @@
     teams-for-linux
 
     # Web browser(s)
-    firefox
-    google-chrome
+    # firefox
+    # google-chrome
     vivaldi
-    inputs.zen-browser.packages."${system}".default
+    # inputs.zen-browser.packages."${system}".default
 
     # rambox # A single app that contains all sorts of web apps. The free version only allows 1 current computer session at a time though
     # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
