@@ -40,7 +40,9 @@
             ln -s "$1" "$2"
           fi
         # '')
-      pkgs.passff-host
+
+      # Required for passff-host to work with mozilla and its extension for `pass`
+      # pkgs.passff-host
     ];
 
     # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -58,7 +60,7 @@
       # '';
 
       # Set up passff-host for firefox password management with "Pass"
-      ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
+      # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
       ".gitconfig".text = ''
         [user]
@@ -93,23 +95,23 @@
           helper = !/run/current-system/sw/bin/gh auth git-credential
       '';
 
-      ".gitconfig-auxilis".text = ''
-        [user]
-          name = daniel.oakman
-          email = daniel.oakman@auxilis.com.au
-          # signingkey = ""
-        [commit]
-          gpgsign = false
-      '';
+      # ".gitconfig-auxilis".text = ''
+      #   [user]
+      #     name = daniel.oakman
+      #     email = daniel.oakman@auxilis.com.au
+      #     # signingkey = ""
+      #   [commit]
+      #     gpgsign = false
+      # '';
 
-      ".gitconfig-frogco".text = ''
-        [user]
-          name = Daniel (Oakman) Brown
-          email = d.oakman@frogco.live
-          signingkey = ~/.ssh/frogco.pub
-        [gpg]
-          format = ssh
-      '';
+      # ".gitconfig-frogco".text = ''
+      #   [user]
+      #     name = Daniel (Oakman) Brown
+      #     email = d.oakman@frogco.live
+      #     signingkey = ~/.ssh/frogco.pub
+      #   [gpg]
+      #     format = ssh
+      # '';
 
       ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
@@ -325,11 +327,6 @@
       enable = true;
       enableZshIntegration = true;
     };
-
-    # TODO enable firefox
-    # firefox = {
-    #   enable = true;
-    # };
 
     direnv = {
       enable = true;

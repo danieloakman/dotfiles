@@ -286,6 +286,10 @@
       clean.extraArgs = "--keep-since 14d --keep 3";
       flake = "/home/${env.user}/repos/personal/dotfiles";
     };
+
+    # Enables the `browserpass` extension for chromium, firefox, google-chrome, vivaldi browsers.
+    browserpass.enable = true;
+
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
