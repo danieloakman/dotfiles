@@ -26,7 +26,7 @@
 
     # Web browser(s)
     # firefox
-    # google-chrome
+    google-chrome
     vivaldi
     # inputs.zen-browser.packages."${system}".default
 
