@@ -66,7 +66,7 @@ in
       # Lists all custom keybinds and their settings. Useful for debugging and adding new keybinds.
       # Create a new keybind through the gnome custom keybinds interface, then run this script to get the settings and how the binding is set.
       (pkgs.writeShellScriptBin "list-custom-keybinds" ''
-        for i in {0..7}; do echo "=== custom$i ==="; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/name; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/command; dconf read /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/binding; echo; done
+        for i in {0..7}; do echo "=== custom$i ==="; dconf read /${customKeybindings}/custom$i/name; dconf read /${customKeybindings}/custom$i/command; dconf read /${customKeybindings}/custom$i/binding; echo; done
       '')
     ];
   };
