@@ -18,6 +18,7 @@ let
     }
     {
       name = "Rofi Run";
+      # TODO: this is not working on wayland
       command = "rofi -show combi -combi-modi \"window,drun,run\" -modi combi";
       binding = "<Super>space";
     }

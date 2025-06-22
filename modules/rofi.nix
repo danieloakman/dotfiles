@@ -5,7 +5,6 @@
       enable = true;
       location = "center";
       cycle = true;
-      package = if env.isOnWayland then pkgs.rofi-wayland else pkgs.rofi;
       pass = {
         enable = true;
         stores = [
