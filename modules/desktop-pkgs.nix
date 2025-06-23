@@ -7,6 +7,10 @@
     tailscale
     vscode
     code-cursor
+    (writeShellScriptBin "open-cursor" ''
+      # Opens the cursor editor in the current directory
+      gnome-terminal -- ${code-cursor}/bin/cursor . &
+    '')
     # zed-editor # Trying this out as an alternative to vscode
     google-drive-ocamlfuse
     inputs.guake.legacyPackages.${system}.guake
