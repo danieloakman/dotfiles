@@ -20,7 +20,7 @@
       text = ''
         # Recommended to edit for actual device in use
 
-        Host github github.comakatosh azura tail9f1d8
+        Host github github.com akatosh azura tail9f1d8
         IdentityFile ~/.ssh/djo-personal
         IdentitiesOnly yes
         AddKeysToAgent yes
