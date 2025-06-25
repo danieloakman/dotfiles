@@ -2,8 +2,6 @@
 
 { inputs, pkgs, env, ... }:
 {
-
-
   networking = {
     # Enable networking
     networkmanager.enable = true;
@@ -15,8 +13,13 @@
     firewall = {
       enable = true;
       # Allow OpenSSH and other dev related ports accessible through firewall
-      allowedTCPPorts = [ 22 5173 4173 4200 4000 8384 ];
-      allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
+      allowedTCPPorts = [ 4200 4000 ];
+      allowedTCPPortRanges = [
+        { from = 3000; to = 3010; }
+        { from = 8000; to = 8100; }
+        { from = 5170; to = 5180; } # typically 5173 for vite, and the same idea for the one below
+        { from = 4170; to = 4180; }
+      ];
       # Open ports in the firewall for tiny.work:
       trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
       allowedUDPPorts = [
@@ -74,52 +77,6 @@
     };
     # Enable CUPS to print documents.
     printing.enable = true;
-
-    # Enable the OpenSSH daemon:
-    openssh = {
-      enable = true;
-      # These commented out settings would force public key authentication, but we don't need that for now as we're using
-      # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
-      settings.PasswordAuthentication = false;
-      settings.KbdInteractiveAuthentication = false;
-    };
-
-    tailscale.enable = true;
-
-    syncthing = {
-      enable = true;
-      inherit (env) user;
-      systemService = true;
-      openDefaultPorts = true;
-      overrideDevices = true;
-      overrideFolders = false; # Cannot have as true when autoAcceptFolders is true for S22
-      dataDir = "/home/${env.user}/sync";
-      configDir = "/home/${env.user}/.config/syncthing";
-      settings = {
-        options.urAccepted = -1; # Do not allow anonymous diagnostics to be sent
-        devices = {
-          "S22" = {
-            name = "Samsung Galaxy S22";
-            id = "UVQTGOE-NWABVGC-GIKEUPN-Y2LWRLU-3IXXPUH-4PTLHSW-OTX3D7U-EDQBIQ2";
-            autoAcceptFolders = true;
-          };
-        };
-        folders = {
-          "obsidian-vault" = {
-            enable = true;
-            id = "snqde-mxdrc";
-            path = "/home/${env.user}/Documents/obsidian-vault";
-            label = "Obsidian Vault";
-          };
-          "general-sync" = {
-            enable = true;
-            id = "jvfnw-u7jgi";
-            path = "/home/${env.user}/Sync";
-            label = "General Sync";
-          };
-        };
-      };
-    };
   };
 
   nix = {

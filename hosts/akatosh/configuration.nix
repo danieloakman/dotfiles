@@ -8,6 +8,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../modules/system.nix
+    ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
     ../../modules/gnome
     ../../modules/power-management.nix
@@ -18,6 +19,7 @@
     ../../modules/dev.nix
     ../../modules/docker.nix
     ../../modules/rofi.nix
+    ../../modules/syncthing.nix
   ];
 
   # Bootloader
