@@ -372,9 +372,6 @@
       maxCacheTtl = 604800;
       # pinentryPackage = pkgs.pinentry;
     };
-
-    # Starts the ssh-agent
-    # ssh-agent.enable = true;
   };
 
   # TODO: Still doesn't work, for some reason:
