@@ -13,30 +13,35 @@
     };
   };
 
-  home-manager.users.${env.user} = {
-    programs.ssh = {
-      enable = true;
-      addKeysToAgent = "yes";
-      controlMaster = "auto";
-      controlPath = "~/.ssh/control-%h-%p-%r";
-      controlPersist = "yes";
-      matchBlocks = {
-        "github github.com akatosh azura tail9f1d8" = {
-          identityFile = "~/.ssh/djo-personal";
-          identitiesOnly = true;
-        };
-        "github github.com stash" = {
-          serverAliveInterval = 30;
-        };
-        # "bitbucket.org" = {
-        #   identityFile = "~/.ssh/djo-auxilis";
-        #   identitiesOnly = true;
-        # };
-        # "gitlab gitlab.com" = {
-        #   identityFile = "~/.ssh/frogco";
-        #   identitiesOnly = true;
-        # };
-      };
+  home-manager.users.${env.user}.home = {
+    # Create a writable SSH config file instead of using programs.ssh.
+    # In particular, when ssh'ing using cursor, it requires a writable ssh config file.
+    file.".ssh/config" = {
+      text = ''
+        # Recommended to edit for actual device in use
+
+        Host github github.comakatosh azura tail9f1d8
+        IdentityFile ~/.ssh/djo-personal
+        IdentitiesOnly yes
+        AddKeysToAgent yes
+        Host github github.com stash
+        ControlPath ~/.ssh/control-%h-%p-%r
+        ControlMaster auto
+        ControlPersist yes
+        ServerAliveInterval 30
+        # Host bitbucket.org
+        # IdentityFile ~/.ssh/djo-auxilis
+        # IdentitiesOnly yes
+        # AddKeysToAgent yes
+        # host gitlab gitlab.com
+        # IdentityFile ~/.ssh/frogco
+        # IdentitiesOnly yes
+        # AddKeysToAgent yes
+      '';
+      # Make the file writable
+      onChange = ''
+        chmod 600 ~/.ssh/config
+      '';
     };
 
     # Starts the ssh-agent
