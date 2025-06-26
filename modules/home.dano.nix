@@ -209,6 +209,9 @@
         symlink $HOME/gdrive/Music $HOME/Music/gdrive
         symlink $HOME/Sync/music $HOME/Music/Sync
         symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
+
+        # Copy the ssh config file to the correct location
+        cp $HOME/repos/personal/dotfiles/files/home/.ssh/config $HOME/.ssh/config
       '';
 
       # TODO: maybe move this to a dotfile or something
