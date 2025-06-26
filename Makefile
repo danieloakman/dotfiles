@@ -31,3 +31,7 @@ lint:
 
 list-generations:
 	nixos-rebuild list-generations
+
+# This will remove all generations except the latest one. Use with caution.
+clean:
+	nh clean all -a --keep 1
