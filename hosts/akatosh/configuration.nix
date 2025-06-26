@@ -25,7 +25,6 @@
 
   # Bootloader
   boot.loader = {
-    # systemd-boot.enable = true; # TODO: remove this line and remove the already existing boot loader that this option creates.
     efi.canTouchEfiVariables = true;
     grub = {
       device = "nodev";
