@@ -35,3 +35,7 @@ list-generations:
 # This will remove all generations except the latest one. Use with caution.
 clean:
 	nh clean all -a --keep 1
+
+# This is ran automatically via our config, but we can run it manually like this.
+gc:
+	nix-collect-garbage -d
