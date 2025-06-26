@@ -2,7 +2,6 @@
   networking.firewall.allowedTCPPorts = [ 22 ];
 
   services = {
-    tailscale.enable = true;
     # Enable the OpenSSH daemon:
     openssh = {
       enable = true;
