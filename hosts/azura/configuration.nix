@@ -17,6 +17,7 @@
     ../../modules/dev.nix
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
+    ../../modules/docker.nix
   ];
 
   # Bootloader.

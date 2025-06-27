@@ -8,7 +8,7 @@
   };
 
   # Enable for GPU pass-through support on things like Docker conainters:
-  hardware.nvidia-container-toolkit.enable = true;
+  hardware.nvidia-container-toolkit.enable = env.hasGPU;
 
   environment.systemPackages = with pkgs; [
     docker
