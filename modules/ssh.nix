@@ -25,12 +25,6 @@
     };
   };
 
-  # Ensure SSH starts after network and Tailscale are ready
-  systemd.services.openssh = {
-    after = [ "network-online.target" "tailscaled.service" ];
-    wants = [ "network-online.target" "tailscaled.service" ];
-  };
-
   # home-manager.users.${env.user} = {
   #   # Starts the ssh-agent
   #   services.ssh-agent.enable = true;

@@ -12,6 +12,7 @@
     firewall = {
       # Allow the wakeonlan discard port to be used.
       allowedTCPPorts = [ 9 ];
+      allowedUDPPorts = [ 9 ];
     };
   };
 }
