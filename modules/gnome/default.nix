@@ -60,7 +60,7 @@
       # gnome.pomodoro # Not updated
       # gnome.cheese # Web cam tool
       gnomeExtensions.appindicator
-      gnomeExtensions.tailscale-status
+      gnomeExtensions.tailscale-qs
       gnome-frog # OCR tool
       # gnomeExtensions.touch-x Not updated
       gnomeExtensions.system-monitor-next # "System Monitor" is better for now
