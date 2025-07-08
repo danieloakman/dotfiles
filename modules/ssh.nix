@@ -2,6 +2,10 @@
   networking.firewall.allowedTCPPorts = [ 22 ];
 
   services = {
+    tailscale = {
+      enable = true;
+      openFirewall = true;
+    };
     # Enable the OpenSSH daemon:
     openssh = {
       enable = true;
@@ -19,12 +23,6 @@
         ListenAddress = "0.0.0.0";
       };
     };
-  };
-
-  # Ensure SSH starts after network and Tailscale are ready
-  systemd.services.openssh = {
-    after = [ "network-online.target" "tailscaled.service" ];
-    wants = [ "network-online.target" "tailscaled.service" ];
   };
 
   # home-manager.users.${env.user} = {

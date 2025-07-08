@@ -23,9 +23,7 @@
     firewall = {
       # Allow the wakeonlan discard port to be used.
       allowedTCPPorts = [ 9 ];
-      # Allow Wake-on-LAN magic packets (UDP port 9)
       allowedUDPPorts = [ 9 ];
-      # Also allow TCP port 9 for some implementations
     };
   };
 
