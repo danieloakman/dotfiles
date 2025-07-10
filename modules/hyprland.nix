@@ -1,7 +1,7 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, inputs, env, ... }:
+{ pkgs, inputs, config, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
@@ -35,6 +35,10 @@ let
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
 in
 {
+  imports = [
+    ./kitty.nix
+  ];
+
   # Enable cachix for hyprland, otherwise hyprland will be built from source:
   nix.settings = {
     substituters = [ "https://hyprland.cachix.org" ];
@@ -214,7 +218,7 @@ in
           pass_mouse_when_bound = false;
         };
 
-        monitor = env.hyprland.monitor;
+        monitor = config.env.hyprland.monitor;
 
         input = {
           natural_scroll = true;

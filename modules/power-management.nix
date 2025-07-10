@@ -1,5 +1,5 @@
 # Power management configuration, including CPU frequency scaling, power profiles, etc
-{ env, ... }:
+{ config, ... }:
 {
   services = {
     # Better scheduling for CPU cycles:
@@ -9,11 +9,11 @@
     thermald.enable = true;
 
     # Disable GNOMEs power management for laptops
-    power-profiles-daemon.enable = !env.isLaptop;
+    power-profiles-daemon.enable = !config.env.isLaptop;
 
     # Enable TLP for laptops
     tlp = {
-      enable = env.isLaptop;
+      enable = config.env.isLaptop;
       settings = {
         CPU_BOOST_ON_AC = 1;
         CPU_BOOST_ON_BAT = 0;
@@ -24,5 +24,5 @@
   };
 
   # Enable powertop for laptops
-  powerManagement.powertop.enable = env.isLaptop;
+  powerManagement.powertop.enable = config.env.isLaptop;
 }

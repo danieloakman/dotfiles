@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, ... }:
+{ lib, pkgs, config, ... }:
 
 {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
@@ -9,8 +9,8 @@
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = {
-    username = env.user;
-    homeDirectory = "/home/${env.user}";
+    username = config.env.user;
+    homeDirectory = "/home/${config.env.user}";
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -234,9 +234,9 @@
       # EDITOR = "emacs";
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
-      PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
+      PASSWORD_STORE_DIR = "/home/${config.env.user}/.local/share/password-store";
       # This is how `nh` is able to find the flake for this host's configuration.
-      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
+      NH_FLAKE = "/home/${config.env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
     };
 
@@ -268,8 +268,8 @@
         export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
       '';
       envExtra = ''
-        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
-        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
+        fpath=(/home/${config.env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
+        fpath=(/home/${config.env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
       shellAliases = {
         nixos-search = "nix search nixpkgs";
@@ -363,7 +363,7 @@
       repositories = {
         "password-store" = {
           interval = 60;
-          path = "/home/${env.user}/.local/share/password-store";
+          path = "/home/${config.env.user}/.local/share/password-store";
           uri = "git@github.com:danieloakman/pwd-store.git";
         };
       };
@@ -382,7 +382,7 @@
   # xdg = {
   #   enable = true;
   #   desktopEntries = {
-  #     "org.${env.user}.move-mouse.desktop" = {
+  #     "org.${config.env.user}.move-mouse.desktop" = {
   #       name = "Move Mouse";
   #       comment = "Move the mouse to prevent auto suspension";
   #       exec = "move-mouse";

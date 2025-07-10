@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, pkgs, env, ... }:
+{ inputs, pkgs, config, ... }:
 {
   networking = {
     # Enable networking
@@ -139,13 +139,13 @@
       wget
       btop
       fastfetch
-      ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
+      ((if config.env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
         pass-otp
         pass-update
         pass-checkup
         pass-audit # TODO
       ]))
-      (if env.isOnWayland then pass-wayland else pass)
+      (if config.env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
       # rofi-pass
       # pinentry-curses
@@ -176,8 +176,8 @@
       nixpkgs-fmt # A formatter for .nix files.
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
-      (if env.isOnWayland then dmenu-wayland else dmenu)
-      (if env.isOnWayland then ydotool else xdotool)
+      (if config.env.isOnWayland then dmenu-wayland else dmenu)
+      (if config.env.isOnWayland then ydotool else xdotool)
 
       starship
       curl
@@ -185,7 +185,7 @@
       # logkeys # Was testing whether I could log laptop buttons or not
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       inputs.devenv.packages.${system}.devenv
-    ] ++ (if env.isOnWayland then [
+    ] ++ (if config.env.isOnWayland then [
       wl-clipboard
     ] else [ ]);
   };
@@ -243,7 +243,7 @@
       enable = true;
       clean.enable = true;
       clean.extraArgs = "--keep-since 14d --keep 3";
-      flake = "/home/${env.user}/repos/personal/dotfiles";
+      flake = "/home/${config.env.user}/repos/personal/dotfiles";
     };
 
     # Enables the `browserpass` extension for chromium, firefox, google-chrome, vivaldi browsers.

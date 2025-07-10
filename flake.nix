@@ -58,38 +58,17 @@
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
-          # This requires env, which is currently defined in the host/configuration.nix, so it can't be imported here (for now).
-          # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
+          ./modules/env.nix
           ./modules/user.nix
           # TODO: import again once we actually use secrets from here
           # ./modules/secrets.nix
         ];
       };
-      createEnv = { user, isLaptop, isOnWayland, wallpaper, hasGPU }: { inherit user isLaptop isOnWayland wallpaper hasGPU; };
     in
     {
       nixosConfigurations = {
         akatosh = nixpkgs.lib.nixosSystem {
-          specialArgs =
-            let
-              env = createEnv {
-                user = "dano";
-                isLaptop = false;
-                isOnWayland = false;
-                hasGPU = true;
-                wallpaper = pkgs.fetchurl {
-                  url = "https://images5.alphacoders.com/131/1315219.jpeg";
-                  sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
-                };
-                hyprland = {
-                  monitor = [
-                    "DP-1, 1920x1080, 0x0, 1.0"
-                    # TODO: other monitors
-                  ];
-                };
-              };
-            in
-            { inherit inputs system env; };
+          specialArgs = { inherit inputs system; };
           modules = [
             ./hosts/akatosh/configuration.nix
             commonImports
@@ -99,25 +78,7 @@
           ];
         };
         azura = nixpkgs.lib.nixosSystem {
-          specialArgs =
-            let
-              env = createEnv {
-                user = "dano";
-                isLaptop = true;
-                isOnWayland = true;
-                hasGPU = false;
-                wallpaper = pkgs.fetchurl {
-                  url = "https://pixeldrain.com/api/file/UELyHDVS";
-                  sha256 = "sha256-1PVA1OhbAA3GT9eG3ZzybI8xBljqyq3TaMyMKwpbTLk";
-                };
-                hyprland = {
-                  monitor = [
-                    "eDP-1, 1366x768, 0x0, 1.0"
-                  ];
-                };
-              };
-            in
-            { inherit inputs system env; };
+          specialArgs = { inherit inputs system; };
           modules = [
             ./hosts/azura/configuration.nix
             commonImports
@@ -127,20 +88,7 @@
           ];
         };
         djo-tiny-laptop = nixpkgs.lib.nixosSystem {
-          specialArgs =
-            let
-              env = createEnv {
-                user = "dano";
-                isLaptop = true;
-                isOnWayland = true;
-                hasGPU = false;
-                wallpaper = pkgs.fetchurl {
-                  url = "https://pixeldrain.com/api/file/CWZC2L9b";
-                  sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
-                };
-              };
-            in
-            { inherit inputs system env; };
+          specialArgs = { inherit inputs system; };
           modules = [
             ./hosts/djo-tiny-laptop/configuration.nix
             commonImports

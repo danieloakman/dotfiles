@@ -1,12 +1,12 @@
 # Stylix config, see: https://www.youtube.com/watch?v=ljHkWgBaQWU
-{ pkgs, env, ... }:
+{ pkgs, config, ... }:
 {
   stylix = {
     enable = true;
 
     # base16Scheme = { };
 
-    image = env.wallpaper;
+    image = config.env.wallpaper;
     # image = pkgs.fetchurl {
     #   # Skyrim + Alduin:
     #   url = "https://wallpaper.forfun.com/fetch/d8/d805db11e6dcb9262194536e29e44079.jpeg";

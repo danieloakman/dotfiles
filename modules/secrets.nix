@@ -1,4 +1,4 @@
-{ inputs, config, env, ... }:
+{ inputs, config, ... }:
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
@@ -10,7 +10,7 @@
     age.keyFile = /home/dano/.config/sops/age/keys.txt;
 
     secrets.root_password = {
-      owner = config.users.users.${env.user}.name;
+      owner = config.users.users.${config.env.user}.name;
     };
   };
 }
