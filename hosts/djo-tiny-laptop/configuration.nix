@@ -4,7 +4,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, pkgs, ... }:
+{ inputs, pkgs, config, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -19,7 +19,7 @@
   ];
 
   # Environment configuration
-  env = {
+  config.env = {
     user = "dano";
     isLaptop = true;
     isOnWayland = true;

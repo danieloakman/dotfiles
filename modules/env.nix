@@ -4,9 +4,6 @@
 with lib;
 
 let
-  cfg = config.env;
-in
-{
   env = {
     user = mkOption {
       type = types.str;
@@ -52,9 +49,10 @@ in
       description = "Hyprland-specific monitor configuration";
     };
   };
-
+in
+{
   config = {
     # Make the env options available to other modules
-    _module.args.env = cfg;
+    _module.args.env = env;
   };
 }
