@@ -1,28 +1,21 @@
+# Deprecated: No longer have this computer as it was Tiny Technologies'.
+
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, ... }:
-let
-  env = {
-    isLaptop = true;
-    isOnWayland = true;
-    hyprland = {
-      monitor = [
-        "eDP-1, 1920x1200, 0x0, 1.0"
-      ];
-    };
-  };
-in
+{ lib, inputs, config, pkgs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
+    ../../modules/user.nix
+    ../../modules/gnome
     (import ../../modules/power-management.nix { inherit env; })
-    (import ../../modules/hyprland.nix { inherit lib inputs config pkgs env; })
-    # ../../modules/gnome.nix
+    inputs.stylix.nixosModules.stylix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 
   # Bootloader.

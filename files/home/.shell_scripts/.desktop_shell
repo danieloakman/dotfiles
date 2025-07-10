@@ -1,0 +1,56 @@
+if isOnWSL; then
+  return
+fi
+
+### Environment Variables ###
+
+# export TRASH=$HOME/.local/share/Trash/files
+# export ANDROID_SDK_ROOT=/home/$USER/Android/Sdk
+# export CAPACITOR_ANDROID_STUDIO_PATH=$(which android-studio)
+# export OPENCV4NODEJS_DISABLE_AUTOBUILD=1
+
+### Aliases ###
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=normal -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+alias spotifyd="/home/$USER/CodeRepos/Other/spotifyd/target/release/spotifyd"
+# If on macos:
+if [[ "$(uname)" == "Darwin" ]]; then
+  alias clip="pbcopy"
+else
+  alias clip="xclip -sel clip"
+fi
+
+# gcp is taken by git cherry pick
+alias gcp="/usr/bin/gcp"
+alias ts="sudo tailscale"
+alias clock="clockify-cli"
+alias gs="ghostscript"
+
+### Functions ###
+
+# TODO: create function to setup google-drive-ocamlfuse
+
+### Other ###
+
+# if command -v google-drive-ocamlfuse &> /dev/null
+# then
+#   export GDRIVE=$HOME/gdrive
+#   if [ -d "$GDRIVE" ]
+#   then
+#     if [ "$(ls -A $HOME/gdrive)" ]; then
+#       # echo "$HOME/gdrive already mounted."
+#     else
+#       eval "$(google-drive-ocamlfuse $HOME/gdrive)"
+#     fi
+#   else
+#     eval "$(mkdir $HOME/gdrive)"
+#     eval "$(google-drive-ocamlfuse $HOME/gdrive)"
+#   fi
+# fi
+
+function prev() {
+  PREV=$(fc -lrn | head -n 1)
+  sh -c "pet new `printf %q "$PREV"`"
+}

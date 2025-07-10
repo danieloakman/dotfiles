@@ -1,36 +1,30 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
-{ lib, inputs, config, pkgs, ... }:
-let
-  env = {
-    isLaptop = false;
-    isOnWayland = false;
-    hyprland = {
-      monitor = [
-        "DP-1, 1920x1080, 0x0, 1.0"
-        # TODO: other monitors
-      ];
-    };
-  };
-in
+{ inputs, config, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
+    ../../modules/system.nix
+    ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
-    (import ../../modules/power-management.nix { inherit env; })
+    ../../modules/gnome
+    ../../modules/power-management.nix
     ../../modules/mobile-dev.nix
-    (import ../../modules/games.nix { inherit pkgs; })
-    (import ../../modules/hyprland.nix { inherit lib inputs config pkgs env; })
-    # ../../modules/gnome.nix
+    ../../modules/games.nix
+    inputs.stylix.nixosModules.stylix
+    ../../modules/stylix.nix
+    ../../modules/dev.nix
+    ../../modules/docker.nix
+    ../../modules/rofi.nix
+    ../../modules/syncthing.nix
+    ../../modules/wakeonlan.nix
   ];
 
   # Bootloader
   boot.loader = {
-    # systemd-boot.enable = true; # TODO: remove this line and remove the already existing boot loader that this option creates.
     efi.canTouchEfiVariables = true;
     grub = {
       device = "nodev";
@@ -40,24 +34,31 @@ in
     };
   };
 
-  networking.hostName = "djo-personal-desktop"; # Define your hostname.
+  networking.hostName = "akatosh"; # Define your hostname.
 
   hardware = {
     enableRedistributableFirmware = true;
+
+    # This might not be needed, as it's to do with cpu graphics, which this system doesn't have. Leave it for now.
     graphics.enable = true;
     graphics.enable32Bit = true;
-    nvidia.modesetting.enable = true;
-    nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
+
+    # See https://nixos.wiki/wiki/Nvidia for more information.
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true; # Fix for issues after waking from suspend
+      package = config.boot.kernelPackages.nvidiaPackages.production;
+      open = false;
+    };
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
-
 }

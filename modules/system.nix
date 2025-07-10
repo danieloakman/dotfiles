@@ -2,8 +2,6 @@
 
 { inputs, pkgs, env, ... }:
 {
-
-
   networking = {
     # Enable networking
     networkmanager.enable = true;
@@ -15,11 +13,20 @@
     firewall = {
       enable = true;
       # Allow OpenSSH and other dev related ports accessible through firewall
-      allowedTCPPorts = [ 22 5173 4173 4200 4000 ];
-      allowedTCPPortRanges = [{ from = 3000; to = 3005; } { from = 8000; to = 8100; }];
+      allowedTCPPorts = [ 4200 4000 ];
+      allowedTCPPortRanges = [
+        { from = 3000; to = 3010; }
+        { from = 8000; to = 8100; }
+        { from = 5170; to = 5180; } # typically 5173 for vite, and the same idea for the one below
+        { from = 4170; to = 4180; }
+      ];
       # Open ports in the firewall for tiny.work:
       trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
-      allowedUDPPorts = [ 443 ]; # For tiny.work VPN
+      allowedUDPPorts = [
+        443 # tiny.work VPN
+        1197 # For PIA VPN
+        1198 # For PIA VPN
+      ];
       # checkReversePath = false;
     };
   };
@@ -27,18 +34,17 @@
   # Enable bluetooth
   hardware.bluetooth = {
     enable = true;
-    # This was here to try and get bluetooth tethering working, but it didn't work.
-    # settings = {
-    #   General = {
-    #     Name = "Hello";
-    #     ControllerMode = "dual";
-    #     FastConnectable = "true";
-    #     Experimental = "true";
-    #   };
-    #   Policy = {
-    #     AutoEnable = "true";
-    #   };
-    # };
+    settings = {
+      General = {
+        Name = "Hello";
+        ControllerMode = "dual";
+        FastConnectable = "true";
+        Experimental = "true";
+      };
+      Policy = {
+        AutoEnable = "true";
+      };
+    };
   };
 
   # Set your time zone.
@@ -80,21 +86,26 @@
       # Enable experimental nix features:
       experimental-features = [ "nix-command" "flakes" ];
       trusted-users = [ "root" "@wheel" ];
+      auto-optimise-store = true;
+      # Enable distributed builds and use substitutes:
+      builders-use-substitutes = true;
     };
     # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
     optimise.automatic = true;
     # Run garbage collection automatically
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
-    };
+    # Disable to not conflict with `programs.nh.clean`
+    # gc = {
+    #   automatic = true;
+    #   dates = "weekly";
+    #   options = "--delete-older-than 14d";
+    #   persistent = true; # Default is true, but just to be explicit.
+    # };
   };
 
 
   # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  # sound.enable = true;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -141,55 +152,28 @@
       # pinentry-qt
       eza
       bat
-      thefuck # TODO:
       lazygit
       fzf
       neovim
+      sops
+      age
       gh
       # gh-dash
       unzip
       zip
       jq
       rsync
-      # rclone # Don't need anymore as it was just used for Obsidian syncing
-      nixpkgs-fmt # A formatter for .nix files.
-      gnat13 # Provides gcc, g++, etc
-      # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
-      gnumake
-      nurl # Generates nix fetcher urls
-      dust
+
+      # Network utilities
+      wakeonlan
+      (pkgs.writeShellScriptBin "wake-akatosh" ''
+        wakeonlan 4c:ed:fb:96:ee:3d
+      '')
+
+      # Nix specific:
       nil # Nix LSP
-      tldr
-      gcalcli
-      zbar # Can scan QR & bar codes using this
-      lf # Terminal file system manager
-
-      # TODO: remove dev related things like go and rust to a devenv instead.
-      # Node can stay as it's needed for running scripts
-
-      # Rust:
-      # cargo
-      # rustup
-
-      # Go related packages:
-      # go
-      # gopls
-      # delve
-      # go-tools
-
-      # Node and Javascript related packages:
-      nodejs_22
-      # yarn
-      pnpm
-      pnpm-shell-completion
-      bun
-
-      python3
-      (python3.withPackages (ps: with ps; [
-        # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
-        pip
-        # pipx
-      ]))
+      nh # Nix helper
+      nixpkgs-fmt # A formatter for .nix files.
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       (if env.isOnWayland then dmenu-wayland else dmenu)
@@ -201,57 +185,6 @@
       # logkeys # Was testing whether I could log laptop buttons or not
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
       inputs.devenv.packages.${system}.devenv
-      awscli2
-      mprocs
-
-      # Nix shells:
-      (pkgs.buildFHSEnv {
-        name = "sh-fhs";
-        targetPkgs = pkgs: (with pkgs; [
-          # More or less copied from the auxilis FHS shell
-          tesseract
-          python310
-          python310Packages.pip
-          python310Packages.virtualenv
-          swig
-          glibc
-          glib.dev
-          libffi
-          ffmpeg
-          libsmf
-          libGL
-          libz
-          libzip
-          libgcc
-          zlib
-          pango
-          fontconfig
-          libstdcxx5
-          opencv
-          cmake
-          pixman
-          cairo
-          libjpeg
-          giflib
-          librsvg
-          # cairomm_1_16
-
-          # Needed for prisma:
-          openssl
-          prisma-engines
-        ]) ++ (with pkgs.xorg; [
-          libX11
-          libXext
-          libSM
-        ]);
-        nativeBuildInputs = pkgs: (with pkgs; [
-          pkg-config
-        ]);
-        # multiPkgs = pkgs: (with pkgs; [
-        #   # Nothing for now
-        # ]);
-        runScript = "zsh";
-      })
     ] ++ (if env.isOnWayland then [
       wl-clipboard
     ] else [ ]);
@@ -287,7 +220,6 @@
         zlib
         pango
         fontconfig
-        libstdcxx5
         opencv
         cmake
         pixman
@@ -301,24 +233,31 @@
         libSM
       ]);
     };
+
+    localsend = {
+      enable = true;
+      openFirewall = true;
+    };
+
+    nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--keep-since 14d --keep 3";
+      flake = "/home/${env.user}/repos/personal/dotfiles";
+    };
+
+    # Enables the `browserpass` extension for chromium, firefox, google-chrome, vivaldi browsers.
+    browserpass.enable = true;
+
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # mtr.enable = true;
   };
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+    nerd-fonts.fira-mono
+    nerd-fonts.fira-code
   ];
-
-  # Enable the OpenSSH daemon:
-  services.openssh = {
-    enable = true;
-    # These commented out settings would force public key authentication, but we don't need that for now as we're using
-    # tailscale to allow access to the machine. Without logging in to tailscale, only LAN access is allowed (with a password).
-    settings.PasswordAuthentication = false;
-    settings.KbdInteractiveAuthentication = false;
-  };
-  services.tailscale.enable = true;
 
   # Symbolic link /bin/sh to /bin/bash for compatibility with things that expect bash to be at /bin/bash:
   system.activationScripts.binbash = {

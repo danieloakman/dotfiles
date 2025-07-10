@@ -1,12 +1,16 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, ... }:
+{ lib, pkgs, env, ... }:
+
 {
+  # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
+  nixpkgs.config.allowUnfree = true;
+
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home = {
-    username = "dano";
-    homeDirectory = "/home/dano";
+    username = env.user;
+    homeDirectory = "/home/${env.user}";
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -23,12 +27,6 @@
       # # "Hello, world!" when run.
       # pkgs.hello
 
-      # # It is sometimes useful to fine-tune packages, for example, by applying
-      # # overrides. You can do that directly here, just don't forget the
-      # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-      # # fonts?
-      # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
       # # You can also create simple shell scripts directly inside your
       # # configuration. For example, this adds a command 'my-hello' to your
       # # environment:
@@ -42,7 +40,9 @@
             ln -s "$1" "$2"
           fi
         # '')
-      pkgs.passff-host
+
+      # Required for passff-host to work with mozilla and its extension for `pass`
+      # pkgs.passff-host
     ];
 
     # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -60,19 +60,19 @@
       # '';
 
       # Set up passff-host for firefox password management with "Pass"
-      ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
+      # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
       ".gitconfig".text = ''
         [user]
-          name = Daniel Oakman
+          name = Daniel (Oakman) Brown
           email = 42539848+danieloakman@users.noreply.github.com
           signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
         [credential]
           helper = cache --timeout 604800
-        [includeIf "gitdir/i:~/repos/tiny/"]
-          path = ~/.gitconfig-tiny
         [includeIf "gitdir/i:~/repos/auxilis/"]
           path = ~/.gitconfig-auxilis
+        [includeIf "gitdir/i:~/repos/frogco/"]
+          path = ~/.gitconfig-frogco
         [commit]
           gpgsign = true
         [init]
@@ -85,6 +85,8 @@
           editor = nano
         [http]
           postBuffer = 524288000
+        [gpg "ssh"]
+          allowedSignersFile = ~/.config/git/allowed_signers
         [credential "https://github.com"]
           helper = 
           helper = !/run/current-system/sw/bin/gh auth git-credential
@@ -93,33 +95,25 @@
           helper = !/run/current-system/sw/bin/gh auth git-credential
       '';
 
-      ".gitconfig-tiny".text = ''
-        [user]
-          name = Daniel Oakman
-          email = 141111365+danoaky-tiny@users.noreply.github.com
-          signingkey = 13960475D8B9726EFD860408E30135695C3CE86B
-        [commit]
-          gpgsign = true
-      '';
+      # ".gitconfig-auxilis".text = ''
+      #   [user]
+      #     name = daniel.oakman
+      #     email = daniel.oakman@auxilis.com.au
+      #     # signingkey = ""
+      #   [commit]
+      #     gpgsign = false
+      # '';
 
-      ".gitconfig-auxilis".text = ''
-        [user]
-          name = daniel.oakman
-          email = daniel.oakman@auxilis.com.au
-          # signingkey = "" # TODO: create auxilis gpg key or some other way to verify commits on bitbucket
-        [commit]
-          gpgsign = false
-      '';
+      # ".gitconfig-frogco".text = ''
+      #   [user]
+      #     name = Daniel (Oakman) Brown
+      #     email = d.oakman@frogco.live
+      #     signingkey = ~/.ssh/frogco.pub
+      #   [gpg]
+      #     format = ssh
+      # '';
 
-      ".config/lazygit/config.yml".text = ''
-        git:
-          overrideGpg: true
-        customCommands:
-          - key: 'F'
-            command: 'git fetch --prune'
-            context: 'localBranches'
-            stream: true
-      '';
+      ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
       ".config/nixpkgs/config.nix".text = ''
         { ... }:
@@ -128,31 +122,7 @@
         }
       '';
 
-      ".ssh/config".text = ''
-        # Recommended to edit for actual device in use
-        Host github github.com 100.100.254.2 djo-personal-desktop djo-personal-laptop djo-tiny-laptop tail9f1d8
-          IdentityFile ~/.ssh/djo-personal
-          IdentitiesOnly yes
-        Host gh-tiny # github github.com
-          IdentityFile ~/.ssh/djo-tiny
-          IdentitiesOnly yes
-        host github github.com stash
-          ControlPath ~/.ssh/control-%h-%p-%r
-          ControlMaster auto
-          ControlPersist yes
-          ServerAliveInterval 30
-        Host bitbucket.org
-          IdentityFile ~/.ssh/djo-auxilis
-          IdentitiesOnly yes
-        Host macstadium.jump.tiny.work
-          HostName macstadium.jump.tiny.work
-          User tiny
-          IdentityFile ~/.ssh/macstadium-jump # TODO: probably should add these ssh keys to sops secrets
-        Host atl-m1-bnode-01 # Add other nodes as needed. There's 01, 02, 03, 04
-          HostName %h.tiny.work
-          User tiny
-          ProxyJump macstadium.jump.tiny.work
-      '';
+      ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
 
       ".config/guake/prefs".text = ''
         [general]
@@ -217,11 +187,14 @@
           skip_gdocs = true
         '';
       };
+
+      ".npmrc".source = ../files/home/.npmrc;
     };
 
     activation = {
       # TODO: this should be `"...".source = "...";`
       createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        # Create symlinks safely:
         function symlink() {
           if [ ! -L "$2" ]; then
             ln -s "$1" "$2"
@@ -234,7 +207,11 @@
         fi
 
         symlink $HOME/gdrive/Music $HOME/Music/gdrive
+        symlink $HOME/Sync/music $HOME/Music/Sync
         symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
+
+        # Copy the ssh config file to the correct location
+        cp $HOME/repos/personal/dotfiles/files/home/.ssh/config $HOME/.ssh/config
       '';
 
       # TODO: maybe move this to a dotfile or something
@@ -257,13 +234,15 @@
       # EDITOR = "emacs";
       # EDITOR = "nvim";
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
-      PASSWORD_STORE_DIR = "/home/dano/.local/share/password-store";
+      PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
+      # This is how `nh` is able to find the flake for this host's configuration.
+      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
+      GRANTED_ALIAS_CONFIGURED = "true";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
   };
 
-  # todo enable more gtk stuff
   gtk = {
     enable = true;
   };
@@ -277,58 +256,64 @@
     zsh = {
       enable = true;
       autosuggestion.enable = true;
-      # enableAutosuggestions = true; # TODO remove this
       enableCompletion = true;
       syntaxHighlighting.enable = true;
-      initExtra = ''
+      initContent = ''
         # Put at the bottom of ".zshrc":
-        if [ -f "$HOME/repos/personal/dotfiles/.main_shell" ]; then
-          source "$HOME/repos/personal/dotfiles/.main_shell"
+        if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
+          source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
         fi
+
+        # This enables included pass extensions in the password store itself (/.extension dir). For some reason this has to go here since putting it in the `sessionVariables` env var doesn't work.
+        export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
       '';
       envExtra = ''
-        fpath=(/home/dano/.dgranted/zsh_autocomplete/assume/ $fpath)
-        fpath=(/home/dano/.dgranted/zsh_autocomplete/granted/ $fpath)
+        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
+        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
       shellAliases = {
-        nixos-switch = "sudo nixos-rebuild switch --flake ~/repos/personal/nixos/#$HOST";
-        nixos-boot = "sudo nixos-rebuild boot --flake ~/repos/personal/nixos/#$HOST";
-        nixos-test = "sudo nixos-rebuild test --flake ~/repos/personal/nixos/#$HOST";
-        nixos-build = "sudo nixos-rebuild build --flake ~/repos/personal/nixos/#$HOST";
-        nixos-dry-build = "sudo nixos-rebuild dry-build --flake ~/repos/personal/nixos/#$HOST";
-        nixos-gc = "sudo nix-collect-garbage --delete-older-than 15d";
-        nixos-update = "sudo nix flake update ~/repos/personal/nixos";
         nixos-search = "nix search nixpkgs";
       };
       oh-my-zsh = {
         enable = true;
         plugins = [
           "git"
-          "thefuck"
           "sudo"
           "z"
-          "web-search"
           "git-auto-fetch"
         ];
         theme = "robbyrussell";
       };
-    };
 
-    # Couldn't get certain binaries to install through rtx, there isn't much support for it in nix
-    # rtx = {
-    #   enable = true;
-    #   enableZshIntegration = true;
-    #   settings = {
-    #     settings = {
-    #       experimental = true;
-    #     };
-    #     tools = {
-    #       # node = "latest";
-    #       pnpm = "latest";
-    #       # bun = "latest";
-    #     };
-    #   };
-    # };
+      # git = {
+      #   enable = true;
+      #   userName = "Daniel Brown";
+      #   userEmail = "42539848+danieloakman@users.noreply.github.com";
+      #   signing = {
+      #     gpgPath = "gpg";
+      #     key = "8FB975523F3FEB6113801C04368C0A3C6913D768";
+      #     signByDefault = true;
+      #   };
+      #   extraConfig = {
+      #     credential = {
+      #       helper = "cache --timeout 604800";
+      #     };
+      #     init = {
+      #       defaultBranch = "main";
+      #     };
+      #     pull = {
+      #       ff = true;
+      #     };
+      #     core = {
+      #       editor = "nano";
+      #     };
+      #     http = {
+      #       postbuffer = "524288000"; 
+      #     };
+      #     "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
+      #   };
+      # };
+    };
 
     # Some github cli extensions weren't available, so don't enalbe in home-manager for now
     # gh = {
@@ -347,15 +332,28 @@
       enableZshIntegration = true;
     };
 
-    # TODO enable firefox
-    # firefox = {
-    #   enable = true;
-    # };
-
     direnv = {
       enable = true;
       enableZshIntegration = true; # see note on other shells below
       nix-direnv.enable = true;
+    };
+
+    lf = {
+      enable = true;
+      keybindings = {
+        "D" = "delete";
+        "~" = "cd ~";
+      };
+      # See https://github.com/gokcehan/lf/blob/master/doc.md#options
+      settings = {
+        hidden = true;
+        info = [ "size" "time" ];
+      };
+    };
+
+    granted = {
+      enable = true;
+      enableZshIntegration = true;
     };
   };
 
@@ -365,7 +363,7 @@
       repositories = {
         "password-store" = {
           interval = 60;
-          path = "/home/dano/.local/share/password-store";
+          path = "/home/${env.user}/.local/share/password-store";
           uri = "git@github.com:danieloakman/pwd-store.git";
         };
       };
@@ -378,22 +376,26 @@
       maxCacheTtl = 604800;
       # pinentryPackage = pkgs.pinentry;
     };
-
-    # This keyring can be used across any window manager, not just gnome.
-    # It's pretty good, not much trouble with it so, I'll continue with it.
-    gnome-keyring.enable = true;
   };
 
-  # TODO: look into why this doesn't do anything
-  xdg.desktopEntries = {
-    "org.dano.move-mouse.desktop" = {
-      name = "Move Mouse";
-      comment = "Move the mouse to prevent auto suspension";
-      exec = "/user/local/bin/move-mouse";
-      type = "Application";
-      terminal = true;
-      categories = [ "Utility" ];
-      # startupNotify = "false";
-    };
-  };
+  # TODO: Still doesn't work, for some reason:
+  # xdg = {
+  #   enable = true;
+  #   desktopEntries = {
+  #     "org.${env.user}.move-mouse.desktop" = {
+  #       name = "Move Mouse";
+  #       comment = "Move the mouse to prevent auto suspension";
+  #       exec = "move-mouse";
+  #       type = "Application";
+  #       terminal = true;
+  #       categories = [ "Utility" ];
+  #       # startupNotify = "false";
+  #     };
+  #   };
+  #   # configFile = {
+  #   #   "test123/a".text = ''
+  #   #     something
+  #   #   '';
+  #   # };
+  # };
 }
