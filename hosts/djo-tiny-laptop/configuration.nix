@@ -4,31 +4,19 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, pkgs, ... }:
+{ lib, inputs, config, pkgs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ../../modules/system.nix
+    (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
     ../../modules/desktop-pkgs.nix
     ../../modules/user.nix
     ../../modules/gnome
-    ../../modules/power-management.nix
+    (import ../../modules/power-management.nix { inherit env; })
     inputs.stylix.nixosModules.stylix
-    ../../modules/stylix.nix
+    (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
-
-  # Environment configuration
-  env = {
-    user = "dano";
-    isLaptop = true;
-    isOnWayland = true;
-    hasGPU = false;
-    wallpaper = pkgs.fetchurl {
-      url = "https://pixeldrain.com/api/file/CWZC2L9b";
-      sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
-    };
-  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

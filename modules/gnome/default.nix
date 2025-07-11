@@ -1,6 +1,6 @@
 # Gnome configuration
 
-{ pkgs, config, ... }:
+{ pkgs, env, ... }:
 {
   imports = [
     # Was having problems with uluancher and setting the activation key to NOT be ctrl + space. I want it to be super + space. But it's not working.
@@ -82,7 +82,7 @@
     allowedUDPPortRanges = [{ from = 1716; to = 1764; }];
   };
 
-  home-manager.users.${config.env.user} = {
+  home-manager.users.${env.user} = {
     services.gnome-keyring.enable = true;
   };
 }

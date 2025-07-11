@@ -1,7 +1,7 @@
 # Kitty terminal config
-{ pkgs, config, ... }:
+{ pkgs, env, ... }:
 {
-  home-manager.users.${config.env.user} = {
+  home-manager.users.${env.user} = {
     home = {
       packages = with pkgs; [
         kitty

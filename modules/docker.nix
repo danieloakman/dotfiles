@@ -1,14 +1,14 @@
-{ config, pkgs, ... }: {
+{ env, pkgs, ... }: {
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
   };
-  users.users.${config.env.user} = {
+  users.users.${env.user} = {
     extraGroups = [ "docker" ];
   };
 
   # Enable for GPU pass-through support on things like Docker conainters:
-  hardware.nvidia-container-toolkit.enable = config.env.hasGPU;
+  hardware.nvidia-container-toolkit.enable = env.hasGPU;
 
   environment.systemPackages = with pkgs; [
     docker

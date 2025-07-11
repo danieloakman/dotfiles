@@ -1,6 +1,6 @@
 # Rofi is a launcher app that can be used to launch applications, files, and other items. Replacement for dmenu or ulauncher.
-{ pkgs, config, ... }: {
-  home-manager.users.${config.env.user} = {
+{ pkgs, env, ... }: {
+  home-manager.users.${env.user} = {
     programs.rofi = {
       enable = true;
       location = "center";
@@ -8,7 +8,7 @@
       pass = {
         enable = true;
         stores = [
-          "home/${config.env.user}/.local/share/password-store"
+          "home/${env.user}/.local/share/password-store"
         ];
       };
       modes = [

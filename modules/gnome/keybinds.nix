@@ -1,5 +1,5 @@
 # This module is used to set the keybinds for the gnome desktop environment.
-{ lib, config, pkgs, ... }:
+{ lib, env, pkgs, ... }:
 let
   mediaKeys = "org/gnome/settings-daemon/plugins/media-keys";
   customKeybindings = "${mediaKeys}/custom-keybindings";
@@ -37,7 +37,7 @@ let
       command = "zsh -c \"source ~/.zshrc && st -- move-mouse\"";
       binding = "<Super><Alt>m";
     }
-  ] ++ (if config.env.isOnWayland then [
+  ] ++ (if env.isOnWayland then [
     {
       name = "Toggle Open/Close Guake";
       command = "zsh -c \"guake-toggle\"";
@@ -46,7 +46,7 @@ let
   ] else [ ]);
 in
 {
-  home-manager.users.${config.env.user} = {
+  home-manager.users.${env.user} = {
     dconf.settings = {
       ${mediaKeys} = {
         custom-keybindings = lib.imap1 (i: keybind: "/${customKeybindings}/custom${toString i}/") keybinds;

@@ -2,8 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ inputs, config, pkgs, ... }:
-
+{ inputs, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -11,6 +10,7 @@
     ../../modules/system.nix
     ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
+    ../../modules/gnome
     ../../modules/power-management.nix
     inputs.stylix.nixosModules.stylix
     ../../modules/stylix.nix
@@ -18,28 +18,7 @@
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/docker.nix
-
-    # Window manager:
-    # ../../modules/gnome
-    ../../modules/hyprland.nix
   ];
-
-  # Environment configuration
-  env = {
-    user = "dano";
-    isLaptop = true;
-    isOnWayland = true;
-    hasGPU = false;
-    wallpaper = pkgs.fetchurl {
-      url = "https://pixeldrain.com/api/file/UELyHDVS";
-      sha256 = "sha256-1PVA1OhbAA3GT9eG3ZzybI8xBljqyq3TaMyMKwpbTLk";
-    };
-    hyprland = {
-      monitor = [
-        "eDP-1, 1366x768, 0x0, 1.0"
-      ];
-    };
-  };
 
   # Bootloader.
   boot.loader.grub = {
