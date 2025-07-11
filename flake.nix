@@ -65,7 +65,7 @@
           # ./modules/secrets.nix
         ];
       };
-      createEnv = { user, isLaptop, isOnWayland, wallpaper, hasGPU }: { inherit user isLaptop isOnWayland wallpaper hasGPU; };
+      createEnv = { user, isLaptop, isOnWayland, wallpaper, hasGPU, hyprland }: { inherit user isLaptop isOnWayland wallpaper hasGPU hyprland; };
     in
     {
       nixosConfigurations = {
