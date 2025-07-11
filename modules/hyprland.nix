@@ -100,11 +100,12 @@ in
 
         bind = [
           "$mod, space, exec, rofi -show drun -show-icons"
+          "$mod, S, exec, rofi-google-search"
+          "$mod, K, exec, kill-processes"
+          "$mod, Q, exec, zsh -c \"source ~/.zshrc && $term -- passs -c\""
           "alt, F4, killactive"
-          # "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
-          # "$mod, Q, exec, guake-toggle"
-          "CTRL, `, exec, pypr toggle term"
+          "CTRL, grave, exec, pypr toggle $term"
           "$mod, T, exec, $files"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
