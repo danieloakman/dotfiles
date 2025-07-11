@@ -99,7 +99,7 @@ in
         "$term" = "kitty";
 
         bind = [
-          "$mod, S, exec, rofi -show drun -show-icons"
+          "$mod, space, exec, rofi -show drun -show-icons"
           "alt, F4, killactive"
           # "$mod, Q, exec, kitty"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
