@@ -48,6 +48,7 @@
       fi
     '')
 
+    # TODO: rename this to rofi-kill-processes, and where it's referenced
     (writeShellScriptBin "kill-processes" ''
       # Get all running processes with CPU and memory usage, sorted by memory usage
       processes=$(ps -eo pid,pcpu,pmem,comm | sort -k3 -nr | awk '{printf "%-6s %5.1f%% %5.1f%% %s\n", $1, $2, $3, $4}')
