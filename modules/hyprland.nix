@@ -358,15 +358,16 @@ in
             };
 
             network = {
-              interface = "wlan0";
               format-wifi = "  {essid} {signalStrength}%";
               format-ethernet = "  {ifname}";
               format-disconnected = "  Disconnected";
               format-linked = "  {ifname}";
               max-length = 50;
               tooltip-format = "{ifname} via {gwaddr}";
-              tooltip-format-wifi = "{essid} ({signalStrength}%)\nIP: {ipaddr}";
-              tooltip-format-ethernet = "{ifname}\nIP: {ipaddr}";
+              tooltip-format-wifi = "{essid} ({signalStrength}%)
+IP: {ipaddr}";
+              tooltip-format-ethernet = "{ifname}
+IP: {ipaddr}";
               tooltip-format-disconnected = "Disconnected";
               on-click = "nm-connection-editor";
             };
