@@ -3,6 +3,7 @@
 # and in the NixOS manual (accessible by running 'nixos-help').
 
 { inputs, config, pkgs, ... }:
+
 {
   imports = [
     # Include the results of the hardware scan.

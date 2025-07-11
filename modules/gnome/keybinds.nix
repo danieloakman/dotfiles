@@ -24,7 +24,7 @@ let
     }
     {
       name = "Search Passwords";
-      command = "zsh -c \"source ~/.zshrc && gnome-terminal -- passs -c\"";
+      command = "zsh -c \"source ~/.zshrc && st -- passs -c\"";
       binding = "<Super>q";
     }
     {
@@ -34,7 +34,7 @@ let
     }
     {
       name = "Move Mouse";
-      command = "zsh -c \"source ~/.zshrc && gnome-terminal -- move-mouse\"";
+      command = "zsh -c \"source ~/.zshrc && st -- move-mouse\"";
       binding = "<Super><Alt>m";
     }
   ] ++ (if config.env.isOnWayland then [
@@ -58,18 +58,20 @@ in
       })
       keybinds);
 
-    home.packages = [
+    home.packages = with pkgs; [
+      # Simple terminal for faster startup time
+      st
+
       # A script to reload the keybinds without a restart/logout-login
-      (pkgs.writeShellScriptBin "reload-keybinds" ''
+      (writeShellScriptBin "reload-keybinds" ''
         dconf reset -f /${customKeybindings}/
         dconf load /${mediaKeys}/ < ~/.config/dconf/keybinds.ini
       '')
       # Lists all custom keybinds and their settings. Useful for debugging and adding new keybinds.
       # Create a new keybind through the gnome custom keybinds interface, then run this script to get the settings and how the binding is set.
-      (pkgs.writeShellScriptBin "list-custom-keybinds" ''
+      (writeShellScriptBin "list-custom-keybinds" ''
         for i in {0..7}; do echo "=== custom$i ==="; dconf read /${customKeybindings}/custom$i/name; dconf read /${customKeybindings}/custom$i/command; dconf read /${customKeybindings}/custom$i/binding; echo; done
       '')
     ];
   };
-
 }
