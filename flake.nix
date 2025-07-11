@@ -57,8 +57,8 @@
       commonImports = { ... }: {
         # Imports inherit inputs system; used across all host configurations:
         imports = [
-          ./modules/env.nix
           inputs.home-manager.nixosModules.home-manager
+          ./modules/env.nix
           ./modules/user.nix
           # TODO: import again once we actually use secrets from here
           # ./modules/secrets.nix

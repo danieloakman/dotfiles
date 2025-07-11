@@ -25,7 +25,7 @@
   ];
 
   # Environment configuration
-  config.env = {
+  env = {
     user = "dano";
     isLaptop = true;
     isOnWayland = true;

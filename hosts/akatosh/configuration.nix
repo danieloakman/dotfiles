@@ -23,7 +23,7 @@
     ../../modules/wakeonlan.nix
   ];
 
-  config.env = {
+  env = {
     user = "dano";
     isLaptop = false;
     isOnWayland = false;
