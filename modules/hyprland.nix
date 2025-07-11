@@ -144,9 +144,11 @@ in
         };
 
         general = {
-          sensitivity = 1.00;
+          # Does not exist now:
+          # sensitivity = 1.00;
+          # apply_sens_to_raw = 1;
+
           border_size = 2;
-          apply_sens_to_raw = 1;
           gaps_in = 6;
           gaps_out = 8;
 
@@ -169,9 +171,10 @@ in
           dim_strength = 0.1;
           dim_special = 0.8;
 
-          drop_shadow = true;
-          shadow_range = 6;
-          shadow_render_power = 1;
+          # Does not exist now:
+          # drop_shadow = true;
+          # shadow_range = 6;
+          # shadow_render_power = 1;
           # col.shadow = $color12;
           # col.shadow_inactive = "0x50000000";
 
@@ -299,7 +302,7 @@ in
           enable_swallow = true;
           swallow_regex = "^(kitty)$";
           focus_on_activate = false;
-          no_direct_scanout = true; # for fullscreen games
+          # no_direct_scanout = true; # for fullscreen games. Does not exist anymore
           initial_workspace_tracking = 0;
         };
 
