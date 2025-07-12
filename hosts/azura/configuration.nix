@@ -19,7 +19,7 @@
 
     # ../../modules/gnome
     # ../../modules/stylix.nix
-    ../../modules/hyprland.nix
+    ../../modules/hyprland
   ];
 
   # Bootloader.
