@@ -42,9 +42,7 @@ in
   };
 
   environment = {
-    sessionVariables = {
-      GUAKE_ENABLE_WAYLAND = 1;
-    };
+    sessionVariables = { };
     systemPackages = with pkgs; [
       pyprland
       hyprpicker
@@ -85,6 +83,7 @@ in
       # systemd.variables = ["--all"];
 
       plugins = [
+        hyprPlugins.pypr
         # hyprPlugins.borders-plus-plus
       ];
 
