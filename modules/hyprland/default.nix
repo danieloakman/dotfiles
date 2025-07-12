@@ -76,7 +76,7 @@ in
     # ];
   };
 
-  home-manager.users.dano = {
+  home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
       enable = true;
       package = hyprPkgs.hyprland;
