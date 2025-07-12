@@ -332,5 +332,15 @@ in
         # };
       };
     };
+
+    home = {
+      file = {
+        ".config/hypr/pyprland.toml".text = ''
+          [pyprland]
+          terminal = "kitty"
+          plugins = ["scratchpads"]
+        '';
+      };
+    };
   };
 }
