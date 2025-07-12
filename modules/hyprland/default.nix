@@ -86,7 +86,6 @@ in
       # systemd.variables = ["--all"];
 
       plugins = [
-        hyprPlugins.pypr
         # hyprPlugins.borders-plus-plus
       ];
 
