@@ -217,6 +217,17 @@ in
 
         monitor = env.hyprland.monitor;
 
+        # Window rules
+        windowrule = [
+          "workspace 1, class:^(Vivaldi)$"
+          "workspace 2, class:^(Cursor)$"
+          "workspace 2, class:^(code)$"
+          "workspace 3, class:^(Spotify)$"
+          "workspace 4, class:^(obsidian)$"
+          "workspace 5, class:^(Discord)$"
+          "workspace 6, class:^(Steam)$"
+        ];
+
         input = {
           natural_scroll = true;
 
