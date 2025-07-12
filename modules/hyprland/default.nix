@@ -339,6 +339,14 @@ in
           [pyprland]
           terminal = "kitty"
           plugins = ["scratchpads"]
+
+          [[scratchpads]]
+          name = "kitty"
+          animation = "fromTop"
+          command = "kitty"
+          class = "kitty"
+          size = "75% 60%"
+          autostart = false
         '';
       };
     };
