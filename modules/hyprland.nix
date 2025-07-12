@@ -329,7 +329,7 @@ in
             position = "top";
             height = 30;
             spacing = 4;
-            margin = "6";
+            margin = "0";
 
             modules-left = [ "hyprland/workspaces" ];
             modules-center = [ "hyprland/window" ];
@@ -337,7 +337,7 @@ in
               "network"
               "cpu"
               "memory"
-              "temperature"
+              # "temperature"
               "battery"
               "clock"
               "tray"
@@ -394,18 +394,18 @@ IP: {ipaddr}";
               on-click-right = "";
             };
 
-            temperature = {
-              hwmon-path-abs = "/sys/class/hwmon/hwmon2/temp1_input";
-              input-filename = "temp1_input";
-              interval = 1;
-              format = "  {temperatureC}°C";
-              max-length = 10;
-              tooltip = true;
-              tooltip-format = "Temperature: {temperatureC}°C";
-              on-click = "";
-              on-click-middle = "";
-              on-click-right = "";
-            };
+            # temperature = {
+            #   hwmon-path-abs = "/sys/class/hwmon/hwmon2/temp1_input";
+            #   input-filename = "temp1_input";
+            #   interval = 1;
+            #   format = "  {temperatureC}°C";
+            #   max-length = 10;
+            #   tooltip = true;
+            #   tooltip-format = "Temperature: {temperatureC}°C";
+            #   on-click = "";
+            #   on-click-middle = "";
+            #   on-click-right = "";
+            # };
 
             battery = {
               bat = "BAT0";
