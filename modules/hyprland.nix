@@ -429,10 +429,10 @@ IP: {ipaddr}";
             };
 
             clock = {
-              timezone = "America/New_York";
+              timezone = "Australia/Sydney";
               tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-              format-alt = "{:%Y-%m-%d %H:%M}";
-              format = "  {:%H:%M}";
+              format-alt = "{:%Y-%m-%d %I:%M %p}";
+              format = "  {:%I:%M %p}";
               max-length = 25;
               interval = 1;
               format-calendar = "<span color='#ecc6d0'><b>{}</b></span>";
