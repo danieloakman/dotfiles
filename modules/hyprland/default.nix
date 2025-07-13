@@ -9,11 +9,11 @@ let
     ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
 
-    ${pkgs.kitty}/bin/kitty &
+    ${pkgs.rofi-wayland}/bin/rofi -show drun -show-icons &
 
     sleep 1
   '';
-  # ${pkgs.rofi-wayland}/bin/rofi -show drun -show-icons &
+  # ${pkgs.kitty}/bin/kitty &
   # ${pkgs.guake}/bin/guake &
   # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -37,6 +37,7 @@ in
 {
   imports = [
     ./waybar.nix
+    ./foot.nix
   ];
 
   # Enable cachix for hyprland, otherwise hyprland will be built from source:
@@ -54,8 +55,8 @@ in
       hyprlock
       hypridle
       # hyprpaper
+      rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
       kitty
-      foot
       dunst
       swww
 
@@ -90,9 +91,9 @@ in
       ];
 
       settings = {
+        # Keep this a list, so other nix modules can add to it.
         exec-once = [
           ''${startupScript}/bin/start''
-          "[workspace special silent] foot"
         ];
 
         "$mod" = "SUPER";
@@ -110,7 +111,6 @@ in
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
-          "CTRL, grave, togglespecialworkspace, special"
         ]
         ++ (
           # workspaces
