@@ -6,10 +6,11 @@
 
         exec-once = [
           "[workspace special silent] $term"
+          # "[workspace pass silent] $term -- passs -c"
         ];
 
         bind = [
-          "$mod, Q, exec, zsh -c \"source ~/.zshrc && $term -- passs -c\""
+          # "$mod, Q, togglespecialworkspace, pass"
           "CTRL, grave, togglespecialworkspace, special"
         ];
 
@@ -26,8 +27,8 @@
         enable = true;
         keybindings = {
           "ctrl+c" = "copy_or_interrupt";
-          "shift+alt+=" = "launch --location=hsplit";
-          "shift+alt+-" = "launch --location=vsplit";
+          "shift+alt+=" = "launch --location=vsplit";
+          "shift+alt+-" = "launch --location=hsplit";
         };
         settings = { };
       };
