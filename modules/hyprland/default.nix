@@ -54,8 +54,8 @@ in
       hyprlock
       hypridle
       # hyprpaper
-      kitty
-      rofi-wayland
+      kitty # General use terminal
+      foot # Used for our guake style terminal
       dunst
       swww
 
@@ -338,15 +338,6 @@ in
         ".config/hypr/pyprland.toml".text = ''
           [pyprland]
           terminal = "kitty"
-          plugins = ["scratchpads"]
-
-          [[scratchpads]]
-          name = "kitty"
-          animation = "fromTop"
-          command = "kitty"
-          class = "kitty"
-          size = "75% 60%"
-          autostart = false
         '';
       };
     };
