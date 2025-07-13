@@ -2,10 +2,14 @@
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
       settings = {
+        "$term" = "kitty";
+
         exec-once = [
-          "[workspace special silent] foot"
+          "[workspace special silent] $term"
         ];
+
         bind = [
+          "$mod, Q, exec, zsh -c \"source ~/.zshrc && $term -- passs -c\""
           "CTRL, grave, togglespecialworkspace, special"
         ];
 
@@ -18,15 +22,16 @@
     };
 
     programs = {
-      foot = {
+      kitty = {
         enable = true;
-        settings = {
-          main = {
-            # font = "size=11";
-            dpi-aware = "yes";
-          };
+        keybindings = {
+          "ctrl+c" = "copy_or_interrupt";
+          "shift+alt+=" = "launch --location=hsplit";
+          "shift+alt+-" = "launch --location=vsplit";
         };
+        settings = { };
       };
     };
   };
 }
+

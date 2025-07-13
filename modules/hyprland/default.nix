@@ -9,11 +9,10 @@ let
     ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
 
-    ${pkgs.rofi-wayland}/bin/rofi -show drun -show-icons &
+    ${pkgs.kitty}/bin/kitty &
 
     sleep 1
   '';
-  # ${pkgs.kitty}/bin/kitty &
   # ${pkgs.guake}/bin/guake &
   # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -37,7 +36,7 @@ in
 {
   imports = [
     ./waybar.nix
-    ./foot.nix
+    ./terminal.nix
   ];
 
   # Enable cachix for hyprland, otherwise hyprland will be built from source:
@@ -56,7 +55,6 @@ in
       hypridle
       # hyprpaper
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
-      kitty
       dunst
       swww
 
@@ -98,13 +96,11 @@ in
 
         "$mod" = "SUPER";
         "$files" = "thunar";
-        "$term" = "kitty";
 
         bind = [
           "$mod, space, exec, rofi -show drun -show-icons"
           "$mod, S, exec, rofi-google-search"
           "$mod, K, exec, kill-processes"
-          "$mod, Q, exec, zsh -c \"source ~/.zshrc && $term -- passs -c\""
           "alt, F4, killactive"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           "$mod, T, exec, $files"
