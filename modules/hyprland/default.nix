@@ -55,6 +55,7 @@ in
       hypridle
       # hyprpaper
       kitty
+      foot
       dunst
       swww
 
@@ -89,7 +90,10 @@ in
       ];
 
       settings = {
-        exec-once = ''${startupScript}/bin/start'';
+        exec-once = [
+          ''${startupScript}/bin/start''
+          "[workspace special silent] foot"
+        ];
 
         "$mod" = "SUPER";
         "$files" = "thunar";
@@ -106,6 +110,7 @@ in
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
+          "CTRL, grave, togglespecialworkspace, special"
         ]
         ++ (
           # workspaces
@@ -205,6 +210,7 @@ in
             "borderangle, 1, 180, liner, loop" #used by rainbow borders and rotating colors
             "fade, 1, 10, default"
             "workspaces, 1, 5, wind"
+            "specialWorkspace, 1, 4, default, slidevert"
           ];
         };
 
