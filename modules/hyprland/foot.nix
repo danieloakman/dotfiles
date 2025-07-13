@@ -22,7 +22,7 @@
         enable = true;
         settings = {
           main = {
-            font = "Fira Code:size=11";
+            # font = "size=11";
             dpi-aware = "yes";
           };
         };
