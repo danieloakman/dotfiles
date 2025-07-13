@@ -15,7 +15,7 @@
 
         animations = {
           animation = [
-            "specialWorkspace, 1, 4, default, slidevert, top"
+            "specialWorkspace, 1, 4, default, slidevert"
           ];
         };
       };

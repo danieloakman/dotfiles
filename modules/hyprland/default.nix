@@ -206,7 +206,6 @@ in
             "borderangle, 1, 180, liner, loop" #used by rainbow borders and rotating colors
             "fade, 1, 10, default"
             "workspaces, 1, 5, wind"
-            "specialWorkspace, 1, 4, default, slidevert"
           ];
         };
 
