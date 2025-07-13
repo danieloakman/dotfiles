@@ -78,6 +78,9 @@ in
     # ];
   };
 
+  # Required for hyprlock to work
+  security.pam.services.hyprlock = { };
+
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
       enable = true;
@@ -340,6 +343,10 @@ in
           terminal = "kitty"
         '';
       };
+    };
+
+    programs = {
+      hyprlock.enable = true;
     };
   };
 }
