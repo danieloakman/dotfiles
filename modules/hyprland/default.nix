@@ -54,8 +54,7 @@ in
       hyprlock
       hypridle
       # hyprpaper
-      kitty # General use terminal
-      foot # Used for our guake style terminal
+      kitty
       dunst
       swww
 
@@ -103,7 +102,6 @@ in
           "$mod, Q, exec, zsh -c \"source ~/.zshrc && $term -- passs -c\""
           "alt, F4, killactive"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
-          "CTRL, grave, exec, pypr toggle $term"
           "$mod, T, exec, $files"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
@@ -268,6 +266,7 @@ in
         };
 
         gestures = {
+          # TODO: tweak these to make it easier to use with trackpad
           workspace_swipe = true;
           workspace_swipe_fingers = 3;
           workspace_swipe_distance = 500;
