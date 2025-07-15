@@ -41,11 +41,12 @@ in
   environment = {
     sessionVariables = { };
     systemPackages = with pkgs; [
-      pyprland
-      hyprpicker
-      hyprcursor
+      pyprland # Extra Hyprland utils/tools
+      hyprpicker # Color picker
+      hyprcursor # Cursor
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
-      dunst
+      dunst # Notification daemon
+      hyprshot # Screenshot tool
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
