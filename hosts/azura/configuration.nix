@@ -34,7 +34,7 @@
   # Required config for imported modules:
   stylix.image = ../../files/assets/azura-wallpaper.jpeg;
   home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
-    "eDP-1, 1366x768, 0x0, 1.0"
+    "eDP-1, 1366x768, 0x0, 1.0" # Try out smaller scale factor
   ];
 
   # This value determines the NixOS release from which the default
