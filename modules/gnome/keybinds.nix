@@ -19,7 +19,7 @@ let
     {
       name = "Rofi Run";
       # TODO: this is not working on wayland
-      command = "rofi -show combi -combi-modi \"window,drun,run\" -modi combi";
+      command = "rofi -show combi -combi-modi \"window,drun,run\" -modi combi -show-icons";
       binding = "<Super>space";
     }
     {
