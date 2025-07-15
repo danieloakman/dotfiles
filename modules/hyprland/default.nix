@@ -39,12 +39,6 @@ in
     ./waybar.nix
   ];
 
-  # Enable cachix for hyprland, otherwise hyprland will be built from source:
-  nix.settings = {
-    substituters = [ "https://hyprland.cachix.org" ];
-    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-  };
-
   environment = {
     sessionVariables = { };
     systemPackages = with pkgs; [

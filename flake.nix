@@ -46,10 +46,13 @@
             substituters = [
               "https://nix-community.cachix.org"
               "https://srid.cachix.org"
+              "https://hyprland.cachix.org" # Enable cachix for hyprland, otherwise hyprland will be built from source
             ];
+            trusted-substituters = [ "https://hyprland.cachix.org" ];
             trusted-public-keys = [
               "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
               "srid.cachix.org-1:MTQ6ksbfz3LBMmjyPh0PLmos+1x+CdtJxA/J2W+PQxI="
+              "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
             ];
           };
         };
