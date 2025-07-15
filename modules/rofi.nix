@@ -33,8 +33,8 @@
       mkdir -p "$(dirname "$HISTORY_FILE")"
       touch "$HISTORY_FILE"
 
-      # Display history and get user input
-      query=$(cat "$HISTORY_FILE" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
+      # Display history and get user input (newest first)
+      query=$(tac "$HISTORY_FILE" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
 
       if [ -n "$query" ]; then
         # Add query to history file (if it's not already there)
