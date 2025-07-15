@@ -334,13 +334,17 @@ in
     services = {
       hyprpaper = {
         enable = true;
-        settings = {
-          ipc = "on";
-          splash = false;
-          splash_offset = 2.0;
-          preload = [ "../../files/assets/spaceship-1.jpeg" ];
-          wallpaper = [ "eDP-1,../../files/assets/spaceship-1.jpeg" ];
-        };
+        settings =
+          let
+            wallpaperPath = "/home/dano/repos/personal/dotfiles/files/assets/spaceship-1.jpeg";
+          in
+          {
+            ipc = "on";
+            splash = false;
+            splash_offset = 2.0;
+            preload = [ wallpaperPath ];
+            wallpaper = [ "eDP-1,${wallpaperPath}" ];
+          };
       };
     };
   };
