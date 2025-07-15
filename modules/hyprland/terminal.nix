@@ -30,7 +30,11 @@
           "shift+alt+=" = "launch --location=vsplit";
           "shift+alt+-" = "launch --location=hsplit";
         };
-        settings = { };
+        settings = {
+          enabled_layouts = "splits";
+          background_opacity = 0.5; # between 0.0 and 1.0
+          background_blur = 1; # Set to a positive value to enable background blur
+        };
       };
     };
   };
