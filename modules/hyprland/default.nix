@@ -1,7 +1,7 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, inputs, env, ... }:
+{ pkgs, inputs, env, config, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
@@ -334,7 +334,7 @@ in
         enable = true;
         settings =
           let
-            wallpaperPath = "/home/dano/repos/personal/dotfiles/files/assets/spaceship-1.jpeg";
+            wallpaperPath = "/home/dano/repos/personal/dotfiles/files/assets/${config.networking.hostname}-wallpaper.jpeg";
           in
           {
             ipc = "on";
