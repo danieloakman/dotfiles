@@ -11,14 +11,14 @@
     ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
     ../../modules/power-management.nix
-    inputs.stylix.nixosModules.stylix
     ../../modules/dev.nix
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/docker.nix
 
     # ../../modules/gnome
-    # ../../modules/stylix.nix
+    inputs.stylix.nixosModules.stylix
+    ../../modules/stylix.nix
     ../../modules/hyprland
   ];
 
