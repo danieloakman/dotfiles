@@ -7,7 +7,6 @@ let
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
-    ${pkgs.hyprlock}/bin/hyprlock &
 
     ${pkgs.kitty}/bin/kitty &
 
@@ -35,6 +34,7 @@ in
 {
   imports = [
     ./bluetooth.nix
+    ./lockscreen.nix
     ./terminal.nix
     ./waybar.nix
   ];
@@ -73,9 +73,6 @@ in
     #   hyprPkgs.xdg-desktop
     # ];
   };
-
-  security.pam.services.hyprlock = { }; # Required for hyprlock to work
-  programs.hyprlock.enable = true;
 
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
@@ -342,28 +339,6 @@ in
     };
 
     services = {
-      hypridle = {
-        enable = true;
-        settings = {
-          general = {
-            after_sleep_cmd = "hyprctl dispatch dpms on";
-            ignore_dbus_inhibit = false;
-            lock_cmd = "hyprlock";
-          };
-          listener = [
-            {
-              timeout = 900;
-              on-timeout = "hyprlock";
-            }
-            {
-              timeout = 1200;
-              on-timeout = "hyprctl dispatch dpms off";
-              on-resume = "hyprctl dispatch dpms on";
-            }
-          ];
-        };
-      };
-
       hyprpaper = {
         enable = true;
         settings = {
