@@ -34,8 +34,9 @@ let
 in
 {
   imports = [
-    ./waybar.nix
+    ./bluetooth.nix
     ./terminal.nix
+    ./waybar.nix
   ];
 
   # Enable cachix for hyprland, otherwise hyprland will be built from source:
