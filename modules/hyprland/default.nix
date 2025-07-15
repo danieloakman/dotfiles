@@ -5,7 +5,6 @@
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
-    ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
     ${pkgs.kitty}/bin/kitty &
 
@@ -45,7 +44,6 @@ in
       hyprpicker # Color picker
       hyprcursor # Cursor
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
-      dunst # Notification daemon
       hyprshot # Screenshot tool
 
       networkmanager
@@ -346,6 +344,8 @@ in
             wallpaper = [ "eDP-1,${wallpaperPath}" ];
           };
       };
+
+      swaync.enable = true;
     };
   };
 }
