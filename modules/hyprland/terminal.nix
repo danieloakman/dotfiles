@@ -1,4 +1,4 @@
-{ env, ... }: {
+{ env, lib, ... }: {
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
       settings = {
@@ -32,8 +32,8 @@
         };
         settings = {
           enabled_layouts = "splits";
-          background_opacity = 0.5; # between 0.0 and 1.0
-          background_blur = 1; # Set to a positive value to enable background blur
+          background_opacity = lib.mkForce 0.5; # between 0.0 and 1.0
+          background_blur = lib.mkForce 1; # Set to a positive value to enable background blur
         };
       };
     };
