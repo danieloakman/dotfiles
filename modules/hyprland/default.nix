@@ -5,16 +5,15 @@
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
-    ${pkgs.swww}/bin/swww init &
     ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
+    ${pkgs.hyprlock}/bin/hyprlock &
 
     ${pkgs.kitty}/bin/kitty &
 
     sleep 1
   '';
   # ${pkgs.guake}/bin/guake &
-  # ${pkgs.swww}/bin/swww img ${./wallpaper.png} &
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
@@ -51,12 +50,8 @@ in
       pyprland
       hyprpicker
       hyprcursor
-      hyprlock
-      hypridle
-      # hyprpaper
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
       dunst
-      swww
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
@@ -78,8 +73,8 @@ in
     # ];
   };
 
-  # Required for hyprlock to work
-  security.pam.services.hyprlock = { };
+  security.pam.services.hyprlock = { }; # Required for hyprlock to work
+  programs.hyprlock.enable = true;
 
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
@@ -345,8 +340,47 @@ in
       };
     };
 
-    programs = {
-      hyprlock.enable = true;
+    services = {
+      hypridle = {
+        enable = true;
+        settings = {
+          general = {
+            after_sleep_cmd = "hyprctl dispatch dpms on";
+            ignore_dbus_inhibit = false;
+            lock_cmd = "hyprlock";
+          };
+          listener = [
+            {
+              timeout = 900;
+              on-timeout = "hyprlock";
+            }
+            {
+              timeout = 1200;
+              on-timeout = "hyprctl dispatch dpms off";
+              on-resume = "hyprctl dispatch dpms on";
+            }
+          ];
+        };
+      };
+
+      hyprpaper = {
+        enable = true;
+        settings = {
+          # Example settings:
+          # TODO: Set up wallpaper:
+          # ipc = "on";
+          # splash = false;
+          # splash_offset = 2.0;
+
+          # preload =
+          #   [ "/share/wallpapers/buttons.png" "/share/wallpapers/cat_pacman.png" ];
+
+          # wallpaper = [
+          #   "DP-3,/share/wallpapers/buttons.png"
+          #   "DP-1,/share/wallpapers/cat_pacman.png"
+          # ];
+        };
+      };
     };
   };
 }
