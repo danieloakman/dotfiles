@@ -336,19 +336,11 @@ in
       hyprpaper = {
         enable = true;
         settings = {
-          # Example settings:
-          # TODO: Set up wallpaper:
-          # ipc = "on";
-          # splash = false;
-          # splash_offset = 2.0;
-
-          # preload =
-          #   [ "/share/wallpapers/buttons.png" "/share/wallpapers/cat_pacman.png" ];
-
-          # wallpaper = [
-          #   "DP-3,/share/wallpapers/buttons.png"
-          #   "DP-1,/share/wallpapers/cat_pacman.png"
-          # ];
+          ipc = "on";
+          splash = false;
+          splash_offset = 2.0;
+          preload = [ "../../files/assets/spaceship-1.jpeg" ];
+          wallpaper = [ "eDP-1,../../files/assets/spaceship-1.jpeg" ];
         };
       };
     };
