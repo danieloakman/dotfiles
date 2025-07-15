@@ -13,6 +13,7 @@
         modules-center = [ "hyprland/window" ];
         modules-right = [
           "network"
+          "bluetooth"
           "cpu"
           "memory"
           # "temperature"
@@ -48,6 +49,26 @@ IP: {ipaddr}";
 IP: {ipaddr}";
           tooltip-format-disconnected = "Disconnected";
           on-click = "nm-connection-editor";
+        };
+
+        bluetooth = {
+          format = " {device_battery_percentage}%";
+          format-connected = " {device_alias} {device_battery_percentage}%";
+          format-connected-battery = " {device_alias} {device_battery_percentage}%";
+          format-device-prefix = " ";
+          format-disabled = " Disabled";
+          format-disconnected = " Disconnected";
+          format-off = " Off";
+          format-on = " On";
+          format-pairing = " Pairing";
+          format-tooltip = "{num_connections} connected";
+          format-tooltip-connection = "{device_alias} {device_battery_percentage}%";
+          interval = 30;
+          max-length = 25;
+          tooltip = true;
+          on-click = "blueman-manager";
+          on-click-middle = "";
+          on-click-right = "";
         };
 
         cpu = {
@@ -194,6 +215,7 @@ IP: {ipaddr}";
       #temperature,
       #backlight,
       #network,
+      #bluetooth,
       #pulseaudio,
       #custom-media,
       #tray,
@@ -264,6 +286,18 @@ IP: {ipaddr}";
 
       #network.disconnected {
         background-color: #f53c3c;
+      }
+
+      #bluetooth {
+        background-color: #5dade2;
+      }
+
+      #bluetooth.disconnected {
+        background-color: #f53c3c;
+      }
+
+      #bluetooth.off {
+        background-color: #95a5a6;
       }
 
       #pulseaudio {
