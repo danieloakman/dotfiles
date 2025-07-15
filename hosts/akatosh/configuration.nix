@@ -41,7 +41,7 @@
     url = "https://images5.alphacoders.com/131/1315219.jpeg";
     sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
   };
-  # home-manager.users.${env.user}.wayland.windowManager.hyprland.monitor = [
+  # home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
   #   "DP-1, 1920x1080, 0x0, 1.0"
   #   # other monitors needed if hyprland were to be used on this host
   # ];

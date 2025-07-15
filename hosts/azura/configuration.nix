@@ -33,7 +33,7 @@
 
   # Required config for imported modules:
   stylix.image = /home/dano/repos/personal/dotfiles/files/assets/azura-wallpaper.jpeg;
-  home-manager.users.${env.user}.wayland.windowManager.hyprland.monitor = [
+  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
     "eDP-1, 1366x768, 0x0, 1.0"
   ];
 
