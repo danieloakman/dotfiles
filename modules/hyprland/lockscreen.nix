@@ -1,7 +1,7 @@
 # The way this is setup with greetd is not fully secure. It's possible somebody could bypass the lock screen.
 { env, ... }: {
   security.pam.services.hyprlock = { }; # Required for hyprlock to work
-  programs.hyprlock.enable = true;
+  programs.hyprlock.enable = true; # TODO: customise hyprlock a bit. Make the clock 12h for example
 
   services.greetd = {
     enable = true;
