@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ inputs, ... }:
+{ inputs, env, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -30,6 +30,12 @@
   };
 
   networking.hostName = "azura"; # Define your hostname. `echo $HOST`
+
+  # Required config for imported modules:
+  stylix.image = /home/dano/repos/personal/dotfiles/files/assets/spaceship-1.jpeg;
+  home-manager.users.${env.user}.wayland.windowManager.hyprland.monitor = [
+    "eDP-1, 1366x768, 0x0, 1.0"
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

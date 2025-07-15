@@ -24,6 +24,13 @@
 
   networking.hostName = "djo-tiny-laptop"; # Define your hostname. `echo $HOST`
 
+  # Required config for imported modules:
+  stylix.image = pkgs.fetchurl {
+    url = "https://pixeldrain.com/api/file/CWZC2L9b";
+    sha256 = "sha256-m8c4ulgOQGBjNcCzW2RNJcLN9ewicFW1CIyHbG3+wmA=";
+  };
+  # home-manager.users.${env.user}.wayland.windowManager.hyprland.monitor = [];
+
   # Enable fingerprint reader:
   services.fprintd = {
     enable = true;

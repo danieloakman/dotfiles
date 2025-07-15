@@ -204,8 +204,6 @@ in
           pass_mouse_when_bound = false;
         };
 
-        monitor = env.hyprland.monitor;
-
         # Window rules
         windowrule = [
           "workspace 1, class:^(vivaldi)$"

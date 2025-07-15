@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ inputs, config, ... }:
+{ inputs, env, config, pkgs, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -35,6 +35,16 @@
   };
 
   networking.hostName = "akatosh"; # Define your hostname.
+
+  # Required config for imported modules:
+  stylix.image = pkgs.fetchurl {
+    url = "https://images5.alphacoders.com/131/1315219.jpeg";
+    sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
+  };
+  # home-manager.users.${env.user}.wayland.windowManager.hyprland.monitor = [
+  #   "DP-1, 1920x1080, 0x0, 1.0"
+  #   # other monitors needed if hyprland were to be used on this host
+  # ];
 
   hardware = {
     enableRedistributableFirmware = true;
