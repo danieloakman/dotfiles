@@ -7,7 +7,6 @@ let
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.dunst}/bin/dunst &
     ${pkgs.pyprland}/bin/pypr &
-
     ${pkgs.kitty}/bin/kitty &
 
     sleep 1
@@ -263,7 +262,7 @@ in
           workspace_swipe_distance = 500;
           workspace_swipe_invert = true;
           workspace_swipe_min_speed_to_force = 30;
-          workspace_swipe_cancel_ratio = 0.5;
+          workspace_swipe_cancel_ratio = 0.33;
           workspace_swipe_create_new = true;
           workspace_swipe_forever = true;
           #workspace_swipe_use_r = true #uncomment if wanted a forever create a new workspace with swipe right
