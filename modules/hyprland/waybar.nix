@@ -6,7 +6,7 @@
         layer = "top";
         position = "top";
         height = 30;
-        spacing = 4;
+        spacing = 0;
         margin = "0";
 
         modules-left = [ "hyprland/workspaces" ];
@@ -144,7 +144,7 @@ IP: {ipaddr}";
 
         tray = {
           icon-size = 21;
-          spacing = 4;
+          spacing = 0;
         };
       };
     };
