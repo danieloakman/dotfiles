@@ -33,8 +33,8 @@
       mkdir -p "$(dirname "$HISTORY_FILE")"
       touch "$HISTORY_FILE"
 
-      # Display history and get user input
-      query=$(cat "$HISTORY_FILE" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
+      # Display history and get user input (newest first)
+      query=$(tac "$HISTORY_FILE" | ${rofi}/bin/rofi -dmenu -p "Google Search: ")
 
       if [ -n "$query" ]; then
         # Add query to history file (if it's not already there)
@@ -48,6 +48,7 @@
       fi
     '')
 
+    # TODO: rename this to rofi-kill-processes, and where it's referenced
     (writeShellScriptBin "kill-processes" ''
       # Get all running processes with CPU and memory usage, sorted by memory usage
       processes=$(ps -eo pid,pcpu,pmem,comm | sort -k3 -nr | awk '{printf "%-6s %5.1f%% %5.1f%% %s\n", $1, $2, $3, $4}')

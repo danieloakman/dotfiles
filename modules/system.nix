@@ -68,6 +68,8 @@
   services = {
     xserver = {
       # Enable the X11 windowing system.
+      # This is apparently needed on wayland systems as well. Quite strange. It's worth trying to disable it in the future
+      # to see if it works without it.
       enable = true;
       # Configure keymap in X11
       xkb = {
@@ -141,7 +143,7 @@
         pass-otp
         pass-update
         pass-checkup
-        pass-audit
+        pass-audit # TODO
       ]))
       (if env.isOnWayland then pass-wayland else pass)
       # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:

@@ -17,6 +17,11 @@
     };
     devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
     stylix.url = "github:danth/stylix";
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
     # zen-browser.url = "github:MarceColl/zen-browser-flake";
@@ -41,10 +46,13 @@
             substituters = [
               "https://nix-community.cachix.org"
               "https://srid.cachix.org"
+              "https://hyprland.cachix.org" # Enable cachix for hyprland, otherwise hyprland will be built from source
             ];
+            trusted-substituters = [ "https://hyprland.cachix.org" ];
             trusted-public-keys = [
               "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
               "srid.cachix.org-1:MTQ6ksbfz3LBMmjyPh0PLmos+1x+CdtJxA/J2W+PQxI="
+              "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
             ];
           };
         };
@@ -60,7 +68,7 @@
           # ./modules/secrets.nix
         ];
       };
-      createEnv = { user, isLaptop, isOnWayland, wallpaper, hasGPU }: { inherit user isLaptop isOnWayland wallpaper hasGPU; };
+      createEnv = { user, isLaptop, isOnWayland, wallpaper, hasGPU, hyprland }: { inherit user isLaptop isOnWayland wallpaper hasGPU hyprland; };
     in
     {
       nixosConfigurations = {
@@ -75,6 +83,12 @@
                 wallpaper = pkgs.fetchurl {
                   url = "https://images5.alphacoders.com/131/1315219.jpeg";
                   sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
+                };
+                hyprland = {
+                  monitor = [
+                    "DP-1, 1920x1080, 0x0, 1.0"
+                    # TODO: other monitors
+                  ];
                 };
               };
             in
@@ -98,6 +112,11 @@
                 wallpaper = pkgs.fetchurl {
                   url = "https://pixeldrain.com/api/file/UELyHDVS";
                   sha256 = "sha256-1PVA1OhbAA3GT9eG3ZzybI8xBljqyq3TaMyMKwpbTLk";
+                };
+                hyprland = {
+                  monitor = [
+                    "eDP-1, 1366x768, 0x0, 1.0"
+                  ];
                 };
               };
             in

@@ -271,8 +271,9 @@
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
         fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
       '';
-      # shellAliases = {
-      # };
+      shellAliases = {
+        nixos-search = "nix search nixpkgs";
+      };
       oh-my-zsh = {
         enable = true;
         plugins = [

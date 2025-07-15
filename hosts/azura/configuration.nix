@@ -10,14 +10,16 @@
     ../../modules/system.nix
     ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
-    ../../modules/gnome
     ../../modules/power-management.nix
     inputs.stylix.nixosModules.stylix
-    ../../modules/stylix.nix
     ../../modules/dev.nix
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/docker.nix
+
+    # ../../modules/gnome
+    # ../../modules/stylix.nix
+    ../../modules/hyprland
   ];
 
   # Bootloader.
