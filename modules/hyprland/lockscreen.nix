@@ -33,10 +33,12 @@
         };
         listener = [
           {
+            # 15 minutes of idle and put hyprlock on
             timeout = 900;
             on-timeout = "hyprlock";
           }
           {
+            # 20 minutes of idle and suspend
             timeout = 1200;
             on-timeout = "hyprctl dispatch dpms off";
             on-resume = "hyprctl dispatch dpms on";
