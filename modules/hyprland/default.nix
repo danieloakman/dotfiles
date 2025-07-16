@@ -112,6 +112,7 @@ in
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
+          "$mod, P, exec, hyprpicker -a"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
