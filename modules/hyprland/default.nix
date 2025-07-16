@@ -108,12 +108,26 @@ in
           "$mod, space, exec, rofi -show combi -combi-modi \"window,drun,run\" -modi combi -show-icons"
           "$mod, S, exec, rofi-google-search"
           "$mod, K, exec, kill-processes"
+          "$mod, return, exec, $term"
           "alt, F4, killactive"
+          "$mod, C, killactive"
+          "$mod, V, togglefloating"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
 
+          # Move focus between windows:
+          "$mod, left, movefocus, l"
+          "$mod, h, movefocus, l"
+          "$mod, right, movefocus, r"
+          "$mod, l, movefocus, r"
+          "$mod, up, movefocus, u"
+          "$mod, k, movefocus, u"
+          "$mod, down, movefocus, d"
+          "$mod, j, movefocus, d"
+
+          # Move windows between workspaces:
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
         ]
