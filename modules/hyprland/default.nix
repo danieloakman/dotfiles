@@ -88,14 +88,8 @@ in
         "$mod" = "SUPER";
         "$files" = "thunar";
 
-        bind = [
-          "$mod, space, exec, rofi -show combi -combi-modi \"window,drun,run\" -modi combi -show-icons"
-          "$mod, S, exec, rofi-google-search"
-          "$mod, K, exec, kill-processes"
-          "alt, F4, killactive"
-          "$mod, F10, exec, ${gamemodeScript}/bin/start"
-          "$mod, T, exec, $files"
-          ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
+        # `l` flag denotes these will also work when an input inhibitor is active
+        bindl = [
           ", XF86MonBrightnessUp, exec, brightnessctl set +10%"
           ", XF86MonBrightnessDown, exec, brightnessctl set 10%-"
           ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
@@ -105,6 +99,19 @@ in
           "alt, F7, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
           "alt, F6, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
           ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+          ", XF86AudioPlay, exec, playerctl play-pause"
+          ", XF86AudioPrev, exec, playerctl previous"
+          ", XF86AudioNext, exec, playerctl next"
+        ];
+
+        bind = [
+          "$mod, space, exec, rofi -show combi -combi-modi \"window,drun,run\" -modi combi -show-icons"
+          "$mod, S, exec, rofi-google-search"
+          "$mod, K, exec, kill-processes"
+          "alt, F4, killactive"
+          "$mod, F10, exec, ${gamemodeScript}/bin/start"
+          "$mod, T, exec, $files"
+          ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
@@ -353,11 +360,13 @@ in
             splash = false;
             splash_offset = 2.0;
             preload = [ wallpaperPath ];
+            # TODO: this will need to be moved to the host root config, as the monitor name is not known here.
             wallpaper = [ "eDP-1,${wallpaperPath}" ];
           };
       };
 
-      swaync.enable = true;
+      swaync.enable = true; # Notification daemon
+      playerctld.enable = true; # Media player control daemon
     };
   };
 }
