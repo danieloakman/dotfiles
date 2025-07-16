@@ -90,8 +90,8 @@ in
 
         # `l` flag denotes these will also work when an input inhibitor is active
         bindl = [
-          ", XF86MonBrightnessUp, exec, brightnessctl set +10%"
-          ", XF86MonBrightnessDown, exec, brightnessctl set 10%-"
+          ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
+          ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
           ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
           #  XF86AudioRaiseVolume, XF86AudioLowerVolume are not working
           # ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
