@@ -27,15 +27,21 @@
       enable = true;
       settings = {
         general = {
-          after_sleep_cmd = "hyprctl dispatch dpms on && hyprlock --immediate";
+          before_sleep_cmd = "loginctl lock-session"; # Lock before suspending
+          after_sleep_cmd = "hyprctl dispatch dpms on";
           ignore_dbus_inhibit = false;
-          lock_cmd = "hyprlock";
+          lock_cmd = "pidof hyprlock || hyprlock"; # Avoid starting hyprlock multiple times
         };
         listener = [
           {
+            timeout = 270; # 4.5 minutes of idle and lower brightness
+            on-timeout = "brightnessctl -s set 5%"; # Lower brightness and save previous brightness state to file
+            on-resume = "brightnessctl -r"; # Restore previous brightness state
+          }
+          {
             # 5 minutes of idle and put hyprlock on
             timeout = 300;
-            on-timeout = "hyprlock";
+            on-timeout = "loginctl lock-session";
           }
           {
             # 10 minutes of idle and turn screen off
@@ -46,8 +52,7 @@
           {
             # 15 minutes of idle and suspend
             timeout = 900;
-            on-timeout = "hyprctl dispatch dpms off && systemctl suspend";
-            on-resume = "hyprctl dispatch dpms on";
+            on-timeout = "systemctl suspend";
           }
         ];
       };
