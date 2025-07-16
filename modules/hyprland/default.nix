@@ -46,7 +46,7 @@ in
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
       hyprshot # Screenshot tool
       brightnessctl # Control backlight brightness
-
+      libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
 
       networkmanager
