@@ -5,19 +5,25 @@
         "$term" = "kitty";
 
         exec-once = [
+          # Start a terminal in a special workspace.
           "[workspace special silent] $term"
           # "[workspace pass silent] $term -- passs -c"
         ];
 
         bind = [
-          # "$mod, Q, togglespecialworkspace, pass"
           "CTRL, grave, togglespecialworkspace, special"
+          # "$mod, Q, togglespecialworkspace, pass"
         ];
 
         animations = {
           animation = [
             "specialWorkspace, 1, 4, default, slidevert"
           ];
+        };
+
+        input = {
+          # Allow clicking around the terminal in its special workspace.
+          special_fallthrough = true;
         };
       };
     };
