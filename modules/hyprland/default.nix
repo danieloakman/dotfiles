@@ -45,6 +45,9 @@ in
       hyprcursor # Cursor
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
       hyprshot # Screenshot tool
+      brightnessctl # Control backlight brightness
+
+      wev # Wayland event viewer. Useful for finding uncommon key codes
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
@@ -92,7 +95,9 @@ in
           "alt, F4, killactive"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
           "$mod, T, exec, $files"
-          "$mod, P, exec, hyprshot"
+          "Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
+          "XF86MonBrightnessUp, exec, brightnessctl set +10%"
+          "XF86MonBrightnessDown, exec, brightnessctl set 10%-"
 
           "SUPER_SHIFT, right, movetoworkspace, +1"
           "SUPER_SHIFT, left, movetoworkspace, -1"
