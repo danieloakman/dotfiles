@@ -381,7 +381,7 @@ in
 
       swaync.enable = true; # Notification daemon
       playerctld.enable = true; # Media player control daemon
-      swayosd = {
+      swayosd = { # TODO: This is supposed to popup with volume changes and other notifications like that but isn't?
         enable = true;
         display = "eDP-1";
       };
