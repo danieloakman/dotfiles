@@ -81,8 +81,4 @@
     allowedTCPPortRanges = [{ from = 1716; to = 1764; }];
     allowedUDPPortRanges = [{ from = 1716; to = 1764; }];
   };
-
-  home-manager.users.${env.user} = {
-    services.gnome-keyring.enable = true;
-  };
 }

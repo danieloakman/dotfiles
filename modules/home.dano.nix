@@ -376,6 +376,12 @@
       maxCacheTtl = 604800;
       # pinentryPackage = pkgs.pinentry;
     };
+
+    # Add gnome-keyring to handle auto gpg password entry, amongst other things:
+    gnome-keyring = {
+      enable = true;
+      components = [ "pkcs11" "secrets" "ssh" ];
+    };
   };
 
   # TODO: Still doesn't work, for some reason:
