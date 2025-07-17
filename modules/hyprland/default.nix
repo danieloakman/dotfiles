@@ -6,7 +6,6 @@ let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.waybar}/bin/waybar &
     ${pkgs.pyprland}/bin/pypr &
-    ${pkgs.kitty}/bin/kitty &
 
     sleep 1
   '';
