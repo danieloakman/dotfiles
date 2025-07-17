@@ -9,7 +9,6 @@ let
 
     sleep 1
   '';
-  # ${pkgs.guake}/bin/guake &
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
@@ -41,7 +40,7 @@ in
     systemPackages = with pkgs; [
       pyprland # Extra Hyprland utils/tools
       hyprpicker # Color picker
-      hyprcursor # Cursor
+      # hyprcursor # Cursor. Stylix seems to handle cursors on wayland, so don't need this.
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
       hyprshot # Screenshot tool
       brightnessctl # Control backlight brightness
