@@ -1,6 +1,10 @@
 # Stylix config, see: https://www.youtube.com/watch?v=ljHkWgBaQWU
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
+  imports = [
+    inputs.stylix.nixosModules.stylix
+  ];
+
   stylix = {
     enable = true;
 

@@ -17,7 +17,6 @@
     ../../modules/docker.nix
 
     # ../../modules/gnome
-    inputs.stylix.nixosModules.stylix
     ../../modules/stylix.nix
     ../../modules/hyprland
   ];

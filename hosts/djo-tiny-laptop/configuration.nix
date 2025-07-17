@@ -14,7 +14,6 @@
     ../../modules/user.nix
     ../../modules/gnome
     (import ../../modules/power-management.nix { inherit env; })
-    inputs.stylix.nixosModules.stylix
     (import ../../modules/stylix.nix { inherit pkgs env; })
   ];
 

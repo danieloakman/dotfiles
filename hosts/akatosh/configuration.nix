@@ -14,7 +14,6 @@
     ../../modules/power-management.nix
     ../../modules/mobile-dev.nix
     ../../modules/games.nix
-    inputs.stylix.nixosModules.stylix
     ../../modules/stylix.nix
     ../../modules/dev.nix
     ../../modules/docker.nix
