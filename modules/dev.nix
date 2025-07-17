@@ -47,6 +47,7 @@
     awscli2
     mprocs
     pet # CLI tool for keeping a list of commands and executing them later
+    entr # Run some command when file(s) change
 
     # Nix shells:
     (pkgs.buildFHSEnv {
