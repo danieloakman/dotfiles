@@ -239,7 +239,7 @@ in
 
         # Window rules
         windowrule = [
-          "workspace 1, class:^(vivaldi)$"
+          "workspace 1, class:^(vivaldi-bin)$"
           "workspace 2, class:^(Cursor)$"
           "workspace 2, class:^(code)$"
           "workspace 3, class:^(Spotify)$"
