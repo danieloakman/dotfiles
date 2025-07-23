@@ -9,7 +9,7 @@
     code-cursor
     (writeShellScriptBin "open-cursor" ''
       # Opens the cursor editor in the current directory
-      gnome-terminal -- ${code-cursor}/bin/cursor . &
+      ${code-cursor}/bin/cursor . >> /tmp/cursor.log 2>&1
     '')
     # zed-editor # Trying this out as an alternative to vscode
     google-drive-ocamlfuse
