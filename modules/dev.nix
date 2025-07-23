@@ -35,7 +35,7 @@
 
     python3
     (python3.withPackages (ps: with ps; [
-      # TODO: comment out most of this in favour of using a devenv and locally installed packages instead
+      # TODO: comment out most of this in favour of using a nix shell and locally installed packages instead
       pip
       requests
       black

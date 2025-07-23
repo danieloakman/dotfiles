@@ -184,7 +184,7 @@
       xclip
       # logkeys # Was testing whether I could log laptop buttons or not
       inputs.openvpn24.legacyPackages.${system}.openvpn_24 # Needed specifically this version for tiny.work
-      inputs.devenv.packages.${system}.devenv
+      # inputs.devenv.packages.${system}.devenv # No long use devenv. Just use nix shell instead.
     ] ++ (if env.isOnWayland then [
       wl-clipboard
     ] else [ ]);
