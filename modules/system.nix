@@ -163,6 +163,7 @@
       zip
       jq
       rsync
+      comma # Can be used to run commands not installed in the system, on the fly, e.g. `, cowsay neat`
 
       # Network utilities
       wakeonlan
