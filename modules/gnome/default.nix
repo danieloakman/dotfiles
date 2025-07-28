@@ -71,6 +71,8 @@
       # gnomeExtensions.enhanced-osk # TODO: remove this comment if gjs-osk is good
       # gnomeExtensions.gjs-osk
       gnomeExtensions.docker
+
+      gpick # GTK color picker
     ] ++ (if env.isLaptop then [
       gnomeExtensions.battery-time
     ] else [ ]);
