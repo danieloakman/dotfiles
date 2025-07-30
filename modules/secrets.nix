@@ -4,13 +4,23 @@
     inputs.sops-nix.nixosModules.sops
   ];
 
-  sops = {
-    defaultSopsFile = ../secrets/secrets.yaml;
-    defaultSopsFormat = "yaml";
-    age.keyFile = /home/dano/.config/sops/age/keys.txt;
+  sops =
+    let
+      # List of secrets to allow the user to access without sudo.
+      secrets = [
+        "password_store_git_url"
+      ];
+    in
+    {
+      defaultSopsFile = ../secrets/secrets.yaml;
+      defaultSopsFormat = "yaml";
+      # age.keyFile = ../secrets/keys.txt;
 
-    secrets.root_password = {
-      owner = config.users.users.${env.user}.name;
+      secrets = builtins.listToAttrs (map (secret: {
+        name = secret;
+        value = {
+          owner = config.users.users.${env.user}.name;
+        };
+      }) secrets);
     };
-  };
 }

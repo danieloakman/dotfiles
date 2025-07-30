@@ -1,9 +1,9 @@
 # Configurations for all users and their home-manager setups:
 
-{ inputs, pkgs, env, ... }:
+{ inputs, pkgs, env, config, ... }:
 {
   home-manager = {
-    extraSpecialArgs = { inherit inputs env; };
+    extraSpecialArgs = let sops = config.sops; in { inherit inputs env sops; };
     users = {
       ${env.user} = import ./home.${env.user}.nix;
     };

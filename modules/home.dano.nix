@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, ... }:
+{ lib, pkgs, env, sops, ... }:
 
 {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
@@ -347,7 +347,7 @@
         "password-store" = {
           interval = 60;
           path = "/home/${env.user}/.local/share/password-store";
-          uri = "git@github.com:danieloakman/pwd-store.git";
+          uri = sops.secrets.password_store_git_url.path;
         };
       };
     };

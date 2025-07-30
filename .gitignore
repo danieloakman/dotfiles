@@ -2,3 +2,4 @@ tmp
 *IGNORE*
 result
 diff
+secrets/age-keys.txt
