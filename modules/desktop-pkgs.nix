@@ -26,7 +26,7 @@
     obsidian
     syncthing
     libreoffice # Just so we can open docx files and things
-    teams-for-linux
+    # teams-for-linux # Doesn't work very well. Teams in the browser is better.
 
     # Web browser(s)
     # firefox
