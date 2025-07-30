@@ -172,23 +172,6 @@
         palette='#000000000000:#cccc00000000:#4e4e9a9a0606:#c4c4a0a00000:#34346565a4a4:#757550507b7b:#060698209a9a:#d3d3d7d7cfcf:#555557575353:#efef29292929:#8a8ae2e23434:#fcfce9e94f4f:#72729f9fcfcf:#adad7f7fa8a8:#3434e2e2e2e2:#eeeeeeeeecec:#ffffffffffff:#000000000000'
         palette-name='Tango'
       '';
-
-      ".config/rclone/rclone.conf" = {
-        # TODO: this should just copy instead of symlink. So move it to a createDotFile function in activation or something.
-        enable = false;
-        text = ''
-          [gdrive]
-          type = drive
-          client_id = 336312788532-rr6rslp7tjcmou515a2tfruq5c6sv0fc.apps.googleusercontent.com
-          client_secret = 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
-          scope = drive
-          token = {"access_token":"ya29.a0Ad52N39DDXHjRTDnUXORTMDJerdD0lvvU-WkYGzG9SDnaSzQhw8rldIGeP6jNDrOsN01--GJekXRcxQJL4an2IFYZk5RB9_G7kolSr64gTuWHTn8Sdgjnai-RyrM-nWPzOjEdBVV5SSS4bZsXtiW-HnadFp5ZOm75vgjaCgYKAaMSARISFQHGX2Mie4EUQx1A7DuatQsw9ZUGxQ0171","token_type":"Bearer","refresh_token":"1//0gkjL-XAaTFyMCgYIARAAGBASNgF-L9Ir4tlol43QRU_LXz0v8E5a2QRd9zcnCUakv6G2SCKOSdMGyxsMM5s4GMFazWvv140WFw","expiry":"2024-04-02T11:15:25.372792772+11:00"}
-          team_drive = 
-          skip_gdocs = true
-        '';
-      };
-
-      ".npmrc".source = ../files/home/.npmrc;
     };
 
     activation = {
