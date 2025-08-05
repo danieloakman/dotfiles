@@ -221,6 +221,7 @@
       # This is how `nh` is able to find the flake for this host's configuration.
       NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
+      DOTFILES_DIR = "/home/${env.user}/repos/personal/dotfiles";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
