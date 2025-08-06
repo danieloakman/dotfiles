@@ -66,7 +66,7 @@
         [user]
           name = Daniel (Oakman) Brown
           email = 42539848+danieloakman@users.noreply.github.com
-          signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
+          signingkey = ${sops.secrets.doakman_gpg_key.path}
         [credential]
           helper = cache --timeout 604800
         [includeIf "gitdir/i:~/repos/auxilis/"]

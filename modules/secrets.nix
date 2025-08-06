@@ -9,6 +9,7 @@
       # List of secrets to allow the user to access without sudo.
       secrets = [
         "password_store_git_url"
+        "doakman_gpg_key"
       ];
     in
     {
