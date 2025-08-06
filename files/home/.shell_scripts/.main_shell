@@ -77,9 +77,6 @@ export ENV=$HOME/.env
 export AWSCREDS=$HOME/.aws/credentials
 export AWSCONFIG=$HOME/.aws/config
 # export TRASH=$HOME/.local/share/Trash # Doesn't actually have a Trash on WSL
-export DJO_DESKTOP_IP="100.100.254.2"
-export DJO_TINY_LAPTOP_IP="100.106.191.23"
-export DJO_S22_IP="100.109.1.86"
 export SHELL_SCRIPTS="$HOME/repos/personal/dotfiles/files/home/.shell_scripts"
 
 ### Aliases ###
