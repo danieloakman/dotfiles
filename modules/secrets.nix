@@ -16,7 +16,7 @@
     {
       defaultSopsFile = ../secrets/secrets.yaml;
       defaultSopsFormat = "yaml";
-      # age.keyFile = ../secrets/keys.txt;
+      age.keyFile = "/var/lib/sops-nix/key.txt";
 
       secrets = builtins.listToAttrs (map (secret: {
         name = secret;

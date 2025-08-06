@@ -26,7 +26,7 @@ make switch
 
 #### See https://www.youtube.com/watch?v=G5f6GC7SnhU for more info if needed.
 Secrets file is located at *./secrets/secret.yaml* and it's encrypted.
-Also need to have your age secret key present in secrets/age-keys.txt
+Also need to have your age secret key present in `/var/lib/sops-nix/key.txt`
 - To edit: `sops secrets/secret.yaml` OR `make edit-secrets`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
 - Access to secrets in builds is done like:
 ```nix
