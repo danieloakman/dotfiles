@@ -24,7 +24,7 @@ let
     }
     {
       name = "Search Passwords";
-      command = "zsh -c \"source ~/.zshrc && st -- passs -c\"";
+      command = "zsh -c \"source ~/.zshrc && kitty -- passs -c\"";
       binding = "<Super>q";
     }
     {
@@ -34,8 +34,13 @@ let
     }
     {
       name = "Move Mouse";
-      command = "zsh -c \"source ~/.zshrc && st -- move-mouse\"";
+      command = "zsh -c \"source ~/.zshrc && kitty -- move-mouse\"";
       binding = "<Super><Alt>m";
+    }
+    {
+      name = "Open GPick";
+      command = "gpick";
+      binding = "<Super>p";
     }
   ] ++ (if env.isOnWayland then [
     {
@@ -59,9 +64,6 @@ in
       keybinds);
 
     home.packages = with pkgs; [
-      # Simple terminal for faster startup time
-      st
-
       # A script to reload the keybinds without a restart/logout-login
       (writeShellScriptBin "reload-keybinds" ''
         dconf reset -f /${customKeybindings}/

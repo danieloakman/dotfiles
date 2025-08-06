@@ -65,6 +65,7 @@
           # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
           ./modules/user.nix
           ./modules/secrets.nix
+          ./modules/kitty.nix
         ];
       };
       createEnv = { user, isLaptop, isOnWayland, hasGPU }: { inherit user isLaptop isOnWayland hasGPU; };
