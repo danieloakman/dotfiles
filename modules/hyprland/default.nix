@@ -113,6 +113,7 @@ in
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
+          "$mod, Q, exec, passmenu" # Works for now as a quick way to get to passwords
 
           # Move focus between windows:
           "$mod, left, movefocus, l"
