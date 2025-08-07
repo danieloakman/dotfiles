@@ -49,6 +49,10 @@
     pet # CLI tool for keeping a list of commands and executing them later
     entr # Run some command when file(s) change
 
+    # AI tools:
+    gemini-cli
+    claude-code
+
     # Nix shells:
     (pkgs.buildFHSEnv {
       name = "sh-fhs";
