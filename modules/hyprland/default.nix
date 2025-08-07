@@ -4,7 +4,6 @@
 { pkgs, inputs, env, config, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
-    ${pkgs.waybar}/bin/waybar &
     ${pkgs.pyprland}/bin/pypr &
 
     sleep 1
@@ -29,10 +28,12 @@ let
 in
 {
   imports = [
+    ./ags.nix
     ./bluetooth.nix
     ./lockscreen.nix
     ./terminal.nix
-    ./waybar.nix
+    ./touch-screen.nix
+    # ./waybar.nix
   ];
 
   environment = {
@@ -113,7 +114,7 @@ in
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
-          "$mod, Q, exec, passmenu" # Works for now as a quick way to get to passwords
+          "$mod, Q, exec, zsh -c 'passmenu'" # Works for now as a quick way to get to passwords
 
           # Move focus between windows:
           "$mod, left, movefocus, l"
@@ -361,6 +362,10 @@ in
       };
     };
 
+    programs = {
+      swayimg.enable = true;
+    };
+
     services = {
       hyprpaper = {
         enable = true;
@@ -380,7 +385,8 @@ in
 
       swaync.enable = true; # Notification daemon
       playerctld.enable = true; # Media player control daemon
-      swayosd = { # TODO: This is supposed to popup with volume changes and other notifications like that but isn't?
+      swayosd = {
+        # TODO: This is supposed to popup with volume changes and other notifications like that but isn't?
         enable = true;
         display = "eDP-1";
       };

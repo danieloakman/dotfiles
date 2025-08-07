@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "types": "source scripts/types.sh",
+    "dev": "source scripts/dev.sh"
+  },
+  "dependencies": {
+    "ags": "*"
+  }
+}

@@ -1,0 +1,42 @@
+@use 'sass:color';
+
+// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
+$fg-color: #{'@theme_fg_color'};
+$bg-color: #{'@theme_bg_color'};
+$rounded: 100px;
+
+window.Bar {
+  background: transparent;
+  color: $fg-color;
+  font-weight: bold;
+  font-size: 14px;
+
+  > centerbox {
+    background: $bg-color;
+  }
+
+  .start-box {
+    margin: 4px;
+
+    .workspaces {
+      border-radius: $rounded;
+      background: color-mix(in srgb, $bg-color 90%, white);
+      button {
+        background: transparent;
+        border-radius: $rounded;
+      }
+      button.selected {
+        background: $fg-color;
+        color: $bg-color;
+        border-radius: $rounded;
+      }
+    }
+  }
+
+  .end-box {
+    button {
+      border-radius: $rounded;
+      margin: 4px;
+    }
+  }
+}
