@@ -1,11 +1,13 @@
 # The way this is setup with greetd is not fully secure. It's possible somebody could bypass the lock screen.
 { env, ... }: {
-  security.pam.services.hyprlock = {
-    # Unlock the GNOME keyring when the lock screen is unlocked
-    enableGnomeKeyring = true;
-  }; # Required for hyprlock to work
-  # Also ensure greetd participates in keyring unlock (useful when a password is entered)
-  security.pam.services.greetd.enableGnomeKeyring = true;
+  security.pam.services = {
+    hyprlock = {
+      # Unlock the GNOME keyring when the lock screen is unlocked
+      enableGnomeKeyring = true;
+    };
+    # Also ensure greetd participates in keyring unlock (useful when a password is entered)
+    greetd.enableGnomeKeyring = true;
+  };
   programs.hyprlock.enable = true; # TODO: customise hyprlock a bit. Make the clock 12h for example
 
   services.greetd = {
