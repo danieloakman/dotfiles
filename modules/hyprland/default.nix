@@ -36,7 +36,7 @@ in
     ./bluetooth.nix
     ./lockscreen.nix
     ./terminal.nix
-    # ./touch-screen.nix # TODO: get working
+    ./touch-screen.nix
     # ./waybar.nix
   ];
 
