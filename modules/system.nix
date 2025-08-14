@@ -200,7 +200,6 @@
         # Add any missing dynamic libraries for unpackaged programs
         # here, NOT in environment.systemPackages
         # TODO: move stuff from auxilis FHS shell to here, probably.
-        # TODO: put stuff in here that's needed to install playwright
         # tesseract
         # python310
         # python310Packages.pip
