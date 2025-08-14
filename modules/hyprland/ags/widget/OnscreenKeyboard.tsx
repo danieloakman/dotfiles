@@ -12,7 +12,7 @@ export const toggleOnScreenKeyboard = () =>
 export default function OnscreenKeyboard() {
   const icon = isOnScreenKeyboardVisible.as((v) => (v ? 'keyboard-off' : 'keyboard'));
   return (
-    <button onClicked={toggleOnScreenKeyboard}>
+    <button onClicked={toggleOnScreenKeyboard} tooltipText="Toggle on-screen keyboard">
       <Icon name={icon} />
     </button>
   );
