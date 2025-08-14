@@ -24,7 +24,7 @@ let
     }
     {
       name = "Search Passwords";
-      command = "zsh -c \"source ~/.zshrc && kitty -- passs -c\"";
+      command = "zsh -c \"source ~/.zshrc && passs -c\"";
       binding = "<Super>q";
     }
     {

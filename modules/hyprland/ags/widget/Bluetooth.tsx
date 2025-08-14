@@ -12,7 +12,7 @@ export const connectedBluetoothDevices = createPoll('', 10000, 'bluetoothctl dev
   (str) =>
     str
       .split('\n')
-      .filter(Boolean)
+      .filter(line => !!line.trim() && line.startsWith('Device'))
       .map((line): BluetoothDevice => {
         line = line.replace('Device ', '').trim();
         const firstSpace = line.indexOf(' ');

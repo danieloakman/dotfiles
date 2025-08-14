@@ -4,5 +4,13 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "jnoortheen.nix-ide"
+  },
+  "nix.serverPath": "nil",
+  "nix.enableLanguageServer": true,
+  "nixpkgs": {
+    "expr": "import <nixpkgs> { }"
+  },
+  "formatting": {
+    "command": ["nixpkgs-fmt"]
   }
 }

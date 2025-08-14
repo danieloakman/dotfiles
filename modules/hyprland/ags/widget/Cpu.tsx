@@ -1,6 +1,7 @@
 import { createPoll } from 'ags/time';
 import { Gtk } from 'ags/gtk4';
 import Icon from '../components/Icon';
+import { clamp } from '../utils/number';
 
 // Based on script from: https://www.mail-archive.com/linuxkernelnewbies@googlegroups.com/msg01690.html
 // Store previous CPU stats for calculating usage
@@ -30,7 +31,7 @@ export const cpuUsage = createPoll('', 1000, 'cat /proc/stat').as((str) => {
   prevTotal = total;
   prevIdle = idle;
 
-  return usage;
+  return clamp(usage, 0, 100);
 });
 
 export default function Cpu() {

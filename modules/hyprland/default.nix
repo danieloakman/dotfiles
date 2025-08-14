@@ -27,6 +27,10 @@ let
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
 in
 {
+  # Enable GNOME Keyring so applications can store and retrieve secrets.
+  programs.seahorse.enable = true; # optional GUI tool
+  services.gnome.gnome-keyring.enable = true;
+
   imports = [
     ./ags.nix
     ./bluetooth.nix
@@ -47,10 +51,12 @@ in
       brightnessctl # Control backlight brightness
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
+      uwsm # Universal Wayland session manager. Can do `uwsm `
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
-      xfce.thunar # File explorer
+      # xfce.thunar # File explorer
+      nautilus # File explorer
     ];
   };
 
@@ -85,7 +91,9 @@ in
         ];
 
         "$mod" = "SUPER";
-        "$files" = "thunar";
+        "$files" = "nautilus";
+        "$browser" = "uwsm app -- vivaldi --ozone-platform=wayland";
+        "$webapp" = "$browser --app";
 
         # `l` flag denotes these will also work when an input inhibitor is active
         bindl = [
@@ -103,10 +111,9 @@ in
         ];
 
         bind = [
-          "$mod, space, exec, rofi -show combi -combi-modi \"window,drun,run\" -modi combi -show-icons"
+          "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"
           "$mod, S, exec, rofi-google-search"
           "$mod, K, exec, kill-processes"
-          "$mod, return, exec, $term"
           "alt, F4, killactive"
           "$mod, C, killactive"
           "$mod, V, togglefloating"
@@ -115,6 +122,11 @@ in
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
           "$mod, Q, exec, zsh -c 'passmenu'" # Works for now as a quick way to get to passwords
+          "$mod, B, exec, $browser"
+
+          # Opted to use desktop entries instead of this.
+          # Open webapps:
+          # "SUPER_SHIFT, Y, exec, $webapp=\"https://www.youtube.com\""
 
           # Move focus between windows:
           "$mod, left, movefocus, l"
@@ -391,5 +403,124 @@ in
         display = "eDP-1";
       };
     };
+
+    xdg.desktopEntries =
+      let
+        webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
+      in
+      {
+        youtube = {
+          name = "YouTube";
+          exec = webapp "https://www.youtube.com";
+          categories = [ "Network" "WebBrowser" ];
+          icon = "youtube";
+          startupNotify = true;
+        };
+        instagram-chats = {
+          name = "Instagram Chats";
+          exec = webapp "https://www.instagram.com/direct/inbox/";
+          categories = [ "Network" "Chat" ];
+          icon = "instagram";
+          startupNotify = true;
+        };
+        claude = {
+          name = "Claude AI";
+          exec = webapp "https://claude.ai/chat";
+          categories = [ "Network" "WebBrowser" ];
+          icon = "claude";
+          startupNotify = true;
+        };
+        gemini = {
+          name = "Gemini";
+          exec = webapp "https://gemini.google.com";
+          categories = [ "Network" "WebBrowser" ];
+          icon = "gemini";
+          startupNotify = true;
+        };
+        google-drive = {
+          name = "Google Drive";
+          exec = webapp "https://drive.google.com";
+          categories = [ "Network" "FileTransfer" ];
+          icon = "google-drive";
+          startupNotify = true;
+        };
+        gmail = {
+          name = "Gmail";
+          exec = webapp "https://mail.google.com";
+          categories = [ "Network" "Email" ];
+          icon = "gmail";
+          startupNotify = true;
+        };
+        google-calendar = {
+          name = "Google Calendar";
+          exec = webapp "https://calendar.google.com";
+          categories = [ "Network" "Calendar" ];
+          icon = "google-calendar";
+          startupNotify = true;
+        };
+        nixos-search-packages = {
+          name = "NixOS Search Packages";
+          exec = webapp "https://search.nixos.org/packages";
+          categories = [ "System" "Development" ];
+          icon = "nixos";
+          startupNotify = true;
+        };
+        home-manager-config = {
+          name = "Home Manager Configuration Search";
+          exec = webapp "https://home-manager-options.extranix.com";
+          categories = [ "System" "Development" ];
+          icon = "home-manager";
+          startupNotify = true;
+        };
+        google-taskboard = {
+          name = "Google Taskboard";
+          exec = webapp "https://tasksboard.com/app";
+          categories = [ "Network" ];
+          icon = "google-tasks";
+          startupNotify = true;
+        };
+        google-photos = {
+          name = "Google Photos";
+          exec = webapp "https://photos.google.com";
+          categories = [ "Network" ];
+          icon = "google-photos";
+          startupNotify = true;
+        };
+        google-mobile-messages = {
+          name = "Google Mobile Messages";
+          exec = webapp "https://messages.google.com/web/conversations";
+          categories = [ "Network" "Chat" ];
+          icon = "google-messages";
+          startupNotify = true;
+        };
+        disney-plus = {
+          name = "Disney Plus";
+          exec = webapp "https://www.disneyplus.com";
+          categories = [ "Network" ];
+          icon = "disney-plus";
+          startupNotify = true;
+        };
+        netflix = {
+          name = "Netflix";
+          exec = webapp "https://www.netflix.com";
+          categories = [ "Network" ];
+          icon = "netflix";
+          startupNotify = true;
+        };
+        stan = {
+          name = "Stan";
+          exec = webapp "https://www.stan.com.au";
+          categories = [ "Network" ];
+          icon = "stan";
+          startupNotify = true;
+        };
+        amazon-prime = {
+          name = "Amazon Prime";
+          exec = webapp "https://www.primevideo.com/";
+          categories = [ "Network" ];
+          icon = "amazon-prime";
+          startupNotify = true;
+        };
+      };
   };
 }

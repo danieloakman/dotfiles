@@ -19,12 +19,6 @@ const POWER_MODE_MAP: Record<string, string> = {
   performance: 'ac',
   'power-saver': 'bat',
 };
-
-const powerMode = createPoll('', POWER_MODE_INTERVAL, 'tlp-stat -s').as((res): PowerMode | null => {
-  const mode = res.match(POWER_MODE_REGEX)?.[0].split('=')[1]?.trim();
-  return mode ? (POWER_MODE_MAP[mode] as PowerMode) ?? null : null;
-});
-
 const getBatteryIcon = (chargePercentage: number) => {
   const index = clamp(
     Math.ceil(chargePercentage / (100 / BAT_CHARGE.length)) - 1,
@@ -33,6 +27,13 @@ const getBatteryIcon = (chargePercentage: number) => {
   );
   return BAT_CHARGE[index];
 };
+
+export const powerMode = createPoll('', POWER_MODE_INTERVAL, 'tlp-stat -s').as(
+  (res): PowerMode | null => {
+    const mode = res.match(POWER_MODE_REGEX)?.[0].split('=')[1]?.trim();
+    return mode ? (POWER_MODE_MAP[mode] as PowerMode) ?? null : null;
+  },
+);
 
 export const battery = createPoll(
   '',
@@ -50,6 +51,31 @@ export const battery = createPoll(
       status === 'Charging' ? 'battery-charging' : (getBatteryIcon(percentage) as Icon.Name),
   };
 });
+// const lastCharges: { timestamp: number; charge: number }[] = [];
+// const LAST_CHARGES_LIMIT = 5;
+// const deltaCharge = () => {
+//   if (lastCharges.length < 2) return 0;
+//   const deltas: number[] = [];
+//   for (let i = 0; i < lastCharges.length - 1; i++) {
+//     const last = lastCharges[i];
+//     const next = lastCharges[i + 1];
+//     if (!last || !next) continue;
+//     deltas.push(last.charge - next.charge);
+//   }
+//   return deltas.reduce((a, b) => a + b, 0) / deltas.length;
+// };
+// export const chargeTimeRemaining = battery.as(({ chargeNow, chargeFull }) => {
+//   if (chargeNow) lastCharges.push({ charge: chargeNow, timestamp: Date.now() });
+//   while (lastCharges.length >= LAST_CHARGES_LIMIT) lastCharges.shift();
+//   const delta = deltaCharge();
+//   if (delta === 0) return 0;
+//   const deltaPerSecond = delta / (BATTERY_INTERVAL / 1000);
+//   if (deltaPerSecond < 0) {
+//     return chargeNow / -deltaPerSecond; // discharging
+//   } else {
+//     return (chargeFull - chargeNow) / deltaPerSecond; // charging
+//   }
+// });
 
 export default function Battery() {
   return (
@@ -68,6 +94,9 @@ export default function Battery() {
           {(mode) =>
             mode && (
               <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+                {/* <With value={chargeTimeRemaining}>
+                  {(seconds) => (<label label={`${seconds}s`} />)}
+                </With> */}
                 <Gtk.DropDown
                   selected={POWER_MODES.indexOf(mode ?? 'performance')}
                   model={Gtk.StringList.new(POWER_MODES.map((v) => v.toUpperCase()))}
@@ -88,5 +117,3 @@ export default function Battery() {
     </menubutton>
   );
 }
-
-export { powerMode };

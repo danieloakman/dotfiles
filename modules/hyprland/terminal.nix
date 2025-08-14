@@ -11,6 +11,7 @@
         ];
 
         bind = [
+          "$mod, return, exec, $term"
           "CTRL, grave, togglespecialworkspace, special"
           # "$mod, Q, togglespecialworkspace, pass"
         ];
