@@ -11,6 +11,7 @@ import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
+import { ControlCenterButton } from './ControlCenter';
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -42,6 +43,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <Battery />
           <Clock />
           <System />
+          <ControlCenterButton />
         </box>
       </centerbox>
     </window>
