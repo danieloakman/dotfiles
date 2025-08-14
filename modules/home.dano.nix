@@ -367,25 +367,4 @@
       components = [ "pkcs11" "secrets" "ssh" ];
     };
   };
-
-  # TODO: Still doesn't work, for some reason:
-  # xdg = {
-  #   enable = true;
-  #   desktopEntries = {
-  #     "org.${env.user}.move-mouse.desktop" = {
-  #       name = "Move Mouse";
-  #       comment = "Move the mouse to prevent auto suspension";
-  #       exec = "move-mouse";
-  #       type = "Application";
-  #       terminal = true;
-  #       categories = [ "Utility" ];
-  #       # startupNotify = "false";
-  #     };
-  #   };
-  #   # configFile = {
-  #   #   "test123/a".text = ''
-  #   #     something
-  #   #   '';
-  #   # };
-  # };
 }
