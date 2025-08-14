@@ -39,28 +39,26 @@ export function toggleControlCenter() {
 }
 
 export default function ControlCenter(gdkmonitor: Gdk.Monitor) {
-  const { TOP, RIGHT, BOTTOM } = Astal.WindowAnchor;
+  const { TOP, RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
       name={CONTROL_CENTER_WINDOW_NAME}
-      // class="ControlCenter"
+      class="ControlCenter"
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.NORMAL}
-      anchor={TOP | RIGHT | BOTTOM}
+      anchor={TOP | RIGHT}
       application={app}
-      $={self => self.connect('move-focus', ()=>{
-        console.log('move-focus')
-      })}
-      marginTop={40}
+      $={(self) =>
+        self.connect('move-focus', () => {
+          console.log('move-focus');
+        })
+      }
+      margin={10}
     >
       <box orientation={Gtk.Orientation.VERTICAL}>
-        <label>Hello</label>
         <button label="hello there"></button>
       </box>
-      {/* <centerbox cssName="centerbox" orientation={Gtk.Orientation.VERTICAL}>
-        <label>Hello</label>
-      </centerbox> */}
     </window>
   );
 }

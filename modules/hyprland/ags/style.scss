@@ -43,11 +43,6 @@ window.Bar {
 
 window.ControlCenter {
   background-color: $bg-color;
-  // margin-top: 50px;
-  // > centerbox {
-  //   margin: 10px;
-  //   background: $bg-color;
-  //   height: 300px;
-  //   width: 300px;
-  // }
+  padding: 10px;
+  border-radius: $rounded;
 }
