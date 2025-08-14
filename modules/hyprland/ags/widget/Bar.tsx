@@ -10,7 +10,7 @@ import Wifi from './Wifi';
 import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
-import Media from './Media';
+import OnscreenKeyboard from './OnscreenKeyboard';
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -26,7 +26,8 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={app}
     >
       <centerbox cssName="centerbox">
-        <box class="start-box" $type="start" halign={Gtk.Align.START}>
+        <box class="start-box" $type="start" spacing={4} halign={Gtk.Align.START}>
+          <OnscreenKeyboard />
           <Workspaces />
           {/* <Media /> */}
         </box>
