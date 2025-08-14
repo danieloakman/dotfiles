@@ -18,7 +18,8 @@
 
     # ../../modules/gnome
     ../../modules/stylix.nix
-    ../../modules/hyprland
+    # ../../modules/hyprland
+    ../../modules/phosh
   ];
 
   # Bootloader.
