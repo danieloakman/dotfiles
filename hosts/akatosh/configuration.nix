@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ inputs, config, pkgs, ... }:
+{ env, config, pkgs, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -10,7 +10,6 @@
     ../../modules/system.nix
     ../../modules/ssh.nix
     ../../modules/desktop-pkgs.nix
-    ../../modules/gnome
     ../../modules/power-management.nix
     ../../modules/mobile-dev.nix
     ../../modules/games.nix
@@ -21,6 +20,29 @@
     ../../modules/syncthing.nix
     ../../modules/wakeonlan.nix
   ];
+
+  specialisation = {
+    gnome = {
+      configuration = {
+        imports = [
+          ../../modules/gnome
+        ];
+      };
+    };
+
+    hyprland = {
+      configuration = {
+        imports = [
+          ../../modules/hyprland
+        ];
+
+        home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
+          "DP-1, 1920x1080, 0x0, 1.0"
+          # other monitors needed if hyprland were to be used on this host
+        ];
+      };
+    };
+  };
 
   # Bootloader
   boot.loader = {
@@ -40,10 +62,6 @@
     url = "https://images5.alphacoders.com/131/1315219.jpeg";
     sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
   };
-  # home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
-  #   "DP-1, 1920x1080, 0x0, 1.0"
-  #   # other monitors needed if hyprland were to be used on this host
-  # ];
 
   hardware = {
     enableRedistributableFirmware = true;
