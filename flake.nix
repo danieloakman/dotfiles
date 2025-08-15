@@ -93,11 +93,11 @@
             in
             { inherit inputs system env; };
           modules = [
-            ./hosts/akatosh/configuration.nix
             commonImports
             { }
             createNixCache
             { }
+            ./hosts/akatosh/configuration.nix
           ];
         };
         azura = nixpkgs.lib.nixosSystem {
@@ -112,11 +112,11 @@
             in
             { inherit inputs system env; };
           modules = [
-            ./hosts/azura/configuration.nix
             commonImports
             { }
             createNixCache
             { }
+            ./hosts/azura/configuration.nix
           ];
         };
         djo-tiny-laptop = nixpkgs.lib.nixosSystem {
@@ -131,11 +131,11 @@
             in
             { inherit inputs system env; };
           modules = [
-            ./hosts/djo-tiny-laptop/configuration.nix
             commonImports
             { }
             createNixCache
             { }
+            ./hosts/djo-tiny-laptop/configuration.nix
           ];
         };
       };
