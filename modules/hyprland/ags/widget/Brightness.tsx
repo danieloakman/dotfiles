@@ -1,4 +1,4 @@
-import { Accessor, createComputed, createExternal } from 'ags';
+import { Accessor, createExternal } from 'ags';
 import { execAsync } from 'ags/process';
 import { noop } from '../utils/fn';
 import { createExternalState } from '../utils/ags';
@@ -35,8 +35,8 @@ export default function Brightness() {
 }
 
 function BrightnessCtrl({ width = 150 }: BrightnessProps) {
-  const step = createComputed([maxBrightness], (max) => Math.ceil(max / 100));
-  const min = createComputed([maxBrightness], (max) => Math.ceil(max * 0.05));
+  const step = maxBrightness.as((max) => Math.ceil(max / 100));
+  const min = maxBrightness.as((max) => Math.ceil(max * 0.05));
 
   return (
     <slider
