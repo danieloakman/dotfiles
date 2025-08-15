@@ -32,9 +32,21 @@
 
   # Required config for imported modules:
   stylix.image = ../../files/assets/azura-wallpaper.jpeg;
-  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
-    "eDP-1, 1366x768, 0x0, 1.0" # Try out smaller scale factor
-  ];
+  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings = {
+    monitor = [
+      "eDP-1, 1366x768, 0x0, 1.0" # Try out smaller scale factor
+    ];
+    # Window rules
+    windowrule = [
+      "workspace 1, class:^(vivaldi-bin)$"
+      "workspace 2, class:^(Cursor)$"
+      "workspace 2, class:^(code)$"
+      "workspace 3, class:^(Spotify)$"
+      "workspace 4, class:^(obsidian)$"
+      "workspace 5, class:^(Discord)$"
+      "workspace 6, class:^(Steam)$"
+    ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

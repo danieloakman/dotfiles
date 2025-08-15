@@ -27,10 +27,6 @@ let
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
 in
 {
-  # Enable GNOME Keyring so applications can store and retrieve secrets.
-  programs.seahorse.enable = true; # optional GUI tool
-  services.gnome.gnome-keyring.enable = true;
-
   imports = [
     ./ags.nix
     ./bluetooth.nix
@@ -55,7 +51,6 @@ in
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
-      # xfce.thunar # File explorer
       nautilus # File explorer
     ];
   };
@@ -65,7 +60,11 @@ in
       enable = true;
       package = hyprPkgs.hyprland;
     };
+    seahorse.enable = true; # optional GUI tool for Gnome keyring
   };
+
+  # Enable GNOME Keyring so applications can store and retrieve secrets.
+  services.gnome.gnome-keyring.enable = true;
 
   xdg.portal = {
     enable = true;
@@ -108,6 +107,12 @@ in
           ", XF86AudioPlay, exec, playerctl play-pause"
           ", XF86AudioPrev, exec, playerctl previous"
           ", XF86AudioNext, exec, playerctl next"
+        ];
+
+        bindm = [
+          # mouse movements
+          "$mod, mouse:272, movewindow"
+          "$mod, mouse:273, resizewindow"
         ];
 
         bind = [
@@ -249,20 +254,7 @@ in
           pass_mouse_when_bound = false;
         };
 
-        # Window rules
-        windowrule = [
-          "workspace 1, class:^(vivaldi-bin)$"
-          "workspace 2, class:^(Cursor)$"
-          "workspace 2, class:^(code)$"
-          "workspace 3, class:^(Spotify)$"
-          "workspace 4, class:^(obsidian)$"
-          "workspace 5, class:^(Discord)$"
-          "workspace 6, class:^(Steam)$"
-        ];
-
         input = {
-          natural_scroll = true;
-
           kb_layout = "us";
           # kb_variant =
           # kb_model =
@@ -277,7 +269,7 @@ in
 
           touchpad = {
             disable_while_typing = true;
-            natural_scroll = true; # Was false from dots' config
+            natural_scroll = true;
             clickfinger_behavior = false;
             middle_button_emulation = true;
             tap-to-click = true;
