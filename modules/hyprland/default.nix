@@ -27,10 +27,6 @@ let
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
 in
 {
-  # Enable GNOME Keyring so applications can store and retrieve secrets.
-  programs.seahorse.enable = true; # optional GUI tool
-  services.gnome.gnome-keyring.enable = true;
-
   imports = [
     ./ags.nix
     ./bluetooth.nix
@@ -65,7 +61,11 @@ in
       enable = true;
       package = hyprPkgs.hyprland;
     };
+    seahorse.enable = true; # optional GUI tool for Gnome keyring
   };
+
+  # Enable GNOME Keyring so applications can store and retrieve secrets.
+  services.gnome.gnome-keyring.enable = true;
 
   xdg.portal = {
     enable = true;
