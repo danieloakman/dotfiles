@@ -19,30 +19,10 @@
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/wakeonlan.nix
+
+    # ../../modules/gnome
+    ../../modules/hyprland
   ];
-
-  specialisation = {
-    gnome = {
-      configuration = {
-        imports = [
-          ../../modules/gnome
-        ];
-      };
-    };
-
-    hyprland = {
-      configuration = {
-        imports = [
-          ../../modules/hyprland
-        ];
-
-        home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
-          "DP-1, 1920x1080, 0x0, 1.0"
-          # other monitors needed if hyprland were to be used on this host
-        ];
-      };
-    };
-  };
 
   # Bootloader
   boot.loader = {

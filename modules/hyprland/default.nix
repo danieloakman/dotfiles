@@ -51,7 +51,6 @@ in
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
-      # xfce.thunar # File explorer
       nautilus # File explorer
     ];
   };
