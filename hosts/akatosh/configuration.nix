@@ -48,10 +48,26 @@
       "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
       "HDMI-A-1, 1920x1080, 5360x0, 1.0"
     ];
+    # This host basically links its 3 monitors to 3 workspaces:
     workspace = [
       "1, monitor:DVI-D-1"
       "2, monitor:DP-2"
       "3, monitor:HDMI-A-1"
+    ];
+    # Window rules
+    windowrule = [
+      "workspace 1, class:^(vivaldi-bin)$"
+      "workspace 1, class:^(vivaldi)$"
+      "workspace 1, class:^(chromium)$"
+      "workspace 1, class:^(chrome)$"
+      "workspace 1, class:^(firefox)$"
+      "workspace 1, class:^(google-chrome)$"
+      "workspace 2, class:^(Cursor)$"
+      "workspace 2, class:^(code)$"
+      "workspace 3, class:^(Spotify)$"
+      "workspace 2, class:^(obsidian)$"
+      "workspace 3, class:^(Discord)$"
+      "workspace 3, class:^(Steam)$"
     ];
   };
 

@@ -254,17 +254,6 @@ in
           pass_mouse_when_bound = false;
         };
 
-        # Window rules
-        windowrule = [
-          "workspace 1, class:^(vivaldi-bin)$"
-          "workspace 2, class:^(Cursor)$"
-          "workspace 2, class:^(code)$"
-          "workspace 3, class:^(Spotify)$"
-          "workspace 4, class:^(obsidian)$"
-          "workspace 5, class:^(Discord)$"
-          "workspace 6, class:^(Steam)$"
-        ];
-
         input = {
           kb_layout = "us";
           # kb_variant =
