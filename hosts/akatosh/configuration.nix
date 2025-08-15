@@ -42,11 +42,18 @@
     url = "https://images5.alphacoders.com/131/1315219.jpeg";
     sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
   };
-  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings.monitor = [
-    "DVI-D-1, 1920x1080, 0x0, 1.0"
-    "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
-    "HDMI-A-1, 1920x1080, 5360x0, 1.0"
-  ];
+  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings = {
+    monitor = [
+      "DVI-D-1, 1920x1080, 0x0, 1.0"
+      "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
+      "HDMI-A-1, 1920x1080, 5360x0, 1.0"
+    ];
+    workspace = [
+      "1, monitor:DVI-D-1"
+      "2, monitor:DP-2"
+      "3, monitor:HDMI-A-1"
+    ];
+  };
 
   hardware = {
     enableRedistributableFirmware = true;
