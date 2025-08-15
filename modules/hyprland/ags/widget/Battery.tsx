@@ -31,14 +31,8 @@ const getBatteryIcon = (chargePercentage: number) => {
 
 export const hasBattery = createExternal(false, (set) => {
   execAsync(`ls ${BAT0_PATH}`)
-    .then((res) => {
-      console.log('res', res);
-      set(true);
-    })
-    .catch((err) => {
-      set(false);
-      console.error('No battery found', err);
-    });
+    .then(() => set(true))
+    .catch(() => set(false));
   return noop;
 });
 
