@@ -109,6 +109,12 @@ in
           ", XF86AudioNext, exec, playerctl next"
         ];
 
+        bindm = [
+          # mouse movements
+          "$mod, mouse:272, movewindow"
+          "$mod, mouse:273, resizewindow"
+        ];
+
         bind = [
           "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"
           "$mod, S, exec, rofi-google-search"
@@ -260,8 +266,6 @@ in
         ];
 
         input = {
-          natural_scroll = false; # Disable natural scroll here, but enable for touchpad
-
           kb_layout = "us";
           # kb_variant =
           # kb_model =
