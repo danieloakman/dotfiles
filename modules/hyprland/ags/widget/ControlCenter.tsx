@@ -13,37 +13,14 @@ import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import Icon from '../components/Icon';
-
-const CONTROL_CENTER_WINDOW_NAME = 'control-center';
-
-export function showControlCenter() {
-  console.log('showControlCenter');
-  app.get_window(CONTROL_CENTER_WINDOW_NAME)?.show();
-}
-
-export function hideControlCenter() {
-  console.log('hideControlCenter');
-  app.get_window(CONTROL_CENTER_WINDOW_NAME)?.hide();
-}
-
-export function isControlCenterVisible() {
-  return app.get_window(CONTROL_CENTER_WINDOW_NAME)?.is_visible();
-}
-
-export function toggleControlCenter() {
-  if (isControlCenterVisible()) {
-    hideControlCenter();
-  } else {
-    showControlCenter();
-  }
-}
+import { toggleWindow, WINDOW_NAME } from '../utils/window';
 
 export default function ControlCenter(gdkmonitor: Gdk.Monitor) {
   const { TOP, RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
-      name={CONTROL_CENTER_WINDOW_NAME}
+      name={WINDOW_NAME.ControlCenter}
       class="ControlCenter"
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.NORMAL}
@@ -65,7 +42,7 @@ export default function ControlCenter(gdkmonitor: Gdk.Monitor) {
 
 export function ControlCenterButton() {
   return (
-    <button onClicked={toggleControlCenter}>
+    <button onClicked={() => toggleWindow('control-center')}>
       <Icon name="power" />
     </button>
   );

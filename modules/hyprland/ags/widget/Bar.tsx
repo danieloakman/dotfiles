@@ -12,6 +12,7 @@ import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import { ControlCenterButton } from './ControlCenter';
+import { WINDOW_NAME } from '../utils/window';
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -19,7 +20,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
     <window
       visible
-      name="bar"
+      name={WINDOW_NAME.Bar}
       class="Bar"
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
