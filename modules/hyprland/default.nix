@@ -261,7 +261,7 @@ in
         ];
 
         input = {
-          natural_scroll = true;
+          natural_scroll = false; # Disable natural scroll here, but enable for touchpad
 
           kb_layout = "us";
           # kb_variant =
@@ -277,7 +277,7 @@ in
 
           touchpad = {
             disable_while_typing = true;
-            natural_scroll = true; # Was false from dots' config
+            natural_scroll = true;
             clickfinger_behavior = false;
             middle_button_emulation = true;
             tap-to-click = true;
