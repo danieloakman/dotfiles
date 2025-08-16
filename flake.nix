@@ -87,7 +87,7 @@
               env = createEnv {
                 user = "dano";
                 isLaptop = false;
-                isOnWayland = false;
+                isOnWayland = true;
                 hasGPU = true;
               };
             in
