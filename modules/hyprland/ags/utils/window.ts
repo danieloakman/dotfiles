@@ -3,6 +3,7 @@ import app from 'ags/gtk4/app';
 export const WINDOW_NAME = {
   Bar: 'bar',
   ControlCenter: 'control-center',
+  PasswordSearch: 'password-search',
 } as const;
 
 export type WindowName = (typeof WINDOW_NAME)[keyof typeof WINDOW_NAME];
@@ -28,4 +29,10 @@ export function toggleWindow(windowName: WindowName) {
 
   if (window.is_visible()) window.hide();
   else window.show();
+}
+
+export function hideAllWindows() {
+  app.get_windows().forEach((window) => {
+    if (window.name !== WINDOW_NAME.Bar && window.is_visible()) window.hide();
+  });
 }

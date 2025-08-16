@@ -46,3 +46,10 @@ window.ControlCenter {
   padding: 10px;
   border-radius: $rounded;
 }
+
+window.PasswordSearch {
+  background-color: transparent;
+  .container {
+    background-color: $bg-color;
+  }
+}

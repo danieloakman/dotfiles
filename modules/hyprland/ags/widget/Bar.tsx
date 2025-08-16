@@ -13,6 +13,7 @@ import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import { ControlCenterButton } from './ControlCenter';
 import { WINDOW_NAME } from '../utils/window';
+import { PasswordSearchButton } from './PasswordSearch';
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -32,7 +33,12 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <OnscreenKeyboard />
           <Workspaces />
           {/* <Media /> */}
+          <PasswordSearchButton />
         </box>
+
+        {/* <box $type="center" halign={Gtk.Align.CENTER}>
+          <label label="Hello" />
+        </box> */}
 
         <box class="end-box" $type="end" halign={Gtk.Align.END}>
           <Cpu />

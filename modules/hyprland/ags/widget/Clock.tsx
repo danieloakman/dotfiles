@@ -10,7 +10,7 @@ export default function Clock() {
   // const label = createComputed([time, isShown], (t, isShown) => (isShown ? t : t.split(' ').slice(1).join(' ')));
 
   return (
-    <menubutton name='clock'>
+    <menubutton name="clock">
       <label label={time} />
       <popover>
         <Gtk.Calendar />
