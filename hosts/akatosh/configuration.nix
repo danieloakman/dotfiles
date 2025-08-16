@@ -19,6 +19,7 @@
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/wakeonlan.nix
+    ../../modules/password-store.nix
 
     # ../../modules/gnome
     ../../modules/hyprland

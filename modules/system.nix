@@ -139,15 +139,6 @@
       wget
       btop
       fastfetch
-      ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
-        pass-otp
-        pass-update
-        pass-checkup
-        pass-audit # TODO
-      ]))
-      (if env.isOnWayland then pass-wayland else pass)
-      # Was trying out https://github.com/NixOS/nixpkgs/issues/104249 for passmenu fix:
-      # rofi-pass
       # pinentry-curses
       # pinentry-qt
       eza
@@ -245,9 +236,6 @@
       clean.extraArgs = "--keep-since 14d --keep 3";
       flake = "/home/${env.user}/repos/personal/dotfiles";
     };
-
-    # Enables the `browserpass` extension for chromium, firefox, google-chrome, vivaldi browsers.
-    browserpass.enable = true;
 
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
