@@ -75,6 +75,7 @@
           ./modules/user.nix
           ./modules/secrets.nix
           ./modules/kitty.nix
+          ./modules/password-store.nix
         ];
       };
       createEnv = { user, isLaptop, isOnWayland, hasGPU }: { inherit user isLaptop isOnWayland hasGPU; };

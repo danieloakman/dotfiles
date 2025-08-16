@@ -18,16 +18,34 @@
     # loader.grub.configurationLimit = 3;
   };
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/0725ce27-35ca-4988-9ee3-007127d7db15";
-    fsType = "ext4";
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/0725ce27-35ca-4988-9ee3-007127d7db15";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/395D-FC06";
+      fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
+    };
+    "/run/media/HDD_1" = {
+      device = "/dev/disk/by-uuid/8C48AC3148AC1BC8";
+      fsType = "ntfs";
+    };
+    "/run/media/HDD_2" = {
+      device = "/dev/disk/by-uuid/5608D2D708D2B4E9";
+      fsType = "ntfs";
+    };
+    "/run/media/HDD_3" = {
+      device = "/dev/disk/by-uuid/1874480F7447EE56";
+      fsType = "ntfs";
+    };
+    "/run/media/HDD_4" = {
+      device = "/dev/disk/by-uuid/788189FD487EDAE2";
+      fsType = "ntfs";
+    };
   };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/395D-FC06";
-    fsType = "vfat";
-    options = [ "fmask=0022" "dmask=0022" ];
-  };
 
   swapDevices = [ ];
 

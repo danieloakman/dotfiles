@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, sops, ... }:
+{ lib, pkgs, env, ... }:
 
 {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
@@ -216,8 +216,6 @@
     sessionVariables = {
       # EDITOR = "emacs";
       # EDITOR = "nvim";
-      # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this
-      PASSWORD_STORE_DIR = "/home/${env.user}/.local/share/password-store";
       # This is how `nh` is able to find the flake for this host's configuration.
       NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
       GRANTED_ALIAS_CONFIGURED = "true";
@@ -342,17 +340,6 @@
   };
 
   services = {
-    git-sync = {
-      enable = true;
-      repositories = {
-        "password-store" = {
-          interval = 60;
-          path = "/home/${env.user}/.local/share/password-store";
-          uri = sops.secrets.password_store_git_url.path;
-        };
-      };
-    };
-
     gpg-agent = {
       enable = true;
       enableZshIntegration = true;
