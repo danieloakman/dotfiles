@@ -1,6 +1,6 @@
 # Home manager setup for 'dano' user
 
-{ lib, pkgs, env, sops, ... }:
+{ lib, pkgs, env, ... }:
 
 {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
