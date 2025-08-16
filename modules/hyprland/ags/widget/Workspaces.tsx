@@ -11,10 +11,17 @@ const workspaces = createConnection(
   [hyprland, 'workspace-removed', getWorkspaces],
 );
 const getFocusedWorkspace = () => hyprland.get_focused_workspace().id;
-const focusedWorkspace = createConnection(
-  getFocusedWorkspace(),
-  [hyprland, 'notify::focused-workspace', getFocusedWorkspace],
+const focusedWorkspace = createConnection(getFocusedWorkspace(), [
+  hyprland,
+  'notify::focused-workspace',
+  getFocusedWorkspace,
+]);
+const focusedClient = createConnection(
+  hyprland.get_focused_client(),
+  [hyprland, 'notify::focused-client', () => hyprland.get_focused_client()],
+  [hyprland, 'notify::clients', () => hyprland.get_focused_client()],
 );
+
 const dataView = createComputed([workspaces, focusedWorkspace], (ws, f) =>
   ws
     .map((w) => ({
