@@ -1,4 +1,4 @@
-{ env, pkgs, ... }:
+{ env, pkgs, config, ... }:
 let
   passwordStorePath = "/home/${env.user}/.local/share/password-store";
 in
@@ -17,16 +17,16 @@ in
   programs.browserpass.enable = true;
 
   home-manager.users.${env.user} = {
-    # services.git-sync = {
-    #   enable = true;
-    #   repositories = {
-    #     "password-store" = {
-    #       interval = 60;
-    #       path = passwordStorePath;
-    #       uri = sops.secrets.password_store_git_url.path;
-    #     };
-    #   };
-    # };
+    services.git-sync = {
+      enable = true;
+      repositories = {
+        "password-store" = {
+          interval = 60;
+          path = passwordStorePath;
+          uri = config.sops.secrets.password_store_git_url.path;
+        };
+      };
+    };
 
     home.sessionVariables = {
       # TODO: Maybe move system level pass to home-manager, and we wouldn't need to do this

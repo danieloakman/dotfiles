@@ -15,7 +15,6 @@
     ../../modules/rofi.nix
     ../../modules/syncthing.nix
     ../../modules/docker.nix
-    ../../modules/password-store.nix
 
     # ../../modules/gnome
     ../../modules/stylix.nix
