@@ -513,6 +513,13 @@ in
           icon = "amazon-prime";
           startupNotify = true;
         };
+        audible = {
+          name = "Audible";
+          exec = webapp "https://www.audible.com.au/library";
+          categories = [ "Network" ];
+          icon = "audible";
+          startupNotify = true;
+        };
       };
   };
 }
