@@ -3,9 +3,6 @@ import app from 'ags/gtk4/app';
 import { Accessor, createState } from 'ags';
 import { hideAllWindows } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
-// import Adw from "adw";
-// import { config, theme } from "@/options";
-// const { margin } = theme.window;
 
 type PopupWindowProps = JSX.IntrinsicElements['window'] & {
   children?: any;
@@ -73,7 +70,6 @@ export function PopupWindow({
       <Gtk.EventControllerKey
         onKeyPressed={({ widget }, keyval: number) => {
           if (keyval === Gdk.KEY_Escape) {
-            console.log('key pressed', keyval);
             widget.hide();
           }
         }}
