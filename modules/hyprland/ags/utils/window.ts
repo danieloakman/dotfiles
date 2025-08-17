@@ -8,7 +8,7 @@ export const WINDOW_NAME = {
 
 export type WindowName = (typeof WINDOW_NAME)[keyof typeof WINDOW_NAME];
 
-export function closeWindow(windowName: WindowName) {
+export function hideWindow(windowName: WindowName) {
   app.get_window(windowName)?.hide();
 }
 

@@ -49,9 +49,18 @@ window.ControlCenter {
 
 window.PasswordSearch {
   background-color: transparent;
+
   .container {
     background-color: $bg-color;
     border-radius: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    // padding: 10px;
+
+    > box {
+      padding: 10px;
+    }
+
     .search-input {
       border-radius: 10px;
     }
