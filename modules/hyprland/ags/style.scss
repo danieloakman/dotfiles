@@ -51,5 +51,9 @@ window.PasswordSearch {
   background-color: transparent;
   .container {
     background-color: $bg-color;
+    border-radius: 10px;
+    .search-input {
+      border-radius: 10px;
+    }
   }
 }
