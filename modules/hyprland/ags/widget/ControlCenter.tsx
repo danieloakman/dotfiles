@@ -14,35 +14,28 @@ import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import Icon from '../components/Icon';
 import { toggleWindow, WINDOW_NAME } from '../utils/window';
+import Modal from '../components/Modal';
 
-export default function ControlCenter(gdkmonitor: Gdk.Monitor) {
-  const { TOP, RIGHT } = Astal.WindowAnchor;
-
+export default function ControlCenter() {
   return (
-    <window
-      name={WINDOW_NAME.ControlCenter}
-      class="ControlCenter"
-      gdkmonitor={gdkmonitor}
-      exclusivity={Astal.Exclusivity.NORMAL}
-      anchor={TOP | RIGHT}
-      application={app}
-      $={(self) =>
-        self.connect('move-focus', () => {
-          console.log('move-focus');
-        })
-      }
-      margin={10}
-    >
-      <box orientation={Gtk.Orientation.VERTICAL}>
-        <button label="hello there"></button>
-      </box>
-    </window>
+    <Modal name={WINDOW_NAME.ControlCenter} cssClasses={['ControlCenter', 'bg-transparent']}>
+      <centerbox
+        cssClasses={['container', 'bg-bg-color']}
+        orientation={Gtk.Orientation.VERTICAL}
+        widthRequest={300}
+        heightRequest={500}
+      >
+        <box $type="start" orientation={Gtk.Orientation.VERTICAL}>
+          <label label="hello there" />
+        </box>
+      </centerbox>
+    </Modal>
   );
 }
 
 export function ControlCenterButton() {
   return (
-    <button onClicked={() => toggleWindow('control-center')}>
+    <button cssClasses={['rounded']} onClicked={() => toggleWindow('control-center')}>
       <Icon name="power" />
     </button>
   );

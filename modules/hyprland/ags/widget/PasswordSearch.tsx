@@ -1,5 +1,5 @@
 import { Gdk, Gtk } from 'ags/gtk4';
-import { PopupWindow } from '../components/PopupWindow';
+import Modal from '../components/Modal';
 import { toggleWindow, WINDOW_NAME, hideWindow } from '../utils/window';
 import Icon from '../components/Icon';
 import SearchInput from '../components/SearchInput';
@@ -9,7 +9,7 @@ import { createPoll } from 'ags/time';
 import { execAsync } from 'ags/process';
 
 const WIDTH = 300;
-const HEIGHT = 300;
+const HEIGHT = 400;
 
 const cleanRe = /^\/|\.gpg$/g;
 
@@ -49,7 +49,7 @@ export default function PasswordSearch() {
   );
 
   return (
-    <PopupWindow
+    <Modal
       name={WINDOW_NAME.PasswordSearch}
       class="PasswordSearch"
       onShow={() => searchInput.grab_focus()}
@@ -107,7 +107,7 @@ export default function PasswordSearch() {
           <label label={passwordsFiltered.as((passwords) => `${passwords.length} results`)} />
         </box>
       </centerbox>
-    </PopupWindow>
+    </Modal>
   );
 }
 

@@ -42,9 +42,9 @@ window.Bar {
 }
 
 window.ControlCenter {
-  background-color: $bg-color;
-  padding: 10px;
-  border-radius: $rounded;
+  // background-color: $bg-color;
+  // padding: 10px;
+  // border-radius: $rounded;
 }
 
 window.PasswordSearch {
@@ -76,4 +76,12 @@ window.PasswordSearch {
 
 .rounded {
   border-radius: $rounded;
+}
+
+.bg-transparent {
+  background-color: transparent;
+}
+
+.bg-bg-color {
+  background-color: $bg-color;
 }

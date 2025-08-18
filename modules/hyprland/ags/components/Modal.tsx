@@ -5,7 +5,9 @@ import { hideAllWindows, WindowName } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
 import { noop } from '../utils/fn';
 
-type PopupWindowProps = JSX.IntrinsicElements['window'] & {
+const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;  
+
+export type ModalProps = JSX.IntrinsicElements['window'] & {
   name: WindowName;
   children?: any;
   width?: number;
@@ -22,7 +24,7 @@ type PopupWindowProps = JSX.IntrinsicElements['window'] & {
 };
 
 /** Display a modal/dialog. */
-export function PopupWindow({
+export default function Modal({
   children,
   name,
   width,
@@ -36,10 +38,10 @@ export function PopupWindow({
   transitionDuration = 0.3,
   halign = Gtk.Align.CENTER,
   valign = Gtk.Align.CENTER,
+  anchor = TOP | BOTTOM | RIGHT | LEFT,
   onShow = noop,
   ...props
-}: PopupWindowProps) {
-  const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;
+}: ModalProps) {
   let contentbox: Gtk.Box;
   const [visible, setVisible] = createState(false);
   const [revealed, setRevealed] = createState(false);
@@ -67,8 +69,8 @@ export function PopupWindow({
       keymode={Astal.Keymode.ON_DEMAND}
       layer={Astal.Layer.OVERLAY}
       gdkmonitor={gdkmonitor}
-      anchor={TOP | BOTTOM | RIGHT | LEFT}
       application={app}
+      anchor={anchor}
       $={init}
       onNotifyVisible={({ visible }) => {
         if (visible) contentbox.grab_focus();
