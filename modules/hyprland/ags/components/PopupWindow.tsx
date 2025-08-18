@@ -1,10 +1,12 @@
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import app from 'ags/gtk4/app';
 import { Accessor, createState } from 'ags';
-import { hideAllWindows } from '../utils/window';
+import { hideAllWindows, WindowName } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
+import { noop } from '../utils/fn';
 
 type PopupWindowProps = JSX.IntrinsicElements['window'] & {
+  name: WindowName;
   children?: any;
   width?: number;
   height?: number;
@@ -15,8 +17,11 @@ type PopupWindowProps = JSX.IntrinsicElements['window'] & {
   gdkmonitor?: Gdk.Monitor;
   transitionType?: Gtk.RevealerTransitionType;
   transitionDuration?: number;
+  /** Called when the window is shown. */
+  onShow?: (contentbox: Gtk.Box) => void;
 };
 
+/** Display a modal/dialog. */
 export function PopupWindow({
   children,
   name,
@@ -31,6 +36,7 @@ export function PopupWindow({
   transitionDuration = 0.3,
   halign = Gtk.Align.CENTER,
   valign = Gtk.Align.CENTER,
+  onShow = noop,
   ...props
 }: PopupWindowProps) {
   const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;
@@ -41,6 +47,7 @@ export function PopupWindow({
   function show() {
     setVisible(true);
     setRevealed(true);
+    onShow(contentbox);
   }
   function hide() {
     setRevealed(false);
