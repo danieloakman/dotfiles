@@ -4,8 +4,9 @@ import { Accessor } from 'ags';
 
 export interface SearchInputProps {
   value?: string | Accessor<string>;
-  onChange?: (value: string) => void;
   widthRequest?: number;
+  hexpand?: boolean;
+  onChange?: (value: string) => void;
   onKeyPressed?: (keyval: number) => void;
   $?: (self: Gtk.SearchEntry) => void;
 }
@@ -21,8 +22,9 @@ export interface SearchInputProps {
 
 export default function SearchInput({
   value,
-  onChange = noop,
   widthRequest,
+  hexpand = false,
+  onChange = noop,
   onKeyPressed = noop,
   $ = noop,
 }: SearchInputProps) {
@@ -34,22 +36,18 @@ export default function SearchInput({
         $(self);
       }}
       text={value}
-      onNotifyText={(self) => {
-        onChange(self.text);
-      }}
+      onNotifyText={(self) => onChange(self.text)}
       widthRequest={widthRequest}
-      onNotifyVisible={(self) => {
-        console.log('notify visible', self.visible);
-      }}
+      hexpand={hexpand}
+      focusable
+      canFocus
       editable
       searchDelay={300}
     >
       <Gtk.EventControllerKey
         onKeyPressed={(_, keyval: number) => {
-          if (keyval === Gdk.KEY_Escape) {
-            input.set_text('');
-          }
           onKeyPressed(keyval);
+          if (keyval === Gdk.KEY_Escape) input.set_text('');
         }}
       />
     </Gtk.SearchEntry>
