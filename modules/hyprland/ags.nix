@@ -10,6 +10,10 @@
         exec-once = [
           "ags run > /tmp/ags.log 2>&1"
         ];
+
+        bind = [
+          "$mod, Q, exec, ags request \"toggle password-search\""
+        ];
       };
     };
 
