@@ -36,8 +36,11 @@ app.start({
     }
   },
   main() {
-    app.get_monitors().map(Bar);
-    app.get_monitors().map(ControlCenter);
+    const monitors = app
+      .get_monitors()
+      .sort((a, b) => b.get_geometry().width - a.get_geometry().width);
+    Bar(monitors[0]!); // Put the Bar on the primary monitor, which is the largest monitor
+    ControlCenter();
     PasswordSearch();
     NativeIconProvider();
   },
