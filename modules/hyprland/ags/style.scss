@@ -58,11 +58,18 @@ window.PasswordSearch {
     // padding: 10px;
 
     > box {
-      padding: 10px;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
 
     .search-input {
       border-radius: 10px;
+    }
+    .password-button {
+      background-color: transparent;
+      &:hover {
+        background-color: color-mix(in srgb, $bg-color 90%, white);
+      }
     }
   }
 }
