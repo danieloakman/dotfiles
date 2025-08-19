@@ -12,7 +12,7 @@ export function NativeIconProvider() {
         await writeFileAsync(
           './types/icons.ts',
           `
-export const NATIVE_ICONS = ${JSON.stringify(self.get_icon_names(), null, 2)} as const;
+export const NATIVE_ICONS = ${JSON.stringify(self.get_icon_names().sort(), null, 2)} as const;
 
 export type NativeIcon = (typeof NATIVE_ICONS)[number];
 `.trim(),
