@@ -8,7 +8,7 @@
     wayland.windowManager.hyprland = {
       settings = {
         exec-once = [
-          "ags run > /tmp/ags.log 2>&1"
+          "PASSWORD_STORE_DIR=\"/home/${env.user}/.local/share/password-store\" ags run > /tmp/ags.log 2>&1"
         ];
 
         bind = [
