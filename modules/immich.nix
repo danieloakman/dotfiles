@@ -1,4 +1,4 @@
-{ env, ... }: {
+{ env, pkgs, ... }: {
   services.immich = {
     enable = true;
     openFirewall = true;
@@ -9,4 +9,7 @@
   users.users.${env.user} = {
     extraGroups = [ "immich" ];
   };
+  environment.systemPackages = with pkgs; [
+    immich-cli
+  ];
 }
