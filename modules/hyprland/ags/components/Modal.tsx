@@ -5,17 +5,13 @@ import { hideAllWindows, WindowName } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
 import { noop } from '../utils/fn';
 
-const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;  
+const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;
 
-export type ModalProps = JSX.IntrinsicElements['window'] & {
+export type ModalProps = Omit<JSX.IntrinsicElements['window'], 'anchor' | `width${string}` | `height${string}`> & {
   name: WindowName;
   children?: any;
   width?: number;
   height?: number;
-  margin_top?: number;
-  margin_bottom?: number;
-  margin_start?: number;
-  margin_end?: number;
   gdkmonitor?: Gdk.Monitor;
   transitionType?: Gtk.RevealerTransitionType;
   transitionDuration?: number;
@@ -35,10 +31,9 @@ export default function Modal({
   margin_end = 0,
   gdkmonitor,
   transitionType = Gtk.RevealerTransitionType.SLIDE_DOWN,
-  transitionDuration = 0.3,
+  transitionDuration = 300,
   halign = Gtk.Align.CENTER,
   valign = Gtk.Align.CENTER,
-  anchor = TOP | BOTTOM | RIGHT | LEFT,
   onShow = noop,
   ...props
 }: ModalProps) {
@@ -70,7 +65,7 @@ export default function Modal({
       layer={Astal.Layer.OVERLAY}
       gdkmonitor={gdkmonitor}
       application={app}
-      anchor={anchor}
+      anchor={TOP | BOTTOM | RIGHT | LEFT}
       $={init}
       onNotifyVisible={({ visible }) => {
         if (visible) contentbox.grab_focus();
@@ -95,7 +90,7 @@ export default function Modal({
       />
       <revealer
         transitionType={transitionType}
-        transitionDuration={transitionDuration * 1000}
+        transitionDuration={transitionDuration}
         revealChild={revealed}
         halign={halign}
         valign={valign}

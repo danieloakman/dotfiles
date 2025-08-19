@@ -18,12 +18,22 @@ import Modal from '../components/Modal';
 
 export default function ControlCenter() {
   return (
-    <Modal name={WINDOW_NAME.ControlCenter} cssClasses={['ControlCenter', 'bg-transparent']}>
+    <Modal
+      name={WINDOW_NAME.ControlCenter}
+      cssClasses={['ControlCenter', 'bg-transparent']}
+      valign={Gtk.Align.START}
+      halign={Gtk.Align.END}
+      margin_top={20}
+      margin_end={20}
+      width={300}
+      height={500}
+      transitionType={Gtk.RevealerTransitionType.CROSSFADE}
+    >
       <centerbox
-        cssClasses={['container', 'bg-bg-color']}
+        cssClasses={['container', 'bg-bg-color', 'rounded-md']}
         orientation={Gtk.Orientation.VERTICAL}
-        widthRequest={300}
-        heightRequest={500}
+        vexpand
+        hexpand
       >
         <box $type="start" orientation={Gtk.Orientation.VERTICAL}>
           <label label="hello there" />
@@ -35,7 +45,7 @@ export default function ControlCenter() {
 
 export function ControlCenterButton() {
   return (
-    <button cssClasses={['rounded']} onClicked={() => toggleWindow('control-center')}>
+    <button cssClasses={['rounded-full']} onClicked={() => toggleWindow('control-center')}>
       <Icon name="power" />
     </button>
   );
