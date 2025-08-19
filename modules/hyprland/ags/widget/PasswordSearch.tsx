@@ -10,15 +10,14 @@ import { execAsync } from 'ags/process';
 
 const WIDTH = 300;
 const HEIGHT = 400;
+const CLEAN_REGEX = /^\/|\.gpg$/g;
 
-const cleanRe = /^\/|\.gpg$/g;
-
-export const passwords = createPoll('', 60000, `zsh -c "ls ${PASSWORD_STORE_DIR}/**/*.gpg"`).as(
+export const passwords = createPoll('', 60000, `zsh -c "echo ${PASSWORD_STORE_DIR}/**/*.gpg"`).as(
   (stdout) =>
     stdout
-      .split('\n')
+      .split(' ')
       .filter(Boolean)
-      .map((path) => path.replace(PASSWORD_STORE_DIR, '').replace(cleanRe, '')),
+      .map((path) => path.replace(PASSWORD_STORE_DIR, '').replace(CLEAN_REGEX, '')),
 );
 
 const overflowToNewline = (text: string, maxLength: number): string => {
