@@ -4,13 +4,20 @@ import { toggleWindow, WINDOW_NAME, hideWindow } from '../utils/window';
 import Icon from '../components/Icon';
 import SearchInput from '../components/SearchInput';
 import { createComputed, createState, For } from 'ags';
-import { PASSWORD_STORE_DIR } from '../utils/env';
+import { HOME, PASSWORD_STORE_DIR, CONFIG_DIR } from '../utils/env';
 import { createPoll } from 'ags/time';
 import { execAsync } from 'ags/process';
+import { createExternalState } from '../utils/ags';
+import { iife } from '../utils/fn';
+import { readFileAsync, writeFileAsync } from 'ags/file';
+import DropDownSelect from '../components/DropDownSelect';
 
 const WIDTH = 300;
 const HEIGHT = 400;
 const CLEAN_REGEX = /^\/|\.gpg$/g;
+const PRIORITY_PATH = `${CONFIG_DIR}/password-search-priority.json`;
+const SORT_OPTIONS = ['priority', 'alphabetical'] as const;
+type SortOption = (typeof SORT_OPTIONS)[number];
 
 export const passwords = createPoll('', 60000, `zsh -c "echo ${PASSWORD_STORE_DIR}/**/*.gpg"`).as(
   (stdout) =>
@@ -39,12 +46,33 @@ const fuzzySearch = (query: string, entries: string[]): string[] => {
   });
 };
 
+const { priority, incrementPriority } = iife(() => {
+  const [priority, setPriority] = createExternalState({} as Record<string, number>, (set) => {
+    readFileAsync(PRIORITY_PATH).then((fileContent) => set(JSON.parse(fileContent)));
+  });
+  return {
+    priority,
+    incrementPriority: async (key: string) => {
+      const newPriority = { ...priority.get(), [key]: (priority.get()[key] ?? 0) + 1 }; // TODO: don't increment, just set to new date
+      setPriority(newPriority);
+      await writeFileAsync(PRIORITY_PATH, JSON.stringify(newPriority));
+    },
+  };
+});
+
 export default function PasswordSearch() {
   let scrolledwindow: Gtk.ScrolledWindow;
   let searchInput: Gtk.SearchEntry;
   const [search, setSearch] = createState('');
-  const passwordsFiltered = createComputed([search, passwords], (search, passwords) =>
-    fuzzySearch(search, passwords),
+  const [sortBy, setSortBy] = createState<SortOption>('priority');
+  const sortByFn = createComputed([sortBy, priority], (sortBy, priority) => {
+    if (sortBy === 'priority')
+      return (a: string, b: string) => (priority[b] ?? 0) - (priority[a] ?? 0);
+    return (a: string, b: string) => a.localeCompare(b);
+  });
+  const passwordsFiltered = createComputed(
+    [search, passwords, sortByFn],
+    (search, passwords, sortByFn) => fuzzySearch(search, passwords).sort(sortByFn),
   );
 
   return (
@@ -93,6 +121,7 @@ export default function PasswordSearch() {
                     else execAsync(`pass ${password} -c`);
                     hideWindow(WINDOW_NAME.PasswordSearch);
                     setSearch('');
+                    incrementPriority(password);
                   }}
                 >
                   <label label={overflowToNewline(password, 30)} halign={Gtk.Align.START} />
@@ -102,9 +131,19 @@ export default function PasswordSearch() {
           </box>
         </scrolledwindow>
 
-        <box $type="end">
-          <label label={passwordsFiltered.as((passwords) => `${passwords.length} results`)} />
-        </box>
+        <centerbox $type="end">
+          <box $type="start">
+            <label label={passwordsFiltered.as((passwords) => `${passwords.length} results`)} />
+          </box>
+
+          <box $type="end">
+            <DropDownSelect
+              options={SORT_OPTIONS}
+              selected={sortBy}
+              onSelected={setSortBy}
+            />
+          </box>
+        </centerbox>
       </centerbox>
     </Modal>
   );

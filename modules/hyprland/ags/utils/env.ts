@@ -4,3 +4,5 @@ export const HOME = Glib.getenv('HOME');
 /** Is true if the app is being run from the dotfiles repository directory. */
 export const DEV = Glib.get_current_dir().startsWith(`${HOME}/.config`);
 export const PASSWORD_STORE_DIR = Glib.getenv('PASSWORD_STORE_DIR') ?? `${HOME}/.password-store`;
+/** Persisted config directory for the app. */
+export const CONFIG_DIR = `${HOME}/.config/ags-config`;

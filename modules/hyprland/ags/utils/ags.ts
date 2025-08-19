@@ -1,4 +1,5 @@
 import { Accessor, createComputed, createExternal, createState, Setter } from 'ags';
+import { noop } from './fn';
 
 /** Converts a value or accessor to an accessor. So downstream we can just always assume it's an accessor. */
 export function toAccessor<T>(value: T | Accessor<T>): Accessor<T> {
@@ -7,16 +8,19 @@ export function toAccessor<T>(value: T | Accessor<T>): Accessor<T> {
 
 export type UnwrapAccessor<T> = T extends Accessor<infer U> ? U : T;
 
-const timestamped = <T>(state: T): { state: T; timestamp: number } => ({ state, timestamp: Date.now() });
+const timestamped = <T>(state: T): { state: T; timestamp: number } => ({
+  state,
+  timestamp: Date.now(),
+});
 
 /** Acts as a mutable `createExternal` */
 export function createExternalState<T extends object | number | string | boolean>(
   initialValue: T,
-  setter: (set: Setter<T>) => () => unknown,
+  setter: (set: Setter<T>) => (() => unknown) | void | undefined | null,
 ) {
   const [value, setValue] = createState<T>(initialValue);
   const valueTs = value.as(timestamped);
-  const external = createExternal(value.get(), setter);
+  const external = createExternal(value.get(), (set) => setter(set) ?? noop);
   const externalTs = external.as(timestamped);
   const resultValue = createComputed([valueTs, externalTs], (v, e) =>
     v.timestamp > e.timestamp ? v.state : e.state,
