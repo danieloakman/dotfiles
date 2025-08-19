@@ -61,7 +61,12 @@ export function InternetConnection() {
   return (
     <box>
       <With value={primaryConnectionType}>
-        {(type) => <Icon name={type === 'wifi' ? 'wifi' : type === 'wired' ? 'cable' : 'wifi-off'} />}
+        {(type) => {
+          if (!type) return <Icon name="wifi-off" tooltipText="No internet" />;
+          else if (type === 'wifi') return <Icon name="wifi" tooltipText="Wifi Connection" />;
+          else if (type === 'wired') return <Icon name="cable" tooltipText="Wired Connection" />;
+          else return <Icon name="wifi-off" tooltipText="No internet" />;
+        }}
       </With>
     </box>
   );
