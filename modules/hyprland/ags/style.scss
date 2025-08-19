@@ -3,7 +3,7 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
 $fg-color: #{'@theme_fg_color'};
 $bg-color: #{'@theme_bg_color'};
-$rounded: 100px;
+$rounded-full: 100px;
 
 window.Bar {
   background: transparent;
@@ -19,23 +19,23 @@ window.Bar {
     margin: 4px;
 
     .workspaces {
-      border-radius: $rounded;
+      border-radius: $rounded-full;
       background: color-mix(in srgb, $bg-color 90%, white);
       button {
         background: transparent;
-        border-radius: $rounded;
+        border-radius: $rounded-full;
       }
       button.selected {
         background: $fg-color;
         color: $bg-color;
-        border-radius: $rounded;
+        border-radius: $rounded-full;
       }
     }
   }
 
   .end-box {
     button {
-      border-radius: $rounded;
+      border-radius: $rounded-full;
       margin: 4px;
     }
   }
@@ -74,8 +74,20 @@ window.PasswordSearch {
   }
 }
 
-.rounded {
-  border-radius: $rounded;
+.rounded-sm {
+  border-radius: 10px;
+}
+.rounded-md {
+  border-radius: 20px;
+}
+.rounded-lg {
+  border-radius: 30px;
+}
+.rounded-xl {
+  border-radius: 40px;
+}
+.rounded-full {
+  border-radius: $rounded-full;
 }
 
 .bg-transparent {

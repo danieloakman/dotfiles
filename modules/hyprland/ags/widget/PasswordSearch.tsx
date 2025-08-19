@@ -113,7 +113,7 @@ export default function PasswordSearch() {
 
 export function PasswordSearchButton() {
   return (
-    <button cssClasses={['rounded']} onClicked={() => toggleWindow('password-search')}>
+    <button cssClasses={['rounded-full']} onClicked={() => toggleWindow('password-search')}>
       <Icon name="search" />
     </button>
   );
