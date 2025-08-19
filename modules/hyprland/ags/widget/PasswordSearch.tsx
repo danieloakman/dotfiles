@@ -53,7 +53,7 @@ const { priority, incrementPriority } = iife(() => {
   return {
     priority,
     incrementPriority: async (key: string) => {
-      const newPriority = { ...priority.get(), [key]: (priority.get()[key] ?? 0) + 1 }; // TODO: don't increment, just set to new date
+      const newPriority = { ...priority.get(), [key]: Date.now() };
       setPriority(newPriority);
       await writeFileAsync(PRIORITY_PATH, JSON.stringify(newPriority));
     },
