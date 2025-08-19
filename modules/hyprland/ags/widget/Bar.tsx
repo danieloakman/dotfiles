@@ -7,7 +7,6 @@ import Workspaces from './Workspaces';
 import Cpu from './Cpu';
 import Memory from './Memory';
 import Internet from './Internet';
-import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
@@ -49,7 +48,6 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <Brightness />
           <Battery />
           <Clock />
-          <System />
           <ControlCenterButton />
         </box>
       </centerbox>

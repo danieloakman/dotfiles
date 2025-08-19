@@ -10,6 +10,7 @@ window.Bar {
   color: $fg-color;
   font-weight: bold;
   font-size: 14px;
+  opacity: 0.9;
 
   > centerbox {
     background: $bg-color;
@@ -88,6 +89,22 @@ window.PasswordSearch {
 }
 .rounded-full {
   border-radius: $rounded-full;
+}
+
+.p-xs {
+  padding: 4px;
+}
+.p-sm {
+  padding: 10px;
+}
+.p-md {
+  padding: 16px;
+}
+.p-lg {
+  padding: 22px;
+}
+.p-xl {
+  padding: 28px;
 }
 
 .bg-transparent {
