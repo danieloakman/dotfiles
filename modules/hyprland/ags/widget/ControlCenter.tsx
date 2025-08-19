@@ -7,7 +7,7 @@ import Volume from './Volume';
 import Workspaces from './Workspaces';
 import Cpu from './Cpu';
 import Memory from './Memory';
-import Wifi, { InternetConnection } from './Wifi';
+import Internet, { InternetConnection } from './Internet';
 import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';

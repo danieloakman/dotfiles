@@ -6,7 +6,7 @@ import Volume from './Volume';
 import Workspaces from './Workspaces';
 import Cpu from './Cpu';
 import Memory from './Memory';
-import Wifi from './Wifi';
+import Internet from './Internet';
 import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
@@ -43,7 +43,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box class="end-box" $type="end" halign={Gtk.Align.END}>
           <Cpu />
           <Memory />
-          <Wifi />
+          <Internet />
           <Bluetooth />
           <Volume />
           <Brightness />

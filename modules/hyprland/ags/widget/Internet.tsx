@@ -35,9 +35,9 @@ const data = createComputed([primaryConnection, wifi], (c, wifi) => ({
   wifi,
 }));
 
-export default function Wifi() {
+export default function Internet() {
   return (
-    <button name="wifi" onClicked={() => execAsync('nm-connection-editor')}>
+    <button name="internet" onClicked={() => execAsync('nm-connection-editor')}>
       <With value={data}>
         {({ primaryConnection, wifi }) => {
           if (!primaryConnection) return <Icon name="wifi-off" />;
