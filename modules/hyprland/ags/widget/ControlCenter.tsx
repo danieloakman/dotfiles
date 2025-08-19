@@ -7,7 +7,7 @@ import Volume from './Volume';
 import Workspaces from './Workspaces';
 import Cpu from './Cpu';
 import Memory from './Memory';
-import Wifi from './Wifi';
+import Wifi, { InternetConnection } from './Wifi';
 import System from './System';
 import Bluetooth from './Bluetooth';
 import Brightness from './Brightness';
@@ -46,7 +46,7 @@ export default function ControlCenter() {
 export function ControlCenterButton() {
   return (
     <button cssClasses={['rounded-full']} onClicked={() => toggleWindow('control-center')}>
-      <Icon name="power" />
+      <InternetConnection />
     </button>
   );
 }

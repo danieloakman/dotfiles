@@ -5,6 +5,8 @@ export function toAccessor<T>(value: T | Accessor<T>): Accessor<T> {
   return value instanceof Accessor ? value : new Accessor(() => value);
 }
 
+export type UnwrapAccessor<T> = T extends Accessor<infer U> ? U : T;
+
 const timestamped = <T>(state: T): { state: T; timestamp: number } => ({ state, timestamp: Date.now() });
 
 /** Acts as a mutable `createExternal` */
