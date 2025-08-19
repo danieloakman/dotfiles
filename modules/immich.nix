@@ -26,5 +26,8 @@ in
     immich-cli
   ];
 
-  networking.firewall.allowedTCPPorts = [ port ];
+  networking.firewall = {
+    allowedTCPPorts = [ port ];
+    allowedUDPPorts = [ port ];
+  };
 }
