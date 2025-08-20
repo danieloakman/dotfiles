@@ -7,6 +7,7 @@ in
 {
   services.immich = {
     inherit user group port;
+    host = "0.0.0.0"; # Open to all interfaces
     enable = true;
     openFirewall = true;
     accelerationDevices = null;
