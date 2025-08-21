@@ -11,6 +11,7 @@ import { createExternalState } from '../utils/ags';
 import { iife } from '../utils/fn';
 import { readFileAsync, writeFileAsync } from 'ags/file';
 import DropDownSelect from '../components/DropDownSelect';
+import { css } from '../utils/styles';
 
 const WIDTH = 300;
 const HEIGHT = 400;
@@ -151,7 +152,7 @@ export default function PasswordSearch() {
 
 export function PasswordSearchButton() {
   return (
-    <button cssClasses={['rounded-full']} onClicked={() => toggleWindow('password-search')}>
+    <button cssClasses={css('rounded-full')} onClicked={() => toggleWindow('password-search')}>
       <Icon name="search" />
     </button>
   );
