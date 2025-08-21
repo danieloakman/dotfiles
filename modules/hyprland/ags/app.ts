@@ -5,6 +5,7 @@ import ControlCenter from './widget/ControlCenter';
 import PasswordSearch from './widget/PasswordSearch';
 import { NativeIconProvider } from './components/NativeIcon';
 import { toggleWindow, WindowName } from './utils/window';
+import AppsModal from './widget/Apps';
 
 const HELP = `
 Usage
@@ -43,5 +44,6 @@ app.start({
     ControlCenter();
     PasswordSearch();
     NativeIconProvider();
+    AppsModal();
   },
 });

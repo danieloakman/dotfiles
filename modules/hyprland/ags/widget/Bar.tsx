@@ -13,7 +13,7 @@ import OnscreenKeyboard from './OnscreenKeyboard';
 import { ControlCenterButton } from './ControlCenter';
 import { WINDOW_NAME } from '../utils/window';
 import { PasswordSearchButton } from './PasswordSearch';
-import AppsWidget from './Apps';
+import { AppsButton } from './Apps';
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -32,7 +32,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box class="start-box" $type="start" spacing={4} halign={Gtk.Align.START}>
           <OnscreenKeyboard />
           <Workspaces />
-          <AppsWidget/>
+          <AppsButton />
           {/* <Media /> */}
           <PasswordSearchButton />
         </box>

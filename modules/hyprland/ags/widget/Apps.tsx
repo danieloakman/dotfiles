@@ -1,8 +1,9 @@
 import Apps from 'gi://AstalApps';
 import Icon from '../components/Icon';
-import { Accessor, createComputed, createState, For } from 'ags';
-import { createExternalState } from '../utils/ags';
+import Modal from '../components/Modal';
+import { Accessor, For } from 'ags';
 import { Gtk } from 'ags/gtk4';
+import { hideWindow, toggleWindow } from '../utils/window';
 
 const apps = new Apps.Apps({
   nameMultiplier: 2,
@@ -13,29 +14,51 @@ const apps = new Apps.Apps({
 
 const appList = new Accessor(() => apps.get_list());
 
-export default function AppsWidget() {
+export default function AppsModal() {
   return (
-    <menubutton name="apps">
-      <Icon name="power" />
-
-      <popover
-        $={(self) => {
-          self.connect('notify::visible', () => {
-            console.log('visible', self.get_visible());
-          });
-        }}
-        heightRequest={500}
-        hexpand
+    <Modal name="apps" width={400} height={500} cssClasses={['bg-transparent']}>
+      <centerbox
+        cssClasses={['bg-bg-color', 'rounded-sm', 'p-sm']}
+        orientation={Gtk.Orientation.VERTICAL}
       >
+        <label $type="start" label="Apps" cssClasses={[]} />
+
         <scrolledwindow
-          maxContentHeight={500}
-          // vscrollbarPolicy={Gtk.PolicyType.ALWAYS}
+          $type="center"
           hscrollbarPolicy={Gtk.PolicyType.NEVER}
+          cssClasses={['py-sm']}
         >
-          <label label="Apps" />
-          <For each={appList}>{(app) => <button heightRequest={50} label={app.get_name()} />}</For>
+          <box vexpand hexpand={false} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+            <For each={appList}>
+              {(app) => (
+                <button
+                  onClicked={() => {
+                    app.launch();
+                    hideWindow('apps');
+                  }}
+                >
+                  <box spacing={4}>
+                    <image iconName={app.get_icon_name()} />
+                    <label label={app.get_name()} />
+                  </box>
+                </button>
+              )}
+            </For>
+          </box>
         </scrolledwindow>
-      </popover>
-    </menubutton>
+
+        <box $type="end">
+          <label label={appList((l) => `${l.length} apps`)} />
+        </box>
+      </centerbox>
+    </Modal>
+  );
+}
+
+export function AppsButton() {
+  return (
+    <button onClicked={() => toggleWindow('apps')}>
+      <Icon name="list" />
+    </button>
   );
 }
