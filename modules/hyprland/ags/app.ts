@@ -6,6 +6,7 @@ import PasswordSearch from './widget/PasswordSearch';
 import { NativeIconProvider } from './components/NativeIcon';
 import { toggleWindow, WindowName } from './utils/window';
 import AppsModal from './widget/Apps';
+import { loadStyles } from './utils/styles';
 
 const HELP = `
 Usage
@@ -37,6 +38,7 @@ app.start({
     }
   },
   main() {
+    loadStyles();
     const monitors = app
       .get_monitors()
       .sort((a, b) => b.get_geometry().width - a.get_geometry().width);

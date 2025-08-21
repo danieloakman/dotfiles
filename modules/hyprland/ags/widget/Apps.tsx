@@ -4,6 +4,7 @@ import Modal from '../components/Modal';
 import { Accessor, For } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import { hideWindow, toggleWindow } from '../utils/window';
+import { css } from '../utils/styles';
 
 const apps = new Apps.Apps({
   nameMultiplier: 2,
@@ -16,17 +17,17 @@ const appList = new Accessor(() => apps.get_list());
 
 export default function AppsModal() {
   return (
-    <Modal name="apps" width={400} height={500} cssClasses={['bg-transparent']}>
+    <Modal name="apps" width={400} height={500} cssClasses={css('bg-transparent')}>
       <centerbox
-        cssClasses={['bg-bg-color', 'rounded-sm', 'p-sm']}
+        cssClasses={css('bg-bg-color', 'rounded-sm', 'p-sm')}
         orientation={Gtk.Orientation.VERTICAL}
       >
-        <label $type="start" label="Apps" cssClasses={[]} />
+        <label $type="start" label="Apps" />
 
         <scrolledwindow
           $type="center"
           hscrollbarPolicy={Gtk.PolicyType.NEVER}
-          cssClasses={['py-sm']}
+          cssClasses={css('py-sm')}
         >
           <box vexpand hexpand={false} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
             <For each={appList}>
@@ -57,7 +58,7 @@ export default function AppsModal() {
 
 export function AppsButton() {
   return (
-    <button onClicked={() => toggleWindow('apps')}>
+    <button onClicked={() => toggleWindow('apps')} cssClasses={css('rounded-full')}>
       <Icon name="list" />
     </button>
   );
