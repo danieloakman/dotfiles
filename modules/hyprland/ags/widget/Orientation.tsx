@@ -17,6 +17,7 @@ const TRANSFORM_MAP: Record<`${RotateDirection}-${RotateTransform}`, RotateTrans
   'ccw-3': 2,
 };
 
+/** NOTE: This doesn't rotate the touch screen input. Only rotates the display. */
 export async function rotateOrientation(direction: RotateDirection) {
   const nextTransform = TRANSFORM_MAP[`${direction}-${currentTransform}`];
   await execAsync(`hyprctl keyword monitor eDP-1,preferred,auto,1,transform,${nextTransform}`);
