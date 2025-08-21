@@ -38,6 +38,7 @@ export const ICONS = [
   'keyboard-off',
   'search',
   'cable',
+  'list',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
