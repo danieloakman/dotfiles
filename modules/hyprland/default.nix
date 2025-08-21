@@ -358,6 +358,10 @@ in
     };
 
     home = {
+      sessionVariables = {
+        ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+      };
+
       file = {
         ".config/hypr/pyprland.toml".text = ''
           [pyprland]
