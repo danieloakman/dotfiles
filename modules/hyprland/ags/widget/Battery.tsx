@@ -118,9 +118,10 @@ export default function Battery() {
                             // Would be nice if this started in a floating window.
                             // `hyprctl dispatch exec [floating] kitty ...`, but I couldn't get this to work so far.
                             if (newMode === mode) return;
-                            execAsync(
-                              `kitty zsh -c "echo 'Enter your password to change to power saver mode.' && sudo tlp ${POWER_MODE_MAP[newMode]}"`,
-                            ).catch(console.error);
+                            console.error('power mode switch not implemented');
+                            // execAsync(
+                            //   `kitty zsh -c "echo 'Enter your password to change to power saver mode.' && sudo tlp ${POWER_MODE_MAP[newMode]}"`,
+                            // ).catch(console.error);
                           }}
                         />
                       </box>
