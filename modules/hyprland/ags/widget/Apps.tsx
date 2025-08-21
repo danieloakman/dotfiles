@@ -6,14 +6,16 @@ import { Gtk } from 'ags/gtk4';
 import { hideWindow, toggleWindow } from '../utils/window';
 import { css } from '../utils/styles';
 
-const apps = new Apps.Apps({
+export const apps = new Apps.Apps({
   nameMultiplier: 2,
   entryMultiplier: 0,
   executableMultiplier: 2,
   showHidden: true,
 });
 
-const appList = new Accessor(() => apps.get_list());
+export const appList = new Accessor(() =>
+  apps.get_list().sort((a, b) => a.get_name().localeCompare(b.get_name())),
+);
 
 export default function AppsModal() {
   return (
