@@ -39,6 +39,8 @@ export const ICONS = [
   'search',
   'cable',
   'list',
+  'rotate-cw',
+  'rotate-ccw',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
