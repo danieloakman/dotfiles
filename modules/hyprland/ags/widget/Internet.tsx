@@ -49,7 +49,12 @@ export default function Internet() {
               </box>
             );
           }
-          return <Icon name="cable" />;
+          return (
+            <box spacing={4}>
+              <Icon name="cable" />
+              <label label={primaryConnection.get_id()} />
+            </box>
+          );
         }}
       </With>
     </button>

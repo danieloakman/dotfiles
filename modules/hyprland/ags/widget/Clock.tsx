@@ -23,6 +23,7 @@ export default function Clock() {
               </box>
             </button>
           ))}
+
           <Gtk.Calendar />
         </box>
       </popover>

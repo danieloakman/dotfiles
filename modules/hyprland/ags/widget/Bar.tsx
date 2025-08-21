@@ -44,8 +44,8 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box class="end-box" $type="end" halign={Gtk.Align.END}>
           <Cpu />
           <Memory />
-          <Internet />
-          <Bluetooth />
+          {/* <Internet /> */}
+          {/* <Bluetooth /> */}
           <Volume />
           <Brightness />
           <Battery />

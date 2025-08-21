@@ -45,6 +45,11 @@ export default function ControlCenter() {
             <System />
           </box>
         </centerbox>
+
+        <box $type="center" orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+          <Internet />
+          <Bluetooth />
+        </box>
       </centerbox>
     </Modal>
   );
