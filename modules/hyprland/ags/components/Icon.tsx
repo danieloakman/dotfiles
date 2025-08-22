@@ -41,6 +41,10 @@ export const ICONS = [
   'list',
   'rotate-cw',
   'rotate-ccw',
+  'chevron-down',
+  'chevron-up',
+  'chevron-left',
+  'chevron-right',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
