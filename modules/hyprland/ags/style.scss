@@ -42,33 +42,12 @@ window.Bar {
   }
 }
 
-window.PasswordSearch {
+.btn-ghost {
   background-color: transparent;
-
-  .container {
-    background-color: $bg-color;
-    border-radius: 10px;
-    padding-right: 10px;
-    padding-left: 10px;
-    // padding: 10px;
-
-    > box {
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    .search-input {
-      border-radius: 10px;
-    }
-    .password-button {
-      background-color: transparent;
-      &:hover {
-        background-color: color-mix(in srgb, $bg-color 90%, white);
-      }
-    }
+  &:hover {
+    background-color: color-mix(in srgb, $bg-color 90%, white);
   }
 }
-
 
 .rounded-sm {
   border-radius: 10px;

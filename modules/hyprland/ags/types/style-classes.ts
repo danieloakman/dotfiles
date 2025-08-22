@@ -1,4 +1,5 @@
 export const STYLE_CLASSES = [
+  "btn-ghost",
   "rounded-sm",
   "rounded-md",
   "rounded-lg",

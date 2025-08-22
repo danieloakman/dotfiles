@@ -11,7 +11,7 @@ import { createExternalState } from '../utils/ags';
 import { iife } from '../utils/fn';
 import { readFileAsync, writeFileAsync } from 'ags/file';
 import DropDownSelect from '../components/DropDownSelect';
-import { css } from '../utils/styles';
+import { classes } from '../utils/styles';
 
 const WIDTH = 300;
 const HEIGHT = 400;
@@ -77,18 +77,14 @@ export default function PasswordSearch() {
   );
 
   return (
-    <Modal
-      name={WINDOW_NAME.PasswordSearch}
-      class="PasswordSearch"
-      onShow={() => searchInput.grab_focus()}
-    >
+    <Modal name={WINDOW_NAME.PasswordSearch} onShow={() => searchInput.grab_focus()}>
       <centerbox
-        class="container"
+        cssClasses={classes('bg-bg-color', 'p-sm', 'rounded-sm')}
         orientation={Gtk.Orientation.VERTICAL}
         widthRequest={WIDTH}
         heightRequest={HEIGHT}
       >
-        <box $type="start">
+        <box $type="start" cssClasses={classes()}>
           <SearchInput
             $={(self) => (searchInput = self)}
             hexpand
@@ -108,6 +104,7 @@ export default function PasswordSearch() {
         >
           <box
             spacing={4}
+            cssClasses={classes('py-sm')}
             vexpand
             hexpand={false}
             orientation={Gtk.Orientation.VERTICAL}
@@ -116,7 +113,7 @@ export default function PasswordSearch() {
             <For each={passwordsFiltered}>
               {(password) => (
                 <button
-                  class="password-button"
+                  cssClasses={classes('btn-ghost')}
                   onClicked={() => {
                     if (password.startsWith('otp/')) execAsync(`pass otp ${password} -c`);
                     else execAsync(`pass ${password} -c`);
@@ -138,11 +135,7 @@ export default function PasswordSearch() {
           </box>
 
           <box $type="end">
-            <DropDownSelect
-              options={SORT_OPTIONS}
-              selected={sortBy}
-              onSelected={setSortBy}
-            />
+            <DropDownSelect options={SORT_OPTIONS} selected={sortBy} onSelected={setSortBy} />
           </box>
         </centerbox>
       </centerbox>
@@ -152,7 +145,7 @@ export default function PasswordSearch() {
 
 export function PasswordSearchButton() {
   return (
-    <button cssClasses={css('rounded-full')} onClicked={() => toggleWindow('password-search')}>
+    <button cssClasses={classes('rounded-full')} onClicked={() => toggleWindow('password-search')}>
       <Icon name="search" />
     </button>
   );
