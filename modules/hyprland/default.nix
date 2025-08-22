@@ -409,6 +409,7 @@ in
         webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
       in
       {
+        # Webapps:
         youtube = {
           name = "YouTube";
           exec = webapp "https://www.youtube.com";
@@ -460,14 +461,14 @@ in
         };
         nixos-search-packages = {
           name = "NixOS Search Packages";
-          exec = webapp "https://search.nixos.org/packages";
+          exec = webapp "https://search.nixos.org/packages?channel=unstable";
           categories = [ "System" "Development" ];
           icon = "nixos";
           startupNotify = true;
         };
         home-manager-config = {
-          name = "Home Manager Configuration Search";
-          exec = webapp "https://home-manager-options.extranix.com";
+          name = "NixOS Home Manager Configuration Search";
+          exec = webapp "https://home-manager-options.extranix.com/?query=&release=master";
           categories = [ "System" "Development" ];
           icon = "home-manager";
           startupNotify = true;
