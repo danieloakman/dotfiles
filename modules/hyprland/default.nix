@@ -48,6 +48,7 @@ in
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
       uwsm # Universal Wayland session manager. Can do `uwsm `
+      cliphist # Clipboard history manager
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
