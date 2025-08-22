@@ -28,12 +28,14 @@ let
 in
 {
   imports = [
-    ./ags.nix
     ./bluetooth.nix
     ./lockscreen.nix
     ./terminal.nix
     ./touch-screen.nix
+
+    # UI Shells:
     # ./waybar.nix
+    ./ags
   ];
 
   environment = {
