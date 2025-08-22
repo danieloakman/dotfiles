@@ -5,6 +5,7 @@ import { execAsync } from 'ags/process';
 import Icon from '../components/Icon';
 import { clamp } from '../utils/number';
 import { noop } from '../utils/fn';
+import DropDownSelect from '../components/DropDownSelect';
 
 const POWER_MODES = ['performance', 'power-saver'] as const;
 export type PowerMode = (typeof POWER_MODES)[number];
@@ -87,49 +88,51 @@ export const battery = createPoll(
 
 export default function Battery() {
   return (
-    <With value={hasBattery}>
-      {(hasBattery) => {
-        if (!hasBattery) return null;
-        return (
-          <menubutton name="battery" hexpand halign={Gtk.Align.CENTER}>
-            <With value={battery}>
-              {({ iconName, percentage }) => (
-                <box spacing={4}>
-                  <Icon name={iconName} />
-                  <label label={`${percentage}%`} widthChars={3} />
-                </box>
-              )}
-            </With>
+    <box>
+      <With value={hasBattery}>
+        {(hasBattery) => {
+          if (!hasBattery) return null;
+          return (
+            <menubutton name="battery" hexpand halign={Gtk.Align.CENTER}>
+              <With value={battery}>
+                {({ iconName, percentage }) => (
+                  <box spacing={4}>
+                    <Icon name={iconName} />
+                    <label label={`${percentage}%`} widthChars={3} />
+                  </box>
+                )}
+              </With>
 
-            <popover>
-              <With value={powerMode}>
-                {(mode) =>
-                  mode && (
-                    <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
-                      {/* <With value={chargeTimeRemaining}>
+              <popover>
+                <With value={powerMode}>
+                  {(mode) =>
+                    mode && (
+                      <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+                        {/* <With value={chargeTimeRemaining}>
                   {(seconds) => (<label label={`${seconds}s`} />)}
                 </With> */}
-                      <Gtk.DropDown
-                        selected={POWER_MODES.indexOf(mode ?? 'performance')}
-                        model={Gtk.StringList.new(POWER_MODES.map((v) => v.toUpperCase()))}
-                        onNotifySelectedItem={(s) => {
-                          // Would be nice if this started in a floating window.
-                          // `hyprctl dispatch exec [floating] kitty ...`, but I couldn't get this to work so far.
-                          const mode =
-                            POWER_MODE_MAP[POWER_MODES[s.get_selected()] ?? 'performance'];
-                          execAsync(
-                            `kitty zsh -c "echo 'Enter your password to change to power saver mode.' && sudo tlp ${mode}"`,
-                          ).catch(console.error);
-                        }}
-                      />
-                    </box>
-                  )
-                }
-              </With>
-            </popover>
-          </menubutton>
-        );
-      }}
-    </With>
+                        <DropDownSelect
+                          options={POWER_MODES}
+                          selected={mode}
+                          onSelected={(newMode) => {
+                            // Would be nice if this started in a floating window.
+                            // `hyprctl dispatch exec [floating] kitty ...`, but I couldn't get this to work so far.
+                            if (newMode === mode) return;
+                            console.error('power mode switch not implemented');
+                            // execAsync(
+                            //   `kitty zsh -c "echo 'Enter your password to change to power saver mode.' && sudo tlp ${POWER_MODE_MAP[newMode]}"`,
+                            // ).catch(console.error);
+                          }}
+                        />
+                      </box>
+                    )
+                  }
+                </With>
+              </popover>
+            </menubutton>
+          );
+        }}
+      </With>
+    </box>
   );
 }

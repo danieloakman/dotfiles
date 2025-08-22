@@ -28,12 +28,14 @@ let
 in
 {
   imports = [
-    ./ags.nix
     ./bluetooth.nix
     ./lockscreen.nix
     ./terminal.nix
     ./touch-screen.nix
+
+    # UI Shells:
     # ./waybar.nix
+    ./ags
   ];
 
   environment = {
@@ -48,6 +50,7 @@ in
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
       uwsm # Universal Wayland session manager. Can do `uwsm `
+      cliphist # Clipboard history manager
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
@@ -126,7 +129,7 @@ in
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
-          "$mod, Q, exec, zsh -c 'passmenu'" # Works for now as a quick way to get to passwords
+          # "$mod, Q, exec, zsh -c 'passmenu'" # No longer needed as we have AGS based password search
           "$mod, B, exec, $browser"
 
           # Opted to use desktop entries instead of this.
@@ -358,6 +361,10 @@ in
     };
 
     home = {
+      sessionVariables = {
+        ELECTRON_OZONE_PLATFORM_HINT = "wayland";
+      };
+
       file = {
         ".config/hypr/pyprland.toml".text = ''
           [pyprland]

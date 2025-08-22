@@ -21,22 +21,24 @@ const [currentBrightness, setCurrentBrightness] = createExternalState<number>(0,
 
 export default function Brightness() {
   return (
-    <With value={maxBrightness}>
-      {(max) => {
-        const step = Math.ceil(max / 100);
-        const min = Math.ceil(max * 0.05);
-        if (min === max) return null;
-        return (
-          <menubutton name="brightness">
-            <Icon name="sun" />
+    <box>
+      <With value={maxBrightness}>
+        {(max) => {
+          const step = Math.ceil(max / 100);
+          const min = Math.ceil(max * 0.05);
+          if (min === max) return null;
+          return (
+            <menubutton name="brightness">
+              <Icon name="sun" />
 
-            <popover>
-              <BrightnessCtrl min={min} max={max} step={step} />
-            </popover>
-          </menubutton>
-        );
-      }}
-    </With>
+              <popover>
+                <BrightnessCtrl min={min} max={max} step={step} />
+              </popover>
+            </menubutton>
+          );
+        }}
+      </With>
+    </box>
   );
 }
 

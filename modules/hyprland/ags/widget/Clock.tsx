@@ -1,19 +1,31 @@
 import { Gtk } from 'ags/gtk4';
 import { createPoll } from 'ags/time';
+import { apps } from './Apps';
 
 // const dateCmd = `date +'%Y-%m-%d %I:%M:%S %p'`;
 const dateCmd = `date +'%I:%M:%S %p'`;
 
+const calendarApps = apps.fuzzy_query('calendar');
+
 export default function Clock() {
-  // const [isShown, setIsShown] = createState(false);
   const time = createPoll('', 1000, dateCmd);
-  // const label = createComputed([time, isShown], (t, isShown) => (isShown ? t : t.split(' ').slice(1).join(' ')));
 
   return (
-    <menubutton name='clock'>
+    <menubutton name="clock">
       <label label={time} />
       <popover>
-        <Gtk.Calendar />
+        <box orientation={Gtk.Orientation.VERTICAL}>
+          {calendarApps.map((app) => (
+            <button onClicked={() => app.launch()}>
+              <box spacing={4}>
+                <image iconName={app.get_icon_name()} />
+                <label label={app.get_name()} />
+              </box>
+            </button>
+          ))}
+
+          <Gtk.Calendar />
+        </box>
       </popover>
     </menubutton>
   );

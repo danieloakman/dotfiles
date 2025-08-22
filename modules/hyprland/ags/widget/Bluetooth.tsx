@@ -57,3 +57,18 @@ export default function Bluetooth() {
     </box>
   );
 }
+
+export function BluetoothConnection() {
+  return (
+    <box>
+      <With value={bluetoothStatus}>
+        {(status) => {
+          if (!status.powered) return <Icon name="bluetooth-off" tooltipText="Bluetooth Off" />;
+          else if (status.discovering) return <Icon name="bluetooth-searching" tooltipText="Bluetooth Discovering" />;
+          else if (status.paired) return <Icon name="bluetooth-connected" tooltipText="Bluetooth Paired" />;
+          else return <Icon name="bluetooth" tooltipText="Bluetooth On" />;
+        }}
+      </With>
+    </box>
+  );
+}
