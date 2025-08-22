@@ -4,7 +4,7 @@ import { toggleWindow, WINDOW_NAME, hideWindow } from '../utils/window';
 import Icon from '../components/Icon';
 import SearchInput from '../components/SearchInput';
 import { createComputed, createState, For } from 'ags';
-import { HOME, PASSWORD_STORE_DIR, CONFIG_DIR } from '../utils/env';
+import { PASSWORD_STORE_DIR, CONFIG_DIR } from '../utils/env';
 import { createPoll } from 'ags/time';
 import { execAsync } from 'ags/process';
 import { createExternalState } from '../utils/ags';
@@ -62,7 +62,6 @@ const { priority, incrementPriority } = iife(() => {
 });
 
 export default function PasswordSearch() {
-  let scrolledwindow: Gtk.ScrolledWindow;
   let searchInput: Gtk.SearchEntry;
   const [search, setSearch] = createState('');
   const [sortBy, setSortBy] = createState<SortOption>('priority');
@@ -99,7 +98,6 @@ export default function PasswordSearch() {
 
         <scrolledwindow
           $type="center"
-          $={(self) => (scrolledwindow = self)}
           hscrollbarPolicy={Gtk.PolicyType.NEVER}
         >
           <box
