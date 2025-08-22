@@ -1,8 +1,13 @@
-import { createBinding, createComputed, createConnection, createState, With } from 'ags';
+import { createBinding, createComputed, createConnection, createState, For, With } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Network from 'gi://AstalNetwork';
 import { Icon } from '../components/Icon';
 import { UnwrapAccessor } from '../utils/ags';
+import { iife, multiComparator } from '../utils/fn';
+import Accordion from '../components/Accordion';
+import { classes } from '../utils/styles';
+import { Fragment } from 'ags';
+import { execAsync } from 'ags/process';
 
 const network = Network.get_default();
 
@@ -13,15 +18,36 @@ export type NetworkClient = UnwrapAccessor<typeof client>;
 export type PrimaryConnection = ReturnType<UnwrapAccessor<NetworkClient['get_primary_connection']>>;
 
 /** The primary internet connection. Can be wired or wireless or none. */
-const getPrimaryConnection = (): PrimaryConnection | null =>
-  network.get_client().get_primary_connection();
-export const primaryConnection = createConnection(
-  getPrimaryConnection(),
-  [network, 'notify::primary', getPrimaryConnection],
-  [network, 'notify::wifi', getPrimaryConnection],
-  [network, 'notify::connectivity', getPrimaryConnection],
-);
-// const connections = // TODO: Get/bind all connections
+export const primaryConnection = iife(() => {
+  const get = (): PrimaryConnection | null => network.get_client().get_primary_connection();
+  return createConnection(
+    get(),
+    [network, 'notify::primary', get],
+    [network, 'notify::wifi', get],
+    [network, 'notify::connectivity', get],
+  );
+});
+export const allConnections = iife(() => {
+  const get = () => network.get_client().get_connections();
+  return createConnection(
+    get(),
+    [network, 'notify', get],
+    [network, 'notify::primary', get],
+    [network, 'notify::wifi', get],
+    [network, 'notify::connectivity', get],
+  );
+});
+export const activeConnections = iife(() => {
+  const get = () => network.get_client().get_active_connections();
+  return createConnection(
+    get(),
+    [network, 'notify::state', get],
+    [network, 'notify::connectivity', get],
+    [network, 'notify::primary', get],
+    [network, 'notify::wifi', get],
+  );
+});
+const connections = createComputed([allConnections, activeConnections], (...v) => v);
 
 export const primaryConnectionType = primaryConnection((c) =>
   !c ? null : c?.type.includes('wireless') ? 'wifi' : 'wired',
@@ -38,16 +64,73 @@ const data = createComputed([primaryConnection, wifi], (c, wifi) => ({
 
 export default function Internet() {
   const [isOpen, setIsOpen] = createState(false);
-  return (
-    <centerbox orientation={Gtk.Orientation.VERTICAL}>
-      <button $type="start" name="internet" onClicked={() => setIsOpen((v) => !v)}>
-        <CurrentConnection />
-      </button>
 
-      <revealer $type="center" revealChild={isOpen}>
-        <label label="Internet" />
-      </revealer>
-    </centerbox>
+  return (
+    <Accordion title="Internet" open={isOpen} onOpenChange={setIsOpen}>
+      <With value={connections}>
+        {([allConnections, activeConnections]) => (
+          <box spacing={4} cssClasses={classes('py-sm')} orientation={Gtk.Orientation.VERTICAL}>
+            {/* TODO: show "Open Network config" here: */}
+            {/* <button>
+              <box></box>
+            </button> */}
+
+            {allConnections
+              .map((connection) => {
+                const isActive = activeConnections.some((c) => c.get_id() === connection.get_id());
+                return { connection, isActive };
+              })
+              .sort(
+                multiComparator(
+                  (a, b) => (b.isActive && a.isActive ? 0 : b.isActive ? 1 : -1),
+                  (a, b) => a.connection.get_id().localeCompare(b.connection.get_id()),
+                ),
+              )
+              .map(({ connection, isActive }) => {
+                return (
+                  <centerbox cssClasses={classes('rounded-sm', 'bg-bg-color', 'btn-ghost')}>
+                    <button
+                      $type="start"
+                      cssClasses={classes('bg-transparent')}
+                      hexpand
+                      label={`${
+                        isActive ? '🟢' : '🔴'
+                      } ${connection.get_id()} (${connection.get_connection_type()})`}
+                      onClicked={() => {
+                        execAsync(`nmcli c ${isActive ? 'down' : 'up'} "${connection.get_id()}"`)
+                          .then(() =>
+                            console.log(`${isActive ? 'Down' : 'Up'} ${connection.get_id()}`),
+                          )
+                          .catch(console.error);
+                      }}
+                    />
+
+                    <button $type="end" cssClasses={classes('bg-transparent')}>
+                      <Icon name="chevron-down" />
+                    </button>
+                  </centerbox>
+                );
+              })}
+          </box>
+        )}
+      </With>
+      {/* <For each={allConnections}>
+          {(connection) => (
+            <centerbox>
+              <button
+                $type="start"
+                hexpand
+                label={`${connection.get_id()} (${connection.get_connection_type()})`}
+                onClicked={() => {}}
+              />
+
+              <button $type="end">
+                <Icon name="chevron-down" />
+              </button>
+            </centerbox>
+          )}
+        </For> */}
+    </Accordion>
   );
 }
 

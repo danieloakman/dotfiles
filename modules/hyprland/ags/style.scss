@@ -49,6 +49,9 @@ window.Bar {
   }
 }
 
+.rounded-none {
+  border-radius: 0px;
+}
 .rounded-sm {
   border-radius: 10px;
 }
@@ -63,6 +66,22 @@ window.Bar {
 }
 .rounded-full {
   border-radius: $rounded-full;
+}
+.rounded-l {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.rounded-r {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.rounded-t {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.rounded-b {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .p-xs {
@@ -92,7 +111,6 @@ window.Bar {
 .bg-transparent {
   background-color: transparent;
 }
-
 .bg-bg-color {
   background-color: $bg-color;
 }
