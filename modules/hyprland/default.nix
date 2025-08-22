@@ -36,6 +36,7 @@ in
     # UI Shells:
     # ./waybar.nix
     ./ags
+    # ./quickshell
   ];
 
   environment = {
