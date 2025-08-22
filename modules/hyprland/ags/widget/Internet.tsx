@@ -1,5 +1,5 @@
-import { createBinding, createComputed, createConnection, With } from 'ags';
-import { execAsync } from 'ags/process';
+import { createBinding, createComputed, createConnection, createState, With } from 'ags';
+import { Gtk } from 'ags/gtk4';
 import Network from 'gi://AstalNetwork';
 import { Icon } from '../components/Icon';
 import { UnwrapAccessor } from '../utils/ags';
@@ -21,6 +21,7 @@ export const primaryConnection = createConnection(
   [network, 'notify::wifi', getPrimaryConnection],
   [network, 'notify::connectivity', getPrimaryConnection],
 );
+// const connections = // TODO: Get/bind all connections
 
 export const primaryConnectionType = primaryConnection((c) =>
   !c ? null : c?.type.includes('wireless') ? 'wifi' : 'wired',
@@ -36,28 +37,41 @@ const data = createComputed([primaryConnection, wifi], (c, wifi) => ({
 }));
 
 export default function Internet() {
+  const [isOpen, setIsOpen] = createState(false);
   return (
-    <button name="internet" onClicked={() => execAsync('nm-connection-editor')}>
-      <With value={data}>
-        {({ primaryConnection, wifi }) => {
-          if (!primaryConnection) return <Icon name="wifi-off" />;
-          if (primaryConnection.type.includes('wireless') && wifi) {
-            return (
-              <box spacing={4}>
-                <Icon name={getWifiStrength(wifi.strength)} marginBottom={8} />
-                <label label={wifi.ssid} />
-              </box>
-            );
-          }
+    <centerbox orientation={Gtk.Orientation.VERTICAL}>
+      <button $type="start" name="internet" onClicked={() => setIsOpen((v) => !v)}>
+        <CurrentConnection />
+      </button>
+
+      <revealer $type="center" revealChild={isOpen}>
+        <label label="Internet" />
+      </revealer>
+    </centerbox>
+  );
+}
+
+function CurrentConnection() {
+  return (
+    <With value={data}>
+      {({ primaryConnection, wifi }) => {
+        if (!primaryConnection) return <Icon name="wifi-off" />;
+        if (primaryConnection.type.includes('wireless') && wifi) {
           return (
             <box spacing={4}>
-              <Icon name="cable" />
-              <label label={primaryConnection.get_id()} />
+              <Icon name={getWifiStrength(wifi.strength)} marginBottom={8} />
+              <label label={wifi.ssid} />
             </box>
           );
-        }}
-      </With>
-    </button>
+        }
+        return (
+          <box spacing={4}>
+            <Icon name="cable" />
+            <label label={primaryConnection.get_id()} />
+          </box>
+        );
+      }}
+    </With>
   );
 }
 

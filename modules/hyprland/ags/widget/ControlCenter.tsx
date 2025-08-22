@@ -16,13 +16,13 @@ import Icon from '../components/Icon';
 import { toggleWindow, WINDOW_NAME } from '../utils/window';
 import Modal from '../components/Modal';
 import Uptime from './Uptime';
-import { css } from '../utils/styles';
+import { classes } from '../utils/styles';
 
 export default function ControlCenter() {
   return (
     <Modal
       name={WINDOW_NAME.ControlCenter}
-      cssClasses={css('bg-transparent')}
+      cssClasses={classes('bg-transparent')}
       valign={Gtk.Align.START}
       halign={Gtk.Align.END}
       margin_top={20}
@@ -32,7 +32,7 @@ export default function ControlCenter() {
       transitionType={Gtk.RevealerTransitionType.CROSSFADE}
     >
       <centerbox
-        cssClasses={css('bg-bg-color', 'rounded-md', 'p-md')}
+        cssClasses={classes('bg-bg-color', 'rounded-md', 'p-md')}
         orientation={Gtk.Orientation.VERTICAL}
         vexpand
         hexpand
@@ -57,7 +57,7 @@ export default function ControlCenter() {
 
 export function ControlCenterButton() {
   return (
-    <button cssClasses={css('rounded-full')} onClicked={() => toggleWindow('control-center')}>
+    <button cssClasses={classes('rounded-full')} onClicked={() => toggleWindow('control-center')}>
       <box spacing={6}>
         <InternetConnection />
         <BluetoothConnection />

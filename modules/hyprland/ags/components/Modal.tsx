@@ -4,10 +4,15 @@ import { Accessor, createState } from 'ags';
 import { hideAllWindows, WindowName } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
 import { noop } from '../utils/fn';
+import { toAccessor } from '../utils/ags';
+import { classes } from '../utils/styles';
 
 const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;
 
-export type ModalProps = Omit<JSX.IntrinsicElements['window'], 'anchor' | `width${string}` | `height${string}`> & {
+export type ModalProps = Omit<
+  JSX.IntrinsicElements['window'],
+  'anchor' | `width${string}` | `height${string}`
+> & {
   name: WindowName;
   children?: any;
   width?: number;
@@ -34,6 +39,7 @@ export default function Modal({
   transitionDuration = 300,
   halign = Gtk.Align.CENTER,
   valign = Gtk.Align.CENTER,
+  cssClasses = [],
   onShow = noop,
   ...props
 }: ModalProps) {
@@ -70,6 +76,7 @@ export default function Modal({
       onNotifyVisible={({ visible }) => {
         if (visible) contentbox.grab_focus();
       }}
+      cssClasses={toAccessor(cssClasses).as((arr) => [...classes('bg-transparent'), ...arr])}
     >
       <Gtk.EventControllerKey
         onKeyPressed={({ widget }, keyval: number) => {

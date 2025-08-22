@@ -19,4 +19,5 @@ export type StyleClass = (typeof STYLE_CLASSES)[number];
   );
 }
 
-export const css = (...classes: StyleClass[]): string[] => classes
+/** Provides type safe class names as referenced in style.scss. */
+export const classes = (...classes: StyleClass[]): string[] => classes;
