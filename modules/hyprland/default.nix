@@ -529,6 +529,34 @@ in
           icon = "audible";
           startupNotify = true;
         };
+        shutdown = {
+          name = "Shutdown";
+          exec = "shutdown -P now";
+          categories = [ "System" ];
+          icon = "shutdown";
+          startupNotify = true;
+        };
+        reboot = {
+          name = "Reboot";
+          exec = "reboot";
+          categories = [ "System" ];
+          icon = "reboot";
+          startupNotify = true;
+        };
+        suspend = {
+          name = "Suspend";
+          exec = "systemctl suspend";
+          categories = [ "System" ];
+          icon = "suspend";
+          startupNotify = true;
+        };
+        logout = {
+          name = "Logout";
+          exec = "logout";
+          categories = [ "System" ];
+          icon = "logout";
+          startupNotify = true;
+        };
       };
   };
 }
