@@ -1,4 +1,4 @@
-import { createState, Node } from 'ags';
+import { Node } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Icon from './Icon';
 import { noop } from '../utils/fn';

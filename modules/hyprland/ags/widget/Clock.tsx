@@ -3,17 +3,17 @@ import { createPoll } from 'ags/time';
 import { apps } from './Apps';
 import { classes } from '../utils/styles';
 
-// const dateCmd = `date +'%Y-%m-%d %I:%M:%S %p'`;
-const dateCmd = `date +'%I:%M:%S %p'`;
+const DATE_CMD = `date +'%I:%M:%S %b %d'`;
+export const time = createPoll('', 1000, DATE_CMD);
 
 const calendarApps = apps.fuzzy_query('calendar');
 
 export default function Clock() {
-  const time = createPoll('', 1000, dateCmd);
-
   return (
-    <menubutton name="clock" cssClasses={classes('rounded-full')}>
-      <label label={time} />
+    // The circular class is specific to the Gtk.MenuButton widget and requests a rounded border.
+    <menubutton name="clock" cssClasses={['circular']}>
+      <label cssClasses={classes('px-sm')} label={time} />
+
       <popover>
         <box orientation={Gtk.Orientation.VERTICAL}>
           {calendarApps.map((app) => (
