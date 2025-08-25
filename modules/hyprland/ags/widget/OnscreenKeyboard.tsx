@@ -1,6 +1,6 @@
 import { execAsync } from 'ags/process';
 import Icon from '../components/Icon';
-import { createExternal, createState, With } from 'ags';
+import { createExternal, createState } from 'ags';
 import { noop } from '../utils/fn';
 
 const [isOnScreenKeyboardVisible, setIsOnScreenKeyboardVisible] = createState(false);
@@ -20,15 +20,10 @@ export const toggleOnScreenKeyboard = () =>
 export default function OnscreenKeyboard() {
   const icon = isOnScreenKeyboardVisible.as((v) => (v ? 'keyboard-off' : 'keyboard'));
   return (
-    <With value={hasTouchScreen}>
-      {(hasTouchScreen) => {
-        if (!hasTouchScreen) return null;
-        return (
-          <button onClicked={toggleOnScreenKeyboard} tooltipText="Toggle on-screen keyboard">
-            <Icon name={icon} />
-          </button>
-        );
-      }}
-    </With>
+    <box visible={hasTouchScreen}>
+      <button onClicked={toggleOnScreenKeyboard} tooltipText="Toggle on-screen keyboard">
+        <Icon name={icon} />
+      </button>
+    </box>
   );
 }

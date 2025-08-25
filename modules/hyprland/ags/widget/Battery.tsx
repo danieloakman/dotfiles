@@ -88,7 +88,7 @@ export const battery = createPoll(
 
 export default function Battery() {
   return (
-    <box>
+    <box visible={hasBattery}>
       <With value={hasBattery}>
         {(hasBattery) => {
           if (!hasBattery) return null;

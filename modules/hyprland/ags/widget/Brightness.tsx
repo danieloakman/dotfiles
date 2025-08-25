@@ -3,7 +3,6 @@ import { execAsync } from 'ags/process';
 import { noop } from '../utils/fn';
 import { createExternalState } from '../utils/ags';
 import Icon from '../components/Icon';
-import GObject from 'gi://GObject?version=2.0';
 
 export const maxBrightness = createExternal(900, (set) => {
   execAsync('brightnessctl max').then((stdout) => {
@@ -19,14 +18,18 @@ const [currentBrightness, setCurrentBrightness] = createExternalState<number>(0,
   return noop;
 });
 
+const canControlBrightness = maxBrightness(max => {
+  const min = Math.ceil(max * 0.05);
+  return min !== max;
+})
+
 export default function Brightness() {
   return (
-    <box>
+    <box visible={canControlBrightness}>
       <With value={maxBrightness}>
         {(max) => {
           const step = Math.ceil(max / 100);
           const min = Math.ceil(max * 0.05);
-          if (min === max) return null;
           return (
             <menubutton name="brightness">
               <Icon name="sun" />
