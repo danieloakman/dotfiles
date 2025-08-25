@@ -4,17 +4,49 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, inputs, config, pkgs, env, ... }:
+{ lib, inputs, config, pkgs, env, modulesPath, ... }:
 {
+  boot = {
+    initrd = {
+      availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+      kernelModules = [ ];
+    };
+    kernelModules = [ "kvm-intel" ];
+    extraModulePackages = [ ];
+  };
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/9c8b7313-0161-4435-a775-1a36b47978e9";
+    fsType = "ext4";
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/1977-CC9F";
+    fsType = "vfat";
+  };
+
+  swapDevices = [ ];
+
+  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+  # (the default) this is the recommended approach. When using systemd-networkd it's
+  # still possible to use this option, but it's recommended to use it in conjunction
+  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp0s20f3.useDHCP = lib.mkDefault true;
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
   imports = [
     # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-    (import ../../modules/system.nix { inherit lib inputs config pkgs env; })
-    ../../modules/desktop-pkgs.nix
-    ../../modules/user.nix
-    ../../modules/gnome
-    (import ../../modules/power-management.nix { inherit env; })
-    (import ../../modules/stylix.nix { inherit pkgs env; })
+    (modulesPath + "/installer/scan/not-detected.nix")
+
+    (import ../modules/system.nix { inherit lib inputs config pkgs env; })
+    ../modules/desktop-pkgs.nix
+    ../modules/user.nix
+    ../modules/gnome
+    (import ../modules/power-management.nix { inherit env; })
+    (import ../modules/stylix.nix { inherit pkgs env; })
   ];
 
   # Bootloader.

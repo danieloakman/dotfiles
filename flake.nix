@@ -98,7 +98,7 @@
             { }
             createNixCache
             { }
-            ./hosts/akatosh/configuration.nix
+            ./hosts/akatosh.nix
           ];
         };
         azura = nixpkgs.lib.nixosSystem {
@@ -117,7 +117,7 @@
             { }
             createNixCache
             { }
-            ./hosts/azura/configuration.nix
+            ./hosts/azura.nix
           ];
         };
         djo-tiny-laptop = nixpkgs.lib.nixosSystem {
@@ -136,7 +136,7 @@
             { }
             createNixCache
             { }
-            ./hosts/djo-tiny-laptop/configuration.nix
+            ./hosts/djo-tiny-laptop.nix
           ];
         };
       };
