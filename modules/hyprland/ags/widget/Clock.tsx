@@ -11,7 +11,7 @@ const calendarApps = apps.fuzzy_query('calendar');
 export default function Clock() {
   return (
     // The circular class is specific to the Gtk.MenuButton widget and requests a rounded border.
-    <menubutton name="clock" cssClasses={['circular']}>
+    <menubutton name="clock" cssClasses={classes('circular')}>
       <label cssClasses={classes('px-sm')} label={time} />
 
       <popover>

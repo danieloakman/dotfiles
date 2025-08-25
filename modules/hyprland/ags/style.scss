@@ -18,6 +18,9 @@ $rounded-full: 100px;
   }
 }
 
+// .circular is an already defined class for many GTK widgets, so we just want to define it here for it to be picked up in intellisense
+.circular {
+}
 .rounded-none {
   border-radius: 0px;
 }
