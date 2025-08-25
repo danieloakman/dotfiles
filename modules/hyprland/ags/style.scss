@@ -3,49 +3,18 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
 $fg-color: #{'@theme_fg_color'};
 $bg-color: #{'@theme_bg_color'};
+$selected-color: color-mix(in srgb, $bg-color 90%, white);
 $rounded-full: 100px;
 
-window.Bar {
-  background: transparent;
-  color: $fg-color;
-  font-weight: bold;
-  font-size: 14px;
-  opacity: 0.9;
-
-  > centerbox {
-    background: $bg-color;
-  }
-
-  .start-box {
-    margin: 4px;
-
-    .workspaces {
-      border-radius: $rounded-full;
-      background: color-mix(in srgb, $bg-color 90%, white);
-      button {
-        background: transparent;
-        border-radius: $rounded-full;
-      }
-      button.selected {
-        background: $fg-color;
-        color: $bg-color;
-        border-radius: $rounded-full;
-      }
-    }
-  }
-
-  .end-box {
-    button {
-      border-radius: $rounded-full;
-      margin: 4px;
-    }
-  }
+.selected {
+  background-color: $selected-color;
+  color: $bg-color;
 }
 
 .btn-ghost {
   background-color: transparent;
   &:hover {
-    background-color: color-mix(in srgb, $bg-color 90%, white);
+    background-color: $selected-color;
   }
 }
 
@@ -84,6 +53,22 @@ window.Bar {
   border-bottom-right-radius: 10px;
 }
 
+.m-xs {
+  margin: 4px;
+}
+.m-sm {
+  margin: 10px;
+}
+.m-md {
+  margin: 16px;
+}
+.m-lg {
+  margin: 22px;
+}
+.m-xl {
+  margin: 28px;
+}
+
 .p-xs {
   padding: 4px;
 }
@@ -114,7 +99,35 @@ window.Bar {
 .bg-bg-color {
   background-color: $bg-color;
 }
+.bg-fg-color {
+  background-color: $fg-color;
+}
+.bg-selected {
+  background-color: $selected-color;
+}
+.color-fg-color {
+  color: $fg-color;
+}
+.color-bg-color {
+  color: $bg-color;
+}
+.color-selected {
+  color: $selected-color;
+}
 
 .opacity-90 {
   opacity: 0.9;
+}
+
+.font-size-xs {
+  font-size: 10px;
+}
+.font-size-sm {
+  font-size: 12px;
+}
+.font-size-md {
+  font-size: 14px;
+}
+.font-size-lg {
+  font-size: 16px;
 }

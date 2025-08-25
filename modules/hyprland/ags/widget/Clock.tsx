@@ -1,6 +1,7 @@
 import { Gtk } from 'ags/gtk4';
 import { createPoll } from 'ags/time';
 import { apps } from './Apps';
+import { classes } from '../utils/styles';
 
 // const dateCmd = `date +'%Y-%m-%d %I:%M:%S %p'`;
 const dateCmd = `date +'%I:%M:%S %p'`;
@@ -11,7 +12,7 @@ export default function Clock() {
   const time = createPoll('', 1000, dateCmd);
 
   return (
-    <menubutton name="clock">
+    <menubutton name="clock" cssClasses={classes('rounded-full')}>
       <label label={time} />
       <popover>
         <box orientation={Gtk.Orientation.VERTICAL}>

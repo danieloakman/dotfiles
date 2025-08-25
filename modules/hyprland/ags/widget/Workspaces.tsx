@@ -1,48 +1,54 @@
-import { createComputed, createConnection, For } from 'ags';
+import { createBinding, createComputed, For, With } from 'ags';
 import Hyprland from 'gi://AstalHyprland';
+import { classes } from '../utils/styles';
 
 const hyprland = Hyprland.get_default();
 
-const getWorkspaces = () => hyprland.get_workspaces().filter((w) => !w.name.includes('special'));
-const workspaces = createConnection(
-  getWorkspaces(),
-  [hyprland, 'notify::workspaces', getWorkspaces],
-  [hyprland, 'workspace-added', getWorkspaces],
-  [hyprland, 'workspace-removed', getWorkspaces],
+export const workspaces = createBinding(hyprland, 'workspaces').as((ws) =>
+  ws.filter((w) => !w.name.includes('special')),
 );
-const getFocusedWorkspace = () => hyprland.get_focused_workspace().id;
-const focusedWorkspace = createConnection(getFocusedWorkspace(), [
-  hyprland,
-  'notify::focused-workspace',
-  getFocusedWorkspace,
-]);
-const focusedClient = createConnection(
-  hyprland.get_focused_client(),
-  [hyprland, 'notify::focused-client', () => hyprland.get_focused_client()],
-  [hyprland, 'notify::clients', () => hyprland.get_focused_client()],
-);
-
-const dataView = createComputed([workspaces, focusedWorkspace], (ws, f) =>
-  ws
-    .map((w) => ({
-      workspace: w,
-      selected: w.id === f,
-    }))
-    .sort(({ workspace: a }, { workspace: b }) => a.id - b.id),
-);
+export const focusedWorkspace = createBinding(hyprland, 'focusedWorkspace');
+export const focusedClient = createBinding(hyprland, 'focusedClient');
 
 export default function Workspaces() {
+  const dataView = createComputed([workspaces, focusedWorkspace], (ws, f) =>
+    ws
+      .map((w) => ({
+        workspace: w,
+        selected: w.id === f.id,
+      }))
+      .sort(({ workspace: a }, { workspace: b }) => a.id - b.id),
+  );
   return (
-    <box class="workspaces">
+    <box cssClasses={classes('rounded-full', 'bg-selected', 'color-fg-color')}>
       <For each={dataView}>
         {({ workspace, selected }) => {
           return (
-            <button class={selected ? 'selected' : ''} onClicked={() => workspace.focus()}>
+            <button
+              cssClasses={classes(
+                'rounded-full',
+                // @ts-ignore Ignore for now
+                ...(selected ? ['bg-fg-color', 'color-bg-color'] : ['bg-transparent']),
+              )}
+              onClicked={() => workspace.focus()}
+            >
               <label label={workspace.name.toString()} />
             </button>
           );
         }}
       </For>
+    </box>
+  );
+}
+
+export function FocusedClient() {
+  return (
+    <box name="focused-client">
+      <With value={focusedClient}>
+        {(client) => {
+          return client && <label label={client.get_title()} />;
+        }}
+      </With>
     </box>
   );
 }

@@ -1,4 +1,5 @@
 export const STYLE_CLASSES = [
+  "selected",
   "btn-ghost",
   "rounded-none",
   "rounded-sm",
@@ -10,6 +11,11 @@ export const STYLE_CLASSES = [
   "rounded-r",
   "rounded-t",
   "rounded-b",
+  "m-xs",
+  "m-sm",
+  "m-md",
+  "m-lg",
+  "m-xl",
   "p-xs",
   "p-sm",
   "p-md",
@@ -19,7 +25,16 @@ export const STYLE_CLASSES = [
   "py-sm",
   "bg-transparent",
   "bg-bg-color",
-  "opacity-90"
+  "bg-fg-color",
+  "bg-selected",
+  "color-fg-color",
+  "color-bg-color",
+  "color-selected",
+  "opacity-90",
+  "font-size-xs",
+  "font-size-sm",
+  "font-size-md",
+  "font-size-lg"
 ] as const;
 
 export type StyleClass = (typeof STYLE_CLASSES)[number];
