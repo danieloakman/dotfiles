@@ -12,13 +12,9 @@ import { WINDOW_NAME } from '../utils/window';
 import { PasswordSearchButton } from './PasswordSearch';
 import { AppsButton } from './Apps';
 import { classes } from '../utils/styles';
-import { createState } from 'ags';
-
-const o = Gtk.Stack;
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
-  const [open, setOpen] = createState(false);
 
   return (
     <window
@@ -42,7 +38,6 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box $type="center" spacing={4}>
           <FocusedClient />
           <Clock />
-          <button label="overlay" onClicked={() => setOpen((v) => !v)} />
         </box>
 
         <box $type="end" spacing={4} halign={Gtk.Align.END}>
