@@ -13,7 +13,11 @@ import { PasswordSearchButton } from './PasswordSearch';
 import { AppsButton } from './Apps';
 import { classes } from '../utils/styles';
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
+export interface BarProps {
+  monitor: Gdk.Monitor;
+}
+
+export default function Bar({ monitor }: BarProps) {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
 
   return (
@@ -21,7 +25,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       visible
       name={WINDOW_NAME.Bar}
       cssClasses={classes('bg-bg-color', 'color-fg-color', 'font-size-md', 'p-xs', 'opacity-90')}
-      gdkmonitor={gdkmonitor}
+      gdkmonitor={monitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={TOP | LEFT | RIGHT}
       application={app}
