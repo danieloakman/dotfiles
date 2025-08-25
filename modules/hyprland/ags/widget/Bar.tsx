@@ -4,10 +4,9 @@ import Battery from './Battery';
 import Clock from './Clock';
 import Volume from './Volume';
 import Workspaces, { FocusedClient } from './Workspaces';
-import Cpu from './Cpu';
-import Memory from './Memory';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
+import OSMonitoring from './OSMonitoring';
 import { ControlCenterButton } from './ControlCenter';
 import { WINDOW_NAME } from '../utils/window';
 import { PasswordSearchButton } from './PasswordSearch';
@@ -28,7 +27,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={app}
     >
       <centerbox cssName="centerbox">
-        <box $type="start" spacing={4} halign={Gtk.Align.START}>
+        <box $type="start" spacing={4}>
           <OnscreenKeyboard />
           <Workspaces />
           <AppsButton />
@@ -36,16 +35,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <PasswordSearchButton />
         </box>
 
-        <box $type="center" halign={Gtk.Align.CENTER}>
+        <box $type="center" spacing={4}>
           <FocusedClient />
           <Clock />
         </box>
 
-        <box $type="end" halign={Gtk.Align.END}>
-          <Cpu />
-          <Memory />
-          {/* <Internet /> */}
-          {/* <Bluetooth /> */}
+        <box $type="end" spacing={4} halign={Gtk.Align.END}>
+          <OSMonitoring />
           <Volume />
           <Brightness />
           <Battery />
