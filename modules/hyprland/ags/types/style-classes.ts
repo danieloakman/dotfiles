@@ -12,6 +12,7 @@ export const STYLE_CLASSES = [
   "rounded-r",
   "rounded-t",
   "rounded-b",
+  "border",
   "m-xs",
   "m-sm",
   "m-md",

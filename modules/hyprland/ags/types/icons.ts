@@ -133,7 +133,6 @@ export const NATIVE_ICONS = [
   "go-previous-symbolic-rtl",
   "go-up-symbolic",
   "google-chrome",
-  "guake",
   "image-missing",
   "insert-image",
   "insert-image-symbolic",
