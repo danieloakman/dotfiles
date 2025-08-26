@@ -1,3 +1,5 @@
+import { Time, timeout } from 'ags/time';
+
 export const once = <T extends (...args: any[]) => any>(fn: T) => {
   let result: ReturnType<T> | undefined;
   return (...args: Parameters<T>) => result ?? (result = fn.apply(fn, args));
@@ -23,5 +25,13 @@ export function multiComparator<T, R extends number | boolean>(
       if (result) return result;
     }
     return (isBool ? false : 0) as R;
+  };
+}
+
+export function debounce<T extends (...args: any[]) => any>(fn: T, delay: number) {
+  let t: Time | undefined;
+  return (...args: Parameters<T>) => {
+    t?.cancel();
+    t = timeout(delay, () => fn(...args));
   };
 }
