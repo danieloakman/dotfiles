@@ -1,11 +1,20 @@
 import { execAsync } from 'ags/process';
 import { Gtk } from 'ags/gtk4';
 import Icon from '../components/Icon';
+import { classes } from '../utils/styles';
 
 export default function System() {
   return (
-    <menubutton halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} tooltipText="System Options">
-      <Icon name="power" />
+    <menubutton
+      halign={Gtk.Align.CENTER}
+      valign={Gtk.Align.CENTER}
+      tooltipText="System Options"
+      cssClasses={classes('circular')}
+    >
+      <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+        <Icon name="power" />
+      </box>
+
       <popover vexpand hexpand>
         <box spacing={4} orientation={Gtk.Orientation.VERTICAL}>
           <button label="Shutdown" onClicked={() => execAsync('shutdown -P now')} />
