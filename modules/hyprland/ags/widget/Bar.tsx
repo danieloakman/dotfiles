@@ -2,7 +2,6 @@ import app from 'ags/gtk4/app';
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import Battery from './Battery';
 import Clock from './Clock';
-import Volume from './Volume';
 import Workspaces, { FocusedClient } from './Workspaces';
 import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
@@ -40,7 +39,6 @@ export default function Bar({ monitor }: BarProps) {
         </box>
 
         <box $type="center" spacing={4}>
-          <FocusedClient />
           <Clock />
         </box>
 
