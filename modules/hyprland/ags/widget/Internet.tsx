@@ -66,7 +66,16 @@ export default function Internet() {
   const [isOpen, setIsOpen] = createState(false);
 
   return (
-    <Accordion title={() => 'Internet'} open={isOpen} onOpenChange={setIsOpen}>
+    <Accordion
+      title={() => (
+        <box spacing={4}>
+          <InternetConnection />
+          <label label={primaryConnection((c) => c?.get_id() ?? 'Internet')} />
+        </box>
+      )}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
       <With value={connections}>
         {([allConnections, activeConnections]) => (
           <box spacing={4} cssClasses={classes('py-sm')} orientation={Gtk.Orientation.VERTICAL}>
@@ -131,30 +140,6 @@ export default function Internet() {
           )}
         </For> */}
     </Accordion>
-  );
-}
-
-function CurrentConnection() {
-  return (
-    <With value={data}>
-      {({ primaryConnection, wifi }) => {
-        if (!primaryConnection) return <Icon name="wifi-off" />;
-        if (primaryConnection.type.includes('wireless') && wifi) {
-          return (
-            <box spacing={4}>
-              <Icon name={getWifiStrength(wifi.strength)} marginBottom={8} />
-              <label label={wifi.ssid} />
-            </box>
-          );
-        }
-        return (
-          <box spacing={4}>
-            <Icon name="cable" />
-            <label label={primaryConnection.get_id()} />
-          </box>
-        );
-      }}
-    </With>
   );
 }
 
