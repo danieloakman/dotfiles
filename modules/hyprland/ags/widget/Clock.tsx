@@ -15,9 +15,9 @@ export default function Clock() {
       <label cssClasses={classes('px-sm')} label={time} />
 
       <popover>
-        <box orientation={Gtk.Orientation.VERTICAL}>
+        <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
           {calendarApps.map((app) => (
-            <button onClicked={() => app.launch()}>
+            <button onClicked={() => app.launch()} cssClasses={classes('btn-ghost')}>
               <box spacing={4}>
                 <image iconName={app.get_icon_name()} />
                 <label label={app.get_name()} />
