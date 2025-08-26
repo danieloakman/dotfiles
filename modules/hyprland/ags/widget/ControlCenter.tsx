@@ -30,7 +30,7 @@ export default function ControlCenter() {
       >
         <centerbox
           orientation={Gtk.Orientation.HORIZONTAL}
-          cssClasses={classes('border', 'rounded-sm', 'p-sm')}
+          cssClasses={classes('border', 'rounded-sm', 'p-xs')}
         >
           <box $type="start" spacing={4} valign={Gtk.Align.CENTER}>
             <Uptime />
