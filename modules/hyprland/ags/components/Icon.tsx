@@ -45,6 +45,7 @@ export const ICONS = [
   'chevron-up',
   'chevron-left',
   'chevron-right',
+  'check',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
@@ -61,14 +62,15 @@ async function loadIcon(name: Icon.Name, color: string) {
 export declare namespace Icon {
   export type Name = (typeof ICONS)[number];
   export interface Props
-    extends Partial<Omit<Gtk.Image.ConstructorProps, 'iconName' | 'pixelSize' | 'file' | 'name'>> {
+    extends Partial<Omit<Gtk.Image.ConstructorProps, 'iconName' | 'pixelSize' | 'file' | 'name' | 'visible'>> {
     name: Name | Accessor<Name>;
     size?: number | Accessor<number>;
     color?: string | Accessor<string>;
+    visible?: boolean | Accessor<boolean>;
   }
 }
 
-export function Icon({ name, size = 18, color = Theme.fgColor, ...props }: Icon.Props) {
+export function Icon({ name, size = 18, color = Theme.fgColor, visible, ...props }: Icon.Props) {
   const computed = createComputed(
     [toAccessor(name), toAccessor(color)],
     (name, color) => [name, color] as const,
@@ -84,7 +86,7 @@ export function Icon({ name, size = 18, color = Theme.fgColor, ...props }: Icon.
   });
 
   return (
-    <box name={`${name}-${color}-icon-box`}>
+    <box name={`${name}-${color}-icon-box`} visible={visible}>
       <With value={iconPath}>
         {(iconPath) =>
           iconPath && (
