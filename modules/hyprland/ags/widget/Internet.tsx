@@ -66,7 +66,7 @@ export default function Internet() {
   const [isOpen, setIsOpen] = createState(false);
 
   return (
-    <Accordion title="Internet" open={isOpen} onOpenChange={setIsOpen}>
+    <Accordion title={() => 'Internet'} open={isOpen} onOpenChange={setIsOpen}>
       <With value={connections}>
         {([allConnections, activeConnections]) => (
           <box spacing={4} cssClasses={classes('py-sm')} orientation={Gtk.Orientation.VERTICAL}>
@@ -160,12 +160,22 @@ function CurrentConnection() {
 
 /** Displays an icon to denote the internet connection type. */
 export function InternetConnection() {
+  const computed = createComputed([primaryConnectionType, wifi], (type, wifi) => ({
+    type,
+    wifi,
+  }));
   return (
     <box>
-      <With value={primaryConnectionType}>
-        {(type) => {
+      <With value={computed}>
+        {({ type, wifi }) => {
           if (!type) return <Icon name="wifi-off" tooltipText="No internet" />;
-          else if (type === 'wifi') return <Icon name="wifi" tooltipText="Wifi Connection" />;
+          else if (type === 'wifi')
+            return (
+              <Icon
+                name={wifi ? getWifiStrength(wifi.strength) : 'wifi'}
+                tooltipText="Wifi Connection"
+              />
+            );
           else if (type === 'wired') return <Icon name="cable" tooltipText="Wired Connection" />;
           else return <Icon name="wifi-off" tooltipText="No internet" />;
         }}

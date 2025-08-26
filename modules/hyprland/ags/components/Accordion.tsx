@@ -1,4 +1,4 @@
-import { Node } from 'ags';
+import { Node, With } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Icon from './Icon';
 import { noop } from '../utils/fn';
@@ -6,7 +6,7 @@ import { Accessor } from 'ags';
 import { toAccessor } from '../utils/ags';
 
 export interface AccordionProps {
-  title: string | Accessor<string>;
+  title: () => Node;
   children: Node;
   cssClasses?: string[];
   css?: string;
@@ -28,8 +28,10 @@ export default function Accordion({
     <centerbox orientation={Gtk.Orientation.VERTICAL} cssClasses={cssClasses} css={css}>
       <button $type="start" onClicked={() => onOpenChange(!_open.get())}>
         <centerbox>
-          <label $type="start" label={title} />
-          <Icon $type="end" name={_open((v) => (v ? 'chevron-up' : 'chevron-down'))} />
+          <box $type="start">
+            {title()}
+          </box>
+          <Icon $type="end" name={_open((v) => (v ? 'chevron-down' : 'chevron-right'))} />
         </centerbox>
       </button>
 

@@ -21,11 +21,7 @@ export default function Volume() {
   return (
     <menubutton name="volume" hexpand halign={Gtk.Align.CENTER}>
       <box spacing={4}>
-        <Icon
-          name={createComputed([muted, volume], (m, v) =>
-            m ? 'volume-off' : v < 0.33 ? 'volume' : v < 0.66 ? 'volume-1' : 'volume-2',
-          )}
-        />
+        <VolumeIndicator />
         <label label={volume.as((v) => v.toFixed(2))} widthChars={3} />
       </box>
       <popover hexpand>
@@ -54,5 +50,15 @@ export default function Volume() {
         </box>
       </popover>
     </menubutton>
+  );
+}
+
+export function VolumeIndicator() {
+  return (
+    <Icon
+      name={createComputed([muted, volume], (m, v) =>
+        m ? 'volume-off' : v < 0.10 ? 'volume' : v < 0.33 ? 'volume-1' : 'volume-2',
+      )}
+    />
   );
 }
