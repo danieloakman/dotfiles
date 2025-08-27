@@ -11,9 +11,11 @@ import { WINDOW_NAME } from '../utils/window';
 import { PasswordSearchButton } from './PasswordSearch';
 import { AppsButton } from './Apps';
 import { classes } from '../utils/styles';
+import Orientation from './Orientation';
+import { Accessor } from 'ags';
 
 export interface BarProps {
-  monitor: Gdk.Monitor;
+  monitor: Gdk.Monitor | Accessor<Gdk.Monitor>;
 }
 
 export default function Bar({ monitor }: BarProps) {
@@ -36,6 +38,7 @@ export default function Bar({ monitor }: BarProps) {
           <AppsButton />
           {/* <Media /> */}
           <PasswordSearchButton />
+          <Orientation />
         </box>
 
         <box $type="center" spacing={4}>

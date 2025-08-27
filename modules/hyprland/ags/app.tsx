@@ -8,6 +8,7 @@ import { toggleWindow, WindowName } from './utils/window';
 import AppsModal from './widget/Apps';
 import { loadStyles } from './utils/styles';
 import { createBinding, For, Fragment, With } from 'ags';
+import { raise } from './utils/fn';
 
 const HELP = `
 Usage
@@ -43,11 +44,11 @@ app.start({
     const monitors = createBinding(app, 'monitors').as((m) =>
       m.sort((a, b) => b.get_geometry().width - a.get_geometry().width),
     );
-    const primaryMonitor = monitors.as((m) => m[0]);
+    const primaryMonitor = monitors.as((m) => m[0] ?? raise('No monitors found'));
     return (
       <Fragment>
         {/* Put the Bar on the primary monitor, which is the largest monitor */}
-        <With value={primaryMonitor}>{(m) => m && <Bar monitor={m} />}</With>
+        <Bar monitor={primaryMonitor} />
         <ControlCenter />
         <PasswordSearch />
         <AppsModal />
