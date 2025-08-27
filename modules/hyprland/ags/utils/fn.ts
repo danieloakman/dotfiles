@@ -2,7 +2,7 @@ import { Time, timeout } from 'ags/time';
 
 export const once = <T extends (...args: any[]) => any>(fn: T) => {
   let result: ReturnType<T> | undefined;
-  return (...args: Parameters<T>) => result ?? (result = fn.apply(fn, args));
+  return (...args: Parameters<T>) => result ?? (result = fn.apply(fn, args)) as ReturnType<T>;
 };
 
 export const noop = () => {};
