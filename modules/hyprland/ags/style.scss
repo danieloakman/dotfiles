@@ -76,6 +76,22 @@ $border-color: color-mix(in srgb, $fg-color 80%, transparent);
 .m-xl {
   margin: 28px;
 }
+.mx-xs {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.mx-sm {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.my-xs {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.my-sm {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
 .p-xs {
   padding: 4px;
