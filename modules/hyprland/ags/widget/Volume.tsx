@@ -61,7 +61,6 @@ export default function Volume() {
           <For each={speakers}>
             {(speaker) => {
               const isDefault = createBinding(speaker, 'is_default').as((v) => !!v);
-              console.log(isDefault.get());
               return (
                 <button onClicked={() => speaker.set_is_default(true)} cssClasses={classes('btn-ghost')}>
                   <centerbox>

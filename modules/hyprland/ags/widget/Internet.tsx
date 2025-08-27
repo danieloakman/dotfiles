@@ -101,7 +101,6 @@ export default function Internet() {
                     <button
                       $type="start"
                       cssClasses={classes('bg-transparent')}
-                      hexpand
                       label={`${
                         isActive ? '🟢' : '🔴'
                       } ${connection.get_id()} (${connection.get_connection_type()})`}
@@ -123,22 +122,6 @@ export default function Internet() {
           </box>
         )}
       </With>
-      {/* <For each={allConnections}>
-          {(connection) => (
-            <centerbox>
-              <button
-                $type="start"
-                hexpand
-                label={`${connection.get_id()} (${connection.get_connection_type()})`}
-                onClicked={() => {}}
-              />
-
-              <button $type="end">
-                <Icon name="chevron-down" />
-              </button>
-            </centerbox>
-          )}
-        </For> */}
     </Accordion>
   );
 }
