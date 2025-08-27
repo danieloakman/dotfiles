@@ -1,5 +1,6 @@
 import { With } from 'ags';
 import { createPoll } from 'ags/time';
+import Icon from '../components/Icon';
 
 export const uptime = createPoll(
   '',
@@ -13,7 +14,8 @@ export const uptime = createPoll(
 
 export default function Uptime() {
   return (
-    <box>
+    <box spacing={4}>
+      <Icon name="hourglass" />
       <With value={uptime}>{([hours, minutes]) => <label label={`Uptime: ${hours}h, ${minutes}m`} />}</With>
     </box>
   );

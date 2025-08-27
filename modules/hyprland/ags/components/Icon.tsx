@@ -46,6 +46,7 @@ export const ICONS = [
   'chevron-left',
   'chevron-right',
   'check',
+  'hourglass',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
@@ -62,7 +63,9 @@ async function loadIcon(name: Icon.Name, color: string) {
 export declare namespace Icon {
   export type Name = (typeof ICONS)[number];
   export interface Props
-    extends Partial<Omit<Gtk.Image.ConstructorProps, 'iconName' | 'pixelSize' | 'file' | 'name' | 'visible'>> {
+    extends Partial<
+      Omit<Gtk.Image.ConstructorProps, 'iconName' | 'pixelSize' | 'file' | 'name' | 'visible'>
+    > {
     name: Name | Accessor<Name>;
     size?: number | Accessor<number>;
     color?: string | Accessor<string>;

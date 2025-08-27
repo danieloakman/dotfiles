@@ -1,4 +1,4 @@
-import { Accessor, createConnection } from 'ags';
+import { Accessor } from 'ags';
 import { Gtk } from 'ags/gtk4';
 
 export declare namespace Editable {
