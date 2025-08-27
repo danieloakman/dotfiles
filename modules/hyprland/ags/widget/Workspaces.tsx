@@ -1,14 +1,6 @@
-import { createBinding, createComputed, For, With } from 'ags';
-import Hyprland from 'gi://AstalHyprland';
+import { createComputed, For, With } from 'ags';
 import { classes } from '../utils/styles';
-
-const hyprland = Hyprland.get_default();
-
-export const workspaces = createBinding(hyprland, 'workspaces').as((ws) =>
-  ws.filter((w) => !w.name.includes('special')),
-);
-export const focusedWorkspace = createBinding(hyprland, 'focusedWorkspace');
-export const focusedClient = createBinding(hyprland, 'focusedClient');
+import { workspaces, focusedWorkspace, focusedClient } from '../utils/hyprland';
 
 export default function Workspaces() {
   const dataView = createComputed([workspaces, focusedWorkspace], (ws, f) =>
