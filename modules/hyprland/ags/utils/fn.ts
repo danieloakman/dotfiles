@@ -35,3 +35,10 @@ export function debounce<T extends (...args: any[]) => any>(fn: T, delay: number
     t = timeout(delay, () => fn(...args));
   };
 }
+
+export function raise(error: Error): never;
+export function raise(message: string): never;
+export function raise(messageOrError: string | Error): never {
+  if (messageOrError instanceof Error) throw messageOrError;
+  throw new Error(messageOrError);
+}
