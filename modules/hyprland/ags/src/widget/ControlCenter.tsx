@@ -24,8 +24,6 @@ export default function ControlCenter() {
       <box
         cssClasses={classes('bg-bg-color', 'rounded-md', 'p-md')}
         orientation={Gtk.Orientation.VERTICAL}
-        vexpand
-        hexpand
         spacing={4}
       >
         <centerbox

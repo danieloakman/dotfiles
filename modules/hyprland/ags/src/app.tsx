@@ -7,8 +7,8 @@ import { NativeIconProvider } from './components/NativeIcon';
 import { toggleWindow, WindowName } from './utils/window';
 import AppsModal from './widget/Apps';
 import { loadStyles } from './utils/styles';
-import { createBinding, For, Fragment, With } from 'ags';
-import { raise } from './utils/fn';
+import { createBinding, Fragment } from 'ags';
+import { raise } from './src/utils/fn';
 
 const HELP = `
 Usage

@@ -11,6 +11,9 @@
     // "checkJs": true,
     // "allowJs": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "ags/gtk4"
+    "jsxImportSource": "ags/gtk4",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

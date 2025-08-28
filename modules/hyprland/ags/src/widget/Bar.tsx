@@ -7,10 +7,10 @@ import Brightness from './Brightness';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import OSMonitoring from './OSMonitoring';
 import { ControlCenterButton } from './ControlCenter';
-import { WINDOW_NAME } from '../utils/window';
+import { WINDOW_NAME } from '@/utils/window';
 import { PasswordSearchButton } from './PasswordSearch';
 import { AppsButton } from './Apps';
-import { classes } from '../utils/styles';
+import { classes } from '@/utils/styles';
 import Orientation from './Orientation';
 import { Accessor } from 'ags';
 
