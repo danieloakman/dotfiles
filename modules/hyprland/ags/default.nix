@@ -9,7 +9,7 @@
       settings = {
         exec-once = [
           # We could maybe just call it from zsh too, and that would include all env vars we'd expect in dev to be set
-          "PASSWORD_STORE_DIR=\"/home/${env.user}/.local/share/password-store\" ags run ./src/app.tsx > /tmp/ags.log 2>&1"
+          "PASSWORD_STORE_DIR=\"/home/${env.user}/.local/share/password-store\" ags run > /tmp/ags.log 2>&1"
         ];
 
         bind = [

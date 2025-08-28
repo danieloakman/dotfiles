@@ -1,12 +1,12 @@
 import app from 'ags/gtk4/app';
-import style from './style.scss';
-import Bar from './widget/Bar';
-import ControlCenter from './widget/ControlCenter';
-import PasswordSearch from './widget/PasswordSearch';
-import { NativeIconProvider } from './components/NativeIcon';
-import { toggleWindow, WindowName } from './utils/window';
-import AppsModal from './widget/Apps';
-import { loadStyles } from './utils/styles';
+import style from './src/style.scss';
+import Bar from './src/widget/Bar';
+import ControlCenter from './src/widget/ControlCenter';
+import PasswordSearch from './src/widget/PasswordSearch';
+import { NativeIconProvider } from './src/components/NativeIcon';
+import { toggleWindow, WindowName } from './src/utils/window';
+import AppsModal from './src/widget/Apps';
+import { loadStyles } from './src/utils/styles';
 import { createBinding, Fragment } from 'ags';
 import { raise } from './src/utils/fn';
 
