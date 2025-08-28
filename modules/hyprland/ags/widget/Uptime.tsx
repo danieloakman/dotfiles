@@ -1,22 +1,19 @@
-import { With } from 'ags';
 import { createPoll } from 'ags/time';
 import Icon from '../components/Icon';
+import { INT_REGEX } from '../utils/number';
 
-export const uptime = createPoll(
-  '',
-  60000,
-  'uptime',
-)((s) => {
-  const match = s.match(/up\s+(\d+:\d+)/)?.[1] ?? '00:00';
-  const [hours, minutes] = match.split(':').map(Number);
-  return [hours, minutes] as const;
+export const uptime = createPoll('', 60000, 'uptime').as((stdout) => {
+  const [, up, time] = stdout.split('  ');
+  const days = parseInt(up?.match(INT_REGEX)?.[0] ?? '0');
+  const [hours = 0, minutes = 0] = time?.replace(',', '')?.split(':').map(Number) ?? [0, 0];
+  return [hours + 24 * days, minutes] as const;
 });
 
 export default function Uptime() {
   return (
     <box spacing={4}>
       <Icon name="hourglass" />
-      <With value={uptime}>{([hours, minutes]) => <label label={`Uptime: ${hours}h, ${minutes}m`} />}</With>
+      <label label={uptime(([hours, minutes]) => `${hours}h, ${minutes}m`)} />
     </box>
   );
 }
