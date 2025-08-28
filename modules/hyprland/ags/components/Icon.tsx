@@ -47,6 +47,7 @@ export const ICONS = [
   'chevron-right',
   'check',
   'hourglass',
+  'dot',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
