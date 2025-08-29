@@ -8,6 +8,7 @@ import Accordion from '../components/Accordion';
 import { classes } from '../utils/styles';
 import { Fragment } from 'ags';
 import { execAsync } from 'ags/process';
+import { apps } from './Apps';
 
 const network = Network.get_default();
 
@@ -79,10 +80,15 @@ export default function Internet() {
       <With value={connections}>
         {([allConnections, activeConnections]) => (
           <box spacing={4} cssClasses={classes('py-sm')} orientation={Gtk.Orientation.VERTICAL}>
-            {/* TODO: show "Open Network config" here: */}
-            {/* <button>
-              <box></box>
-            </button> */}
+            <button
+              cssClasses={classes('btn-ghost')}
+              label="Open Network Connection Manager"
+              onClicked={() =>
+                execAsync('nm-connection-editor').catch((err) =>
+                  console.error('Failed to open network connection manager', err),
+                )
+              }
+            />
 
             {allConnections
               .map((connection) => {
