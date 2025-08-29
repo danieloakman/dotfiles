@@ -6,6 +6,7 @@ import { classes } from '../utils/styles';
 import { clamp } from '../utils/number';
 import { debounce } from '../utils/fn';
 import { Gtk } from 'ags/gtk4';
+import { createBooleanState } from '@/utils/ags';
 
 const wp = Wp.get_default();
 const defaultSpeaker = createBinding(wp.audio, 'defaultSpeaker');
@@ -24,7 +25,7 @@ export const setVolume = debounce((value: number) => {
 }, 100);
 
 export default function Volume() {
-  const [open, setOpen] = createState(false);
+  const [open, { toggle: toggleOpen }] = createBooleanState(false);
 
   return (
     <box
@@ -52,7 +53,7 @@ export default function Volume() {
         <label label={volume.as((v) => `${clamp(Math.round(v * 100), 0, 100)}%`)} widthChars={3} />
 
         <button
-          onClicked={() => setOpen((v) => !v)}
+          onClicked={toggleOpen}
           cssClasses={classes('btn-ghost', 'rounded-full')}
         >
           <Icon name={open((v) => (v ? 'chevron-down' : 'chevron-right'))} />

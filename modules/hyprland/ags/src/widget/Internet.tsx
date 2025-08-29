@@ -2,7 +2,7 @@ import { createBinding, createComputed, createConnection, createState, For, With
 import { Gtk } from 'ags/gtk4';
 import Network from 'gi://AstalNetwork';
 import { Icon } from '../components/Icon';
-import { UnwrapAccessor } from '../utils/ags';
+import { createBooleanState, UnwrapAccessor } from '../utils/ags';
 import { iife, multiComparator } from '../utils/fn';
 import Accordion from '../components/Accordion';
 import { classes } from '../utils/styles';
@@ -63,7 +63,7 @@ const data = createComputed([primaryConnection, wifi], (c, wifi) => ({
 }));
 
 export default function Internet() {
-  const [isOpen, setIsOpen] = createState(false);
+  const [isOpen, { toggle: toggleIsOpen }] = createBooleanState(false);
 
   return (
     <Accordion
@@ -74,7 +74,7 @@ export default function Internet() {
         </box>
       )}
       open={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={toggleIsOpen}
     >
       <With value={connections}>
         {([allConnections, activeConnections]) => (
