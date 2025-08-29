@@ -12,7 +12,10 @@ import { PasswordSearchButton } from './PasswordSearch';
 import { AppsButton } from './Apps';
 import { classes } from '@/utils/styles';
 import Orientation from './Orientation';
-import { Accessor } from 'ags';
+import { Accessor, createExternal } from 'ags';
+import HorizontalRevealer from '@/components/HorizontalRevealer';
+import { noop } from '@/utils/fn';
+import { hasTouchDevice } from '@/utils/hyprland';
 
 export interface BarProps {
   monitor: Gdk.Monitor | Accessor<Gdk.Monitor>;
@@ -33,12 +36,19 @@ export default function Bar({ monitor }: BarProps) {
     >
       <centerbox cssName="centerbox">
         <box $type="start" spacing={4}>
-          <OnscreenKeyboard />
+          <HorizontalRevealer
+            visible={createExternal(false, (set) => {
+              hasTouchDevice().then(set);
+              return noop;
+            })}
+          >
+            <OnscreenKeyboard />
+            <Orientation />
+          </HorizontalRevealer>
           <Workspaces />
           <AppsButton />
           {/* <Media /> */}
           <PasswordSearchButton />
-          <Orientation />
         </box>
 
         <box $type="center" spacing={4}>
