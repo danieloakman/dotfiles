@@ -5,9 +5,10 @@ import { readFileAsync, writeFileAsync } from 'ags/file';
 import { Theme } from '../utils/theme';
 import { execAsync } from 'ags/process';
 import { toAccessor } from '../utils/ags';
+import { raise } from '@/utils/fn';
 
 const CURRENT_DIR = GLib.get_current_dir();
-const ICONS_DIR = `${CURRENT_DIR}/icons`;
+const ICONS_DIR = `${CURRENT_DIR}/src/icons`;
 const TMP_ICONS_DIR = '/tmp/ags-icons';
 
 /** See https://lucide.dev/icons/ for more. Download and put in [PROJECT]/icons/** */
@@ -55,7 +56,7 @@ async function loadIcon(name: Icon.Name, color: string) {
   const dest = `${TMP_ICONS_DIR}/${name}-${color}.svg`;
   if (await execAsync(`cat ${dest}`).catch(() => false)) return dest;
   const icon = await readFileAsync(src).catch((err) => {
-    throw new Error(`Icon ${name} not found`, { cause: err });
+    raise(new Error(`Icon ${name} not found`, { cause: err }));
   });
   await writeFileAsync(dest, icon.replace('currentColor', color));
   return dest;

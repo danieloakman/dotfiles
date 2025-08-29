@@ -5,6 +5,7 @@ import { clamp } from '../utils/number';
 import { Vr } from '../components/Separators';
 import { classes } from '../utils/styles';
 import { execAsync } from 'ags/process';
+import { raise } from '@/utils/fn';
 
 export default function OSMonitoring() {
   return (
@@ -35,7 +36,7 @@ export const cpuUsage = createPoll('', 1000, 'cat /proc/stat').as((str) => {
   // Parse CPU stats: user nice system idle iowait irq softirq steal guest guest_nice
   const cpuValues = cpuLine.split(/\s+/).slice(1).map(Number);
   const idle = cpuValues[3]; // idle time is at index 3
-  if (!idle) throw new Error('idle is undefined');
+  if (!idle) raise('idle is undefined');
   const total = cpuValues.reduce((sum, value) => sum + value, 0);
 
   // Calculate CPU usage since last check
