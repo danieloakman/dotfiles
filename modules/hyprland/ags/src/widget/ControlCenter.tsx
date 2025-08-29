@@ -7,6 +7,7 @@ import { toggleWindow, WINDOW_NAME } from '../utils/window';
 import Modal from '../components/Modal';
 import Uptime from './Uptime';
 import { classes } from '../utils/styles';
+import { Hr } from '@/components/Separators';
 
 export default function ControlCenter() {
   return (
@@ -24,11 +25,11 @@ export default function ControlCenter() {
       <box
         cssClasses={classes('bg-bg-color', 'rounded-md', 'p-md')}
         orientation={Gtk.Orientation.VERTICAL}
-        spacing={4}
+        spacing={12}
       >
         <centerbox
           orientation={Gtk.Orientation.HORIZONTAL}
-          cssClasses={classes('border', 'rounded-sm', 'p-xs')}
+          // cssClasses={classes('border', 'rounded-sm', 'p-xs')}
         >
           <box $type="start" spacing={4} valign={Gtk.Align.CENTER}>
             <Uptime />
@@ -37,6 +38,8 @@ export default function ControlCenter() {
             <System />
           </box>
         </centerbox>
+
+        <Hr />
 
         <Volume />
         <Internet />

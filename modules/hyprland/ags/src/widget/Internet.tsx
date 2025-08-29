@@ -1,4 +1,4 @@
-import { createBinding, createComputed, createConnection, createState, For, With } from 'ags';
+import { createBinding, createComputed, createConnection, With } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Network from 'gi://AstalNetwork';
 import { Icon } from '../components/Icon';
@@ -6,9 +6,8 @@ import { createBooleanState, UnwrapAccessor } from '../utils/ags';
 import { iife, multiComparator } from '../utils/fn';
 import Accordion from '../components/Accordion';
 import { classes } from '../utils/styles';
-import { Fragment } from 'ags';
 import { execAsync } from 'ags/process';
-import { apps } from './Apps';
+import { Hr } from '@/components/Separators';
 
 const network = Network.get_default();
 
@@ -89,6 +88,8 @@ export default function Internet() {
                 )
               }
             />
+
+            <Hr />
 
             {allConnections
               .map((connection) => {
