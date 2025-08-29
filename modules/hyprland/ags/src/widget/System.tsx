@@ -2,6 +2,7 @@ import { execAsync } from 'ags/process';
 import { Gtk } from 'ags/gtk4';
 import Icon from '../components/Icon';
 import { classes } from '../utils/styles';
+import { notify } from '@/utils/notifications';
 
 export default function System() {
   return (
@@ -24,5 +25,13 @@ export default function System() {
         </box>
       </popover>
     </menubutton>
+  );
+}
+
+export function Shutdown() {
+  return (
+    <button onClicked={() => notify('Shutdown', { urgency: 'critical' })}>
+      <Icon name="power" />
+    </button>
   );
 }
