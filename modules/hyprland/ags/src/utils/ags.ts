@@ -30,3 +30,17 @@ export function createExternalState<T extends object | number | string | boolean
   };
   return [resultValue, resultSetter] as const;
 }
+
+/** Convenience function for creating a boolean state. */
+export const createBooleanState = (initialValue: boolean) => {
+  const [value, set] = createState(initialValue);
+  return [
+    value,
+    {
+      set,
+      setTrue: () => set(true),
+      setFalse: () => set(false),
+      toggle: () => set(!value.get()),
+    },
+  ] as const;
+};
