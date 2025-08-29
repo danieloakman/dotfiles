@@ -73,6 +73,7 @@
     ../modules/syncthing.nix
     ../modules/wakeonlan.nix
     ../modules/immich.nix
+    ../modules/firefly.nix
 
     # ../modules/gnome
     ../modules/hyprland
