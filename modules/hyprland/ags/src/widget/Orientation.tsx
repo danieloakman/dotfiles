@@ -27,7 +27,7 @@ export async function rotateOrientation(direction: RotateDirection) {
   const nextTransform = TRANSFORM_MAP[`${direction}-${currentTransform}`];
 
   const allMonitors = monitors.get();
-  if (allMonitors.length > 1) throw new Error('Multiple monitors not supported for rotation');
+  if (allMonitors.length > 1) raise('Multiple monitors not supported for rotation');
   const monitor = allMonitors[0] ?? raise('No monitor found');
 
   await execAsync(
