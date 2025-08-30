@@ -8,6 +8,8 @@ import Modal from '../components/Modal';
 import Uptime from './Uptime';
 import { classes } from '../utils/styles';
 import { Hr } from '@/components/Separators';
+import Notifications from './Notifications';
+import TrayApps from './TrayApps';
 
 export default function ControlCenter() {
   return (
@@ -45,6 +47,8 @@ export default function ControlCenter() {
         <Volume />
         <Internet />
         <Bluetooth />
+        <Notifications />
+        <TrayApps />
       </box>
     </Modal>
   );
