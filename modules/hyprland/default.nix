@@ -50,6 +50,7 @@ in
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
       uwsm # Universal Wayland session manager. Can do `uwsm `
+      hyprshot # Screenshot tool # TODO: move to programs.hyprshot.enable
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
@@ -359,7 +360,7 @@ in
       # Image viewer
       swayimg.enable = true;
       # Screenshot tool.
-      hyprshot.enable = true;
+      # hyprshot.enable = true; # TODO: add this back in once it's available for our pinned version of home-manager
     };
 
     services = {
