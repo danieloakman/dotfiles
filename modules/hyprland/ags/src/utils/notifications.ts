@@ -1,7 +1,16 @@
 import { NativeIcon } from '@/types/icons';
+import { createBinding } from 'ags';
 import { execAsync } from 'ags/process';
-// import Notifd from 'gi://AstalNotifd';
-// const notifd = Notifd.get_default();
+import Notifd from 'gi://AstalNotifd';
+const notifd = Notifd.get_default();
+
+export const notifications = createBinding(notifd, 'notifications');
+
+export const dontDisturb = createBinding(notifd, 'dont_disturb');
+
+export function setDontDisturb(value: boolean) {
+  notifd.set_dont_disturb(value);
+}
 
 export interface NotifyOptions<ActionKey extends string> {
   icon?: NativeIcon;
