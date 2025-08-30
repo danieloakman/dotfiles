@@ -46,12 +46,10 @@ in
       hyprpicker # Color picker
       # hyprcursor # Cursor. Stylix seems to handle cursors on wayland, so don't need this.
       rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
-      hyprshot # Screenshot tool
       brightnessctl # Control backlight brightness
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes
       uwsm # Universal Wayland session manager. Can do `uwsm `
-      cliphist # Clipboard history manager
 
       networkmanager
       networkmanagerapplet # Provides `nmi-connection-editor` command
@@ -105,7 +103,7 @@ in
           ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
           ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
           ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-          "alt, F7, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" # Need these because XF86 volume keys don't work
+          "alt, F7, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" # Need these because XF86 volume keys don't work sometimes
           "alt, F6, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
           ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
           ", XF86AudioPlay, exec, playerctl play-pause"
@@ -185,10 +183,6 @@ in
         };
 
         general = {
-          # Does not exist now:
-          # sensitivity = 1.00;
-          # apply_sens_to_raw = 1;
-
           border_size = 2;
           gaps_in = 6;
           gaps_out = 8;
@@ -279,19 +273,6 @@ in
             tap-to-click = true;
             drag_lock = false;
           };
-
-          # below for devices with touchdevice ie. touchscreen
-          # TODO: set up env for touch device
-          # touchdevice = {
-          #   enabled = true;
-          # };
-
-          # below is for table see link above for proper variables
-          # TODO: Set up env for tablet 
-          # tablet = {
-          #   transform = 0;
-          #   left_handed = 0;
-          # };
         };
 
         gestures = {
@@ -375,7 +356,10 @@ in
     };
 
     programs = {
+      # Image viewer
       swayimg.enable = true;
+      # Screenshot tool.
+      hyprshot.enable = true;
     };
 
     services = {
@@ -395,13 +379,21 @@ in
           };
       };
 
-      swaync.enable = true; # Notification daemon
       playerctld.enable = true; # Media player control daemon
-      swayosd = {
-        # TODO: This is supposed to popup with volume changes and other notifications like that but isn't?
+
+      # Clipboard history manager
+      cliphist = {
         enable = true;
-        display = "eDP-1";
+        systemdTargets = [ "hyprland-session.target" ];
       };
+
+      # Don't need these anymore if we're using AGS and its custom notification backend.
+      # swaync.enable = true; # Notification daemon
+      # swayosd = {
+      #   # This is supposed to popup with volume changes and other notifications like that but isn't?
+      #   enable = true;
+      #   display = "eDP-1";
+      # };
     };
 
     xdg.desktopEntries =
@@ -529,6 +521,8 @@ in
           icon = "audible";
           startupNotify = true;
         };
+
+        # System management:
         shutdown = {
           name = "Shutdown";
           exec = "shutdown -P now";
