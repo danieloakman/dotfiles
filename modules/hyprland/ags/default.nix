@@ -5,14 +5,6 @@ in
 {
   services.gvfs.enable = true; # Caches network cover art for mpris with spotify usage
 
-  environment.systemPackages = with astalPkgs; [
-    # These astal packages have cli tools included:
-    notifd
-    mpris
-    apps
-    tray
-  ];
-
   home-manager.users.${env.user} = {
     # add the home manager module
     imports = [ inputs.ags.homeManagerModules.default ];
@@ -29,6 +21,14 @@ in
         ];
       };
     };
+
+    home.packages = with astalPkgs; [
+      # These astal packages have cli tools included:
+      notifd
+      mpris
+      apps
+      tray
+    ];
 
     programs.ags = {
       enable = true;
