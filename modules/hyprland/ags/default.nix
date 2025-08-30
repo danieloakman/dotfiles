@@ -5,6 +5,16 @@ in
 {
   services.gvfs.enable = true; # Caches network cover art for mpris with spotify usage
 
+  environment.systemPackages = with pkgs; [
+    libcava # Audio visualizer cli
+  ] ++ (with astalPkgs; [
+    # These astal packages have cli tools included:
+    notifd
+    mpris
+    apps
+    tray
+  ]);
+
   home-manager.users.${env.user} = {
     # add the home manager module
     imports = [ inputs.ags.homeManagerModules.default ];
@@ -22,13 +32,7 @@ in
       };
     };
 
-    home.packages = with astalPkgs; [
-      # These astal packages have cli tools included:
-      notifd
-      mpris
-      apps
-      tray
-    ];
+    programs.cava.enable = true; # Audio visualizer
 
     programs.ags = {
       enable = true;
@@ -43,10 +47,11 @@ in
         hyprland
         wireplumber
         network
-        notifd
+        notifd # Has a gvfs error when starting up
         mpris # Adds support for spotify and other mpris compatible apps
         apps # Adds an api for apps specifed as .desktop files
-        tray
+        tray # Adds an api for desktop tray items
+        cava # Audio visualizer cli
         # TODO: include these once we know it's working
         # powerprofiles
       ]);
