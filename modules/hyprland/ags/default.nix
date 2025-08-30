@@ -1,5 +1,17 @@
-{ env, inputs, pkgs, ... }: {
+{ env, inputs, pkgs, ... }:
+let
+  astalPkgs = inputs.astal.packages.${pkgs.system};
+in
+{
   services.gvfs.enable = true; # Caches network cover art for mpris with spotify usage
+
+  environment.systemPackages = with astalPkgs; [
+    # These astal packages have cli tools included:
+    notifd
+    mpris
+    apps
+    tray
+  ];
 
   home-manager.users.${env.user} = {
     # add the home manager module
@@ -27,13 +39,14 @@
       # additional packages and executables to add to gjs's runtime
       extraPackages = with pkgs; [
         # fzf
-      ] ++ (with inputs.astal.packages.${pkgs.system}; [
+      ] ++ (with astalPkgs; [
         hyprland
         wireplumber
         network
         notifd
         mpris # Adds support for spotify and other mpris compatible apps
         apps # Adds an api for apps specifed as .desktop files
+        tray
         # TODO: include these once we know it's working
         # powerprofiles
       ]);
