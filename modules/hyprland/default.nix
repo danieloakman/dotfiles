@@ -40,7 +40,9 @@ in
   ];
 
   environment = {
-    sessionVariables = { };
+    sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+    };
     systemPackages = with pkgs; [
       pyprland # Extra Hyprland utils/tools
       hyprpicker # Color picker
@@ -277,10 +279,7 @@ in
         };
 
         gestures = {
-          # TODO: tweak these to make it easier to use with trackpad
-          workspace_swipe = true;
-          workspace_swipe_fingers = 3;
-          workspace_swipe_distance = 500;
+          workspace_swipe_touch = true;
           workspace_swipe_invert = true;
           workspace_swipe_min_speed_to_force = 30;
           workspace_swipe_cancel_ratio = 0.33;
@@ -314,6 +313,7 @@ in
           disable_hyprland_logo = true;
           disable_splash_rendering = true;
           middle_click_paste = false;
+          disable_autoreload = true;
 
           # Don't know what these do:
           vfr = true;

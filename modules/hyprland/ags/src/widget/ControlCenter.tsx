@@ -7,9 +7,9 @@ import { toggleWindow, WINDOW_NAME } from '../utils/window';
 import Modal from '../components/Modal';
 import Uptime from './Uptime';
 import { classes } from '../utils/styles';
-import { Hr } from '@/components/Separators';
+import { Hr, Vr } from '@/components/Separators';
 import Notifications from './Notifications';
-import TrayApps from './TrayApps';
+import TrayApps, { trayItems } from './TrayApps';
 
 export default function ControlCenter() {
   return (
@@ -48,7 +48,6 @@ export default function ControlCenter() {
         <Internet />
         <Bluetooth />
         <Notifications />
-        <TrayApps />
       </box>
     </Modal>
   );
@@ -56,12 +55,17 @@ export default function ControlCenter() {
 
 export function ControlCenterButton() {
   return (
-    <button cssClasses={classes('rounded-full')} onClicked={() => toggleWindow('control-center')}>
-      <box spacing={6}>
-        <VolumeIndicator />
-        <BluetoothConnection />
-        <InternetConnection />
-      </box>
-    </button>
+    <box cssClasses={classes('rounded-full', 'bg-selected')} spacing={6}>
+      <TrayApps />
+      <Vr visible={trayItems((v) => v.length > 0)} cssClasses={classes('my-xs')} />
+
+      <button cssClasses={classes('rounded-full')} onClicked={() => toggleWindow('control-center')}>
+        <box spacing={6}>
+          <VolumeIndicator />
+          <BluetoothConnection />
+          <InternetConnection />
+        </box>
+      </button>
+    </box>
   );
 }

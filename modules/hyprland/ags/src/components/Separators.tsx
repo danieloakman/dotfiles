@@ -1,7 +1,9 @@
 import { Accessor } from 'ags';
 import { Gtk } from 'ags/gtk4';
 
-export interface VrProps extends Partial<Gtk.Separator.ConstructorProps> {}
+export interface VrProps extends Omit<Partial<Gtk.Separator.ConstructorProps>, 'visible'> {
+  visible?: Accessor<boolean> | boolean;
+}
 
 export function Vr(props: VrProps) {
   return <Gtk.Separator {...props} />;

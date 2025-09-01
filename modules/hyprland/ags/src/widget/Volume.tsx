@@ -11,6 +11,7 @@ import { createBooleanState } from '@/utils/ags';
 const wp = Wp.get_default();
 const defaultSpeaker = createBinding(wp.audio, 'defaultSpeaker');
 const volume = createBinding(wp.audio.defaultSpeaker, 'volume');
+const volumeLabel = volume((v) => `${clamp(Math.round(v * 100), 0, 100)}%`);
 const muted = createBinding(wp.audio.defaultSpeaker, 'mute');
 const speakers = createBinding(wp.audio, 'speakers').as((arr) =>
   arr.sort((a, b) => a.device.description.localeCompare(b.device.description)),
@@ -50,12 +51,9 @@ export default function Volume() {
           }}
         />
 
-        <label label={volume.as((v) => `${clamp(Math.round(v * 100), 0, 100)}%`)} widthChars={3} />
+        <label label={volumeLabel} widthChars={3} />
 
-        <button
-          onClicked={toggleOpen}
-          cssClasses={classes('btn-ghost', 'rounded-full')}
-        >
+        <button onClicked={toggleOpen} cssClasses={classes('btn-ghost', 'rounded-full')}>
           <Icon name={open((v) => (v ? 'chevron-down' : 'chevron-right'))} />
         </button>
       </box>
@@ -88,6 +86,7 @@ export default function Volume() {
 export function VolumeIndicator() {
   return (
     <Icon
+      tooltipText={volumeLabel}
       name={createComputed([muted, volume], (m, v) =>
         m ? 'volume-off' : v < 0.1 ? 'volume' : v < 0.33 ? 'volume-1' : 'volume-2',
       )}

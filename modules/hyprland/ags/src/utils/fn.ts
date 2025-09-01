@@ -1,8 +1,8 @@
-import { Time, timeout } from 'ags/time';
+import { Timer, timeout } from 'ags/time';
 
 export const once = <T extends (...args: any[]) => any>(fn: T) => {
   let result: ReturnType<T> | undefined;
-  return (...args: Parameters<T>) => result ?? (result = fn.apply(fn, args)) as ReturnType<T>;
+  return (...args: Parameters<T>) => result ?? ((result = fn.apply(fn, args)) as ReturnType<T>);
 };
 
 export const noop = () => {};
@@ -29,7 +29,7 @@ export function multiComparator<T, R extends number | boolean>(
 }
 
 export function debounce<T extends (...args: any[]) => any>(fn: T, delay: number) {
-  let t: Time | undefined;
+  let t: Timer | undefined;
   return (...args: Parameters<T>) => {
     t?.cancel();
     t = timeout(delay, () => fn(...args));
@@ -42,4 +42,15 @@ export function raise(messageOrError: string | Error): never {
   const e = messageOrError instanceof Error ? messageOrError : new Error(messageOrError);
   console.error(e);
   throw e;
+}
+
+export function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, ReturnType<T>>();
+  return ((...args: Parameters<T>) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
 }
