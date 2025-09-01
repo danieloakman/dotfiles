@@ -1,5 +1,7 @@
 # Remember: this file cannot have any leading spaces before the commands, only tabs.
 
+# TODO: Update flake commands to point to where the flake is located.
+
 # Update the flake. Which will update available nix packages and their versions.
 update:
 	sudo nix flake update --flake ~/repos/personal/dotfiles
