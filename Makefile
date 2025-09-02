@@ -19,6 +19,7 @@ edit-secrets:
 gc:
 	nix-collect-garbage -d
 
+# TODO: look into just using `nh` for both nix-darwin and linux.
 # Delegate to the appropriate Makefile based on the OS.
 %:
 	$(MAKE) -C $(MAKEFILE_PATH) $@
