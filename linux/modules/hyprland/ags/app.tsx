@@ -22,8 +22,7 @@ toggle
 
 app.start({
   css: style,
-  requestHandler: (req, res) => {
-    const [cmd, ...args] = req.split(' ');
+  requestHandler: ([cmd, ...args], res) => {
     switch (cmd) {
       case 'toggle':
         const windowId = args[0];
@@ -32,9 +31,10 @@ app.start({
           return;
         }
         toggleWindow(windowId as WindowName);
-        res(1);
+        res('Success');
         return;
       default:
+        console.warn('Unknown command:', cmd);
         res(HELP);
         return;
     }

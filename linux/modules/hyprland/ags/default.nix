@@ -27,7 +27,7 @@ in
         ];
 
         bind = [
-          "$mod, Q, exec, ags request \"toggle password-search\""
+          "$mod, Q, exec, ags request toggle password-search"
         ];
       };
     };
