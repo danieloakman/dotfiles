@@ -1,10 +1,10 @@
-_: {
+{ env, ... }: {
   # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
   nixpkgs.config.allowUnfree = true;
 
   home = {
-    username = "daniel.brown";
-    homeDirectory = "/Users/daniel.brown";
+    username = env.user;
+    homeDirectory = env.home;
     stateVersion = "25.05";
 
     file.".gitconfig".text = ''

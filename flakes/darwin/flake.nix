@@ -16,6 +16,10 @@
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
     let
       system = "aarch64-darwin";
+      env = {
+        user = "daniel.brown";
+        home = "/Users/daniel.brown";
+      };
       configuration = { pkgs, ... }: {
         nixpkgs = {
           config.allowUnfree = true;
@@ -53,7 +57,7 @@
           # $ darwin-rebuild changelog
           stateVersion = 6;
 
-          primaryUser = "daniel.brown";
+          primaryUser = env.user;
 
           defaults = {
             NSGlobalDomain = {
@@ -176,15 +180,19 @@
             inherit system;
             modules = [
               configuration
-              # home-manager.darwinModules.home-manager
-              # {
-              #   home-manager = {
-              #     useGlobalPkgs = true;
-              #     useUserPackages = true;
-              #     extraSpecialArgs = { inherit inputs system; };
-              #     users."daniel.brown" = ./modules/home.nix;
-              #   };
-              # }
+              home-manager.darwinModules.home-manager
+              {
+                users.users.${env.user} = {
+                  name = env.user;
+                  home = env.home;
+                };
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  extraSpecialArgs = { inherit inputs system env; };
+                  users.${env.user} = ./modules/home.nix;
+                };
+              }
             ];
           };
         in
