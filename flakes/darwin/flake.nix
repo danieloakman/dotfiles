@@ -37,6 +37,7 @@
             nodejs_24
             bun
             pnpm
+            # oh-my-zsh # Installed manually via curl command found on oh-my-zsh website.
           ];
         };
 
@@ -166,15 +167,15 @@
               PASSWORD_STORE_DIR = "$HOME/repos/personal/pwd-store";
               PASSWORD_STORE_ENABLE_EXTENSIONS = "true";
             };
-            shellInit = ''
-              # Put at the bottom of ".zshrc":
-              if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
-                source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
-              fi
+            # shellInit = ''
+            #   # Put at the bottom of ".zshrc":
+            #   if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
+            #     source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
+            #   fi
 
-              fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
-              fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
-            '';
+            #   fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
+            #   fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
+            # '';
           };
         };
 
