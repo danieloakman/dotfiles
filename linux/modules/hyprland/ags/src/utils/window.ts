@@ -5,6 +5,7 @@ export const WINDOW_NAME = {
   ControlCenter: 'control-center',
   PasswordSearch: 'password-search',
   Apps: 'apps',
+  Notifications: 'notifications',
 } as const;
 
 export type WindowName = (typeof WINDOW_NAME)[keyof typeof WINDOW_NAME];

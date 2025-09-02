@@ -2,11 +2,31 @@ import Icon from '@/components/Icon';
 import { createBooleanState, UnwrapAccessor } from '@/utils/ags';
 import { clearNotifications, notifications } from '@/utils/notifications';
 import { classes } from '@/utils/styles';
-import { For, onMount } from 'ags';
-import { Gtk } from 'ags/gtk4';
+import { WINDOW_NAME } from '@/utils/window';
+import { Accessor, For, onMount } from 'ags';
+import { Astal, Gdk, Gtk } from 'ags/gtk4';
+import app from 'ags/gtk4/app';
 import Pango from 'gi://Pango';
 
-export default function Notifications() {
+export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Accessor<Gdk.Monitor> }) {
+  const { TOP, BOTTOM, RIGHT, LEFT } = Astal.WindowAnchor;
+  return (
+    <window
+      // visible={notifications((n) => n.length > 0)}
+      name={WINDOW_NAME.Notifications}
+      anchor={TOP | RIGHT}
+      exclusivity={Astal.Exclusivity.NORMAL}
+      application={app}
+      gdkmonitor={monitor}
+    >
+      <box>
+        <label label="Notifications TODO" />
+      </box>
+    </window>
+  );
+}
+
+export function NotificationsList() {
   return (
     <box name="Notifications" spacing={4} orientation={Gtk.Orientation.VERTICAL}>
       <button label="Clear" onClicked={clearNotifications} />
