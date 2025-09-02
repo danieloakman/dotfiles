@@ -1,6 +1,6 @@
 # Update the flake. Which will update available nix packages and their versions.
 update:
-	sudo nix flake update --flake ~/repos/personal/dotfiles
+	sudo nix flake update --flake .
 
 build:
 	nh os build
