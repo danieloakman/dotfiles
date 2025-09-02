@@ -47,7 +47,11 @@
           enable = false;
         };
 
-
+        users.users.${env.user} = {
+          name = env.user;
+          home = env.home;
+          # shell = pkgs.zsh;
+        };
 
         system = {
           # Set Git commit hash for darwin-version.
@@ -182,10 +186,6 @@
               configuration
               home-manager.darwinModules.home-manager
               {
-                users.users.${env.user} = {
-                  name = env.user;
-                  home = env.home;
-                };
                 home-manager = {
                   useGlobalPkgs = true;
                   useUserPackages = true;
