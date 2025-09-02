@@ -32,11 +32,13 @@
         helper = 
         helper = !/opt/homebrew/bin/gh auth git-credential
     '';
-    file.".gnupg/gpg.conf".text = ''
-      default-cache-ttl = 604800
-      max-cache-ttl = 604800
+    file.".gnupg/gpg-agent.conf".text = ''
+      default-cache-ttl 604800
+      max-cache-ttl 604800
       pinentry-program /opt/homebrew/bin/pinentry-mac
     '';
+    file."Library/Application Support/lazygit/config.yml".source = ../../files/home/.config/lazygit/config.yml;
+    file.".config/git/allowed_signers".source = ../../files/home/.config/git/allowed_signers;
   };
 
   # Let Home Manager install and manage itself.
