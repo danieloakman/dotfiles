@@ -76,31 +76,20 @@
       };
     };
 
-    # starship = {
-    #   enable = true;
-    #   enableZshIntegration = true;
-    # };
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
-    # direnv = {
-    #   enable = true;
-    #   enableZshIntegration = true; # see note on other shells below
-    #   nix-direnv.enable = true;
-    # };
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
 
-    # granted = {
-    #   enable = true;
-    #   enableZshIntegration = true;
-    # };
+    granted = {
+      enable = true;
+      enableZshIntegration = true;
+    };
   };
-
-  # services = {
-  #   gpg-agent = {
-  #     enable = true;
-  #     enableSshSupport = true;
-  #     pinentry.program = "/opt/homebrew/bin/pinentry-mac";
-  #     enableZshIntegration = true;
-  #     defaultCacheTtl = 604800; # 1 week
-  #     maxCacheTtl = 604800;
-  #   };
-  # };
 }
