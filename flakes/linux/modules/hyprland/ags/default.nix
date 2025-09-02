@@ -41,9 +41,7 @@ in
       configDir = ./.;
 
       # additional packages and executables to add to gjs's runtime
-      extraPackages = with pkgs; [
-        # fzf
-      ] ++ (with astalPkgs; [
+      extraPackages = with pkgs; (with astalPkgs; [
         hyprland
         wireplumber
         network
