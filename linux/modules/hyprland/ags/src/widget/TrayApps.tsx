@@ -19,7 +19,9 @@ export default function TrayApps() {
           const iconName = createBinding(item, 'iconName');
           const menuModel = createBinding(item, 'menuModel');
           return item.isMenu ? (
-            <menubutton menuModel={menuModel} tooltipText={title} />
+            <menubutton menuModel={menuModel} tooltipText={title} cssClasses={classes('circular')}>
+              <image iconName={iconName} gicon={gicon} />
+            </menubutton>
           ) : (
             <button
               onClicked={() => item.activate(0, 0)}
