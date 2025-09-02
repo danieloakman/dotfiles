@@ -113,7 +113,7 @@
       #     format = ssh
       # '';
 
-      ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
+      ".config/lazygit/config.yml".source = ../../files/home/.config/lazygit/config.yml;
 
       ".config/nixpkgs/config.nix".text = ''
         { ... }:
@@ -122,7 +122,7 @@
         }
       '';
 
-      ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
+      ".config/git/allowed_signers".source = ../../files/home/.config/git/allowed_signers;
     };
 
     activation = {
@@ -163,7 +163,7 @@
       # EDITOR = "emacs";
       # EDITOR = "nvim";
       # This is how `nh` is able to find the flake for this host's configuration.
-      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles";
+      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles/linux";
       GRANTED_ALIAS_CONFIGURED = "true";
       DOTFILES_DIR = "/home/${env.user}/repos/personal/dotfiles";
     };

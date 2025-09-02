@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   # Wake-on-LAN configuration for ethernet interface
   networking = {
     # Allow the wakeonlan discard port to be used.

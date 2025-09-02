@@ -3,7 +3,7 @@
 { inputs, pkgs, env, config, ... }:
 {
   home-manager = {
-    extraSpecialArgs = let sops = config.sops; in { inherit inputs env sops; };
+    extraSpecialArgs = let inherit (config) sops; in { inherit inputs env sops; };
     users = {
       ${env.user} = import ./home.${env.user}.nix;
     };

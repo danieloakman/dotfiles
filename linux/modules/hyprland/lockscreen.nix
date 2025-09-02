@@ -15,7 +15,7 @@
     settings = rec {
       initial_session = {
         command = "hyprland > /dev/null 2>&1";
-        user = env.user;
+        inherit (env) user;
       };
       default_session = initial_session;
     };

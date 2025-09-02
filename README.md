@@ -1,10 +1,17 @@
 # Dotfiles
 
-My NixOS configuration files and dotfiles.
+My NixOS & Nix-darwin configuration files and dotfiles.
 
 General dotfiles are kept in the *files/home* directory. *files/\** is for other files outside of the home directory.
 
 See the [shell script readme](files/home/.shell_scripts/README.md) file for more information on utilising the shell scripts.
+
+## Directory structure
+- `files/` general files that are symlinked or otherwise used as assets.
+- `linux/` linux nix flake and related nix modules.
+- `darwin/` nix-darwin flake and related nix modules.
+- `modules/` common or shared nix modules that can be used across any flake.
+- `secrets/` sops secrets setup here.
 
 ## Building
 
@@ -40,7 +47,7 @@ text = ''
 
 ## Notes
 
-* Note the *#HOST_NAME*, this references the name of the config in `nixosConfigurations` within *~/nixos/flake.nix*
+* Note the *#HOST_NAME*, this references the name of the config in `nixosConfigurations` in the relevant flake.nix file.
 * You can run `man home-configuration.nix` to get a list of useful home-manager settings and configurations.
 * When making new nix files, **make sure to commit them first**, otherwise nix will not be able to find them.
 * */boot/kernels* may occasionally fill up with unused linux kernels and need to be manually cleaned up, i.e. `sudo rm /boot/kernels/*6.6.33*`
