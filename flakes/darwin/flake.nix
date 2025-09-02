@@ -50,7 +50,6 @@
         users.users.${env.user} = {
           name = env.user;
           home = env.home;
-          # shell = pkgs.zsh;
         };
 
         system = {
