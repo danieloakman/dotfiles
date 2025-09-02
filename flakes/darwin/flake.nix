@@ -151,6 +151,7 @@
             "vivaldi"
             "visual-studio-code"
             "warp"
+            "zoom"
           ];
         };
 
