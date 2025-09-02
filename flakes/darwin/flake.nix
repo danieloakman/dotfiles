@@ -139,6 +139,7 @@
             "fastfetch"
             "pinentry-mac"
             "btop"
+            "fzf"
             {
               name = "syncthing";
               restart_service = "changed";
