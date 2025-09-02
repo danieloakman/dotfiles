@@ -15,11 +15,12 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
     let
+      system = "aarch64-darwin";
       configuration = { pkgs, ... }: {
         nixpkgs = {
           config.allowUnfree = true;
           # The platform the configuration will be used on.
-          hostPlatform = "aarch64-darwin";
+          hostPlatform = system;
         };
 
         # List packages installed in system profile. To search by name, run:
@@ -72,7 +73,7 @@
               autohide-delay = 0.1;
               autohide-time-modifier = 0.2;
               expose-animation-duration = 0.2;
-              tilesize = 36;
+              tilesize = 50;
               showhidden = true;
               show-recents = false;
               mru-spaces = false;
@@ -172,7 +173,7 @@
       darwinConfigurations =
         let
           config = {
-            system = "aarch64-darwin";
+            inherit system;
             modules = [
               configuration
               # home-manager.darwinModules.home-manager
@@ -180,7 +181,7 @@
               #   home-manager = {
               #     useGlobalPkgs = true;
               #     useUserPackages = true;
-              #     extraSpecialArgs = { inherit inputs; };
+              #     extraSpecialArgs = { inherit inputs system; };
               #     users."daniel.brown" = ./modules/home.nix;
               #   };
               # }
@@ -190,10 +191,10 @@
         {
           # TODO: just use one of these host names. For some reason changing the host name on mac isn't always working.
           "boethiah" = nix-darwin.lib.darwinSystem {
-            inherit (config) modules;
+            inherit (config) modules system;
           };
           "MY797HJWD7" = nix-darwin.lib.darwinSystem {
-            inherit (config) modules;
+            inherit (config) modules system;
           };
         };
     };
