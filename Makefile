@@ -1,9 +1,9 @@
 # 'Darwin' or 'Linux'
 OS := $(shell uname -s)
 ifeq ($(OS),Darwin)
-  MAKEFILE_PATH = ~/repos/personal/dotfiles/flakes/darwin
+  MAKEFILE_PATH = ~/repos/personal/dotfiles/darwin
 else
-  MAKEFILE_PATH = ~/repos/personal/dotfiles/flakes/linux
+  MAKEFILE_PATH = ~/repos/personal/dotfiles/linux
 endif
 
 fmt:

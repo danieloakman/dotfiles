@@ -50,7 +50,7 @@
 
         users.users.${env.user} = {
           name = env.user;
-          home = env.home;
+          inherit (env) home;
         };
 
         system = {
