@@ -134,7 +134,7 @@
 
         # Passthrough mode to allow typing special characters (e.g., Polish letters)
         # Enter with 'alt-p', exit with 'alt-p' or 'esc'.
-        # [mode.passthrough.binding]
+        [mode.passthrough.binding]
         alt-p = 'mode main'
         esc = 'mode main'
 
