@@ -2,7 +2,7 @@ import { writeFileAsync } from 'ags/file';
 import { Gtk } from 'ags/gtk4';
 import { NativeIcon } from '../types/icons';
 import { Accessor } from 'ags';
-import { noop } from '../utils/fn';
+import { DEV } from '@/utils/env';
 
 /** Generates the `types/icons.ts` file */
 export function NativeIconProvider() {
@@ -10,13 +10,16 @@ export function NativeIconProvider() {
     <Gtk.IconTheme
       $={async (self) => {
         await writeFileAsync(
-          './types/icons.ts',
+          './src/types/icons.ts',
           `
 export const NATIVE_ICONS = ${JSON.stringify(self.get_icon_names().sort(), null, 2)} as const;
 
 export type NativeIcon = (typeof NATIVE_ICONS)[number];
 `.trim(),
-        ).catch(noop); // Ignore errors
+        ).catch((err) => {
+          if (!DEV) return;
+          console.error('Failed to load icons', err);
+        });
       }}
     />
   );
