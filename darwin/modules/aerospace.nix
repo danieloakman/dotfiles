@@ -55,16 +55,16 @@
         alt-v = 'layout floating tiling'
 
         # Focus movement
-        alt-arrow-left = 'focus left'
-        alt-arrow-down = 'focus down'
-        alt-arrow-up = 'focus up'
-        alt-arrow-right = 'focus right'
+        alt-left = 'focus left'
+        alt-down = 'focus down'
+        alt-up = 'focus up'
+        alt-right = 'focus right'
 
         # Window movement
-        alt-shift-arrow-left = 'move left'
-        alt-shift-arrow-down = 'move down'
-        alt-shift-arrow-up = 'move up'
-        alt-shift-arrow-right = 'move right'
+        alt-shift-left = 'move left'
+        alt-shift-down = 'move down'
+        alt-shift-up = 'move up'
+        alt-shift-right = 'move right'
 
         # Resize windows
         alt-shift-minus = 'resize smart -50'
@@ -124,9 +124,9 @@
 
         # Passthrough mode to allow typing special characters (e.g., Polish letters)
         # Enter with 'alt-p', exit with 'alt-p' or 'esc'.
-        [mode.passthrough.binding]
-        alt-p = 'mode main'
-        esc = 'mode main'
+        # [mode.passthrough.binding]
+        # alt-p = 'mode main'
+        # esc = 'mode main'
 
         # Window detection rules
         [[on-window-detected]]
