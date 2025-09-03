@@ -1,6 +1,6 @@
 { self, pkgs, system, env, inputs, ... }: {
   imports = [
-    # ../modules/aerospace.nix
+    ../modules/aerospace.nix
   ];
 
   home-manager = {
