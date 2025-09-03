@@ -1,13 +1,13 @@
 { self, pkgs, system, env, inputs, ... }: {
   imports = [
-    # ./modules/aerospace.nix
+    # ../modules/aerospace.nix
   ];
 
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs system env self; };
-    users.${env.user} = ./modules/home.nix;
+    users.${env.user} = ../modules/home.nix;
   };
 
   nixpkgs = {
