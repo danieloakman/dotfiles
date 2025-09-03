@@ -120,6 +120,7 @@
       "btop"
       "fzf"
       "starship"
+      "dust"
       {
         name = "syncthing";
         restart_service = "changed";
