@@ -3,7 +3,16 @@
   config = lib.mkIf pkgs.stdenv.isDarwin {
     home-manager.users.${env.user} = {
       # Ensure aerospace package installed
-      home.packages = [ pkgs.aerospace ];
+      home.packages = [
+        pkgs.aerospace
+
+        # Reload aerospace and other aerospace plugins/packages:
+        (pkgs.writeShellScriptBin "aerospace-reload" ''
+          ${pkgs.aerospace}/bin/aerospace reload-config
+          cd ${env.home}/.local/share/aerospace-swipe
+          make restart
+        '')
+      ];
 
       # Source aerospace config from the home-manager store
       home.file.".aerospace.toml".text = ''
