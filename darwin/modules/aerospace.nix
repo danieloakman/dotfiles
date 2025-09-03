@@ -55,20 +55,21 @@
         alt-v = 'layout floating tiling'
 
         # Focus movement
-        alt-left = 'focus left'
-        alt-down = 'focus down'
-        alt-up = 'focus up'
-        alt-right = 'focus right'
+        alt-h = 'focus left'
+        alt-j = 'focus down'
+        alt-k = 'focus up'
+        alt-l = 'focus right'
 
         # Window movement
-        alt-shift-left = 'move left'
-        alt-shift-down = 'move down'
-        alt-shift-up = 'move up'
-        alt-shift-right = 'move right'
+        alt-shift-h = 'move left'
+        alt-shift-j = 'move down'
+        alt-shift-k = 'move up'
+        alt-shift-l = 'move right'
 
         # Resize windows
-        alt-shift-minus = 'resize smart -50'
-        alt-shift-equal = 'resize smart +50'
+        # Conflicts with terminal split pane shortcuts:
+        # alt-shift-minus = 'resize smart -50'
+        # alt-shift-equal = 'resize smart +50'
 
         # Workspace management
         alt-1 = 'workspace 1'
@@ -125,12 +126,12 @@
         # Passthrough mode to allow typing special characters (e.g., Polish letters)
         # Enter with 'alt-p', exit with 'alt-p' or 'esc'.
         # [mode.passthrough.binding]
-        # alt-p = 'mode main'
-        # esc = 'mode main'
+        alt-p = 'mode main'
+        esc = 'mode main'
 
         # Window detection rules
         [[on-window-detected]]
-        if.app-id = 'com.brave.Browser'
+        if.app-id = 'com.vivaldi.Vivaldi'
         run = 'move-node-to-workspace 1'
 
         [[on-window-detected]]
