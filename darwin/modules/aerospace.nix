@@ -53,10 +53,10 @@
         # Main mode bindings
         [mode.main.binding]
         # Launch applications
-        alt-shift-enter = 'exec-and-forget open -na alacritty'
-        alt-shift-b = 'exec-and-forget open -a "Brave Browser"'
-        alt-shift-t = 'exec-and-forget open -a "Telegram"'
-        alt-shift-f = 'exec-and-forget open -a Finder'
+        # alt-shift-enter = 'exec-and-forget open -na alacritty'
+        # alt-shift-b = 'exec-and-forget open -a "Brave Browser"'
+        # alt-shift-t = 'exec-and-forget open -a "Telegram"'
+        # alt-shift-f = 'exec-and-forget open -a Finder'
 
         # Window management
         alt-c = "close"
@@ -64,12 +64,20 @@
         alt-v = 'layout floating tiling'
 
         # Focus movement
+        ctrl-left = 'focus left'
+        ctrl-down = 'focus down'
+        ctrl-up = 'focus up'
+        ctrl-right = 'focus right'
         alt-h = 'focus left'
         alt-j = 'focus down'
         alt-k = 'focus up'
         alt-l = 'focus right'
 
         # Window movement
+        ctrl-shift-left = 'move left'
+        ctrl-shift-down = 'move down'
+        ctrl-shift-up = 'move up'
+        ctrl-shift-right = 'move right'
         alt-shift-h = 'move left'
         alt-shift-j = 'move down'
         alt-shift-k = 'move up'
