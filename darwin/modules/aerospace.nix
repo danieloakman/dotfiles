@@ -156,11 +156,15 @@
         run = 'move-node-to-workspace 2'
 
         [[on-window-detected]]
-        if.app-id = 'com.tdesktop.Telegram'
+        if.app-id = 'com.microsoft.teams2'
         run = 'move-node-to-workspace 3'
 
         [[on-window-detected]]
-        if.app-id = 'com.obsproject.obs-studio'
+        if.app-id = 'com.microsoft.Outlook'
+        run = 'move-node-to-workspace 3'
+
+        [[on-window-detected]]
+        if.app-id = 'inc.wonder.roam'
         run = 'move-node-to-workspace 4'
 
         [[on-window-detected]]
