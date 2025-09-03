@@ -1,6 +1,6 @@
 { lib, pkgs, env, ... }:
 {
-  config = lib.mkIf (pkgs.stdenv.isDarwin) {
+  config = lib.mkIf pkgs.stdenv.isDarwin {
     home-manager.users.${env.user} = {
       # Ensure aerospace package installed
       home.packages = [ pkgs.aerospace ];
