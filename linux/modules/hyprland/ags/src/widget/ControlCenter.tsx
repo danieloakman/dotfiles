@@ -25,7 +25,7 @@ export default function ControlCenter() {
       opacity={0.9}
     >
       <box
-        cssClasses={classes('bg-bg-color', 'rounded-md', 'p-md')}
+        cssClasses={classes('bg-bg-color', 'rounded', 'p-md')}
         orientation={Gtk.Orientation.VERTICAL}
         spacing={12}
       >

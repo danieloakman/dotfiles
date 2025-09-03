@@ -21,7 +21,7 @@ export default function AppsModal() {
   return (
     <Modal name="apps" width={400} height={500} cssClasses={classes('bg-transparent')}>
       <centerbox
-        cssClasses={classes('bg-bg-color', 'rounded-sm', 'p-sm')}
+        cssClasses={classes('bg-bg-color', 'rounded', 'p')}
         orientation={Gtk.Orientation.VERTICAL}
       >
         <label $type="start" label="Apps" />
@@ -29,7 +29,7 @@ export default function AppsModal() {
         <scrolledwindow
           $type="center"
           hscrollbarPolicy={Gtk.PolicyType.NEVER}
-          cssClasses={classes('py-sm')}
+          cssClasses={classes('py')}
         >
           <box vexpand hexpand={false} orientation={Gtk.Orientation.VERTICAL} spacing={4}>
             <For each={appList}>

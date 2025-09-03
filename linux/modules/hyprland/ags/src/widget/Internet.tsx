@@ -104,7 +104,7 @@ export default function Internet() {
               )
               .map(({ connection, isActive }) => {
                 return (
-                  <centerbox cssClasses={classes('rounded-sm', 'bg-bg-color', 'btn-ghost')}>
+                  <centerbox cssClasses={classes('rounded', 'bg-bg-color', 'btn-ghost')}>
                     <button
                       $type="start"
                       cssClasses={classes('bg-transparent')}

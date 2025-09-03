@@ -32,10 +32,10 @@ export default function Volume() {
     <box
       name="Volume"
       spacing={4}
-      cssClasses={classes('border', 'p-xs', 'rounded-sm')}
+      cssClasses={classes('border', 'p-sm', 'rounded')}
       orientation={Gtk.Orientation.VERTICAL}
     >
-      <box spacing={4}>
+      <box spacing={4} valign={Gtk.Align.CENTER}>
         <button cssClasses={classes('btn-ghost', 'rounded-full')} onClicked={toggleMute}>
           <VolumeIndicator />
         </button>
