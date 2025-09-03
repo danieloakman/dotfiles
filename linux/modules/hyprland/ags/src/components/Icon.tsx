@@ -85,7 +85,7 @@ export declare namespace Icon {
   }
 }
 
-export function Icon({ name, size = 18, color = Theme.fgColor, visible, ...props }: Icon.Props) {
+export function Icon({ name, size = 18, color = Theme.fgColor, visible, halign, valign, ...props }: Icon.Props) {
   const computed = createComputed(
     [toAccessor(name), toAccessor(color)],
     (name, color) => [name, color] as const,
@@ -101,7 +101,7 @@ export function Icon({ name, size = 18, color = Theme.fgColor, visible, ...props
   });
 
   return (
-    <box name={`${name}-${color}-icon-box`} visible={visible}>
+    <box name={`${name}-${color}-icon-box`} visible={visible} halign={halign} valign={valign}>
       <With value={iconPath}>
         {(iconPath) =>
           iconPath && (
