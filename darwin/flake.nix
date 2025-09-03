@@ -28,16 +28,8 @@
             inherit system;
             specialArgs = { inherit inputs system env self; };
             modules = [
-              ./hosts/boethiah.nix
               home-manager.darwinModules.home-manager
-              {
-                home-manager = {
-                  useGlobalPkgs = true;
-                  useUserPackages = true;
-                  extraSpecialArgs = { inherit inputs system env self; };
-                  users.${env.user} = ./modules/home.nix;
-                };
-              }
+              ./hosts/boethiah.nix
             ];
           };
         in

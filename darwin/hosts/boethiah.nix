@@ -1,4 +1,15 @@
-{ self, pkgs, system, env, ... }: {
+{ self, pkgs, system, env, inputs, ... }: {
+  imports = [
+    # ./modules/aerospace.nix
+  ];
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = { inherit inputs system env self; };
+    users.${env.user} = ./modules/home.nix;
+  };
+
   nixpkgs = {
     config.allowUnfree = true;
     # The platform the configuration will be used on.
