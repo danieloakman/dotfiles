@@ -26,7 +26,8 @@
       nodejs_24
       bun
       pnpm
-      # oh-my-zsh # Installed manually via curl command found on oh-my-zsh website.
+      pnpm-shell-completion
+      pet # CLI tool for keeping a list of commands and executing them later
     ];
   };
 
@@ -133,9 +134,8 @@
       "starship"
       "dust"
       "zbar"
-      "awscli2"
+      "awscli"
       "mprocs"
-      "pet" # CLI tool for keeping a list of commands and executing them later
       "entr" # Run some command when file(s) change
       {
         name = "syncthing";
