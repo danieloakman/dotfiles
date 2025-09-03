@@ -91,5 +91,8 @@
       enable = true;
       enableZshIntegration = true;
     };
+
+    # Enables the `browserpass` extension for chromium, firefox, google-chrome, vivaldi browsers.
+    browserpass.enable = true;
   };
 }
