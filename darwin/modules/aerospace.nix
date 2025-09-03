@@ -50,21 +50,21 @@
         alt-shift-f = 'exec-and-forget open -a Finder'
 
         # Window management
-        alt-q = "close"
+        alt-c = "close"
         alt-m = 'fullscreen'
-        alt-f = 'layout floating tiling'
+        alt-v = 'layout floating tiling'
 
         # Focus movement
-        alt-h = 'focus left'
-        alt-j = 'focus down'
-        alt-k = 'focus up'
-        alt-l = 'focus right'
+        alt-arrow-left = 'focus left'
+        alt-arrow-down = 'focus down'
+        alt-arrow-up = 'focus up'
+        alt-arrow-right = 'focus right'
 
         # Window movement
-        alt-shift-h = 'move left'
-        alt-shift-j = 'move down'
-        alt-shift-k = 'move up'
-        alt-shift-l = 'move right'
+        alt-shift-arrow-left = 'move left'
+        alt-shift-arrow-down = 'move down'
+        alt-shift-arrow-up = 'move up'
+        alt-shift-arrow-right = 'move right'
 
         # Resize windows
         alt-shift-minus = 'resize smart -50'
@@ -148,6 +148,16 @@
         [[on-window-detected]]
         if.app-id = 'us.zoom.xos'
         run = 'move-node-to-workspace 5'
+      '';
+
+      home.file.".config/aerospace-swipe/config.json".text = ''
+        {
+          "haptic": true,
+          "natural_swipe": true,
+          "wrap_around": true,
+          "skip_empty": true,
+          "fingers": 3
+        }
       '';
     };
   };
