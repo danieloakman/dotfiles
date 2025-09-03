@@ -163,7 +163,7 @@
       # Requires aerospace-swipe: See https://github.com/acsandmann/aerospace-swipe
       home.file.".config/aerospace-swipe/config.json".text = ''
         {
-          "haptic": true,
+          "haptic": false,
           "natural_swipe": true,
           "wrap_around": true,
           "skip_empty": true,
