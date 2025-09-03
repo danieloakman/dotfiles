@@ -52,7 +52,7 @@
       };
       controlcenter = {
         BatteryShowPercentage = true;
-        Bluetooth = true;
+        Bluetooth = false;
       };
       dock = {
         autohide = true;
