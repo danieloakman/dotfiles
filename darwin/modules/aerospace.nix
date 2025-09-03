@@ -150,6 +150,7 @@
         run = 'move-node-to-workspace 5'
       '';
 
+      # Requires aerospace-swipe: See https://github.com/acsandmann/aerospace-swipe
       home.file.".config/aerospace-swipe/config.json".text = ''
         {
           "haptic": true,
