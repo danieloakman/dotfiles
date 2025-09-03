@@ -21,6 +21,7 @@
   environment = {
     systemPackages = with pkgs; [
       nixpkgs-fmt
+      statix
       nil
       raycast
       nodejs_24
