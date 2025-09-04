@@ -48,6 +48,8 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
 }
 
 export function NotificationsList() {
+  const nonTransientNotifications = notifications(arr => arr.filter(n => !n.transient));
+
   return (
     <box name="Notifications" spacing={4} orientation={Gtk.Orientation.VERTICAL}>
       <button label="Clear" onClicked={clearNotifications} />
@@ -63,7 +65,7 @@ export function NotificationsList() {
           hexpand={false}
           cssClasses={classes('p')}
         >
-          <For each={notifications}>
+          <For each={nonTransientNotifications}>
             {(notification) => <Notification notification={notification} />}
           </For>
         </box>
