@@ -73,6 +73,7 @@
     ../modules/syncthing.nix
     ../modules/wakeonlan.nix
     ../modules/immich.nix
+    ../modules/zsh.nix
 
     # ../modules/gnome
     ../modules/hyprland

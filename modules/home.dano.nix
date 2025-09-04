@@ -113,7 +113,7 @@
       #     format = ssh
       # '';
 
-      ".config/lazygit/config.yml".source = ../../files/home/.config/lazygit/config.yml;
+      ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
       ".config/nixpkgs/config.nix".text = ''
         { ... }:
@@ -122,7 +122,7 @@
         }
       '';
 
-      ".config/git/allowed_signers".source = ../../files/home/.config/git/allowed_signers;
+      ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
     };
 
     activation = {
@@ -181,67 +181,34 @@
   programs = {
     home-manager.enable = true;
 
-    zsh = {
-      enable = true;
-      autosuggestion.enable = true;
-      enableCompletion = true;
-      syntaxHighlighting.enable = true;
-      initContent = ''
-        # Put at the bottom of ".zshrc":
-        if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
-          source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
-        fi
-
-        # This enables included pass extensions in the password store itself (/.extension dir). For some reason this has to go here since putting it in the `sessionVariables` env var doesn't work.
-        export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
-      '';
-      envExtra = ''
-        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
-        fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
-      '';
-      shellAliases = {
-        nixos-search = "nix search nixpkgs";
-      };
-      oh-my-zsh = {
-        enable = true;
-        plugins = [
-          "git"
-          "sudo"
-          "z"
-          "git-auto-fetch"
-        ];
-        theme = "robbyrussell";
-      };
-
-      # git = {
-      #   enable = true;
-      #   userName = "Daniel Brown";
-      #   userEmail = "42539848+danieloakman@users.noreply.github.com";
-      #   signing = {
-      #     gpgPath = "gpg";
-      #     key = "8FB975523F3FEB6113801C04368C0A3C6913D768";
-      #     signByDefault = true;
-      #   };
-      #   extraConfig = {
-      #     credential = {
-      #       helper = "cache --timeout 604800";
-      #     };
-      #     init = {
-      #       defaultBranch = "main";
-      #     };
-      #     pull = {
-      #       ff = true;
-      #     };
-      #     core = {
-      #       editor = "nano";
-      #     };
-      #     http = {
-      #       postbuffer = "524288000"; 
-      #     };
-      #     "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
-      #   };
-      # };
-    };
+    # git = {
+    #   enable = true;
+    #   userName = "Daniel Brown";
+    #   userEmail = "42539848+danieloakman@users.noreply.github.com";
+    #   signing = {
+    #     gpgPath = "gpg";
+    #     key = "8FB975523F3FEB6113801C04368C0A3C6913D768";
+    #     signByDefault = true;
+    #   };
+    #   extraConfig = {
+    #     credential = {
+    #       helper = "cache --timeout 604800";
+    #     };
+    #     init = {
+    #       defaultBranch = "main";
+    #     };
+    #     pull = {
+    #       ff = true;
+    #     };
+    #     core = {
+    #       editor = "nano";
+    #     };
+    #     http = {
+    #       postbuffer = "524288000"; 
+    #     };
+    #     "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
+    #   };
+    # };
 
     # Some github cli extensions weren't available, so don't enalbe in home-manager for now
     # gh = {
@@ -255,17 +222,6 @@
     # };
     # gh-dash.enable = true;
 
-    starship = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-
-    direnv = {
-      enable = true;
-      enableZshIntegration = true; # see note on other shells below
-      nix-direnv.enable = true;
-    };
-
     lf = {
       enable = true;
       keybindings = {
@@ -277,11 +233,6 @@
         hidden = true;
         info = [ "size" "time" ];
       };
-    };
-
-    granted = {
-      enable = true;
-      enableZshIntegration = true;
     };
   };
 

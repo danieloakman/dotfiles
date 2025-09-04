@@ -29,7 +29,7 @@
             specialArgs = { inherit inputs system env self; };
             modules = [
               home-manager.darwinModules.home-manager
-              ./hosts/boethiah.nix
+              ../hosts/boethiah.nix
             ];
           };
         in

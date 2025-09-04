@@ -1,7 +1,8 @@
-{ self, pkgs, system, env, inputs, ... }: {
+{ self, pkgs, system, env, ... }: {
   imports = [
     # ../modules/aerospace.nix
     # ../modules/skhd.nix
+    ../modules/zsh.nix
   ];
 
   networking.hostName = "boethiah";
@@ -9,8 +10,60 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = { inherit inputs system env self; };
-    users.${env.user} = ../modules/home.nix;
+    # extraSpecialArgs = { inherit inputs system env self; };
+    users.${env.user} = {
+      # Let Home Manager install and manage itself.
+      programs.home-manager.enable = true;
+
+      home = {
+        username = env.user;
+        homeDirectory = env.home;
+        stateVersion = "25.05";
+
+        sessionVariables = {
+          # This is how `nh` is able to find the flake for this host's configuration.
+          # NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles/linux";
+          GRANTED_ALIAS_CONFIGURED = "true";
+          DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
+        };
+
+        file.".gitconfig".text = ''
+          [user]
+            name = Daniel (Oakman) Brown
+            email = 42539848+danieloakman@users.noreply.github.com
+            signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
+          [credential]
+            helper = cache --timeout 604800
+          [commit]
+            gpgsign = true
+          [init]
+            defaultBranch = main
+          [gpg]
+            program = gpg
+          [pull]
+            ff = true
+          [core]
+            editor = nano
+          [http]
+            postBuffer = 524288000
+          [gpg "ssh"]
+            allowedSignersFile = ~/.config/git/allowed_signers
+          [credential "https://github.com"]
+            helper = 
+            helper = !/opt/homebrew/bin/gh auth git-credential
+          [credential "https://gist.github.com"]
+            helper = 
+            helper = !/opt/homebrew/bin/gh auth git-credential
+        '';
+        file.".gnupg/gpg-agent.conf".text = ''
+          default-cache-ttl 604800
+          max-cache-ttl 604800
+          pinentry-program /opt/homebrew/bin/pinentry-mac
+        '';
+        file."Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
+        file.".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
+      };
+    };
   };
 
   nixpkgs = {
@@ -204,15 +257,6 @@
         PASSWORD_STORE_DIR = "$HOME/repos/personal/pwd-store";
         PASSWORD_STORE_ENABLE_EXTENSIONS = "true";
       };
-      # shellInit = ''
-      #   # Put at the bottom of ".zshrc":
-      #   if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
-      #     source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
-      #   fi
-
-      #   fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/assume/ $fpath)
-      #   fpath=(/home/${env.user}/.dgranted/zsh_autocomplete/granted/ $fpath)
-      # '';
     };
   };
 }

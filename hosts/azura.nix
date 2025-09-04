@@ -48,6 +48,7 @@
     ../modules/syncthing.nix
     ../modules/docker.nix
     ../modules/stylix.nix
+    ../modules/zsh.nix
 
     # ../modules/gnome
     ../modules/hyprland
