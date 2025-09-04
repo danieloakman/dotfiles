@@ -57,11 +57,6 @@ const WIFI_STRENGTH: Icon.Name[] = ['wifi-zero', 'wifi-low', 'wifi-high'];
 const getWifiStrength = (strength: number) =>
   WIFI_STRENGTH[Math.ceil(strength / 33) - 1] ?? 'wifi-off';
 
-const data = createComputed([primaryConnection, wifi], (c, wifi) => ({
-  primaryConnection: c,
-  wifi,
-}));
-
 export default function Internet() {
   const [isOpen, { toggle: toggleIsOpen }] = createBooleanState(false);
 
