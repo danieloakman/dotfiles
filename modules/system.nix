@@ -166,6 +166,7 @@
       nil # Nix LSP
       nh # Nix helper
       nixpkgs-fmt # A formatter for .nix files.
+      statix # A linter for .nix files.
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       (if env.isOnWayland then dmenu-wayland else dmenu)
