@@ -6,6 +6,12 @@
         outLogFile = "/tmp/skhd.log";
         errorLogFile = "/tmp/skhd-error.log";
         config = ''
+          alt - 1 : open -a "Vivaldi"
+          alt - 2 : open -a "Cursor"
+          alt - 3 : open -a "Microsoft Teams"
+          alt - 4 : open -a "Roam"
+          alt - 5 : open -a "Zoom"
+
           # 0x3B is supposed to be the fn key.
           # Doesn't work
           # 0x3B + left : aerospace focus left
