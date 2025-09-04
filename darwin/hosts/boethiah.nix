@@ -1,6 +1,6 @@
 { self, pkgs, system, env, inputs, ... }: {
   imports = [
-    ../modules/aerospace.nix
+    # ../modules/aerospace.nix
     # ../modules/skhd.nix
   ];
 
@@ -108,6 +108,10 @@
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;
         };
+      };
+      WindowManager = {
+        # Enable Stage Manager:
+        GloballyEnabled = true;
       };
     };
 
