@@ -36,7 +36,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
         >
           <For each={notifications}>
             {(notification) => (
-              <box cssClasses={classes('bg-bg-color', 'rounded')}>
+              <box cssClasses={classes('bg-bg-color', 'rounded', 'p')}>
                 <Notification notification={notification} />
               </box>
             )}
