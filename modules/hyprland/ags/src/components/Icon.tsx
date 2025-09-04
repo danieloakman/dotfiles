@@ -1,6 +1,6 @@
 import { Gtk } from 'ags/gtk4';
 import GLib from 'gi://GLib';
-import { Accessor, createComputed, createExternal, createState, onMount, With } from 'ags';
+import { Accessor, createComputed, createExternal, With } from 'ags';
 import { readFileAsync, writeFileAsync } from 'ags/file';
 import { Theme } from '../utils/theme';
 import { execAsync } from 'ags/process';
@@ -54,6 +54,7 @@ export const ICONS = [
   'bell-off',
   'bell-ring',
   'bell',
+  'lock',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
@@ -85,7 +86,15 @@ export declare namespace Icon {
   }
 }
 
-export function Icon({ name, size = 18, color = Theme.fgColor, visible, halign, valign, ...props }: Icon.Props) {
+export function Icon({
+  name,
+  size = 18,
+  color = Theme.fgColor,
+  visible,
+  halign,
+  valign,
+  ...props
+}: Icon.Props) {
   const computed = createComputed(
     [toAccessor(name), toAccessor(color)],
     (name, color) => [name, color] as const,
