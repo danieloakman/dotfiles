@@ -63,21 +63,43 @@
         AppleShowAllExtensions = true;
         InitialKeyRepeat = 20;
         KeyRepeat = 3;
+        _HIHideMenuBar = false;
       };
       controlcenter = {
         BatteryShowPercentage = true;
         Bluetooth = false;
       };
-      dock = {
-        autohide = true;
-        autohide-delay = 0.1;
-        autohide-time-modifier = 0.2;
-        expose-animation-duration = 0.2;
-        tilesize = 50;
-        showhidden = true;
-        show-recents = false;
-        mru-spaces = false;
-      };
+      dock =
+        let
+          hotCornerAction = {
+            disabled = 0;
+            missionControl = 1;
+            applicationWindows = 2;
+            desktop = 3;
+            startScreenSaver = 4;
+            disableScreenSaver = 5;
+            dashboard = 6;
+            putDisplayToSleep = 10;
+            launchpad = 11;
+            notificationCenter = 12;
+            lockScreen = 13;
+            quickNote = 14;
+          };
+        in
+        {
+          autohide = true;
+          autohide-delay = 0.1;
+          autohide-time-modifier = 0.2;
+          expose-animation-duration = 0.2;
+          tilesize = 50;
+          showhidden = true;
+          show-recents = false;
+          mru-spaces = false;
+          wvous-bl-corner = hotCornerAction.dashboard;
+          wvous-br-corner = hotCornerAction.desktop;
+          wvous-tl-corner = hotCornerAction.missionControl;
+          wvous-tr-corner = hotCornerAction.notificationCenter;
+        };
       CustomUserPreferences = {
         "com.apple.symbolichotkeys" = {
           AppleSymbolicHotKeys = {
@@ -112,6 +134,18 @@
       WindowManager = {
         # Enable Stage Manager:
         GloballyEnabled = true;
+        AutoHide = false;
+        # Add margins to tiled windows:
+        EnableTiledWindowMargins = true;
+        # Enable drag window to edge of screen to tile left/right:
+        EnableTilingByEdgeDrag = true;
+        # Enable drag window to top of screen to maximize:
+        EnableTopTilingByEdgeDrag = true;
+        # Hide desktop icons in stage manager:
+        HideDesktop = false;
+        StageManagerHideWidgets = false;
+        StandardHideDesktopIcons = false;
+        StandardHideWidgets = false;
       };
     };
 
