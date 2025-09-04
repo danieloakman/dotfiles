@@ -246,6 +246,7 @@
       "warp"
       "zoom"
       "spotify"
+      "obsidian"
     ];
   };
 
