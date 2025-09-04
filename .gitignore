@@ -3,3 +3,5 @@ tmp
 result
 diff
 secrets/age-keys.txt
+@girs
+node_modules
