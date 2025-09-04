@@ -10,8 +10,5 @@ boot:
 switch:
 	sudo darwin-rebuild switch --flake .
 
-test:
-	sudo darwin-rebuild test --flake .
-
 list-generations:
 	sudo darwin-rebuild list-generations --flake .
