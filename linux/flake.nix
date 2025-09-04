@@ -84,7 +84,7 @@
           ./modules/password-store.nix
         ];
       };
-      createEnv = { user, isLaptop, isOnWayland, hasGPU }: { inherit user isLaptop isOnWayland hasGPU; };
+      createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: { inherit user home isLaptop isOnWayland hasGPU; };
     in
     {
       nixosConfigurations = {
@@ -93,6 +93,7 @@
             let
               env = createEnv {
                 user = "dano";
+                home = "/home/dano";
                 isLaptop = false;
                 isOnWayland = true;
                 hasGPU = true;
@@ -112,6 +113,7 @@
             let
               env = createEnv {
                 user = "dano";
+                home = "/home/dano";
                 isLaptop = true;
                 isOnWayland = true;
                 hasGPU = false;
@@ -131,6 +133,7 @@
             let
               env = createEnv {
                 user = "dano";
+                home = "/home/dano";
                 isLaptop = true;
                 isOnWayland = true;
                 hasGPU = false;
