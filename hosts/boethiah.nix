@@ -244,6 +244,7 @@
       "visual-studio-code"
       "warp"
       "zoom"
+      "spotify"
     ];
   };
 
