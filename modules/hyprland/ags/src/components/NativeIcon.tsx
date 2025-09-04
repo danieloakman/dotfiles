@@ -1,8 +1,10 @@
 import { writeFileAsync } from 'ags/file';
 import { Gtk } from 'ags/gtk4';
-import { NativeIcon } from '../types/icons';
+import { NATIVE_ICONS, NativeIcon } from '../types/icons';
 import { Accessor } from 'ags';
 import { DEV } from '@/utils/env';
+
+export type { NativeIcon };
 
 /** Generates the `types/icons.ts` file */
 export function NativeIconProvider() {
@@ -32,4 +34,12 @@ export interface NativeIconProps {
 
 export default function NativeIcon({ name, size = 18 }: NativeIconProps) {
   return <image iconName={name} pixelSize={size} />;
+}
+
+export function lookupNativeIcon(name: string): NativeIcon | undefined {
+  if (NATIVE_ICONS.includes(name as NativeIcon)) return name as NativeIcon;
+  return NATIVE_ICONS.find(
+    (i) =>
+      i.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(i.toLowerCase()),
+  );
 }
