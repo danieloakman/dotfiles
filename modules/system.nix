@@ -234,7 +234,7 @@
       enable = true;
       clean.enable = true;
       clean.extraArgs = "--keep-since 14d --keep 3";
-      flake = "/home/${env.user}/repos/personal/dotfiles";
+      flake = "${env.home}/repos/personal/dotfiles/linux";
     };
 
     # Some programs need SUID wrappers, can be configured further or are

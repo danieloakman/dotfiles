@@ -21,8 +21,6 @@
         stateVersion = "25.05";
 
         sessionVariables = {
-          # This is how `nh` is able to find the flake for this host's configuration.
-          # NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles/linux";
           GRANTED_ALIAS_CONFIGURED = "true";
           DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
         };

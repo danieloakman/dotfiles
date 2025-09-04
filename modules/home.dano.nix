@@ -10,7 +10,7 @@
   # manage.
   home = {
     username = env.user;
-    homeDirectory = "/home/${env.user}";
+    homeDirectory = env.home;
 
     # This value determines the Home Manager release that your configuration is
     # compatible with. This helps avoid breakage when a new Home Manager release
@@ -163,9 +163,9 @@
       # EDITOR = "emacs";
       # EDITOR = "nvim";
       # This is how `nh` is able to find the flake for this host's configuration.
-      NH_FLAKE = "/home/${env.user}/repos/personal/dotfiles/linux";
+      NH_FLAKE = "${env.home}/repos/personal/dotfiles/linux";
       GRANTED_ALIAS_CONFIGURED = "true";
-      DOTFILES_DIR = "/home/${env.user}/repos/personal/dotfiles";
+      DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
     };
 
     sessionPath = [ "/usr/local/bin" "$HOME/bin" ];

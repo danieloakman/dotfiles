@@ -1,6 +1,6 @@
 { env, pkgs, config, ... }:
 let
-  passwordStorePath = "/home/${env.user}/.local/share/password-store";
+  passwordStorePath = "${env.home}/.local/share/password-store";
 in
 {
   environment.systemPackages = with pkgs; [

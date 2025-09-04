@@ -368,7 +368,7 @@ in
         enable = true;
         settings =
           let
-            wallpaperPath = "/home/dano/repos/personal/dotfiles/files/assets/${config.networking.hostName}-wallpaper.jpeg";
+            wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/${config.networking.hostName}-wallpaper.jpeg";
           in
           {
             ipc = "on";

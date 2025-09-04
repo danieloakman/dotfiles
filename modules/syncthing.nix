@@ -9,8 +9,8 @@
     openDefaultPorts = true;
     overrideDevices = true;
     overrideFolders = false; # Cannot have as true when autoAcceptFolders is true for S22
-    dataDir = "/home/${env.user}/sync";
-    configDir = "/home/${env.user}/.config/syncthing";
+    dataDir = "${env.home}/sync";
+    configDir = "${env.home}/.config/syncthing";
     settings = {
       options.urAccepted = -1; # Do not allow anonymous diagnostics to be sent
       devices = {
@@ -24,13 +24,13 @@
         "obsidian-vault" = {
           enable = true;
           id = "snqde-mxdrc";
-          path = "/home/${env.user}/Documents/obsidian-vault";
+          path = "${env.home}/Documents/obsidian-vault";
           label = "Obsidian Vault";
         };
         "general-sync" = {
           enable = true;
           id = "jvfnw-u7jgi";
-          path = "/home/${env.user}/Sync";
+          path = "${env.home}/Sync";
           label = "General Sync";
         };
       };
