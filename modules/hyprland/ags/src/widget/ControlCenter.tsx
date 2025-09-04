@@ -1,7 +1,7 @@
 import { Gtk } from 'ags/gtk4';
 import Volume, { VolumeIndicator } from './Volume';
 import Internet, { InternetConnection } from './Internet';
-import System, { Shutdown } from './System';
+import System from './System';
 import Bluetooth, { BluetoothConnection } from './Bluetooth';
 import { toggleWindow, WINDOW_NAME } from '../utils/window';
 import Modal from '../components/Modal';
@@ -37,7 +37,6 @@ export default function ControlCenter() {
             <Uptime />
           </box>
           <box $type="end" spacing={4} valign={Gtk.Align.CENTER}>
-            <Shutdown />
             <System />
           </box>
         </centerbox>

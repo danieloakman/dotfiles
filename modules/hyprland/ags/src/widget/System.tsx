@@ -27,11 +27,3 @@ export default function System() {
     </menubutton>
   );
 }
-
-export function Shutdown() {
-  return (
-    <button onClicked={() => notify('Shutdown', { urgency: 'critical' })}>
-      <Icon name="power" />
-    </button>
-  );
-}
