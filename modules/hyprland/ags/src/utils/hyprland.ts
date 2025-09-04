@@ -1,5 +1,5 @@
-import { createBinding, createExternal } from 'ags';
-import { noop, once } from './fn';
+import { createBinding } from 'ags';
+import { once } from './fn';
 import { safeJSONParse } from './object';
 import { execAsync } from 'ags/process';
 import Hyprland from 'gi://AstalHyprland';
