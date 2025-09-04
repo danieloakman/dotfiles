@@ -59,7 +59,10 @@ export function ControlCenterButton() {
       <TrayApps />
       <Vr visible={trayItems((v) => v.length > 0)} cssClasses={classes('my-xs')} />
 
-      <button cssClasses={classes('rounded-full')} onClicked={() => toggleWindow('control-center')}>
+      <button
+        cssClasses={classes('rounded-full', 'btn-ghost-on-bg')}
+        onClicked={() => toggleWindow('control-center')}
+      >
         <box spacing={6}>
           <VolumeIndicator />
           <BluetoothConnection />

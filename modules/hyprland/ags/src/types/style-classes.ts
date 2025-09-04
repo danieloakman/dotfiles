@@ -1,6 +1,7 @@
 export const STYLE_CLASSES = [
   "selected",
   "btn-ghost",
+  "btn-ghost-on-bg",
   "circular",
   "rounded-none",
   "rounded",

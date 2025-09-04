@@ -3,21 +3,28 @@
 // https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
 $fg-color: #{'@theme_fg_color'};
 $bg-color: #{'@theme_bg_color'};
-$selected-color: color-mix(in srgb, $bg-color 90%, white);
+$selected-fg-color: color-mix(in srgb, $fg-color 40%, black);
+$selected-bg-color: color-mix(in srgb, $bg-color 90%, white);
 $rounded-full: 100px;
 $rounded: 20px;
 $gap: 10px;
 $border-color: color-mix(in srgb, $fg-color 80%, transparent);
 
 .selected {
-  background-color: $selected-color;
+  background-color: $selected-bg-color;
   color: $bg-color;
 }
 
 .btn-ghost {
   background-color: transparent;
   &:hover {
-    background-color: $selected-color;
+    background-color: $selected-bg-color;
+  }
+}
+.btn-ghost-on-bg {
+  background-color: transparent;
+  &:hover {
+    background-color: $selected-fg-color;
   }
 }
 
@@ -201,7 +208,7 @@ $border-color: color-mix(in srgb, $fg-color 80%, transparent);
   background-color: $fg-color;
 }
 .bg-selected {
-  background-color: $selected-color;
+  background-color: $selected-bg-color;
 }
 .color-fg-color {
   color: $fg-color;
@@ -210,7 +217,7 @@ $border-color: color-mix(in srgb, $fg-color 80%, transparent);
   color: $bg-color;
 }
 .color-selected {
-  color: $selected-color;
+  color: $selected-bg-color;
 }
 
 .opacity-90 {

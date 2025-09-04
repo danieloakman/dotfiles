@@ -25,7 +25,7 @@ export default function TrayApps() {
           ) : (
             <button
               onClicked={() => item.activate(0, 0)}
-              cssClasses={classes('rounded-full')}
+              cssClasses={classes('rounded-full', 'btn-ghost')}
               tooltipText={item.title || item.tooltipText}
             >
               <image iconName={iconName} gicon={gicon} />
