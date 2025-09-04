@@ -4,6 +4,8 @@
     # ../modules/skhd.nix
   ];
 
+  networking.hostName = "boethiah";
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -15,6 +17,13 @@
     config.allowUnfree = true;
     # The platform the configuration will be used on.
     hostPlatform = system;
+  };
+
+  nix = {
+    # Necessary for using flakes on this system.
+    settings.experimental-features = "nix-command flakes";
+    # Use Determinate Nix:
+    enable = false;
   };
 
   # List packages installed in system profile. To search by name, run:
@@ -31,13 +40,6 @@
       pnpm-shell-completion
       pet # CLI tool for keeping a list of commands and executing them later
     ];
-  };
-
-  nix = {
-    # Necessary for using flakes on this system.
-    settings.experimental-features = "nix-command flakes";
-    # Use Determinate Nix:
-    enable = false;
   };
 
   users.users.${env.user} = {
@@ -213,6 +215,4 @@
       # '';
     };
   };
-
-  networking.hostName = "boethiah";
 }
