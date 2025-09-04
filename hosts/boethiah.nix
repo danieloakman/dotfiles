@@ -27,41 +27,44 @@
           DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
         };
 
-        file.".gitconfig".text = ''
-          [user]
-            name = Daniel (Oakman) Brown
-            email = 42539848+danieloakman@users.noreply.github.com
-            signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
-          [credential]
-            helper = cache --timeout 604800
-          [commit]
-            gpgsign = true
-          [init]
-            defaultBranch = main
-          [gpg]
-            program = gpg
-          [pull]
-            ff = true
-          [core]
-            editor = nano
-          [http]
-            postBuffer = 524288000
-          [gpg "ssh"]
-            allowedSignersFile = ~/.config/git/allowed_signers
-          [credential "https://github.com"]
-            helper = 
-            helper = !/opt/homebrew/bin/gh auth git-credential
-          [credential "https://gist.github.com"]
-            helper = 
-            helper = !/opt/homebrew/bin/gh auth git-credential
-        '';
-        file.".gnupg/gpg-agent.conf".text = ''
-          default-cache-ttl 604800
-          max-cache-ttl 604800
-          pinentry-program /opt/homebrew/bin/pinentry-mac
-        '';
-        file."Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
-        file.".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
+        file = {
+
+          ".gitconfig".text = ''
+            [user]
+              name = Daniel (Oakman) Brown
+              email = 42539848+danieloakman@users.noreply.github.com
+              signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
+            [credential]
+              helper = cache --timeout 604800
+            [commit]
+              gpgsign = true
+            [init]
+              defaultBranch = main
+            [gpg]
+              program = gpg
+            [pull]
+              ff = true
+            [core]
+              editor = nano
+            [http]
+              postBuffer = 524288000
+            [gpg "ssh"]
+              allowedSignersFile = ~/.config/git/allowed_signers
+            [credential "https://github.com"]
+              helper = 
+              helper = !/opt/homebrew/bin/gh auth git-credential
+            [credential "https://gist.github.com"]
+              helper = 
+              helper = !/opt/homebrew/bin/gh auth git-credential
+          '';
+          ".gnupg/gpg-agent.conf".text = ''
+            default-cache-ttl 604800
+            max-cache-ttl 604800
+            pinentry-program /opt/homebrew/bin/pinentry-mac
+          '';
+          "Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
+          ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
+        };
       };
     };
   };
