@@ -7,7 +7,7 @@
         alt - 2 : open -a "Cursor"
         alt - 3 : open -a "Microsoft Teams"
         alt - 4 : open -a "Roam"
-        alt - 5 : open -a "Zoom"
+        alt - 5 : open -a "zoom.us"
       '';
     };
 
