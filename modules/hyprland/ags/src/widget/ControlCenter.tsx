@@ -56,7 +56,7 @@ export function ControlCenterButton() {
   return (
     <box cssClasses={classes('rounded-full', 'bg-selected')} spacing={6}>
       <TrayApps />
-      <Vr visible={trayItems((v) => v.length > 0)} cssClasses={classes('my-xs')} />
+      <Vr visible={trayItems((v) => v.length > 0)} cssClasses={classes('my-sm')} />
 
       <button
         cssClasses={classes('rounded-full', 'btn-ghost-on-bg')}
