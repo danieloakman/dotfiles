@@ -78,7 +78,7 @@ export default function PasswordSearch() {
   return (
     <Modal name={WINDOW_NAME.PasswordSearch} onShow={() => searchInput.grab_focus()}>
       <centerbox
-        cssClasses={classes('bg-bg-color', 'p-sm', 'rounded-sm')}
+        cssClasses={classes('bg-bg-color', 'p-sm', 'rounded')}
         orientation={Gtk.Orientation.VERTICAL}
         widthRequest={WIDTH}
         heightRequest={HEIGHT}
