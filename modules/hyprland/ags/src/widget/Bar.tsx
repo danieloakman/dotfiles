@@ -28,7 +28,7 @@ export default function Bar({ monitor }: BarProps) {
     <window
       visible
       name={WINDOW_NAME.Bar}
-      cssClasses={classes('bg-bg-color', 'color-fg-color', 'font-size-md', 'p-sm', 'opacity-90')}
+      cssClasses={classes('bg-bg-color', 'color-fg-color', 'p-sm', 'opacity-90')}
       gdkmonitor={monitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={TOP | LEFT | RIGHT}
