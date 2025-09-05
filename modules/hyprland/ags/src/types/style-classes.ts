@@ -56,10 +56,12 @@ export const STYLE_CLASSES = [
   "color-bg-color",
   "color-selected",
   "opacity-90",
+  "opacity-70",
   "font-size-xs",
   "font-size-sm",
   "font-size-md",
-  "font-size-lg"
+  "font-size-lg",
+  "font-size-xl"
 ] as const;
 
 export type StyleClass = (typeof STYLE_CLASSES)[number];

@@ -223,16 +223,22 @@ $border-color: color-mix(in srgb, $fg-color 80%, transparent);
 .opacity-90 {
   opacity: 0.9;
 }
+.opacity-70 {
+  opacity: 0.7;
+}
 
 .font-size-xs {
-  font-size: 10px;
-}
-.font-size-sm {
   font-size: 12px;
 }
-.font-size-md {
+.font-size-sm {
   font-size: 14px;
 }
-.font-size-lg {
+.font-size-md {
   font-size: 16px;
+}
+.font-size-lg {
+  font-size: 18px;
+}
+.font-size-xl {
+  font-size: 20px;
 }
