@@ -233,6 +233,7 @@
       "awscli"
       "mprocs"
       "entr" # Run some command when file(s) change
+      "lazydocker"
       {
         name = "syncthing";
         restart_service = "changed";
@@ -246,6 +247,8 @@
       "warp"
       "zoom"
       "spotify"
+      "obsidian"
+      "docker-desktop"
     ];
   };
 

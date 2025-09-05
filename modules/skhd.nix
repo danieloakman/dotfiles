@@ -1,30 +1,41 @@
-{ env, lib, pkgs, ... }: {
+{ lib, pkgs, ... }: {
   config = lib.mkIf pkgs.stdenv.isDarwin {
-    home-manager.users.${env.user} = {
-      services.skhd = {
-        enable = true;
-        outLogFile = "/tmp/skhd.log";
-        errorLogFile = "/tmp/skhd-error.log";
-        config = ''
-          alt - 1 : open -a "Vivaldi"
-          alt - 2 : open -a "Cursor"
-          alt - 3 : open -a "Microsoft Teams"
-          alt - 4 : open -a "Roam"
-          alt - 5 : open -a "Zoom"
-
-          # 0x3B is supposed to be the fn key.
-          # Doesn't work
-          # 0x3B + left : aerospace focus left
-          # 0x3B + right : aerospace focus right
-          # 0x3B + up : aerospace focus up
-          # 0x3B + down : aerospace focus down
-
-          # 0x3B + shift + left : aerospace move left
-          # 0x3B + shift + right : aerospace move right
-          # 0x3B + shift + up : aerospace move up
-          # 0x3B + shift + down : aerospace move down
-        '';
-      };
+    services.skhd = {
+      enable = true;
+      skhdConfig = ''
+        alt - 1 : open -a "Vivaldi"
+        alt - 2 : open -a "Cursor"
+        alt - 3 : open -a "Microsoft Teams"
+        alt - 4 : open -a "Roam"
+        alt - 5 : open -a "zoom.us"
+      '';
     };
+
+    # home-manager.users.${env.user} = {
+    #   services.skhd = {
+    #     enable = true;
+    #     outLogFile = "/tmp/skhd.log";
+    #     errorLogFile = "/tmp/skhd-error.log";
+    #     config = ''
+    #       alt - 1 : open -a "Vivaldi"
+    #       alt - 2 : open -a "Cursor"
+    #       alt - 3 : open -a "Microsoft Teams"
+    #       alt - 4 : open -a "Roam"
+    #       alt - 5 : open -a "Zoom"
+
+    #       # 0x3B is supposed to be the fn key.
+    #       # Doesn't work
+    #       # 0x3B + left : aerospace focus left
+    #       # 0x3B + right : aerospace focus right
+    #       # 0x3B + up : aerospace focus up
+    #       # 0x3B + down : aerospace focus down
+
+    #       # 0x3B + shift + left : aerospace move left
+    #       # 0x3B + shift + right : aerospace move right
+    #       # 0x3B + shift + up : aerospace move up
+    #       # 0x3B + shift + down : aerospace move down
+    #     '';
+    #   };
+    # };
   };
 }
