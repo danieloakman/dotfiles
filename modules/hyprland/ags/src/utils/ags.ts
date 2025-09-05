@@ -1,5 +1,6 @@
 import { Accessor, createComputed, createExternal, createState, Setter } from 'ags';
 import { noop } from './fn';
+import { interval } from 'ags/time';
 
 /** Converts a value or accessor to an accessor. So downstream we can just always assume it's an accessor. */
 export function toAccessor<T>(value: T | Accessor<T>): Accessor<T> {
@@ -43,4 +44,14 @@ export const createBooleanState = (initialValue: boolean) => {
       toggle: () => set(!value.get()),
     },
   ] as const;
+};
+
+export const createInterval = (intervalMs: number) => {
+  return createExternal(0, (set) => {
+    const t = interval(intervalMs, () => set((n) => n + 1));
+    return () => {
+      t.cancel();
+      set(0);
+    };
+  });
 };
