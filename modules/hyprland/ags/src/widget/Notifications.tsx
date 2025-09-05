@@ -10,6 +10,7 @@ import app from 'ags/gtk4/app';
 import { createPoll, interval } from 'ags/time';
 import Pango from 'gi://Pango';
 import Notifd from 'gi://AstalNotifd';
+import { StyleClass } from '@/types/style-classes';
 
 const { TOP } = Astal.WindowAnchor;
 
@@ -43,9 +44,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
         >
           <For each={notifications}>
             {(notification) => (
-              <box cssClasses={classes('bg-bg-color', 'rounded', 'p')}>
-                <Notification notification={notification} />
-              </box>
+              <Notification notification={notification} cssClasses={['bg-bg-color', 'rounded', 'px', 'py-sm']} />
             )}
           </For>
         </box>
@@ -85,9 +84,13 @@ const dateNow = createPoll('', 1000, 'echo').as(() => Date.now());
 function Notification({
   notification,
   width = 500,
+  cssClasses = [],
+  css = '',
 }: {
   notification: UnwrapAccessor<typeof notifications>[number];
   width?: number;
+  cssClasses?: StyleClass[];
+  css?: string;
 }) {
   const [revealed, { toggle: toggleRevealed }] = createBooleanState(false);
   const time = createBinding(notification, 'time').as((t) => t * 1000);
@@ -104,15 +107,15 @@ function Notification({
     <box
       name="Notification"
       orientation={Gtk.Orientation.VERTICAL}
-      cssClasses={classes('p-xs')}
-      css={`
-        border-left-width: 4px;
-        border-left-style: solid;
-        border-radius: 4px;
-        border-color: ${URGENCY_COLORS[notification.urgency]};
-      `}
+      cssClasses={classes('p-xs', ...cssClasses)}
       widthRequest={width}
       hexpand
+      css={`
+        ${css}
+        border-left-width: 4px;
+        border-left-style: solid;
+        border-color: ${URGENCY_COLORS[notification.urgency]};
+      `}
     >
       <centerbox valign={Gtk.Align.CENTER} hexpand widthRequest={width}>
         <box $type="start" spacing={6}>
