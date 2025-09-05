@@ -8,7 +8,7 @@
       pass = {
         enable = true;
         stores = [
-          "home/${env.user}/.local/share/password-store"
+          "${env.home}/repos/personal/pwd-store"
         ];
       };
       modes = [
