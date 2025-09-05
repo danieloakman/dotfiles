@@ -1,16 +1,19 @@
 import Icon from '@/components/Icon';
-import { createBooleanState, UnwrapAccessor } from '@/utils/ags';
+import { createBooleanState, createInterval, UnwrapAccessor } from '@/utils/ags';
 import { iife } from '@/utils/fn';
 import { clearNotifications, notifications } from '@/utils/notifications';
 import { classes } from '@/utils/styles';
 import { WINDOW_NAME } from '@/utils/window';
-import { Accessor, createBinding, createComputed, For } from 'ags';
+import { Accessor, createBinding, createComputed, createExternal, For } from 'ags';
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import app from 'ags/gtk4/app';
 import { createPoll, interval } from 'ags/time';
 import Pango from 'gi://Pango';
 import Notifd from 'gi://AstalNotifd';
 import { StyleClass } from '@/types/style-classes';
+import { clamp } from '@/utils/number';
+
+Gtk.LevelBar;
 
 const { TOP } = Astal.WindowAnchor;
 
@@ -44,7 +47,10 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
         >
           <For each={notifications}>
             {(notification) => (
-              <Notification notification={notification} cssClasses={['bg-bg-color', 'rounded', 'px', 'py-sm']} />
+              <Notification
+                notification={notification}
+                cssClasses={['bg-bg-color', 'rounded', 'px']}
+              />
             )}
           </For>
         </box>
@@ -79,7 +85,9 @@ export function NotificationsList() {
     </box>
   );
 }
-const dateNow = createPoll('', 1000, 'echo').as(() => Date.now());
+
+const UPDATE_INTERVAL = 50;
+const DEFAULT_TIMEOUT = 10000;
 
 function Notification({
   notification,
@@ -94,14 +102,13 @@ function Notification({
 }) {
   const [revealed, { toggle: toggleRevealed }] = createBooleanState(false);
   const time = createBinding(notification, 'time').as((t) => t * 1000);
-  const expire = createBinding(notification, 'expireTimeout');
+  // const expire = createBinding(notification, 'expireTimeout');
   const appName = createBinding(notification, 'appName');
   const appIcon = createBinding(notification, 'appIcon');
-  const timeLeft = createComputed(
-    [time, expire, dateNow],
-    (time, expire, dateNow) => time + expire - dateNow,
-  );
-  const transient = createBinding(notification, 'transient');
+  const interval = createInterval(UPDATE_INTERVAL);
+  const levelMaxValue =
+    notification.expireTimeout < 0 ? DEFAULT_TIMEOUT : notification.expireTimeout;
+  const levelValue = interval((t) => clamp(t * UPDATE_INTERVAL, 0, levelMaxValue));
 
   return (
     <box
@@ -146,8 +153,6 @@ function Notification({
               cssClasses={classes('opacity-70')}
             />
           </box>
-
-          {/* TODO: add an animated bar that fills to the right based on the time left */}
         </box>
 
         <box $type="end" spacing={4} marginStart={6} valign={Gtk.Align.CENTER}>
@@ -168,6 +173,36 @@ function Notification({
           </button>
         </box>
       </centerbox>
+
+      <levelbar
+        value={levelValue}
+        maxValue={levelMaxValue}
+        minValue={0}
+        heightRequest={1}
+        // levelbar[.discrete]
+        // ╰── trough
+        //     ├── block.filled.level-name
+        //     ┊
+        //     ├── block.empty
+        //     ┊
+        // css={`
+        //   color: red;
+        //   * {
+        //     color: transparent;
+        //     background-color: transparent;
+        //   }
+        //   transition: all 0.5s ease-in-out;
+        //   trough {
+        //     background-color: transparent;
+        //   }
+        //   block.filled {
+        //     background-color: ${URGENCY_COLORS[notification.urgency]};
+        //   }
+        //   block.empty {
+        //     background-color: transparent;
+        //   }
+        // `}
+      />
 
       <revealer revealChild={revealed} widthRequest={width}>
         <box orientation={Gtk.Orientation.VERTICAL} spacing={4} valign={Gtk.Align.CENTER}>
