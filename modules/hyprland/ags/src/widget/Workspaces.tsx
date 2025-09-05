@@ -5,6 +5,7 @@ import NativeIcon, {
   lookupNativeIcon,
   NativeIcon as NativeIconType,
 } from '@/components/NativeIcon';
+import { Gtk } from 'ags/gtk4';
 
 export default function Workspaces() {
   const dataView = createComputed([workspaces, focusedWorkspace], (ws, f) =>
@@ -29,7 +30,7 @@ export default function Workspaces() {
               )}
               onClicked={() => workspace.focus()}
             >
-              <box spacing={4}>
+              <box spacing={4} halign={Gtk.Align.CENTER}>
                 <label label={workspace.name.toString()} />
                 <For
                   each={
