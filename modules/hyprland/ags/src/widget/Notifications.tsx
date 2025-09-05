@@ -48,7 +48,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
 }
 
 export function NotificationsList() {
-  const nonTransientNotifications = notifications(arr => arr.filter(n => !n.transient));
+  const nonTransientNotifications = notifications((arr) => arr.filter((n) => !n.transient));
 
   return (
     <box name="Notifications" spacing={4} orientation={Gtk.Orientation.VERTICAL}>
@@ -77,48 +77,100 @@ const dateNow = createPoll('', 1000, 'echo').as(() => Date.now());
 
 function Notification({
   notification,
+  width = 500,
 }: {
   notification: UnwrapAccessor<typeof notifications>[number];
+  width?: number;
 }) {
   const [revealed, { toggle: toggleRevealed }] = createBooleanState(false);
-  const time = createBinding(notification, 'time');
+  const time = createBinding(notification, 'time').as((t) => t * 1000);
   const expire = createBinding(notification, 'expireTimeout');
+  const appName = createBinding(notification, 'appName');
+  const appIcon = createBinding(notification, 'appIcon');
   const timeLeft = createComputed(
     [time, expire, dateNow],
-    (time, expire, dateNow) => (time + expire) - dateNow,
+    (time, expire, dateNow) => time + expire - dateNow,
   );
-  const transient = createBinding(notification, 'transient')
+  const transient = createBinding(notification, 'transient');
 
   return (
-    <box name="Notification" orientation={Gtk.Orientation.VERTICAL}>
-      <box spacing={4}>
-        <Icon name="bell" />
-        <label
-          label={notification.summary}
-          ellipsize={Pango.EllipsizeMode.END}
-          maxWidthChars={20}
-        />
-        <button onClicked={() => notification.dismiss()} cssClasses={classes('btn-ghost')}>
-          <Icon name="x" />
-        </button>
-        <button onClicked={toggleRevealed}>
-          <Icon name={revealed((v) => (v ? 'chevron-down' : 'chevron-right'))} />
-        </button>
-      </box>
+    <box
+      name="Notification"
+      orientation={Gtk.Orientation.VERTICAL}
+      cssClasses={classes('p-xs')}
+      widthRequest={width}
+      hexpand
+    >
+      <centerbox valign={Gtk.Align.CENTER} hexpand widthRequest={width}>
+        <box $type="start" spacing={6}>
+          <Icon name="bell" />
 
-      
-      <revealer revealChild={revealed}>
-        <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
-          <label label={notification.appIcon} />
+          <box spacing={4} orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
+            <label
+              lines={1}
+              label={appName}
+              ellipsize={Pango.EllipsizeMode.END}
+              halign={Gtk.Align.START}
+              cssClasses={classes('opacity-70')}
+            />
+            <label
+              lines={1}
+              label={notification.summary}
+              ellipsize={Pango.EllipsizeMode.END}
+              halign={Gtk.Align.START}
+              // maxWidthChars={20}
+            />
+
+            <label
+              visible={!!notification.body}
+              lines={1}
+              label={notification.body}
+              ellipsize={Pango.EllipsizeMode.END}
+              halign={Gtk.Align.START}
+              cssClasses={classes('font-size-xs', 'opacity-70')}
+            />
+          </box>
+        </box>
+
+        <box $type="end" spacing={4} marginStart={6} valign={Gtk.Align.CENTER}>
+          <label
+            label={time((t) => {
+              const [h, m] = new Date(t).toLocaleTimeString().split(':').slice(0, 2);
+              const hours = parseInt(h ?? '0');
+              return `${(hours % 12)?.toString().padStart(2, '0')}:${m?.padStart(2, '0')}${
+                hours >= 12 ? 'pm' : 'am'
+              }`;
+            })}
+          />
+          <button onClicked={() => notification.dismiss()} cssClasses={classes('btn-ghost')}>
+            <Icon name="x" />
+          </button>
+          <button onClicked={toggleRevealed}>
+            <Icon name={revealed((v) => (v ? 'chevron-down' : 'chevron-right'))} />
+          </button>
+        </box>
+      </centerbox>
+
+      <revealer revealChild={revealed} widthRequest={width}>
+        <box orientation={Gtk.Orientation.VERTICAL} spacing={4} valign={Gtk.Align.CENTER}>
+          <label label={`Desktop Entry: ${notification.desktopEntry}`} />
+          <label label={`App Name: ${notification.appName}`} />
+          <label label={`App Icon: ${notification.appIcon}`} />
+          {/* <label label={`Time: ${notification.time}`} /> */}
+          <label label={`Expire: ${notification.expireTimeout}`} />
+          <label label={`Transient: ${notification.transient}`} />
+          <image file={notification.image} />
+          <label label={`a ${notification.image}`} />
+          {/* <label label={notification.appIcon} />
           <image iconName={notification.appIcon} />
           <label
             lines={3}
             label={[notification.time, notification.summary, notification.body].join('\n')}
           />
-          <label label={expire(t => `Expire: ${t} seconds`)} />
-          <label label={time(t => `Time: ${t / 1000} seconds`)} />
+          <label label={expire((t) => `Expire: ${t} seconds`)} />
+          <label label={time((t) => `Time: ${t / 1000} seconds`)} />
           <label label={timeLeft((t) => `Time Left: ${t / 1000} seconds`)} />
-          <label label={transient(t => `Transient: ${t}`)} />
+          <label label={transient((t) => `Transient: ${t}`)} /> */}
         </box>
       </revealer>
     </box>
