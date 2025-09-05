@@ -9,8 +9,15 @@ import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import app from 'ags/gtk4/app';
 import { createPoll, interval } from 'ags/time';
 import Pango from 'gi://Pango';
+import Notifd from 'gi://AstalNotifd';
 
 const { TOP } = Astal.WindowAnchor;
+
+const URGENCY_COLORS: Record<Notifd.Urgency, string> = {
+  [Notifd.Urgency.CRITICAL]: 'red',
+  [Notifd.Urgency.NORMAL]: '$fg-color',
+  [Notifd.Urgency.LOW]: '$selected',
+};
 
 export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Accessor<Gdk.Monitor> }) {
   return (
@@ -98,6 +105,12 @@ function Notification({
       name="Notification"
       orientation={Gtk.Orientation.VERTICAL}
       cssClasses={classes('p-xs')}
+      css={`
+        border-left-width: 4px;
+        border-left-style: solid;
+        border-radius: 4px;
+        border-color: ${URGENCY_COLORS[notification.urgency]};
+      `}
       widthRequest={width}
       hexpand
     >
@@ -118,7 +131,7 @@ function Notification({
               label={notification.summary}
               ellipsize={Pango.EllipsizeMode.END}
               halign={Gtk.Align.START}
-              // maxWidthChars={20}
+              cssClasses={classes('font-size-lg')}
             />
 
             <label
@@ -127,9 +140,11 @@ function Notification({
               label={notification.body}
               ellipsize={Pango.EllipsizeMode.END}
               halign={Gtk.Align.START}
-              cssClasses={classes('font-size-xs', 'opacity-70')}
+              cssClasses={classes('opacity-70')}
             />
           </box>
+
+          {/* TODO: add an animated bar that fills to the right based on the time left */}
         </box>
 
         <box $type="end" spacing={4} marginStart={6} valign={Gtk.Align.CENTER}>
