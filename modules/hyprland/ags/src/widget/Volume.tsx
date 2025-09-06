@@ -1,5 +1,5 @@
 import Wp from 'gi://AstalWp';
-import { createBinding, createComputed, createState, For } from 'ags';
+import { createBinding, createComputed, For } from 'ags';
 import { execAsync } from 'ags/process';
 import Icon from '../components/Icon';
 import { classes } from '../utils/styles';
@@ -18,11 +18,14 @@ const speakers = createBinding(wp.audio, 'speakers').as((arr) =>
 );
 
 export const toggleMute = debounce(() => {
-  execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle');
+  execAsync('swayosd-client --output-volume mute-toggle').catch(err => console.error('mute error', err));
+  // execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle');
 }, 100);
 
 export const setVolume = debounce((value: number) => {
-  execAsync(`wpctl set-volume @DEFAULT_AUDIO_SINK@ ${value}`);
+  const diff = Math.round((value - volume.get()) * 100);
+  execAsync(`swayosd-client --output-volume ${diff}`).catch(err => console.error('volume set error', err));
+  // execAsync(`wpctl set-volume @DEFAULT_AUDIO_SINK@ ${value}`);
 }, 100);
 
 export default function Volume() {
