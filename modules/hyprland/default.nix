@@ -103,16 +103,20 @@ in
         bindl = [
           ", XF86MonBrightnessUp, exec, swayosd-client --brightness 5"
           ", XF86MonBrightnessDown, exec, swayosd-client --brightness -5"
-          # ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle" # Most keyboards use the audiomicmute key for this, so we use the output-volume cmd instead.
-          ", XF86AudioMicMute, exec, swayosd-client --output-volume mute-toggle"
           ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume 5"
           ", XF86AudioLowerVolume, exec, swayosd-client --output-volume -5"
           "alt, F7, exec, swayosd-client --output-volume 5" # Need these because XF86 volume keys don't work sometimes
           "alt, F6, exec, swayosd-client --output-volume -5"
-          ", XF86AudioMute, exec, swayosd-client --input-volume mute-toggle"
+          ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
+          ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
           ", XF86AudioPlay, exec, swayosd-client --playerctl play-pause"
           ", XF86AudioPrev, exec, swayosd-client --playerctl prev"
           ", XF86AudioNext, exec, swayosd-client --playerctl next"
+        ];
+
+        bindr = [
+          "CAPS, Caps_Lock, exec, swayosd-client --caps-lock"
+          "NUM, Num_Lock, exec, swayosd-client --num-lock"
         ];
 
         bindm = [
