@@ -9,7 +9,6 @@ import AppsModal from './src/widget/Apps';
 import { loadStyles } from './src/utils/styles';
 import { createBinding, Fragment } from 'ags';
 import { raise } from './src/utils/fn';
-import { NotificationPopups } from '@/widget/Notifications';
 
 const HELP = `
 Usage
@@ -54,7 +53,7 @@ app.start({
         <PasswordSearch />
         <AppsModal />
         <NativeIconProvider />
-        <NotificationPopups />
+        {/* <NotificationPopups /> */}
       </Fragment>
     );
   },
