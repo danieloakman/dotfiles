@@ -4,8 +4,8 @@ import { execAsync } from 'ags/process';
 // import Notifd from 'gi://AstalNotifd';
 // const notifd = Notifd.get_default();
 
-const [notifications] = createState<import('gi://AstalNotifd').default.Notification[]>([])
-export { notifications}
+const [astalNotifications] = createState<import('gi://AstalNotifd').default.Notification[]>([]);
+export { astalNotifications };
 // export const notifications = createBinding(notifd, 'notifications').as((notifications) => {
 //   // Dismiss duplicate notifications
 //   const results = new Map<string, Notifd.Notification>();

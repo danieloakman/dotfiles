@@ -1,13 +1,11 @@
 import Icon from '@/components/Icon';
 import { createBooleanState, createInterval, UnwrapAccessor } from '@/utils/ags';
-import { iife } from '@/utils/fn';
-import { clearNotifications, notifications } from '@/utils/notifications';
+import { clearNotifications, astalNotifications } from '@/utils/notifications';
 import { classes } from '@/utils/styles';
 import { WINDOW_NAME } from '@/utils/window';
-import { Accessor, createBinding, createComputed, createExternal, For } from 'ags';
+import { Accessor, createBinding, For } from 'ags';
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
 import app from 'ags/gtk4/app';
-import { createPoll, interval } from 'ags/time';
 import Pango from 'gi://Pango';
 import Notifd from 'gi://AstalNotifd';
 import { StyleClass } from '@/types/style-classes';
@@ -24,7 +22,7 @@ const URGENCY_COLORS: Record<Notifd.Urgency, string> = {
 export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Accessor<Gdk.Monitor> }) {
   return (
     <window
-      visible={notifications((n) => n.length > 0)}
+      visible={astalNotifications((n) => n.length > 0)}
       name={WINDOW_NAME.Notifications}
       anchor={TOP}
       exclusivity={Astal.Exclusivity.NORMAL}
@@ -44,7 +42,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
           hexpand
           cssClasses={classes('bg-transparent')}
         >
-          <For each={notifications}>
+          <For each={astalNotifications}>
             {(notification) => (
               <Notification
                 notification={notification}
@@ -59,7 +57,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
 }
 
 export function NotificationsList() {
-  const nonTransientNotifications = notifications((arr) => arr.filter((n) => !n.transient));
+  const nonTransientNotifications = astalNotifications((arr) => arr.filter((n) => !n.transient));
 
   return (
     <box name="Notifications" spacing={4} orientation={Gtk.Orientation.VERTICAL}>
@@ -94,7 +92,7 @@ function Notification({
   cssClasses = [],
   css = '',
 }: {
-  notification: UnwrapAccessor<typeof notifications>[number];
+  notification: UnwrapAccessor<typeof astalNotifications>[number];
   width?: number;
   cssClasses?: StyleClass[];
   css?: string;
