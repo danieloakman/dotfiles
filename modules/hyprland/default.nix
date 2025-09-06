@@ -101,17 +101,17 @@ in
 
         # `l` flag denotes these will also work when an input inhibitor is active
         bindl = [
-          ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
-          ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-          ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-          ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-          ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-          "alt, F7, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" # Need these because XF86 volume keys don't work sometimes
-          "alt, F6, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-          ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-          ", XF86AudioPlay, exec, playerctl play-pause"
-          ", XF86AudioPrev, exec, playerctl previous"
-          ", XF86AudioNext, exec, playerctl next"
+          ", XF86MonBrightnessUp, exec, swayosd-client --brightness 5"
+          ", XF86MonBrightnessDown, exec, swayosd-client --brightness -5"
+          ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
+          ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume 5"
+          ", XF86AudioLowerVolume, exec, swayosd-client --output-volume -5"
+          "alt, F7, exec, swayosd-client --output-volume 5" # Need these because XF86 volume keys don't work sometimes
+          "alt, F6, exec, swayosd-client --output-volume -5"
+          ", XF86AudioMute, exec, swayosd-client --input-volume mute-toggle"
+          ", XF86AudioPlay, exec, swayosd-client --playerctl play-pause"
+          ", XF86AudioPrev, exec, swayosd-client --playerctl prev"
+          ", XF86AudioNext, exec, swayosd-client --playerctl next"
         ];
 
         bindm = [
