@@ -13,8 +13,6 @@ import Notifd from 'gi://AstalNotifd';
 import { StyleClass } from '@/types/style-classes';
 import { clamp } from '@/utils/number';
 
-Gtk.LevelBar;
-
 const { TOP } = Astal.WindowAnchor;
 
 const URGENCY_COLORS: Record<Notifd.Urgency, string> = {
@@ -30,6 +28,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
       name={WINDOW_NAME.Notifications}
       anchor={TOP}
       exclusivity={Astal.Exclusivity.NORMAL}
+      layer={Astal.Layer.OVERLAY}
       application={app}
       gdkmonitor={monitor}
       margin={8}
@@ -40,7 +39,7 @@ export function NotificationPopups({ monitor }: { monitor?: Gdk.Monitor | Access
       <scrolledwindow hscrollbarPolicy={Gtk.PolicyType.NEVER}>
         <box
           orientation={Gtk.Orientation.VERTICAL}
-          spacing={4}
+          spacing={10}
           vexpand
           hexpand
           cssClasses={classes('bg-transparent')}
@@ -205,25 +204,20 @@ function Notification({
       />
 
       <revealer revealChild={revealed} widthRequest={width}>
-        <box orientation={Gtk.Orientation.VERTICAL} spacing={4} valign={Gtk.Align.CENTER}>
+        <box
+          orientation={Gtk.Orientation.VERTICAL}
+          spacing={4}
+          valign={Gtk.Align.CENTER}
+          widthRequest={width}
+        >
+          {/* <label lines={20} label={notification.body} widthRequest={width} /> */}
           <label label={`Desktop Entry: ${notification.desktopEntry}`} />
           <label label={`App Name: ${notification.appName}`} />
           <label label={`App Icon: ${notification.appIcon}`} />
-          {/* <label label={`Time: ${notification.time}`} /> */}
           <label label={`Expire: ${notification.expireTimeout}`} />
           <label label={`Transient: ${notification.transient}`} />
           <image file={notification.image} />
-          <label label={`a ${notification.image}`} />
-          {/* <label label={notification.appIcon} />
-          <image iconName={notification.appIcon} />
-          <label
-            lines={3}
-            label={[notification.time, notification.summary, notification.body].join('\n')}
-          />
-          <label label={expire((t) => `Expire: ${t} seconds`)} />
-          <label label={time((t) => `Time: ${t / 1000} seconds`)} />
-          <label label={timeLeft((t) => `Time Left: ${t / 1000} seconds`)} />
-          <label label={transient((t) => `Transient: ${t}`)} /> */}
+          <label label={`Image: ${notification.image}`} />
         </box>
       </revealer>
     </box>
