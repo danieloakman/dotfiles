@@ -3,6 +3,8 @@
     # ../modules/aerospace.nix
     ../modules/skhd.nix
     ../modules/zsh.nix
+    ../modules/mobile-dev.nix
+    ../modules/docker.nix
   ];
 
   networking.hostName = "boethiah";
@@ -238,7 +240,6 @@
       "awscli"
       "mprocs"
       "entr" # Run some command when file(s) change
-      "lazydocker"
       {
         name = "syncthing";
         restart_service = "changed";
@@ -253,8 +254,6 @@
       "zoom"
       "spotify"
       "obsidian"
-      "docker-desktop"
-      "android-studio"
     ];
   };
 
