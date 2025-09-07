@@ -93,6 +93,11 @@
       pnpm
       pnpm-shell-completion
       pet # CLI tool for keeping a list of commands and executing them later
+
+      # Golang & related tools:
+      go
+      gopls
+      delve
     ];
   };
 
@@ -249,6 +254,7 @@
       "spotify"
       "obsidian"
       "docker-desktop"
+      "android-studio"
     ];
   };
 
