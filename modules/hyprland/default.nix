@@ -116,7 +116,7 @@ in
 
         bindr = [
           "CAPS, Caps_Lock, exec, swayosd-client --caps-lock"
-          "NUM, Num_Lock, exec, swayosd-client --num-lock"
+          # "NUM, Num_Lock, exec, swayosd-client --num-lock" # TODO: fix this
         ];
 
         bindm = [
