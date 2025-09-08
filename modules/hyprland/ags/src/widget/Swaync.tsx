@@ -3,6 +3,13 @@ import { classes } from '../utils/styles';
 import { execAsync } from 'ags/process';
 import { swayncStatus } from '@/utils/notifications';
 import { StyleClass } from '@/types/style-classes';
+import { hideWindow } from '@/utils/window';
+
+export async function toggleSwayncPanel() {
+  await execAsync('swaync-client -t').catch((err) =>
+    console.error('Failed to toggle SwayNC panel', err),
+  );
+}
 
 export interface SwayncProps {
   visible?: boolean;
@@ -15,7 +22,10 @@ export default function Swaync({ visible, cssClasses = [] }: SwayncProps) {
       visible={visible}
       name="SwayNC"
       cssClasses={classes('rounded', ...cssClasses)}
-      onClicked={() => execAsync('swaync-client -t')}
+      onClicked={async () => {
+        hideWindow('control-center');
+        await toggleSwayncPanel();
+      }}
     >
       <Icon
         name={swayncStatus(({ dnd, count }) =>
