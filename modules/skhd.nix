@@ -35,6 +35,7 @@ in
     # };
 
     home-manager.users.${env.user} = {
+      home.packages = [ openApp ];
       services.skhd = {
         enable = true;
         outLogFile = "/tmp/skhd.log";
