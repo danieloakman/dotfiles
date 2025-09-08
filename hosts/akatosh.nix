@@ -74,6 +74,7 @@
     ../modules/wakeonlan.nix
     ../modules/immich.nix
     ../modules/zsh.nix
+    ../modules/network.nix
 
     # ../modules/gnome
     ../modules/hyprland

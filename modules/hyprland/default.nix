@@ -54,8 +54,7 @@ in
       uwsm # Universal Wayland session manager. Can do `uwsm `
       hyprshot # Screenshot tool # TODO: move to programs.hyprshot.enable
 
-      networkmanager
-      networkmanagerapplet # Provides `nmi-connection-editor` command
+      rofi-network-manager # Rofi network manager GUI
       nautilus # File explorer
     ];
   };

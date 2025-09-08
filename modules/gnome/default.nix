@@ -12,6 +12,12 @@
     ./keybinds.nix
   ];
 
+  # Gnome network manager applet
+  programs.nm-applet = {
+    enable = true;
+    indicator = true;
+  };
+
   services = {
     # Enable the GNOME Desktop Environment.
     displayManager = {
@@ -53,9 +59,6 @@
     ];
 
     systemPackages = with pkgs; [
-      networkmanager
-      networkmanagerapplet # Provides `nmi-connection-editor` command
-      networkmanager-openvpn
       gnome-tweaks
       gnome-terminal
       # gnome.pomodoro # Not updated

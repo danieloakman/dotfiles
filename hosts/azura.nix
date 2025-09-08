@@ -49,6 +49,7 @@
     ../modules/docker.nix
     ../modules/stylix.nix
     ../modules/zsh.nix
+    ../modules/network.nix
 
     # ../modules/gnome
     ../modules/hyprland
