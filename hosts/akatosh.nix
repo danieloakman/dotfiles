@@ -75,6 +75,7 @@
     ../modules/immich.nix
     ../modules/zsh.nix
     ../modules/network.nix
+    ../modules/comma.nix
 
     # ../modules/gnome
     ../modules/hyprland
