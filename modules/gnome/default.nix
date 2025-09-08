@@ -12,12 +12,6 @@
     ./keybinds.nix
   ];
 
-  # Gnome network manager applet
-  programs.nm-applet = {
-    enable = true;
-    indicator = true;
-  };
-
   services = {
     # Enable the GNOME Desktop Environment.
     displayManager = {

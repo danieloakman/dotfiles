@@ -32,4 +32,10 @@
       # checkReversePath = false;
     };
   };
+
+  # Network manager connection applet:
+  programs.nm-applet = {
+    enable = true;
+    indicator = true;
+  };
 }
