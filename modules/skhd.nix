@@ -24,9 +24,8 @@ let
     fi
   '';
   openDockedApp = pkgs.writeShellScriptBin "open-docked-app" ''
-    N="$1"
-    APP_NAME=$(${listDockedApps}/bin/list-docked-apps | sed -n "$N"p)
-    ${openApp}/bin/open-app $APP_NAME
+    APP_NAME=$(${listDockedApps}/bin/list-docked-apps | sed -n "$1"p)
+    ${openApp}/bin/open-app "$APP_NAME"
   '';
 in
 {
