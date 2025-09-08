@@ -396,8 +396,8 @@ in
       swaync = {
         enable = true; # Notification daemon
         settings = {
-          positionX = "center";
-          positionY = "top";
+          # positionX = "center";
+          # positionY = "top";
           # layer = "overlay";
           # control-center-layer = "top";
           # layer-shell = true;
