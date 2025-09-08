@@ -220,6 +220,10 @@
 
   homebrew = {
     enable = true;
+    onActivation = {
+      # Remove all brews no longer listed here as well as their program files:
+      cleanup = "zap";
+    };
 
     brews = [
       "gh"
@@ -240,6 +244,7 @@
       "awscli"
       "mprocs"
       "entr" # Run some command when file(s) change
+      "mas"
       {
         name = "syncthing";
         restart_service = "changed";
@@ -254,7 +259,12 @@
       "zoom"
       "spotify"
       "obsidian"
+      "localsend"
     ];
+
+    masApps = {
+      Xcode = 497799835;
+    };
   };
 
   programs = {

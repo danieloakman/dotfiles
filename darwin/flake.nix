@@ -19,6 +19,13 @@
       env = {
         user = "daniel.brown";
         home = "/Users/daniel.brown";
+        hasGPU = false;
+      };
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
       };
     in
     {
@@ -26,7 +33,7 @@
         let
           boethiahConfig = {
             inherit system;
-            specialArgs = { inherit inputs system env self; };
+            specialArgs = { inherit inputs system env self pkgs; };
             modules = [
               home-manager.darwinModules.home-manager
               ../hosts/boethiah.nix
