@@ -20,6 +20,8 @@
         user = "daniel.brown";
         home = "/Users/daniel.brown";
         hasGPU = false;
+        platform = "darwin";
+        selectPlatform = config: config.darwin;
       };
       pkgs = import nixpkgs {
         inherit system;

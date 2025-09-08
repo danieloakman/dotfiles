@@ -246,6 +246,7 @@
       "mprocs"
       "entr" # Run some command when file(s) change
       "mas"
+      "lazydocker"
       {
         name = "syncthing";
         restart_service = "changed";
@@ -261,6 +262,7 @@
       "spotify"
       "obsidian"
       "localsend"
+      "docker-desktop"
     ];
 
     masApps = {

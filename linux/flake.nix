@@ -84,7 +84,11 @@
           ../modules/password-store.nix
         ];
       };
-      createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: { inherit user home isLaptop isOnWayland hasGPU; };
+      createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: {
+        inherit user home isLaptop isOnWayland hasGPU;
+        platform = "linux";
+        selectPlatform = config: config.linux; # For platform specific configs. Will always return the linux config.
+      };
     in
     {
       nixosConfigurations = {

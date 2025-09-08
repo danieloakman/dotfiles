@@ -1,28 +1,31 @@
 { env, pkgs, ... }: {
   config =
-    if pkgs.stdenv.isDarwin then {
-      homebrew = {
-        brews = [ "lazydocker" ];
-        casks = [ "docker-desktop" ];
-      };
-    } else
+    env.selectPlatform
       {
-        virtualisation.docker = {
-          enable = true;
-          enableOnBoot = true;
+        darwin = {
+          homebrew = {
+            brews = [ "lazydocker" ];
+            casks = [ "docker-desktop" ];
+          };
         };
-        users.users.${env.user} = {
-          extraGroups = [ "docker" ];
+        linux = {
+          virtualisation.docker = {
+            enable = true;
+            enableOnBoot = true;
+          };
+          users.users.${env.user} = {
+            extraGroups = [ "docker" ];
+          };
+
+          # Enable for GPU pass-through support on things like Docker conainters:
+          hardware.nvidia-container-toolkit.enable = env.hasGPU;
+
+          environment.systemPackages = with pkgs; [
+            docker
+            docker-compose
+            docker-init
+            lazydocker
+          ];
         };
-
-        # Enable for GPU pass-through support on things like Docker conainters:
-        hardware.nvidia-container-toolkit.enable = env.hasGPU;
-
-        environment.systemPackages = with pkgs; [
-          docker
-          docker-compose
-          docker-init
-          lazydocker
-        ];
       };
 }
