@@ -54,7 +54,6 @@ export default function Bar({ monitor }: BarProps) {
 
         <box $type="center" spacing={4}>
           <Clock />
-          <Swaync />
         </box>
 
         <box $type="end" spacing={4} halign={Gtk.Align.END}>

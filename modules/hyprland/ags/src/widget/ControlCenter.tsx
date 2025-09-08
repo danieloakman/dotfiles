@@ -9,6 +9,7 @@ import Uptime from './Uptime';
 import { classes } from '../utils/styles';
 import { Hr, Vr } from '@/components/Separators';
 import TrayApps, { trayItems } from './TrayApps';
+import Swaync from './Swaync';
 
 export default function ControlCenter() {
   return (
@@ -53,9 +54,9 @@ export default function ControlCenter() {
 
 export function ControlCenterButton() {
   return (
-    <box cssClasses={classes('rounded-full', 'bg-selected')} spacing={6}>
+    <box cssClasses={classes('rounded-full', 'bg-selected')}>
       <TrayApps />
-      <Vr visible={trayItems((v) => v.length > 0)} cssClasses={classes('my-sm')} />
+      <Swaync cssClasses={['btn-ghost-on-bg']} />
 
       <button
         cssClasses={classes('rounded-full', 'btn-ghost-on-bg')}
