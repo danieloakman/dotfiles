@@ -5,6 +5,7 @@
     ../modules/zsh.nix
     ../modules/mobile-dev.nix
     ../modules/docker.nix
+    ../modules/scripts.nix
   ];
 
   networking.hostName = "boethiah";
