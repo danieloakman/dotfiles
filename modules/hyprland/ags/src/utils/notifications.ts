@@ -54,32 +54,54 @@ export function clearNotifications() {
 }
 
 export interface NotifyOptions<ActionKey extends string> {
-  icon?: NativeIcon;
+  /** The summary/title of the notification. */
+  summary: string;
+  /** The body/message of the notification. */
+  body?: string;
+  icon?: NativeIcon | ({} & string);
   actions?: Record<ActionKey, string>;
   expire?: number;
   urgency?: 'low' | 'normal' | 'critical';
+  transient?: boolean;
+  appName?: string;
+  categories?: string[];
 }
 
 export async function notify<ActionKey extends string>(
-  message: string,
-  { icon, actions, expire = 5000, urgency = 'normal' }: NotifyOptions<ActionKey> = {},
-) {
-  return execAsync(
-    [
-      'notify-send',
-      message,
-      '-t',
-      expire.toString(),
-      '-u',
-      urgency,
-      ...(icon ? ['-i', icon] : []),
-      ...(actions ? Object.entries(actions).map(([key, text]) => `-A "${key}=${text}"`) : []),
-    ].filter(Boolean),
-  )
+  {
+    summary,
+    body,
+    icon,
+    actions,
+    expire,
+    urgency = 'normal',
+    transient,
+    appName,
+    categories,
+  }: NotifyOptions<ActionKey> = { summary: 'Unknown' },
+): Promise<{ id: string; action?: ActionKey }> {
+  const cmd = [
+    'notify-send',
+    summary,
+    ...(body ? [body] : []),
+    '--urgency',
+    urgency,
+    '--print-id',
+    ...(categories ? ['--category', categories.join(',')] : []),
+    ...(expire ? ['--expire-time', expire.toString()] : []),
+    ...(appName ? ['--app-name', appName] : []),
+    ...(transient ? ['--transient'] : []),
+    ...(icon ? ['--icon', icon] : []),
+    ...(actions
+      ? Object.entries(actions).flatMap(([key, text]) => ['--action', `${key}=${text}`])
+      : []),
+  ].filter(Boolean);
+  // console.debug('notify', cmd);
+  return execAsync(cmd)
     .then((stdout) => {
-      if (actions) return stdout;
+      const [id, action] = stdout.split('\n');
+      if (!id) raise('notification id not found');
+      return { id, action: action as ActionKey | undefined };
     })
-    .catch((error) => {
-      console.error('Failed to send notification', error);
-    });
+    .catch((error) => raise(new Error('Failed to send notification', { cause: error })));
 }

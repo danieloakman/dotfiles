@@ -1,14 +1,14 @@
 import { Gtk } from 'ags/gtk4';
 import Volume, { VolumeIndicator } from './Volume';
 import Internet, { InternetConnection } from './Internet';
-import System from './System';
+import { Restart, Shutdown, Suspend } from './System';
 import Bluetooth, { BluetoothConnection } from './Bluetooth';
 import { toggleWindow, WINDOW_NAME } from '../utils/window';
 import Modal from '../components/Modal';
 import Uptime from './Uptime';
 import { classes } from '../utils/styles';
-import { Hr, Vr } from '@/components/Separators';
-import TrayApps, { trayItems } from './TrayApps';
+import { Hr } from '@/components/Separators';
+import TrayApps from './TrayApps';
 import Swaync from './Swaync';
 
 export default function ControlCenter() {
@@ -31,13 +31,14 @@ export default function ControlCenter() {
       >
         <centerbox
           orientation={Gtk.Orientation.HORIZONTAL}
-          // cssClasses={classes('border', 'rounded-sm', 'p-xs')}
         >
           <box $type="start" spacing={4} valign={Gtk.Align.CENTER}>
             <Uptime />
           </box>
           <box $type="end" spacing={4} valign={Gtk.Align.CENTER}>
-            <System />
+            <Suspend />
+            <Restart />
+            <Shutdown />
           </box>
         </centerbox>
 
