@@ -44,7 +44,7 @@ in
           alt - 2 : ${openApp}/bin/open-app "Cursor"
           alt - 3 : ${openApp}/bin/open-app "Microsoft Teams"
           alt - 4 : ${openApp}/bin/open-app "Roam"
-          alt - 5 : ${openApp}/bin/open-app "zoom.us"
+          alt - 5 : ${openApp}/bin/open-app "Spotify"
         '';
       };
     };
