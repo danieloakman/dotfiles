@@ -1,5 +1,8 @@
 { env, lib, pkgs, ... }:
 let
+  listDockedApps = pkgs.writeShellScriptBin "list-docked-apps" ''
+    osascript -e 'tell application "System Events" to tell process "Dock" to set DL to name of UI elements of list 1 whose subrole is "AXApplicationDockItem"' | sed 's/ *, */\n/g'
+  '';
   openApp = pkgs.writeShellScriptBin "open-app" ''
     APP_NAME="$1"
 
@@ -20,6 +23,11 @@ let
         open -a "$APP_NAME"
     fi
   '';
+  openDockedApp = pkgs.writeShellScriptBin "open-docked-app" ''
+    N="$1"
+    APP_NAME=$(${listDockedApps}/bin/list-docked-apps | sed -n "$N"p)
+    ${openApp}/bin/open-app $APP_NAME
+  '';
 in
 {
   config = lib.mkIf pkgs.stdenv.isDarwin {
@@ -35,17 +43,23 @@ in
     # };
 
     home-manager.users.${env.user} = {
-      home.packages = [ openApp ];
+      home.packages = [ openApp listDockedApps openDockedApp ];
       services.skhd = {
         enable = true;
         outLogFile = "/tmp/skhd.log";
         errorLogFile = "/tmp/skhd-error.log";
         config = ''
-          alt - 1 : ${openApp}/bin/open-app "Vivaldi"
-          alt - 2 : ${openApp}/bin/open-app "Cursor"
-          alt - 3 : ${openApp}/bin/open-app "Microsoft Teams"
-          alt - 4 : ${openApp}/bin/open-app "Roam"
-          alt - 5 : ${openApp}/bin/open-app "Spotify"
+          alt - t : open-docked-app 1
+          alt - 1 : open-docked-app 2
+          alt - 2 : open-docked-app 3
+          alt - 3 : open-docked-app 4
+          alt - 4 : open-docked-app 5
+          alt - 5 : open-docked-app 6
+          alt - 6 : open-docked-app 7
+          alt - 7 : open-docked-app 8
+          alt - 8 : open-docked-app 9
+          alt - 9 : open-docked-app 10
+          alt - 0 : open-docked-app 11
         '';
       };
     };
