@@ -87,7 +87,7 @@
       createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: {
         inherit user home isLaptop isOnWayland hasGPU;
         platform = "linux";
-        selectPlatform = config: config.linux ? null; # For platform specific configs. Will always return the linux config.
+        selectPlatform = config: config.linux or {}; # For platform specific configs. Will always return the linux config.
       };
     in
     {
