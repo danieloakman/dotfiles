@@ -27,39 +27,34 @@ let
     APP_NAME=$(${listDockedApps}/bin/list-docked-apps | sed -n "$1"p)
     ${openApp}/bin/open-app "$APP_NAME"
   '';
+  skhdConfig = ''
+    alt - 1 : open-docked-app 1
+    alt - 2 : open-docked-app 2
+    alt - 3 : open-docked-app 3
+    alt - 4 : open-docked-app 4
+    alt - 5 : open-docked-app 5
+    alt - 6 : open-docked-app 6
+    alt - 7 : open-docked-app 7
+    alt - 8 : open-docked-app 8
+    alt - 9 : open-docked-app 9
+    alt - 0 : open-docked-app 10
+    alt - 0 : open-docked-app 11
+  '';
 in
 {
   config = lib.mkIf pkgs.stdenv.isDarwin {
-    # services.skhd = {
-    #   enable = true;
-    #   skhdConfig = ''
-    #     alt - 1 : open -a "Vivaldi"
-    #     alt - 2 : open -a "Cursor"
-    #     alt - 3 : ${openApp}/bin/open-app "Microsoft Teams"
-    #     alt - 4 : ${openApp}/bin/open-app "Roam"
-    #     alt - 5 : ${openApp}/bin/open-app "zoom.us"
-    #   '';
-    # };
+    services.skhd = {
+      enable = true;
+      skhdConfig = skhdConfig;
+    };
 
     home-manager.users.${env.user} = {
       home.packages = [ openApp listDockedApps openDockedApp ];
       services.skhd = {
-        enable = true;
+        enable = false;
         outLogFile = "/tmp/skhd.log";
         errorLogFile = "/tmp/skhd-error.log";
-        config = ''
-          alt - t : open-docked-app 1
-          alt - 1 : open-docked-app 2
-          alt - 2 : open-docked-app 3
-          alt - 3 : open-docked-app 4
-          alt - 4 : open-docked-app 5
-          alt - 5 : open-docked-app 6
-          alt - 6 : open-docked-app 7
-          alt - 7 : open-docked-app 8
-          alt - 8 : open-docked-app 9
-          alt - 9 : open-docked-app 10
-          alt - 0 : open-docked-app 11
-        '';
+        config = skhdConfig;
       };
     };
   };
