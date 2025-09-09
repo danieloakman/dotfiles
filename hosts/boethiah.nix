@@ -246,6 +246,7 @@
       "entr" # Run some command when file(s) change
       "mas"
       "lazydocker"
+      "cliclick"
       {
         name = "syncthing";
         restart_service = "changed";
