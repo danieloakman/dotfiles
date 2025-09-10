@@ -1,5 +1,5 @@
 import { classes } from '@/utils/styles';
-import { For, createBinding } from 'ags';
+import { For, With, createBinding, createComputed } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Tray from 'gi://AstalTray';
 
@@ -18,15 +18,29 @@ export default function TrayApps() {
           const gicon = createBinding(item, 'gicon');
           const iconName = createBinding(item, 'iconName');
           const menuModel = createBinding(item, 'menuModel');
+          const actionGroup = createBinding(item, 'actionGroup');
+          const popoverMenu = createComputed([menuModel, actionGroup], (menuModel, actionGroup) => {
+            const m = Gtk.PopoverMenu.new_from_model(menuModel);
+            m.insert_action_group('dbusmenu', actionGroup);
+            return m;
+          });
+          console.log(item.iconName, item.gicon);
+
           return item.isMenu ? (
-            <menubutton menuModel={menuModel} tooltipText={title} cssClasses={classes('circular')}>
+            <menubutton
+              name={title}
+              tooltipText={item.tooltipText || item.title}
+              cssClasses={classes('circular')}
+              popover={popoverMenu}
+            >
               <image iconName={iconName} gicon={gicon} />
             </menubutton>
           ) : (
             <button
+              name={title}
               onClicked={() => item.activate(0, 0)}
               cssClasses={classes('rounded-full', 'btn-ghost')}
-              tooltipText={item.title || item.tooltipText}
+              tooltipText={item.tooltipText || item.title}
             >
               <image iconName={iconName} gicon={gicon} />
             </button>
