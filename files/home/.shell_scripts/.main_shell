@@ -211,5 +211,5 @@ fi
 
 # Check if GH_TOKEN is set, if not, set it with personal token:
 if [ -z "$GH_TOKEN" ]; then
-  export GH_TOKEN=$(pass github_tokens/personal)
+  export GH_TOKEN=$(pass api_keys/personal/github/admin)
 fi
