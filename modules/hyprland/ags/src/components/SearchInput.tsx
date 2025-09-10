@@ -6,6 +6,7 @@ export interface SearchInputProps {
   value?: string | Accessor<string>;
   widthRequest?: number;
   hexpand?: boolean;
+  placeholder?: string;
   onChange?: (value: string) => void;
   onKeyPressed?: (keyval: number) => void;
   $?: (self: Gtk.SearchEntry) => void;
@@ -24,6 +25,7 @@ export default function SearchInput({
   value,
   widthRequest,
   hexpand = false,
+  placeholder = '',
   onChange = noop,
   onKeyPressed = noop,
   $ = noop,
@@ -36,6 +38,7 @@ export default function SearchInput({
         $(self);
       }}
       text={value}
+      placeholderText={placeholder}
       onNotifyText={(self) => onChange(self.text)}
       widthRequest={widthRequest}
       hexpand={hexpand}
