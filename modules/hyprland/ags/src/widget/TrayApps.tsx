@@ -24,9 +24,9 @@ export default function TrayApps() {
             m.insert_action_group('dbusmenu', actionGroup);
             return m;
           });
-          console.log(item.iconName, item.gicon);
 
           return item.isMenu ? (
+            // TODO: a seg regularly occurs when using these menubuttons. Seems to be just from usage.
             <menubutton
               name={title}
               tooltipText={item.tooltipText || item.title}
