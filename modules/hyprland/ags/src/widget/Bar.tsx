@@ -35,8 +35,8 @@ export default function Bar({ monitor }: BarProps) {
       anchor={TOP | LEFT | RIGHT}
       application={app}
     >
-      <centerbox cssName="centerbox">
-        <box $type="start" spacing={4}>
+      <centerbox name="bar-container" cssName="centerbox">
+        <box name="start" $type="start" spacing={4}>
           <HorizontalRevealer
             visible={createExternal(false, (set) => {
               hasTouchDevice().then(set);
@@ -52,11 +52,11 @@ export default function Bar({ monitor }: BarProps) {
           <PasswordSearchButton />
         </box>
 
-        <box $type="center" spacing={4}>
+        <box name="center" $type="center" spacing={4}>
           <Clock />
         </box>
 
-        <box $type="end" spacing={4} halign={Gtk.Align.END}>
+        <box name="end" $type="end" spacing={4} halign={Gtk.Align.END}>
           <OSMonitoring />
           <Brightness />
           <Battery />
