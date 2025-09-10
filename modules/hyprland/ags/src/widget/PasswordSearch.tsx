@@ -12,6 +12,7 @@ import { iife } from '../utils/fn';
 import { readFileAsync, writeFileAsync } from 'ags/file';
 import DropDownSelect from '../components/DropDownSelect';
 import { classes } from '../utils/styles';
+import { Hr } from '@/components/Separators';
 
 const WIDTH = 300;
 const HEIGHT = 400;
@@ -83,23 +84,23 @@ export default function PasswordSearch() {
         widthRequest={WIDTH}
         heightRequest={HEIGHT}
       >
-        <box $type="start" cssClasses={classes()}>
+        <box $type="start" cssClasses={classes()} orientation={Gtk.Orientation.VERTICAL}>
           <SearchInput
             $={(self) => (searchInput = self)}
             hexpand
             value={search}
+            placeholder="Search for a password"
             onChange={setSearch}
             onKeyPressed={(keyval) => {
               if (keyval === Gdk.KEY_Escape && !search.get().length)
                 hideWindow(WINDOW_NAME.PasswordSearch);
             }}
           />
+
+          <Hr marginTop={4} marginBottom={4} />
         </box>
 
-        <scrolledwindow
-          $type="center"
-          hscrollbarPolicy={Gtk.PolicyType.NEVER}
-        >
+        <scrolledwindow $type="center" hscrollbarPolicy={Gtk.PolicyType.NEVER}>
           <box
             spacing={4}
             cssClasses={classes('py-sm')}
