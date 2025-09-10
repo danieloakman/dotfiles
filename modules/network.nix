@@ -1,4 +1,11 @@
 { pkgs, ... }: {
+  environment.systemPackages = with pkgs; [
+    # Including these because I noticed the nm-* icons were missing without them.
+    networkmanager
+    networkmanager-openvpn
+    networkmanagerapplet
+  ];
+
   networking = {
     # Enable networking
     networkmanager = {
