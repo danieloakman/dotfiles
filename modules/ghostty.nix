@@ -9,8 +9,8 @@
         # Enabling both cmd and alt for the quake style terminal because both have caveats
         keybind = global:alt+grave_accent=toggle_quick_terminal
         keybind = global:cmd+grave_accent=toggle_quick_terminal
-        keybind = "shift+alt>=new_split:right"
-        keybind = "shift+alt>-=new_split:down"
+        keybind = "alt+shift+]=new_split:right"
+        keybind = "alt+shift+[=new_split:down"
       '';
     };
   } // env.selectPlatform {
