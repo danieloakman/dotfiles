@@ -57,7 +57,6 @@ export default function Bar({ monitor }: BarProps) {
 
         <box name="end" $type="end" spacing={4} halign={Gtk.Align.END}>
           <OSMonitoring />
-          <Battery />
           <ControlCenterButton />
         </box>
       </centerbox>

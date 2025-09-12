@@ -10,6 +10,7 @@ import DropDownSelect from '../components/DropDownSelect';
 const POWER_MODES = ['performance', 'power-saver'] as const;
 export type PowerMode = (typeof POWER_MODES)[number];
 
+const percentageRegex = /(\d+)%/;
 const BAT_CHARGE: Icon.Name[] = ['battery', 'battery-low', 'battery-medium', 'battery-full'];
 const BAT0_PATH = '/sys/class/power_supply/BAT0';
 const BATTERY_INTERVAL = 5000;
@@ -60,6 +61,19 @@ export const battery = createPoll(
       status === 'Charging' ? 'battery-charging' : (getBatteryIcon(percentage) as Icon.Name),
   };
 });
+
+export const b = createPoll('', 10000, 'fastfetch -s Battery -l none').as((stdout) => {
+  const info = stdout.split(':')[1] ?? '';
+  const [percentage = '0', hours = '0', minutes = '0'] = info.match(/\d+/g) ?? [];
+  const status = info.match(/\[.+\]/)?.[0]?.replace(/\[|\]/g, '');
+  return {
+    percentage: parseInt(percentage),
+    hours: parseInt(hours),
+    minutes: parseInt(minutes),
+    status,
+  };
+});
+
 // const lastCharges: { timestamp: number; charge: number }[] = [];
 // const LAST_CHARGES_LIMIT = 5;
 // const deltaCharge = () => {
@@ -94,14 +108,7 @@ export default function Battery() {
           if (!hasBattery) return null;
           return (
             <menubutton name="battery" hexpand halign={Gtk.Align.CENTER}>
-              <With value={battery}>
-                {({ iconName, percentage }) => (
-                  <box spacing={4}>
-                    <Icon name={iconName} />
-                    <label label={`${percentage}%`} widthChars={3} />
-                  </box>
-                )}
-              </With>
+              <BatteryInfo />
 
               <popover>
                 <With value={powerMode}>
@@ -133,6 +140,27 @@ export default function Battery() {
           );
         }}
       </With>
+    </box>
+  );
+}
+
+export function BatteryInfo({ showPercentage = false }: { showPercentage?: boolean }) {
+  return (
+    <box
+      visible={hasBattery}
+      spacing={4}
+      tooltipText={b((v) =>
+        [
+          `${v.percentage}%`,
+          v.status,
+          !v.hours && !v.minutes ? null : `${v.hours} hours, ${v.minutes} minutes remaining`,
+        ]
+          .filter(Boolean)
+          .join(' - '),
+      )}
+    >
+      <Icon name={battery((v) => v.iconName)} />
+      <label visible={showPercentage} label={battery((v) => `${v.percentage}%`)} widthChars={3} />
     </box>
   );
 }

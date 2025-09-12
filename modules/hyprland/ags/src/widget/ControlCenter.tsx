@@ -11,6 +11,7 @@ import { Hr } from '@/components/Separators';
 import TrayApps from './TrayApps';
 import Swaync from './Swaync';
 import Brightness from './Brightness';
+import { BatteryInfo } from './Battery';
 
 export default function ControlCenter() {
   return (
@@ -33,8 +34,9 @@ export default function ControlCenter() {
         <centerbox
           orientation={Gtk.Orientation.HORIZONTAL}
         >
-          <box $type="start" spacing={4} valign={Gtk.Align.CENTER}>
+          <box $type="start" spacing={8} valign={Gtk.Align.CENTER}>
             <Uptime />
+            <BatteryInfo showPercentage />
           </box>
           <box $type="end" spacing={4} valign={Gtk.Align.CENTER}>
             <Suspend />
@@ -47,7 +49,7 @@ export default function ControlCenter() {
 
         <Volume />
         <Brightness />
-        <Internet />
+        {/* <Internet /> */}
         <Bluetooth />
         {/* <NotificationsList /> */}
       </box>
@@ -69,6 +71,7 @@ export function ControlCenterButton() {
           <VolumeIndicator />
           <BluetoothConnection />
           <InternetConnection />
+          <BatteryInfo />
         </box>
       </button>
     </box>
