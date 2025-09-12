@@ -2,6 +2,7 @@ import { Gtk } from 'ags/gtk4';
 import { createPoll } from 'ags/time';
 import { apps } from './Apps';
 import { classes } from '../utils/styles';
+import { createBinding } from 'ags';
 
 const DATE_CMD = `date +'%I:%M:%S %b %d'`;
 export const time = createPoll('', 1000, DATE_CMD);
@@ -19,8 +20,8 @@ export default function Clock() {
           {calendarApps.map((app) => (
             <button onClicked={() => app.launch()} cssClasses={classes('btn-ghost')}>
               <box spacing={4}>
-                <image iconName={app.get_icon_name()} />
-                <label label={app.get_name()} />
+                <image iconName={createBinding(app, 'icon_name')} />
+                <label label={createBinding(app, 'name')} />
               </box>
             </button>
           ))}

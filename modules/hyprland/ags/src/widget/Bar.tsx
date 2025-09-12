@@ -16,7 +16,6 @@ import { Accessor, createExternal } from 'ags';
 import HorizontalRevealer from '@/components/HorizontalRevealer';
 import { noop } from '@/utils/fn';
 import { hasTouchDevice } from '@/utils/hyprland';
-import Swaync from './Swaync';
 
 export interface BarProps {
   monitor: Gdk.Monitor | Accessor<Gdk.Monitor>;

@@ -142,7 +142,7 @@ export function InternetConnection() {
           else if (type === 'wifi')
             return (
               <Icon
-                name={wifi ? getWifiStrength(wifi.strength) : 'wifi'}
+                name={wifi ? getWifiStrength(wifi.get_strength()) : 'wifi'}
                 tooltipText="Wifi Connection"
               />
             );

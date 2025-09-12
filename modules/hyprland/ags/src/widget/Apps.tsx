@@ -1,7 +1,7 @@
 import Apps from 'gi://AstalApps';
 import Icon from '../components/Icon';
 import Modal from '../components/Modal';
-import { Accessor, For } from 'ags';
+import { Accessor, createBinding, For } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import { hideWindow, toggleWindow } from '../utils/window';
 import { classes } from '../utils/styles';
@@ -41,8 +41,8 @@ export default function AppsModal() {
                   }}
                 >
                   <box spacing={4}>
-                    <image iconName={app.get_icon_name()} />
-                    <label label={app.get_name()} />
+                    <image iconName={createBinding(app, 'icon_name')} />
+                    <label label={createBinding(app, 'name')} />
                   </box>
                 </button>
               )}

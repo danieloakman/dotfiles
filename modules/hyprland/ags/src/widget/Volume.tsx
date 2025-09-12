@@ -9,22 +9,30 @@ import { Gtk } from 'ags/gtk4';
 import { createBooleanState } from '@/utils/ags';
 
 const wp = Wp.get_default();
-const defaultSpeaker = createBinding(wp.audio, 'defaultSpeaker');
-const volume = createBinding(wp.audio.defaultSpeaker, 'volume');
+const defaultSpeaker = createBinding(wp.get_audio(), 'defaultSpeaker');
+const volume = createBinding(wp.get_audio().get_default_speaker(), 'volume');
 const volumeLabel = volume((v) => `${clamp(Math.round(v * 100), 0, 100)}%`);
-const muted = createBinding(wp.audio.defaultSpeaker, 'mute');
-const speakers = createBinding(wp.audio, 'speakers').as((arr) =>
-  arr.sort((a, b) => a.device.description.localeCompare(b.device.description)),
+const muted = createBinding(wp.get_audio().get_default_speaker(), 'mute');
+const speakers = createBinding(wp.get_audio(), 'speakers').as((arr) =>
+  arr.sort((a, b) =>
+    (a.get_device()?.get_description() ?? '').localeCompare(
+      b.get_device()?.get_description() ?? '',
+    ),
+  ),
 );
 
 export const toggleMute = debounce(() => {
-  execAsync('swayosd-client --output-volume mute-toggle').catch(err => console.error('mute error', err));
+  execAsync('swayosd-client --output-volume mute-toggle').catch((err) =>
+    console.error('mute error', err),
+  );
   // execAsync('wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle');
 }, 100);
 
 export const setVolume = debounce((value: number) => {
   const diff = Math.round((value - volume.get()) * 100);
-  execAsync(`swayosd-client --output-volume ${diff}`).catch(err => console.error('volume set error', err));
+  execAsync(`swayosd-client --output-volume ${diff}`).catch((err) =>
+    console.error('volume set error', err),
+  );
   // execAsync(`wpctl set-volume @DEFAULT_AUDIO_SINK@ ${value}`);
 }, 100);
 
@@ -66,6 +74,7 @@ export default function Volume() {
           <For each={speakers}>
             {(speaker) => {
               const isDefault = createBinding(speaker, 'is_default').as((v) => !!v);
+              const device = createBinding(speaker, 'device');
               return (
                 <button
                   onClicked={() => speaker.set_is_default(true)}
@@ -74,7 +83,7 @@ export default function Volume() {
                 >
                   <box spacing={4}>
                     <Icon name={isDefault((v) => (v ? 'check' : 'dot'))} />
-                    <label label={speaker.device.description} />
+                    <label label={device((v) => v?.get_description() ?? '')} />
                   </box>
                 </button>
               );

@@ -1,14 +1,10 @@
 import Mpris from 'gi://AstalMpris';
-import { createConnection } from 'ags';
+import { createBinding } from 'ags';
 
 const spotify = Mpris.Player.new('spotify');
 
-const title = createConnection(spotify.title, [spotify, 'notify::title', () => spotify.title]);
-const playbackStatus = createConnection(spotify.playbackStatus, [
-  spotify,
-  'notify::playback-status',
-  () => spotify.playbackStatus,
-]);
+const title = createBinding(spotify, 'title');
+const playbackStatus = createBinding(spotify, 'playback_status');
 
 export default function Media() {
   return (

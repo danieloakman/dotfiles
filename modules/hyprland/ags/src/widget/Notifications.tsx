@@ -100,11 +100,13 @@ function Notification({
   const [revealed, { toggle: toggleRevealed }] = createBooleanState(false);
   const time = createBinding(notification, 'time').as((t) => t * 1000);
   // const expire = createBinding(notification, 'expireTimeout');
+  const summary = createBinding(notification, 'summary');
+  const body = createBinding(notification, 'body');
   const appName = createBinding(notification, 'appName');
   const appIcon = createBinding(notification, 'appIcon');
   const interval = createInterval(UPDATE_INTERVAL);
   const levelMaxValue =
-    notification.expireTimeout < 0 ? DEFAULT_TIMEOUT : notification.expireTimeout;
+    notification.get_expire_timeout() < 0 ? DEFAULT_TIMEOUT : notification.get_expire_timeout();
   const levelValue = interval((t) => clamp(t * UPDATE_INTERVAL, 0, levelMaxValue));
 
   return (
@@ -118,7 +120,7 @@ function Notification({
         ${css}
         border-left-width: 4px;
         border-left-style: solid;
-        border-color: ${URGENCY_COLORS[notification.urgency]};
+        border-color: ${URGENCY_COLORS[notification.get_urgency()]};
       `}
     >
       <centerbox valign={Gtk.Align.CENTER} hexpand widthRequest={width}>
@@ -135,16 +137,16 @@ function Notification({
             />
             <label
               lines={1}
-              label={notification.summary}
+              label={summary}
               ellipsize={Pango.EllipsizeMode.END}
               halign={Gtk.Align.START}
               cssClasses={classes('font-size-lg')}
             />
 
             <label
-              visible={!!notification.body}
+              visible={body((v) => !!v)}
               lines={1}
-              label={notification.body}
+              label={body}
               ellipsize={Pango.EllipsizeMode.END}
               halign={Gtk.Align.START}
               cssClasses={classes('opacity-70')}
@@ -209,13 +211,13 @@ function Notification({
           widthRequest={width}
         >
           {/* <label lines={20} label={notification.body} widthRequest={width} /> */}
-          <label label={`Desktop Entry: ${notification.desktopEntry}`} />
-          <label label={`App Name: ${notification.appName}`} />
-          <label label={`App Icon: ${notification.appIcon}`} />
-          <label label={`Expire: ${notification.expireTimeout}`} />
-          <label label={`Transient: ${notification.transient}`} />
-          <image file={notification.image} />
-          <label label={`Image: ${notification.image}`} />
+          <label label={`Desktop Entry: ${notification.get_desktop_entry()}`} />
+          <label label={`App Name: ${notification.get_app_name()}`} />
+          <label label={`App Icon: ${notification.get_app_icon()}`} />
+          <label label={`Expire: ${notification.get_expire_timeout()}`} />
+          <label label={`Transient: ${notification.get_transient()}`} />
+          <image file={notification.get_image()} />
+          <label label={`Image: ${notification.get_image()}`} />
         </box>
       </revealer>
     </box>

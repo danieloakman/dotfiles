@@ -25,11 +25,11 @@ export default function TrayApps() {
             return m;
           });
 
-          return item.isMenu ? (
+          return item.get_is_menu() ? (
             // TODO: a seg regularly occurs when using these menubuttons. Seems to be just from usage.
             <menubutton
               name={title}
-              tooltipText={item.tooltipText || item.title}
+              tooltipText={item.get_tooltip_text() || item.get_title()}
               cssClasses={classes('circular')}
               popover={popoverMenu}
             >
@@ -40,7 +40,7 @@ export default function TrayApps() {
               name={title}
               onClicked={() => item.activate(0, 0)}
               cssClasses={classes('rounded-full', 'btn-ghost')}
-              tooltipText={item.tooltipText || item.title}
+              tooltipText={item.get_tooltip_text() || item.get_title()}
             >
               <image iconName={iconName} gicon={gicon} />
             </button>

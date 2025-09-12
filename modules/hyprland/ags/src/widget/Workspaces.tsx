@@ -12,15 +12,16 @@ export default function Workspaces() {
     ws
       .map((w) => ({
         workspace: w,
-        selected: w.id === f.id,
+        selected: w.get_id() === f.get_id(),
       }))
-      .sort(({ workspace: a }, { workspace: b }) => a.id - b.id),
+      .sort(({ workspace: a }, { workspace: b }) => a.get_id() - b.get_id()),
   );
   return (
     <box cssClasses={classes('rounded-full', 'bg-selected', 'color-fg-color')}>
       <For each={dataView}>
         {({ workspace, selected }) => {
           const clients = createBinding(workspace, 'clients');
+          const name = createBinding(workspace, 'name');
           return (
             <button
               cssClasses={classes(
@@ -31,12 +32,12 @@ export default function Workspaces() {
               onClicked={() => workspace.focus()}
             >
               <box spacing={4} halign={Gtk.Align.CENTER}>
-                <label label={workspace.name.toString()} />
+                <label label={name} />
                 <For
                   each={
                     clients.as((arr) =>
                       Array.from(
-                        new Set(arr.map((c) => lookupNativeIcon(c.class)).filter(Boolean)),
+                        new Set(arr.map((c) => lookupNativeIcon(c.get_class())).filter(Boolean)),
                       ),
                     ) as Accessor<NativeIconType[]>
                   }
