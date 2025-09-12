@@ -10,6 +10,7 @@ import { classes } from '../utils/styles';
 import { Hr } from '@/components/Separators';
 import TrayApps from './TrayApps';
 import Swaync from './Swaync';
+import Brightness from './Brightness';
 
 export default function ControlCenter() {
   return (
@@ -45,6 +46,7 @@ export default function ControlCenter() {
         <Hr />
 
         <Volume />
+        <Brightness />
         <Internet />
         <Bluetooth />
         {/* <NotificationsList /> */}

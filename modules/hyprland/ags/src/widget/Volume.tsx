@@ -7,6 +7,7 @@ import { clamp } from '../utils/number';
 import { debounce } from '../utils/fn';
 import { Gtk } from 'ags/gtk4';
 import { createBooleanState } from '@/utils/ags';
+import Card from '@/components/Card';
 
 const wp = Wp.get_default();
 const defaultSpeaker = createBinding(wp.get_audio(), 'defaultSpeaker');
@@ -40,10 +41,8 @@ export default function Volume() {
   const [open, { toggle: toggleOpen }] = createBooleanState(false);
 
   return (
-    <box
+    <Card
       name="Volume"
-      spacing={4}
-      cssClasses={classes('border', 'p-sm', 'rounded')}
       orientation={Gtk.Orientation.VERTICAL}
     >
       <box spacing={4} valign={Gtk.Align.CENTER}>
@@ -91,7 +90,7 @@ export default function Volume() {
           </For>
         </box>
       </revealer>
-    </box>
+    </Card>
   );
 }
 
