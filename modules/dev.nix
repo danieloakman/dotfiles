@@ -52,6 +52,7 @@
     # AI tools:
     gemini-cli
     claude-code
+    cursor-cli
 
     # Nix shells:
     (pkgs.buildFHSEnv {
