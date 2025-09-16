@@ -249,6 +249,7 @@
       "mas"
       "lazydocker"
       "cliclick"
+      "cocoapods"
       {
         name = "syncthing";
         restart_service = "changed";
