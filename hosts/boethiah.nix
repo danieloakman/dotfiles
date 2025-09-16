@@ -259,7 +259,7 @@
       "cursor"
       "vivaldi"
       "visual-studio-code"
-      "warp"
+      # "warp"
       "zoom"
       "spotify"
       "obsidian"
