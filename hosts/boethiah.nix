@@ -266,6 +266,7 @@
       "obsidian"
       "localsend"
       "docker-desktop"
+      "private-internet-access"
     ];
 
     masApps = {
