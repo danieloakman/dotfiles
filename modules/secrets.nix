@@ -10,6 +10,7 @@
       # Some of these aren't security concerns if they were exposed, but it's better to just hide them anyway.
       secrets = [
         "password_store_git_url" # Git URL for password store
+        "pia_credentials" # Private Internet Access credentials 
       ];
     in
     {

@@ -40,9 +40,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # zen-browser.url = "github:MarceColl/zen-browser-flake";
+    pia = {
+      url = "github:Fuwn/pia.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, pia, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -87,7 +91,7 @@
       createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: {
         inherit user home isLaptop isOnWayland hasGPU;
         platform = "linux";
-        selectPlatform = config: config.linux or {}; # For platform specific configs. Will always return the linux config.
+        selectPlatform = config: config.linux or { }; # For platform specific configs. Will always return the linux config.
       };
     in
     {
@@ -103,7 +107,7 @@
                 hasGPU = true;
               };
             in
-            { inherit inputs system env; };
+            { inherit inputs system env pia; };
           modules = [
             commonImports
             { }
