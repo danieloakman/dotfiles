@@ -53,9 +53,9 @@ in
       wev # Wayland event viewer. Useful for finding uncommon key codes
       uwsm # Universal Wayland session manager. Can do `uwsm `
       hyprshot # Screenshot tool # TODO: move to programs.hyprshot.enable
-
       rofi-network-manager # Rofi network manager GUI
       nautilus # File explorer
+      gnome-disk-utility # Gnome disk utility for formatting drives
     ];
   };
 
