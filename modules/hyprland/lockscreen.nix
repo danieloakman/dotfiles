@@ -84,7 +84,7 @@
         listener = [
           {
             timeout = 270; # 4.5 minutes of idle and lower brightness
-            on-timeout = "brightnessctl -s set 5%"; # Lower brightness and save previous brightness state to file
+            on-timeout = "notify-send \"Idle for 4:30 minutes\" \"About to lock the session due to inactivity\" -u critical -i emblem-important-symbolic -e | brightnessctl -s set 5%"; # Lower brightness and save previous brightness state to file
             on-resume = "brightnessctl -r"; # Restore previous brightness state
           }
           {
