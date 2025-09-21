@@ -40,7 +40,7 @@ in
       {
         immich-webapp = {
           name = "Immich Webapp";
-          exec = webapp "http://localhost:2283";
+          exec = webapp "http://localhost:${toString port}";
           categories = [ "Network" "WebBrowser" ];
           icon = "immich";
           startupNotify = true;
