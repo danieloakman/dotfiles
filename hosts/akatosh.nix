@@ -76,7 +76,7 @@
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    ../modules/streaming.nix
+    # ../modules/streaming.nix
 
     # ../modules/gnome
     ../modules/hyprland
