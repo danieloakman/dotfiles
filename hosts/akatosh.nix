@@ -76,7 +76,7 @@
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    # ../modules/streaming.nix
+    ../modules/streaming.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -127,6 +127,13 @@
       "workspace 3, class:^(Discord)$"
       "workspace 3, class:^(Steam)$"
     ];
+  };
+
+  specialisation = {
+    streaming.configuration = {
+      system.nixos.tags = [ "streaming" ];
+      streaming.enable = true;
+    };
   };
 
   hardware = {
