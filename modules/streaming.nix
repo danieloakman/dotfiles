@@ -46,10 +46,10 @@ in
       transmission = {
         enable = true;
         openFirewall = true;
-        settings = {
-          downloadDir = "/run/media/HDD_3/Downloads";
-          incompleteDir = "/run/media/HDD_3/Downloads/incomplete";
-        };
+        # settings = {
+        #   downloadDir = "/run/media/HDD_3/Downloads";
+        #   incompleteDir = "/run/media/HDD_3/Downloads/incomplete";
+        # };
         # credentialsFile = config.sops.secrets.transmission_credentials.path;
       };
       prowlarr = {
