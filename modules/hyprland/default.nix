@@ -32,6 +32,7 @@ in
     ./lockscreen.nix
     ./terminal.nix
     ./touch-screen.nix
+    ./ydotool.nix
 
     # UI Shells:
     # ./waybar.nix
