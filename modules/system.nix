@@ -140,7 +140,6 @@
 
       # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
       (if env.isOnWayland then dmenu-wayland else dmenu)
-      (if env.isOnWayland then ydotool else xdotool)
 
       starship
       curl
@@ -150,7 +149,9 @@
       # inputs.devenv.packages.${system}.devenv # No long use devenv. Just use nix shell instead.
     ] ++ (if env.isOnWayland then [
       wl-clipboard
-    ] else [ ]);
+    ] else [
+      xdotool
+    ]);
   };
 
   programs = {
