@@ -64,6 +64,8 @@ export const battery = createPoll(
 
 export const b = createPoll('', 10000, 'fastfetch -s Battery -l none').as((stdout) => {
   const info = stdout.split(':')[1] ?? '';
+  // FIXME: when there's less than an hour remaining, only minutes are shown.
+  // So only `hours` is populated here.
   const [percentage = '0', hours = '0', minutes = '0'] = info.match(/\d+/g) ?? [];
   const status = info.match(/\[.+\]/)?.[0]?.replace(/\[|\]/g, '');
   return {
