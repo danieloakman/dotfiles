@@ -57,6 +57,7 @@ in
       rofi-network-manager # Rofi network manager GUI
       nautilus # File explorer
       gnome-disk-utility # Gnome disk utility for formatting drives
+      baobab # Gnome utility for analysing disk usage
     ];
   };
 
