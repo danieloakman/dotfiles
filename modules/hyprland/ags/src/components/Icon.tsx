@@ -55,6 +55,7 @@ export const ICONS = [
   'bell-ring',
   'bell',
   'lock',
+  'mouse-pointer',
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {
