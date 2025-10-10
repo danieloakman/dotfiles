@@ -15,7 +15,12 @@ import Orientation from './Orientation';
 import { Accessor, createExternal } from 'ags';
 import HorizontalRevealer from '@/components/HorizontalRevealer';
 import { noop } from '@/utils/fn';
-import { hasTouchDevice } from '@/utils/hyprland';
+import {
+  createIsIdle,
+  cursorPosition,
+  hasTouchDevice,
+  lastTimeCursorMoved,
+} from '@/utils/hyprland';
 import MoveMouse from './MoveMouse';
 
 export interface BarProps {

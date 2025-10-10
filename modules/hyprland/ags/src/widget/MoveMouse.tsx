@@ -3,14 +3,15 @@ import { createBooleanState } from '@/utils/ags';
 import { randInt } from '@/utils/number';
 import { classes } from '@/utils/styles';
 import { Theme } from '@/utils/theme';
-import { onCleanup, With } from 'ags';
-import { execAsync } from 'ags/process';
+import { createComputed, onCleanup, With } from 'ags';
 import { interval } from 'ags/time';
+import { createIsIdle, moveCursorRelative } from '@/utils/hyprland';
 
 const INTERVAL = 60000 * 2;
 
 export default function MoveMouse() {
   const [enabled, { toggle: toggleEnabled }] = createBooleanState(false);
+  const isIdle = createIsIdle(INTERVAL);
 
   return (
     <box name="MoveMouse">
@@ -20,8 +21,8 @@ export default function MoveMouse() {
       >
         <Icon name="mouse-pointer" color={enabled((v) => (v ? Theme.bgColor : Theme.fgColor))} />
       </button>
-      <With value={enabled}>
-        {(enabled) => {
+      <With value={createComputed([enabled, isIdle], (enabled, isIdle) => enabled && isIdle)}>
+        {(enabled: boolean) => {
           if (!enabled) return null;
           return <Impl />;
         }}
@@ -31,11 +32,7 @@ export default function MoveMouse() {
 }
 
 function Impl() {
-  const timer = interval(INTERVAL, () =>
-    execAsync(`ydotool mousemove -x ${randInt(-50, 50)} -y ${randInt(-50, 50)}`).catch((err) =>
-      console.log(err),
-    ),
-  );
+  const timer = interval(INTERVAL, () => moveCursorRelative(randInt(-50, 50), randInt(-50, 50)));
   onCleanup(() => timer.cancel());
   return <box name="timer-active"></box>;
 }

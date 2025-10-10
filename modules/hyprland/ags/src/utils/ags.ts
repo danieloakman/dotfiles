@@ -55,3 +55,17 @@ export const createInterval = (intervalMs: number) => {
     };
   });
 };
+
+export const distinctUntilChanged =
+  <T>(compare: (prev: T, curr: T) => boolean = (prev, curr) => prev === curr) =>
+  (value: Accessor<T>) =>
+    createExternal(value.get(), (set) => {
+      let prev: T | undefined = undefined;
+      return value.subscribe(() => {
+        const next = value.get();
+        if (prev === undefined || !compare(prev, next)) {
+          prev = next;
+          set(next);
+        }
+      });
+    });

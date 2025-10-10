@@ -1,8 +1,10 @@
-import { createBinding } from 'ags';
-import { once } from './fn';
+import { createBinding, createComputed, createExternal, createState } from 'ags';
+import { iife, once, pipe } from './fn';
 import { safeJSONParse } from './object';
 import { execAsync } from 'ags/process';
 import Hyprland from 'gi://AstalHyprland';
+import { interval } from 'ags/time';
+import { createInterval, distinctUntilChanged } from './ags';
 
 export interface HyprlandDevice {
   [key: string]: unknown;
@@ -37,3 +39,32 @@ export const devices = once(() =>
 /** Whether the system has a device like a touch screen. */
 export const hasTouchDevice = () =>
   devices().then((devices) => ((devices?.touch?.length || devices?.tablets?.length) ?? 0) > 0);
+
+export const cursorPosition = pipe(
+  createInterval(1000).as(() => ({
+    x: hyprland.cursor_position.get_x(),
+    y: hyprland.cursor_position.get_y(),
+  })),
+  distinctUntilChanged((prev, next) => prev.x === next.x && prev.y === next.y),
+);
+
+export const lastTimeCursorMoved = cursorPosition(() => Date.now());
+
+/** Creates an accessor that is true if the cursor has been idle for the given `timeMs`. */
+export const createIsIdle = (timeMs: number) =>
+  pipe(
+    createComputed(
+      [lastTimeCursorMoved, createInterval(1000).as(() => Date.now())],
+      (cursorTime, now) => cursorTime + timeMs < now,
+    ),
+    distinctUntilChanged(),
+  );
+
+export const moveCursorRelative = (x: number, y: number) => {
+  try {
+    const pos = hyprland.get_cursor_position();
+    hyprland.move_cursor(pos.get_x() + x, pos.get_y() + y);
+  } catch (err) {
+    console.log('Error in moveCursor:', err);
+  }
+};

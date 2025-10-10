@@ -114,3 +114,137 @@ export function attempt(arg: unknown, ...rest: unknown[]): unknown {
   }
   throw new Error('Cannot convert arg to result');
 }
+
+export interface MonoFn<A, B = A> {
+  (a: A): B;
+}
+
+export function pipe<A, B>(a: A, aFn: MonoFn<A, B>): B;
+export function pipe<A, B, C>(a: A, aFn: MonoFn<A, B>, bFn: MonoFn<B, C>): C;
+export function pipe<A, B, C, D>(a: A, aFn: MonoFn<A, B>, bFn: MonoFn<B, C>, cFn: MonoFn<C, D>): D;
+export function pipe<A, B, C, D, E>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+): E;
+export function pipe<A, B, C, D, E, F>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+): F;
+export function pipe<A, B, C, D, E, F, G>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+): G;
+export function pipe<A, B, C, D, E, F, G, H>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+): H;
+export function pipe<A, B, C, D, E, F, G, H, I>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+  hFn: MonoFn<H, I>,
+): I;
+export function pipe<A, B, C, D, E, F, G, H, I, J>(
+  a: A,
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+  hFn: MonoFn<H, I>,
+  iFn: MonoFn<I, J>,
+): J;
+export function pipe(initialValue: unknown, ...funcs: MonoFn<unknown, unknown>[]): unknown;
+export function pipe(initialValue: unknown, ...funcs: MonoFn<unknown, unknown>[]): unknown {
+  let result = initialValue;
+  for (const func of funcs) result = func(result);
+  return result;
+}
+
+export function flow<A, B>(aFn: MonoFn<A, B>): MonoFn<A, B>;
+export function flow<A, B, C>(aFn: MonoFn<A, B>, bFn: MonoFn<B, C>): MonoFn<A, C>;
+export function flow<A, B, C, D>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+): MonoFn<A, D>;
+export function flow<A, B, C, D, E>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+): MonoFn<A, E>;
+export function flow<A, B, C, D, E, F>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+): MonoFn<A, F>;
+export function flow<A, B, C, D, E, F, G>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+): MonoFn<A, G>;
+export function flow<A, B, C, D, E, F, G, H>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+): MonoFn<A, H>;
+export function flow<A, B, C, D, E, F, G, H, I>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+  hFn: MonoFn<H, I>,
+): MonoFn<A, I>;
+export function flow<A, B, C, D, E, F, G, H, I, J>(
+  aFn: MonoFn<A, B>,
+  bFn: MonoFn<B, C>,
+  cFn: MonoFn<C, D>,
+  dFn: MonoFn<D, E>,
+  eFn: MonoFn<E, F>,
+  fFn: MonoFn<F, G>,
+  gFn: MonoFn<G, H>,
+  hFn: MonoFn<H, I>,
+  iFn: MonoFn<I, J>,
+): MonoFn<A, J>;
+export function flow(...funcs: MonoFn<unknown, unknown>[]): MonoFn<unknown, unknown>;
+export function flow(...funcs: MonoFn<unknown, unknown>[]): MonoFn<unknown, unknown> {
+  return (value: unknown) => pipe(value, ...funcs);
+}
