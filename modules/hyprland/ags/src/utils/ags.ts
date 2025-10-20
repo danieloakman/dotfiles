@@ -1,4 +1,4 @@
-import { Accessor, createComputed, createExternal, createState, Setter } from 'ags';
+import { Accessor, createComputed, createExternal, createState, onCleanup, Setter } from 'ags';
 import { noop } from './fn';
 import { interval } from 'ags/time';
 
@@ -69,3 +69,9 @@ export const distinctUntilChanged =
         }
       });
     });
+
+/** Subscribe to a value and call a callback when it changes. */
+export function useSubscribe<T>(value: Accessor<T>, callback: (value: T) => void) {
+  const unsub = value.subscribe(() => callback(value.get()));
+  onCleanup(() => unsub());
+}

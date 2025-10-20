@@ -100,6 +100,7 @@ export const NATIVE_ICONS = [
   "face-smile-big",
   "face-smile-big-symbolic",
   "face-smile-symbolic",
+  "filezilla",
   "filled-xterm_16x16",
   "filled-xterm_32x32",
   "filled-xterm_48x48",
