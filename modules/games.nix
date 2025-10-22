@@ -15,6 +15,7 @@
     # lutris # Popular game manager for linux (other than steam)
     # heroic # Heroic games launcher
     # bottles # Run windows games on linux
+    retroarch-free # Emulator manager including many cores already installed
   ];
 
   # Sets up a set of optimisations for when playing games.
