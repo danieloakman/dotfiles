@@ -13,6 +13,7 @@
     gcalcli
     zbar # Can scan QR & bar codes using this
     lf # Terminal file system manager
+    wine # For running Windows applications on Linux
 
     # Node and Javascript related packages:
     nodejs_24
