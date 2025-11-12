@@ -48,7 +48,7 @@ in
       pyprland # Extra Hyprland utils/tools
       hyprpicker # Color picker
       # hyprcursor # Cursor. Stylix seems to handle cursors on wayland, so don't need this.
-      rofi-wayland # Make sure it's installed, even though we have imported rofi.nix
+      rofi # Make sure it's installed, even though we have imported rofi.nix
       brightnessctl # Control backlight brightness
       libnotify # Adds notification commands like `notify-send`
       wev # Wayland event viewer. Useful for finding uncommon key codes

@@ -3,6 +3,10 @@
 # and in the NixOS manual (accessible by running 'nixos-help').
 
 { env, config, pkgs, lib, modulesPath, ... }:
+let
+  # nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.production
+  nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.stable;
+in
 {
   boot = {
     initrd = {
@@ -10,7 +14,11 @@
       kernelModules = [ "nvidia" ];
     };
     kernelModules = [ "kvm-intel" ];
-    extraModulePackages = [ config.boot.kernelPackages.nvidiaPackages.production ];
+    kernelParams = [
+      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      "module_blacklist=i915"
+    ];
+    extraModulePackages = [ nvidiaPkg ];
     # Limit the number of generations to 3
     # loader.grub.configurationLimit = 3;
   };
@@ -147,9 +155,10 @@
     # See https://nixos.wiki/wiki/Nvidia for more information.
     nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = true; # Fix for issues after waking from suspend
-      package = config.boot.kernelPackages.nvidiaPackages.production;
-      open = false;
+      powerManagement.enable = false; # Was hanging on boot when enabled
+      package = nvidiaPkg;
+      open = false; # Must be false as GTX 1080Ti doesn't support the open module
+      nvidiaSettings = true;
     };
   };
 
