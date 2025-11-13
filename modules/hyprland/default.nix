@@ -134,7 +134,6 @@ in
           "$mod, C, killactive"
           "$mod, V, togglefloating"
           "$mod, F10, exec, ${gamemodeScript}/bin/start"
-          "$mod, F9, exec, hyprctl dispatch dpms toggle" # Toggle turning display off and on
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"

@@ -1,5 +1,30 @@
 # The way this is setup with greetd is not fully secure. It's possible somebody could bypass the lock screen.
-{ env, ... }: {
+{ env, pkgs, lib, ... }:
+let
+  hypridleStatus = (pkgs.writeShellScriptBin "hypridle-status" ''
+    if systemctl --user is-active --quiet hypridle.service; then
+      echo "enabled"
+    else
+      echo "disabled"
+    fi
+  '');
+  hypridleToggle = (pkgs.writeShellScriptBin "hypridle-toggle" ''
+    STATUS=$(${lib.getExe hypridleStatus})
+    if [ "$STATUS" = "enabled" ]; then
+      systemctl --user stop hypridle.service
+      echo "disabled"
+    else
+      systemctl --user start hypridle.service
+      echo "enabled"
+    fi
+  '');
+  serverModeToggle = (pkgs.writeShellScriptBin "server-mode-toggle" ''
+    hyprctl dispatch dpms toggle;
+    STATUS = $(${lib.getExe hypridleToggle});
+    notify-send "Server Mode Toggle" "Server mode $STATUS" -u normal;
+  '');
+in
+{
   security.pam.services = {
     hyprlock = {
       # Unlock the GNOME keyring when the lock screen is unlocked
@@ -20,6 +45,12 @@
       default_session = initial_session;
     };
   };
+
+  environment.systemPackages = [
+    hypridleStatus
+    hypridleToggle
+    serverModeToggle
+  ];
 
   home-manager.users.${env.user} = {
     # Didn't end up looking that good, so just use default hyprlock config instead.
@@ -69,6 +100,10 @@
         exec-once = [
           "hyprlock || hyprctl dispatch exit"
         ];
+
+        bind = [
+          "$mod, F9, exec, ${lib.getExe serverModeToggle}"
+        ];
       };
     };
 
@@ -80,7 +115,6 @@
           after_sleep_cmd = "hyprctl dispatch dpms on";
           ignore_dbus_inhibit = false;
           lock_cmd = "pidof hyprlock || hyprlock"; # Avoid starting hyprlock multiple times
-          inhibit_sleep = 2; # See https://wiki.hypr.land/Hypr-Ecosystem/hypridle/#general
         };
         listener = [
           {
