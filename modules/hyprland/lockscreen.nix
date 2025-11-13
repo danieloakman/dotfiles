@@ -21,7 +21,7 @@ let
   serverModeToggle = (pkgs.writeShellScriptBin "server-mode-toggle" ''
     hyprctl dispatch dpms toggle;
     STATUS = $(${lib.getExe hypridleToggle});
-    notify-send "Server Mode Toggle" "Server mode $STATUS" -u normal;
+    notify-send "Server Mode Toggle" "$STATUS" -e;
   '');
 in
 {
