@@ -80,6 +80,7 @@
           after_sleep_cmd = "hyprctl dispatch dpms on";
           ignore_dbus_inhibit = false;
           lock_cmd = "pidof hyprlock || hyprlock"; # Avoid starting hyprlock multiple times
+          inhibit_sleep = 2; # See https://wiki.hypr.land/Hypr-Ecosystem/hypridle/#general
         };
         listener = [
           {
