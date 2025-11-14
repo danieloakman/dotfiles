@@ -8,7 +8,7 @@ import { PASSWORD_STORE_DIR, CONFIG_DIR } from '../utils/env';
 import { createPoll } from 'ags/time';
 import { execAsync } from 'ags/process';
 import { createExternalState } from '../utils/ags';
-import { iife } from '../utils/fn';
+import { iife } from '@/js-utils';
 import { readFileAsync, writeFileAsync } from 'ags/file';
 import DropDownSelect from '../components/DropDownSelect';
 import { classes } from '../utils/styles';

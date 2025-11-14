@@ -1,11 +1,11 @@
 import Icon from '@/components/Icon';
 import { createBooleanState } from '@/utils/ags';
-import { randInt } from '@/utils/number';
 import { classes } from '@/utils/styles';
 import { Theme } from '@/utils/theme';
 import { createComputed } from 'ags';
 import { createIsIdle, moveCursorRelative } from '@/utils/hyprland';
 import { useSubscribe } from '../utils/ags';
+import { randInteger } from '@/js-utils';
 
 const INTERVAL = 60000 * 2;
 
@@ -17,7 +17,7 @@ export default function MoveMouse() {
     (enabled) => {
       if (!enabled) return;
       console.log('moving mouse');
-      moveCursorRelative(randInt(-50, 50), randInt(-50, 50));
+      moveCursorRelative(randInteger(-50, 50), randInteger(-50, 50));
     },
   );
 

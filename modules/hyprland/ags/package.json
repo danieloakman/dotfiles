@@ -1,9 +1,20 @@
 {
+  "name": "ags",
+  "private": true,
+  "version": "0.1.0",
   "scripts": {
     "types": "source scripts/types.sh",
-    "dev": "source scripts/dev.sh"
+    "dev": "source scripts/dev.sh",
+    "start": "ags run app.tsx"
   },
   "dependencies": {
-    "ags": "*"
+    "@danoaky/js-utils": "./local_node_modules/js-utils-0.29.1.tgz",
+    "iteragain": "./local_node_modules/iteragain-4.1.6.tgz"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21",
+    "typescript": "^5",
+    "ags": "/home/dano/.local/share/ags",
+    "gnim": "/home/dano/.local/share/ags/node_modules/gnim"
   }
 }

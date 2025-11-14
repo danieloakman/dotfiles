@@ -3,8 +3,7 @@ import { Gtk } from 'ags/gtk4';
 import { createExternal, With } from 'ags';
 import { execAsync } from 'ags/process';
 import Icon from '../components/Icon';
-import { clamp } from '../utils/number';
-import { noop } from '../utils/fn';
+import { clamp, noop } from '@/js-utils';
 import DropDownSelect from '../components/DropDownSelect';
 
 const POWER_MODES = ['performance', 'power-saver'] as const;

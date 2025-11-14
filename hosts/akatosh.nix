@@ -85,7 +85,7 @@ in
     ../modules/network.nix
     ../modules/comma.nix
     ../modules/streaming.nix
-    ../modules/n8n.nix
+    # ../modules/n8n.nix
 
     # ../modules/gnome
     ../modules/hyprland

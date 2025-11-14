@@ -3,7 +3,7 @@ import app from 'ags/gtk4/app';
 import { Accessor, createState } from 'ags';
 import { hideAllWindows, WindowName } from '../utils/window';
 import Graphene from 'gi://Graphene?version=1.0';
-import { noop } from '../utils/fn';
+import { noop } from '@/js-utils';
 import { toAccessor } from '../utils/ags';
 import { classes } from '../utils/styles';
 

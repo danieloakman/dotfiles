@@ -8,7 +8,7 @@ import { toggleWindow, WindowName } from './src/utils/window';
 import AppsModal from './src/widget/Apps';
 import { loadStyles } from './src/utils/styles';
 import { createBinding, Fragment } from 'ags';
-import { raise } from './src/utils/fn';
+import { raise } from '@/js-utils';
 
 const HELP = `
 Usage

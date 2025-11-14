@@ -1,11 +1,11 @@
 import { createPoll } from 'ags/time';
 import { Gtk } from 'ags/gtk4';
 import Icon from '../components/Icon';
-import { clamp } from '../utils/number';
+import { clamp } from '@/js-utils';
 import { Vr } from '../components/Separators';
 import { classes } from '../utils/styles';
 import { execAsync } from 'ags/process';
-import { raise } from '@/utils/fn';
+import { raise } from '@/js-utils';
 
 export default function OSMonitoring() {
   return (

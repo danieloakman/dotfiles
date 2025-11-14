@@ -1,7 +1,7 @@
 import { execAsync } from 'ags/process';
 import Icon from '../components/Icon';
 import { createExternal, createState } from 'ags';
-import { noop } from '../utils/fn';
+import { noop } from '@/js-utils';
 import { hasTouchDevice } from '../utils/hyprland';
 
 const [isOnScreenKeyboardVisible, setIsOnScreenKeyboardVisible] = createState(false);

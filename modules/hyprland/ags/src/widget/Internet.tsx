@@ -3,7 +3,7 @@ import { Gtk } from 'ags/gtk4';
 import Network from 'gi://AstalNetwork';
 import { Icon } from '../components/Icon';
 import { createBooleanState, UnwrapAccessor } from '../utils/ags';
-import { iife, multiComparator } from '../utils/fn';
+import { iife, multiComparator } from '@/js-utils';
 import Accordion from '../components/Accordion';
 import { classes } from '../utils/styles';
 import { execAsync } from 'ags/process';

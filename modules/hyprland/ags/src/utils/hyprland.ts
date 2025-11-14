@@ -1,9 +1,7 @@
-import { createBinding, createComputed, createExternal, createState } from 'ags';
-import { iife, once, pipe } from './fn';
-import { safeJSONParse } from './object';
+import { createBinding, createComputed } from 'ags';
+import { once, pipe, safeJSONParse } from '@/js-utils';
 import { execAsync } from 'ags/process';
 import Hyprland from 'gi://AstalHyprland';
-import { interval } from 'ags/time';
 import { createInterval, distinctUntilChanged } from './ags';
 
 export interface HyprlandDevice {

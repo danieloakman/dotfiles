@@ -5,7 +5,7 @@ import { readFileAsync, writeFileAsync } from 'ags/file';
 import { Theme } from '../utils/theme';
 import { execAsync } from 'ags/process';
 import { toAccessor } from '../utils/ags';
-import { raise } from '@/utils/fn';
+import { raise } from '@/js-utils';
 
 const CURRENT_DIR = GLib.get_current_dir();
 const ICONS_DIR = `${CURRENT_DIR}/src/icons`;

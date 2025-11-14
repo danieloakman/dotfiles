@@ -1,7 +1,7 @@
 import { Node, With } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import Icon from './Icon';
-import { noop } from '../utils/fn';
+import { noop } from '@/js-utils';
 import { Accessor } from 'ags';
 import { toAccessor } from '../utils/ags';
 
@@ -28,9 +28,7 @@ export default function Accordion({
     <centerbox orientation={Gtk.Orientation.VERTICAL} cssClasses={cssClasses} css={css}>
       <button $type="start" onClicked={() => onOpenChange(!_open.get())}>
         <centerbox>
-          <box $type="start">
-            {title()}
-          </box>
+          <box $type="start">{title()}</box>
           <Icon $type="end" name={_open((v) => (v ? 'chevron-down' : 'chevron-right'))} />
         </centerbox>
       </button>

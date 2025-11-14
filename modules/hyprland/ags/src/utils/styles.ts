@@ -2,7 +2,7 @@ import { writeFileAsync } from 'ags/file';
 import { execAsync } from 'ags/process';
 import { StyleClass } from '../types/style-classes';
 import { DEV } from './env';
-import { attempt } from './fn';
+import { attempt } from '@/js-utils';
 
 export async function loadStyles() {
   const { data: text, error } = await attempt(execAsync('cat ./src/style.scss'));

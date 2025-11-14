@@ -1,9 +1,7 @@
 import app from 'ags/gtk4/app';
 import { Astal, Gdk, Gtk } from 'ags/gtk4';
-import Battery from './Battery';
 import Clock from './Clock';
-import Workspaces, { FocusedClient } from './Workspaces';
-import Brightness from './Brightness';
+import Workspaces from './Workspaces';
 import OnscreenKeyboard from './OnscreenKeyboard';
 import OSMonitoring from './OSMonitoring';
 import { ControlCenterButton } from './ControlCenter';
@@ -14,13 +12,8 @@ import { classes } from '@/utils/styles';
 import Orientation from './Orientation';
 import { Accessor, createExternal } from 'ags';
 import HorizontalRevealer from '@/components/HorizontalRevealer';
-import { noop } from '@/utils/fn';
-import {
-  createIsIdle,
-  cursorPosition,
-  hasTouchDevice,
-  lastTimeCursorMoved,
-} from '@/utils/hyprland';
+import { noop } from '@/js-utils';
+import { hasTouchDevice } from '@/utils/hyprland';
 import MoveMouse from './MoveMouse';
 
 export interface BarProps {

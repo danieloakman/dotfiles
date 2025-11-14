@@ -3,7 +3,8 @@ import Icon from '../components/Icon';
 import { classes } from '../utils/styles';
 import { Vr } from '../components/Separators';
 import { devices, hasTouchDevice, monitors } from '../utils/hyprland';
-import { noop, raise } from '../utils/fn';
+import { noop } from '@/js-utils';
+import { raise } from '@/js-utils';
 import { createExternal } from 'ags';
 
 export type RotateDirection = 'cw' | 'ccw';

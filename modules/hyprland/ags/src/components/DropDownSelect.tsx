@@ -1,7 +1,7 @@
 import { Accessor, createComputed } from 'ags';
 import { Gtk } from 'ags/gtk4';
 import { toAccessor } from '../utils/ags';
-import { raise } from '@/utils/fn';
+import { raise } from '@/js-utils';
 
 export interface DropDownSelectProps<T extends string> {
   options: readonly T[] | Accessor<readonly T[]>;

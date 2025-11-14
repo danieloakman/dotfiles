@@ -1,6 +1,6 @@
 import { Accessor, createComputed, createExternal, With } from 'ags';
 import { execAsync } from 'ags/process';
-import { debounce, noop } from '../utils/fn';
+import { noop, debounce } from '@/js-utils';
 import { createExternalState } from '../utils/ags';
 import Icon from '../components/Icon';
 import Card from '@/components/Card';
@@ -62,7 +62,9 @@ export default function Brightness() {
         min={1}
         max={100}
         step={1}
-        onChangeValue={({ value }) => setBrightness(Math.round(value))}
+        onChangeValue={({ value }) => {
+          setBrightness(Math.round(value));
+        }}
         hexpand
       />
     </Card>

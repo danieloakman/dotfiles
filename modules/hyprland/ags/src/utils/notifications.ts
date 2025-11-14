@@ -1,9 +1,8 @@
 import { NativeIcon } from '@/types/icons';
-import { createBinding, createExternal, createState } from 'ags';
+import { createState } from 'ags';
 import { execAsync, createSubprocess } from 'ags/process';
-import { safeJSONParse } from './object';
-import { raise } from './fn';
-import { createExternalState } from './ags';
+import { safeJSONParse } from '@/js-utils';
+import { raise } from '@/js-utils';
 
 // ***ASTAL NOTIFD IMPLEMENTATION***
 // import Notifd from 'gi://AstalNotifd';

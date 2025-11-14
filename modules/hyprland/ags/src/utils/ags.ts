@@ -1,5 +1,5 @@
 import { Accessor, createComputed, createExternal, createState, onCleanup, Setter } from 'ags';
-import { noop } from './fn';
+import { noop } from '@/js-utils';
 import { interval } from 'ags/time';
 
 /** Converts a value or accessor to an accessor. So downstream we can just always assume it's an accessor. */

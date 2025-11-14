@@ -1,5 +1,5 @@
 import { Gdk, Gtk } from 'ags/gtk4';
-import { noop } from '../utils/fn';
+import { noop } from '@/js-utils';
 import { Accessor } from 'ags';
 
 export interface SearchInputProps {
