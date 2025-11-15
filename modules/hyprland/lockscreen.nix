@@ -50,6 +50,8 @@ in
   environment.systemPackages = [
     hypridleStatus
     hypridleToggle
+    hypridleStart
+    hypridleStop
   ];
 
   home-manager.users.${env.user} = {
