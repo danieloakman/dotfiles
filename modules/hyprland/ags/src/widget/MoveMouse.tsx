@@ -9,6 +9,7 @@ import { randInteger } from '@/js-utils';
 
 const INTERVAL = 60000 * 2;
 
+// TODO: this is no longer working after adding the idle detection. Perhaps just make it move the mouse regardless of idle state.
 export default function MoveMouse() {
   const [enabled, { toggle: toggleEnabled }] = createBooleanState(false);
   const isIdle = createIsIdle(INTERVAL);
