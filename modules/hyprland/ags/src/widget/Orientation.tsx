@@ -33,7 +33,7 @@ export async function rotateOrientation(direction: RotateDirection) {
 
   await execAsync(
     `hyprctl keyword monitor ${monitor.name},preferred,auto,1,transform,${nextTransform}`,
-  );
+  ).catch((err) => console.error('Failed to rotate monitor', err));
 
   const _devices = await devices();
   if (_devices?.touch?.length)

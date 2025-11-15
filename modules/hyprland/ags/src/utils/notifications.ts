@@ -44,7 +44,9 @@ export const swayncStatus = createSubprocess('', 'zsh -c "swaync-client -s"').as
 
 export function setDontDisturb(value: boolean) {
   // notifd.set_dont_disturb(value);
-  execAsync(`swaync-client ${value ? '-dn' : '-df'}`);
+  execAsync(`swaync-client ${value ? '-dn' : '-df'}`).catch((err) =>
+    console.error('Failed to set do not disturb', err),
+  );
 }
 
 export function clearNotifications() {

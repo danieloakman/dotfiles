@@ -30,17 +30,30 @@ export default function System() {
                 transient: true,
                 icon: 'emblem-system-symbolic',
               });
-              if (action === 'confirm') execAsync('shutdown -P now');
+              if (action === 'confirm')
+                await execAsync('shutdown -P now').catch((err) =>
+                  console.error('Failed to shutdown', err),
+                );
             }}
           />
           <button
             label="Suspend"
-            onClicked={() => {
-              execAsync('systemctl suspend');
-            }}
+            onClicked={() =>
+              execAsync('systemctl suspend').catch((err) => console.error('Failed to suspend', err))
+            }
           />
-          <button label="Reboot" onClicked={() => execAsync('reboot')} />
-          <button label="Logout" onClicked={() => execAsync('logout')} />
+          <button
+            label="Reboot"
+            onClicked={() =>
+              execAsync('reboot').catch((err) => console.error('Failed to reboot', err))
+            }
+          />
+          <button
+            label="Logout"
+            onClicked={() =>
+              execAsync('logout').catch((err) => console.error('Failed to logout', err))
+            }
+          />
         </box>
       </popover>
     </menubutton>
@@ -61,7 +74,10 @@ export function Shutdown() {
           transient: true,
           icon: 'emblem-system-symbolic',
         });
-        if (action === 'confirm') execAsync('shutdown -P now');
+        if (action === 'confirm')
+          await execAsync('shutdown -P now').catch((err) =>
+            console.error('Failed to shutdown', err),
+          );
       }}
     >
       <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
@@ -76,7 +92,9 @@ export function Suspend() {
     <button
       cssClasses={classes('circular')}
       tooltipText="Suspend"
-      onClicked={() => execAsync('systemctl suspend')}
+      onClicked={() =>
+        execAsync('systemctl suspend').catch((err) => console.error('Failed to suspend', err))
+      }
     >
       <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
         <Icon name="lock" />
@@ -99,7 +117,8 @@ export function Restart() {
           transient: true,
           icon: 'emblem-system-symbolic',
         });
-        if (action === 'confirm') execAsync('reboot');
+        if (action === 'confirm')
+          await execAsync('reboot').catch((err) => console.error('Failed to reboot', err));
       }}
     >
       <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>

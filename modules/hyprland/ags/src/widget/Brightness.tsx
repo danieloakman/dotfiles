@@ -90,7 +90,9 @@ function BrightnessCtrl({
       max={max}
       step={step}
       onChangeValue={({ value }) => {
-        execAsync(`brightnessctl set ${value}`);
+        execAsync(`brightnessctl set ${value}`).catch((err) =>
+          console.error('Failed to set brightness', err),
+        );
         setCurrentBrightness(value);
       }}
     />

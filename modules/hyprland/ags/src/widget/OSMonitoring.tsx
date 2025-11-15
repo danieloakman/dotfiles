@@ -12,7 +12,11 @@ export default function OSMonitoring() {
     <button
       name="os-monitoring"
       cssClasses={classes('rounded-full')}
-      onClicked={() => execAsync('kitty --title "btop" --hold -e "btop"')}
+      onClicked={() =>
+        execAsync('kitty --title "btop" --hold -e "btop"').catch((err) =>
+          console.error('Failed to open btop', err),
+        )
+      }
     >
       <box spacing={8}>
         <Cpu />

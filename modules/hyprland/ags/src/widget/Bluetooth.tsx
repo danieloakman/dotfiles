@@ -12,7 +12,7 @@ export const connectedBluetoothDevices = createPoll('', 10000, 'bluetoothctl dev
   (str) =>
     str
       .split('\n')
-      .filter(line => !!line.trim() && line.startsWith('Device'))
+      .filter((line) => !!line.trim() && line.startsWith('Device'))
       .map((line): BluetoothDevice => {
         line = line.replace('Device ', '').trim();
         const firstSpace = line.indexOf(' ');
@@ -39,7 +39,11 @@ export default function Bluetooth() {
       <button
         name="bluetooth"
         tooltipText="Open Bluetooth Manager"
-        onClicked={() => execAsync('blueman-manager')}
+        onClicked={() =>
+          execAsync('blueman-manager').catch((err) =>
+            console.error('Failed to open bluetooth manager', err),
+          )
+        }
       >
         <With value={dataView}>
           {([status, devices]) => {
@@ -64,8 +68,10 @@ export function BluetoothConnection() {
       <With value={bluetoothStatus}>
         {(status) => {
           if (!status.powered) return <Icon name="bluetooth-off" tooltipText="Bluetooth Off" />;
-          else if (status.discovering) return <Icon name="bluetooth-searching" tooltipText="Bluetooth Discovering" />;
-          else if (status.paired) return <Icon name="bluetooth-connected" tooltipText="Bluetooth Paired" />;
+          else if (status.discovering)
+            return <Icon name="bluetooth-searching" tooltipText="Bluetooth Discovering" />;
+          else if (status.paired)
+            return <Icon name="bluetooth-connected" tooltipText="Bluetooth Paired" />;
           else return <Icon name="bluetooth" tooltipText="Bluetooth On" />;
         }}
       </With>

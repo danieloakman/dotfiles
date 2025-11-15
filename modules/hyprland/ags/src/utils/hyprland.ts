@@ -31,7 +31,12 @@ export const focusedClient = createBinding(hyprland, 'focusedClient');
 export const monitors = createBinding(hyprland, 'monitors');
 
 export const devices = once(() =>
-  execAsync('hyprctl devices -j').then(safeJSONParse<HyprlandDevices>),
+  execAsync('hyprctl devices -j')
+    .then(safeJSONParse<HyprlandDevices>)
+    .catch((err) => {
+      console.error('Failed to get hyprland devices', err);
+      return null;
+    }),
 );
 
 /** Whether the system has a device like a touch screen. */

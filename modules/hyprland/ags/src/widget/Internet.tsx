@@ -111,7 +111,7 @@ export default function Internet() {
                           .then(() =>
                             console.log(`${isActive ? 'Down' : 'Up'} ${connection.get_id()}`),
                           )
-                          .catch(console.error);
+                          .catch((err) => console.error('Failed to toggle connection', err));
                       }}
                     />
 

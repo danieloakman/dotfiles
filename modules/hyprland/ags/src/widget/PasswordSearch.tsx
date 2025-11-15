@@ -113,9 +113,12 @@ export default function PasswordSearch() {
               {(password) => (
                 <button
                   cssClasses={classes('btn-ghost')}
-                  onClicked={() => {
-                    if (password.startsWith('otp/')) execAsync(`pass otp ${password} -c`);
-                    else execAsync(`pass ${password} -c`);
+                  onClicked={async () => {
+                    await execAsync(
+                      password.startsWith('otp/')
+                        ? `pass otp ${password} -c`
+                        : `pass ${password} -c`,
+                    ).catch((err) => console.error('Failed to copy password', err));
                     hideWindow(WINDOW_NAME.PasswordSearch);
                     setSearch('');
                     incrementPriority(password);
