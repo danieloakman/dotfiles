@@ -14,7 +14,7 @@ import { Accessor, createExternal } from 'ags';
 import HorizontalRevealer from '@/components/HorizontalRevealer';
 import { noop } from '@/js-utils';
 import { hasTouchDevice } from '@/utils/hyprland';
-import MoveMouse from './MoveMouse';
+import Coffee from './Coffee';
 
 export interface BarProps {
   monitor: Gdk.Monitor | Accessor<Gdk.Monitor>;
@@ -45,7 +45,8 @@ export default function Bar({ monitor }: BarProps) {
             <Orientation />
           </HorizontalRevealer>
           <Workspaces />
-          <MoveMouse />
+          {/* <MoveMouse /> */}
+          <Coffee />  
           <AppsButton />
           {/* <Media /> */}
           <PasswordSearchButton />

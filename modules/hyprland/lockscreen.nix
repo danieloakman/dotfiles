@@ -8,20 +8,21 @@ let
       echo "disabled"
     fi
   '');
+  hypridleStart = (pkgs.writeShellScriptBin "hypridle-start" ''
+    systemctl --user start hypridle.service
+    echo "enabled"
+  '');
+  hypridleStop = (pkgs.writeShellScriptBin "hypridle-stop" ''
+    systemctl --user stop hypridle.service
+    echo "disabled"
+  '');
   hypridleToggle = (pkgs.writeShellScriptBin "hypridle-toggle" ''
     STATUS=$(${lib.getExe hypridleStatus})
     if [ "$STATUS" = "enabled" ]; then
-      systemctl --user stop hypridle.service
-      echo "disabled"
+      ${lib.getExe hypridleStop}
     else
-      systemctl --user start hypridle.service
-      echo "enabled"
+      ${lib.getExe hypridleStart}
     fi
-  '');
-  serverModeToggle = (pkgs.writeShellScriptBin "server-mode-toggle" ''
-    hyprctl dispatch dpms toggle;
-    STATUS = $(${lib.getExe hypridleToggle});
-    notify-send "Server Mode Toggle" "$STATUS" -e;
   '');
 in
 {
@@ -49,7 +50,6 @@ in
   environment.systemPackages = [
     hypridleStatus
     hypridleToggle
-    serverModeToggle
   ];
 
   home-manager.users.${env.user} = {
@@ -96,15 +96,9 @@ in
       };
     }; */
     wayland.windowManager.hyprland = {
-      settings = {
-        exec-once = [
-          "hyprlock || hyprctl dispatch exit"
-        ];
-
-        bind = [
-          "$mod, F9, exec, ${lib.getExe serverModeToggle}"
-        ];
-      };
+      settings.exec-once = [
+        "hyprlock || hyprctl dispatch exit"
+      ];
     };
 
     services.hypridle = {
