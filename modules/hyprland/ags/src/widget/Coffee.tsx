@@ -1,18 +1,18 @@
 import Icon from '@/components/Icon';
 import { noop } from '@/js-utils';
-import { createExternalState } from '@/utils/ags';
+import { createExternalState, createInterval, useSubscribe } from '@/utils/ags';
 import { notify } from '@/utils/notifications';
 import { classes } from '@/utils/styles';
 import { Theme } from '@/utils/theme';
 import { execAsync } from 'ags/process';
 
-const [hypridleEnabled, setHypridleEnabled] = createExternalState<boolean>(false, (set) => {
+const isHypridleEnabled = () =>
   execAsync('hypridle-status')
     .then((stdout) => stdout.trim() === 'enabled')
-    .then(set)
-    .catch((err) => console.error('Failed to get hypridle status', err));
-  return noop;
-});
+    .catch((err) => {
+      console.error('Failed to get hypridle status', err);
+      return false;
+    });
 
 const toggleHypridle = () =>
   execAsync('hypridle-toggle')
@@ -29,8 +29,18 @@ const toggleHypridle = () =>
     })
     .catch((err) => console.error('Failed to toggle hypridle', err));
 
+const [hypridleEnabled, setHypridleEnabled] = createExternalState<boolean>(false, (set) => {
+  isHypridleEnabled().then(set);
+  return noop;
+});
+
 /** hypridle inhibitor widget */
 export default function Coffee() {
+  useSubscribe(createInterval(10000), async () => {
+    const enabled = await isHypridleEnabled();
+    if (enabled !== hypridleEnabled.get()) setHypridleEnabled(enabled);
+  });
+
   return (
     <box name="Coffee">
       <button
