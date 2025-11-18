@@ -115,14 +115,14 @@
       #     format = ssh
       # '';
 
-      # ".gitconfig-frogco".text = ''
-      #   [user]
-      #     name = Daniel (Oakman) Brown
-      #     email = daniel.brown@futuresecure.ai
-      #     signingkey = ~/.ssh/fsai.pub
-      #   [gpg]
-      #     format = ssh
-      # '';
+      ".gitconfig-fsai".text = ''
+        [user]
+          name = Daniel (Oakman) Brown
+          email = daniel.brown@futuresecure.ai
+          signingkey = ~/.ssh/fsai.pub
+        [gpg]
+          format = ssh
+      '';
 
       ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
