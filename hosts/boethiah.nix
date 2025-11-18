@@ -37,6 +37,8 @@
               signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
             [credential]
               helper = cache --timeout 604800
+            [includeIf "gitdir/i:~/repos/fsai/"]
+              path = ~/.gitconfig-fsai
             [commit]
               gpgsign = true
             [init]
@@ -57,6 +59,16 @@
             [credential "https://gist.github.com"]
               helper = 
               helper = !/opt/homebrew/bin/gh auth git-credential
+          '';
+          ".gitconfig-fsai".text = ''
+            [user]
+              name = Daniel (Oakman) Brown
+              email = daniel.brown@futuresecure.ai
+              signingkey = ~/.ssh/id_rsa.pub
+            [gpg]
+              format = ssh
+            # [commit]
+            #   gpgsign = true
           '';
           ".gnupg/gpg-agent.conf".text = ''
             default-cache-ttl 604800
