@@ -1,7 +1,7 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, inputs, env, config, ... }:
+{ pkgs, inputs, env, config, lib, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.pyprland}/bin/pypr &
@@ -11,17 +11,27 @@ let
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
-        hyprctl --batch "\
-            keyword animations:enabled 0;\
-            keyword decoration:drop_shadow 0;\
-            keyword decoration:blur:enabled 0;\
-            keyword general:gaps_in 0;\
-            keyword general:gaps_out 0;\
-            keyword general:border_size 1;\
-            keyword decoration:rounding 0"
-        exit
+      hyprctl --batch "\
+        keyword animations:enabled 0;\
+        keyword decoration:drop_shadow 0;\
+        keyword decoration:blur:enabled 0;\
+        keyword general:gaps_in 0;\
+        keyword general:gaps_out 0;\
+        keyword general:border_size 1;\
+        keyword decoration:rounding 0"
+      exit
     fi
     hyprctl reload
+  '';
+  screenSaveScript = pkgs.pkgs.writeShellScriptBin "screen-save" ''
+    mouse_move_enables_dpms=$(hyprctl getoption misc:mouse_move_enables_dpms | awk 'NR==1{print $2}')
+    if [ "$mouse_move_enables_dpms" = 1 ] ; then
+      hyprctl keyword misc:mouse_move_enables_dpms 0
+      hyprctl dispatch dpms off
+    else
+      hyprctl keyword misc:mouse_move_enables_dpms 1
+      hyprctl dispatch dpms on
+    fi
   '';
   hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
   hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
@@ -92,7 +102,7 @@ in
       settings = {
         # Keep this a list, so other nix modules can add to it.
         exec-once = [
-          ''${startupScript}/bin/start''
+          ''${lib.getExe startupScript}''
         ];
 
         "$mod" = "SUPER";
@@ -133,8 +143,8 @@ in
           "alt, F4, killactive"
           "$mod, C, killactive"
           "$mod, V, togglefloating"
-          "$mod, F10, exec, ${gamemodeScript}/bin/start"
-          "$mod, F9, exec, hyprctl dispatch dpms toggle" # Toggle turning display off and on
+          "$mod, F10, exec, ${lib.getExe gamemodeScript}"
+          "$mod, F9, exec, ${lib.getExe screenSaveScript}" # Toggle turning display off and on
           "$mod, T, exec, $files"
           ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
           "$mod, P, exec, hyprpicker -a"
