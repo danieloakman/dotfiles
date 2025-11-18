@@ -73,6 +73,8 @@
           path = ~/.gitconfig-auxilis
         [includeIf "gitdir/i:~/repos/frogco/"]
           path = ~/.gitconfig-frogco
+        [includeIf "gitdir/i:~/repos/fsai/"]
+          path = ~/.gitconfig-fsai
         [commit]
           gpgsign = true
         [init]
@@ -109,6 +111,15 @@
       #     name = Daniel (Oakman) Brown
       #     email = d.oakman@frogco.live
       #     signingkey = ~/.ssh/frogco.pub
+      #   [gpg]
+      #     format = ssh
+      # '';
+
+      # ".gitconfig-frogco".text = ''
+      #   [user]
+      #     name = Daniel (Oakman) Brown
+      #     email = daniel.brown@futuresecure.ai
+      #     signingkey = ~/.ssh/fsai.pub
       #   [gpg]
       #     format = ssh
       # '';
