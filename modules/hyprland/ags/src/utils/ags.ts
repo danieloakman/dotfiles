@@ -14,6 +14,7 @@ const timestamped = <T>(state: T): { state: T; timestamp: number } => ({
   timestamp: Date.now(),
 });
 
+// TODO: there's a bug with this where the first couple or so value updates are not reflected in the external value.
 /** Acts as a mutable `createExternal` */
 export function createExternalState<T extends object | number | string | boolean>(
   initialValue: T,

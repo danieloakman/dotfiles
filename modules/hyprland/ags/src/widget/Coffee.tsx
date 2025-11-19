@@ -1,9 +1,9 @@
 import Icon from '@/components/Icon';
-import { noop } from '@/js-utils';
-import { createExternalState, createInterval, useSubscribe } from '@/utils/ags';
+import { createInterval, useSubscribe } from '@/utils/ags';
 import { notify } from '@/utils/notifications';
 import { classes } from '@/utils/styles';
 import { Theme } from '@/utils/theme';
+import { createState } from 'ags';
 import { execAsync } from 'ags/process';
 
 const isHypridleEnabled = () =>
@@ -29,10 +29,7 @@ const toggleHypridle = () =>
     })
     .catch((err) => console.error('Failed to toggle hypridle', err));
 
-const [hypridleEnabled, setHypridleEnabled] = createExternalState<boolean>(false, (set) => {
-  isHypridleEnabled().then(set);
-  return noop;
-});
+const [hypridleEnabled, setHypridleEnabled] = createState<boolean>(false);
 
 /** hypridle inhibitor widget */
 export default function Coffee() {
