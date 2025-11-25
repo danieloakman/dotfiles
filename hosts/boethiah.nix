@@ -279,6 +279,7 @@
       "localsend"
       "docker-desktop"
       "private-internet-access"
+      "gimp"
     ];
 
     masApps = {
