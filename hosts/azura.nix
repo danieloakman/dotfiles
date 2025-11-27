@@ -44,6 +44,7 @@
     ../modules/desktop-pkgs.nix
     ../modules/power-management.nix
     ../modules/dev.nix
+    ../modules/mobile-dev.nix
     ../modules/rofi.nix
     ../modules/syncthing.nix
     ../modules/docker.nix
