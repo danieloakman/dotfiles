@@ -445,6 +445,13 @@ in
           icon = "youtube";
           startupNotify = true;
         };
+        twitch = {
+          name = "Twitch";
+          exec = webapp "https://www.twitch.tv";
+          categories = [ "Network" "WebBrowser" ];
+          icon = "twitch";
+          startupNotify = true;
+        };
         instagram-chats = {
           name = "Instagram Chats";
           exec = webapp "https://www.instagram.com/direct/inbox/";
