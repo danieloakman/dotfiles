@@ -72,7 +72,7 @@
       "eDP-1, 1366x768, 0x0, 1.0"
     ];
     # Window rules
-    windowrule = [
+    windowrulev2 = [
       "workspace 1, class:^(vivaldi-bin)$"
       "workspace 2, class:^(Cursor)$"
       "workspace 2, class:^(code)$"

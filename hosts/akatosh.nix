@@ -15,7 +15,10 @@ in
     };
     kernelModules = [ "kvm-intel" ];
     kernelParams = [
-      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      # "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      # Removed NVreg_PreserveVideoMemoryAllocations as it conflicts with suspend
+      # If you need to preserve video memory, you'll need to configure NVIDIA
+      # power management differently (see NVIDIA driver README)
       "module_blacklist=i915"
     ];
     extraModulePackages = [ nvidiaPkg ];
@@ -122,7 +125,7 @@ in
       "3, monitor:HDMI-A-1"
     ];
     # Window rules
-    windowrule = [
+    windowrulev2 = [
       "workspace 1, class:^(vivaldi-bin)$"
       "workspace 1, class:^(vivaldi)$"
       "workspace 1, class:^(chromium)$"
@@ -155,7 +158,9 @@ in
     # See https://nixos.wiki/wiki/Nvidia for more information.
     nvidia = {
       modesetting.enable = true;
-      powerManagement.enable = false; # Was hanging on boot when enabled
+      # Enable power management for suspend to work properly
+      # Fine-grained requires PRIME offload (needs Turing+ GPU), so use regular PM
+      powerManagement.enable = true;
       package = nvidiaPkg;
       open = false; # Must be false as GTX 1080Ti doesn't support the open module
       nvidiaSettings = true;
