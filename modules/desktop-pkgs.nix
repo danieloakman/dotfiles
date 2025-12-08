@@ -27,7 +27,7 @@
     libreoffice # Just so we can open docx files and things
     # teams-for-linux # Doesn't work very well. Teams in the browser is better.
     filezilla # For FTP/SFTP/etc. Could maybe replace with a ftp tui in the future, since this is quite large
-    gnome-text-editor # For quick text editing in a GUI.
+    textadept # For quick text editing in a GUI.
 
     # Web browser(s)
     # firefox
