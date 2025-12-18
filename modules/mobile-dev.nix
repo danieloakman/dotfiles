@@ -36,6 +36,7 @@
         users.users.${env.user} = {
           extraGroups = [
             "adbusers" # Allows access to using `adb`
+            "kvm" # Required for Android emulator
           ];
         };
       };

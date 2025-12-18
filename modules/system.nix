@@ -94,6 +94,10 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  # Enable KVM for virtualization (needed for Android emulator)
+  virtualisation.libvirtd.enable = false; # We don't need libvirtd, just KVM modules
+  boot.kernelModules = [ "kvm-intel" ]; # Load KVM module for Intel CPUs
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
