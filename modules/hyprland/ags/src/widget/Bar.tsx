@@ -15,6 +15,7 @@ import HorizontalRevealer from '@/components/HorizontalRevealer';
 import { noop } from '@/js-utils';
 import { hasTouchDevice } from '@/utils/hyprland';
 import Coffee from './Coffee';
+import Media from './Media';
 
 export interface BarProps {
   monitor: Gdk.Monitor | Accessor<Gdk.Monitor>;
@@ -48,8 +49,8 @@ export default function Bar({ monitor }: BarProps) {
           {/* <MoveMouse /> */}
           <Coffee />  
           <AppsButton />
-          {/* <Media /> */}
           <PasswordSearchButton />
+          {/* <Media /> */}
         </box>
 
         <box name="center" $type="center" spacing={4}>

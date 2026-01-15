@@ -13,6 +13,7 @@ import { readFileAsync, writeFileAsync } from 'ags/file';
 import DropDownSelect from '../components/DropDownSelect';
 import { classes } from '../utils/styles';
 import { Hr } from '@/components/Separators';
+import { toast } from '@/utils/toast';
 
 const WIDTH = 300;
 const HEIGHT = 400;
@@ -76,6 +77,23 @@ export default function PasswordSearch() {
     (search, passwords, sortByFn) => fuzzySearch(search, passwords).sort(sortByFn),
   );
 
+  async function copyPassword(password: string) {
+    console.log('copying', password);
+    execAsync(
+      password.startsWith('otp/') ? `pass otp ${password} -c` : `pass ${password} -c`,
+    ).catch((err) => console.error('Failed to copy password', err));
+    setSearch('');
+    incrementPriority(password);
+    toast(`"${password}" copied to clipboard`);
+    // notify({
+    //   body: 'Password copied to clipboard',
+    //   summary: password,
+    //   transient: true,
+    //   icon: 'edit-copy-symbolic',
+    // });
+    hideWindow(WINDOW_NAME.PasswordSearch);
+  }
+
   return (
     <Modal name={WINDOW_NAME.PasswordSearch} onShow={() => searchInput.grab_focus()}>
       <centerbox
@@ -111,19 +129,7 @@ export default function PasswordSearch() {
           >
             <For each={passwordsFiltered}>
               {(password) => (
-                <button
-                  cssClasses={classes('btn-ghost')}
-                  onClicked={async () => {
-                    await execAsync(
-                      password.startsWith('otp/')
-                        ? `pass otp ${password} -c`
-                        : `pass ${password} -c`,
-                    ).catch((err) => console.error('Failed to copy password', err));
-                    hideWindow(WINDOW_NAME.PasswordSearch);
-                    setSearch('');
-                    incrementPriority(password);
-                  }}
-                >
+                <button cssClasses={classes('btn-ghost')} onClicked={() => copyPassword(password)}>
                   <label label={overflowToNewline(password, 30)} halign={Gtk.Align.START} />
                 </button>
               )}
