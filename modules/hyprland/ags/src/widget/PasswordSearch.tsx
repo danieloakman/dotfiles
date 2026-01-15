@@ -78,7 +78,7 @@ export default function PasswordSearch() {
   );
 
   async function copyPassword(password: string) {
-    console.log('copying', password);
+    // This should be awaiting the execSync, but it was causing an out of sync issue with the notification/toast.
     execAsync(
       password.startsWith('otp/') ? `pass otp ${password} -c` : `pass ${password} -c`,
     ).catch((err) => console.error('Failed to copy password', err));
