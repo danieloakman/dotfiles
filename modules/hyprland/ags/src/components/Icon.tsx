@@ -57,6 +57,8 @@ export const ICONS = [
   'lock',
   'mouse-pointer',
   'coffee',
+  'download',
+  'upload'
 ] as const;
 
 async function loadIcon(name: Icon.Name, color: string) {

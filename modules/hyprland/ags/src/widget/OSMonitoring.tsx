@@ -22,6 +22,10 @@ export default function OSMonitoring() {
         <Cpu />
         <Vr />
         <Memory />
+        {/* <Vr />
+          <DownloadSpeed />
+          <Vr />
+          <UploadSpeed /> */}
       </box>
     </button>
   );
@@ -89,6 +93,116 @@ export function Memory() {
     <box spacing={2}>
       <Icon name="memory-stick" />
       <label label={memoryUsage((n) => n.toString())} widthChars={2} />
+    </box>
+  );
+}
+
+// Store previous network stats for calculating download speed
+let prevRxBytes = 0;
+export const downloadSpeed = createPoll('', 1000, 'cat /proc/net/dev').as((str) => {
+  const lines = str.split('\n');
+  let totalRxBytes = 0;
+
+  // Parse /proc/net/dev - skip header lines and loopback interface
+  for (const line of lines) {
+    // Skip header lines
+    if (line.includes('Inter-|') || line.includes(' face |') || line.trim() === '') {
+      continue;
+    }
+
+    // Parse interface line: "interface: rx_bytes rx_packets ..."
+    const match = line.match(/^\s*(\w+):\s+(\d+)/);
+    if (match) {
+      const interfaceName = match[1];
+      const rxBytes = Number(match[2]);
+
+      // Skip loopback interface
+      if (interfaceName !== 'lo') {
+        totalRxBytes += rxBytes;
+      }
+    }
+  }
+
+  // Calculate download speed in MBps
+  // Poll interval is 1000ms (1 second), so bytes per second = diff
+  const diffBytes = totalRxBytes - prevRxBytes;
+  const mbps = diffBytes >= 0 ? diffBytes / (1024 * 1024) : 0; // Convert bytes to MB
+
+  // Store current value for next iteration
+  prevRxBytes = totalRxBytes;
+
+  // Round to 1 decimal place
+  return Math.round(mbps * 10) / 10;
+});
+
+// Store previous network stats for calculating upload speed
+let prevTxBytes = 0;
+export const uploadSpeed = createPoll('', 1000, 'cat /proc/net/dev').as((str) => {
+  const lines = str.split('\n');
+  let totalTxBytes = 0;
+
+  // Parse /proc/net/dev - skip header lines and loopback interface
+  for (const line of lines) {
+    // Skip header lines
+    if (line.includes('Inter-|') || line.includes(' face |') || line.trim() === '') {
+      continue;
+    }
+
+    // Parse interface line: "interface: rx_bytes ... tx_bytes ..."
+    // Format: interface: rx_bytes rx_packets rx_errs rx_drop rx_fifo rx_frame rx_compressed rx_multicast tx_bytes ...
+    const match = line.match(/^\s*(\w+):/);
+    if (match) {
+      const interfaceName = match[1];
+
+      // Skip loopback interface
+      if (interfaceName !== 'lo') {
+        // Split by whitespace and get tx_bytes (index 9: after interface name and 8 rx fields)
+        const parts = line.split(/\s+/).filter((p) => p.length > 0);
+        // parts[0] = "interface:", parts[1-8] = rx fields, parts[9] = tx_bytes
+        if (parts.length > 9) {
+          const txBytes = Number(parts[9]);
+          totalTxBytes += txBytes;
+        }
+      }
+    }
+  }
+
+  // Calculate upload speed in MBps
+  // Poll interval is 1000ms (1 second), so bytes per second = diff
+  const diffBytes = totalTxBytes - prevTxBytes;
+  const mbps = diffBytes >= 0 ? diffBytes / (1024 * 1024) : 0; // Convert bytes to MB
+
+  // Store current value for next iteration
+  prevTxBytes = totalTxBytes;
+
+  // Round to 1 decimal place
+  return Math.round(mbps * 10) / 10;
+});
+
+export function DownloadSpeed() {
+  const label = downloadSpeed.as((speed) => {
+    // Format: show 1 decimal place if < 10, otherwise round to integer
+    if (speed < 10) return speed.toFixed(1);
+    return Math.round(speed).toString();
+  });
+  return (
+    <box spacing={2}>
+      <Icon name="download" />
+      <label label={label} widthChars={3} />
+    </box>
+  );
+}
+
+export function UploadSpeed() {
+  const label = uploadSpeed.as((speed) => {
+    // Format: show 1 decimal place if < 10, otherwise round to integer
+    if (speed < 10) return speed.toFixed(1);
+    return Math.round(speed).toString();
+  });
+  return (
+    <box spacing={2}>
+      <Icon name="upload" />
+      <label label={label} widthChars={3} />
     </box>
   );
 }
