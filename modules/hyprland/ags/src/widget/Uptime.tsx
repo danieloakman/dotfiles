@@ -1,6 +1,6 @@
 import { createPoll } from 'ags/time';
 import Icon from '../components/Icon';
-const INT_REGEX = /^\d+$/;
+const INT_REGEX = /\d+/;
 
 export const uptime = createPoll('', 60000, 'uptime').as((stdout) => {
   const [, up, time] = stdout.split('  ');
