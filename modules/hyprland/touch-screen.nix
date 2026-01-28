@@ -1,4 +1,4 @@
-{ inputs, pkgs, env, lib, ... }: {
+{ pkgs, env, ... }: {
   environment.systemPackages = with pkgs; [
     wvkbd # Wayland on-screen keyboard
   ];
@@ -11,7 +11,7 @@
     wayland.windowManager.hyprland = {
       plugins = [
         # Enable Hyprgrass for binding keys to the on-screen keyboard
-        inputs.hyprgrass.packages.${pkgs.system}.default
+        # inputs.hyprgrass.packages.${pkgs.system}.default
         # optional integration with pulse-audio, see examples/hyprgrass-pulse/README.md
         # inputs.hyprgrass.packages.${pkgs.system}.hyprgrass-pulse
       ];
@@ -23,11 +23,11 @@
       };
 
       # Guard plugin-specific keywords to prevent errors during initial parse
-      extraConfig = lib.mkAfter ''
-        # hyprlang noerror true
-        hyprgrass-bind = , edge:d:u, exec, onscreen-keyboard-toggle
-        # hyprlang noerror false
-      '';
+      # extraConfig = lib.mkAfter ''
+      #   # hyprlang noerror true
+      #   hyprgrass-bind = , edge:d:u, exec, onscreen-keyboard-toggle
+      #   # hyprlang noerror false
+      # '';
     };
   };
 }

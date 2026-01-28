@@ -13,6 +13,8 @@
   ];
 
   services = {
+    # Enable the X11 windowing system.
+    xserver.enable = !env.isOnWayland;
     # Enable the GNOME Desktop Environment.
     displayManager = {
       gdm.enable = true;
@@ -71,7 +73,7 @@
       gnomeExtensions.docker
 
       gpick # GTK color picker
-    ] ++ (if env.isLaptop then [
+    ] ++ (if env.deviceType == "laptop" then [
       gnomeExtensions.battery-time
     ] else [ ]);
   };

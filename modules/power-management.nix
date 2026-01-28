@@ -1,5 +1,5 @@
 # Power management configuration, including CPU frequency scaling, power profiles, etc
-{ env, ... }:
+{ env, lib, ... }:
 {
   services = {
     # Better scheduling for CPU cycles:
@@ -9,11 +9,11 @@
     thermald.enable = true;
 
     # Disable GNOMEs power management for laptops
-    power-profiles-daemon.enable = !env.isLaptop;
+    power-profiles-daemon.enable = env.deviceType == "laptop";
 
     # Enable TLP for laptops
     tlp = {
-      enable = env.isLaptop;
+      enable = env.deviceType == "laptop";
       settings = {
         CPU_BOOST_ON_AC = 1;
         CPU_BOOST_ON_BAT = 0;
@@ -26,6 +26,21 @@
     };
   };
 
-  # Enable powertop for laptops
-  powerManagement.powertop.enable = env.isLaptop;
+  # Enable powertop to see power usage
+  powerManagement.powertop.enable = true;
+
+  # Server-specific power management options
+  # For servers, use powersave governor which scales up when needed but saves power at idle
+  # Alternative: "ondemand" - more responsive but slightly higher idle power
+  powerManagement.cpuFreqGovernor = if env.deviceType == "server" then "powersave" else null;
+
+  # Enable CPU idle states (C-states) for better power savings at idle
+  # This allows CPUs to enter deeper sleep states when idle
+  # Note: kernelParams merge automatically, so this will add to any existing params
+  boot.kernelParams = lib.mkIf (env.deviceType == "server") [
+    # Enable all CPU idle states for maximum power savings
+    # 0 = unlimited, allows all C-states (C1-C10)
+    # Alternative: limit to C6 for stability if needed: "intel_idle.max_cstate=6"
+    "intel_idle.max_cstate=0"
+  ];
 }

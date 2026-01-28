@@ -14,10 +14,6 @@ in
   };
 
   config = lib.mkIf config.streaming.enable {
-    environment.systemPackages = with pkgs; [
-      qbittorrent
-    ];
-
     services = {
       jellyfin = {
         enable = true;

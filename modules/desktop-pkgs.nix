@@ -1,21 +1,13 @@
 # This module is for adding general desktop, system level packages. Stuff that has a GUI:
-{ pkgs, inputs, system, ... }:
+{ pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
     # thunderbird # Email client and also has calendar
     # birdtray # Thunderbird tray icon
-    tailscale
-    vscode
-    code-cursor
-    (writeShellScriptBin "open-cursor" ''
-      # Opens the cursor editor in the current directory
-      ${code-cursor}/bin/cursor . &> /tmp/cursor.log &
-    '')
     # zed-editor # Trying this out as an alternative to vscode
     google-drive-ocamlfuse
     # Was trying this out for a week or two. I think guake is just overall a better choice. `pass` autocomplete no longer worked for one. And making the terminal a paid subscription gave me the ick.
     # warp-terminal
-    home-manager
     discord
     zoom-us
     slack
@@ -28,6 +20,7 @@
     # teams-for-linux # Doesn't work very well. Teams in the browser is better.
     filezilla # For FTP/SFTP/etc. Could maybe replace with a ftp tui in the future, since this is quite large
     textadept # For quick text editing in a GUI.
+    qbittorrent
 
     # Web browser(s)
     # firefox

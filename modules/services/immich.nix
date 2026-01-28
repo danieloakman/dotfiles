@@ -1,17 +1,28 @@
-{ env, pkgs, ... }:
+{ config, env, pkgs, ... }:
 let
   user = "immich";
   group = "immich";
   port = 2283;
 in
 {
-  services.immich = {
-    inherit user group port;
-    host = "0.0.0.0"; # Open to all interfaces
-    enable = true;
-    openFirewall = true;
-    accelerationDevices = null;
-    mediaLocation = "/run/media/HDD_3/immich";
+
+  services = {
+    immich = {
+      inherit user group port;
+      host = "0.0.0.0"; # Open to all interfaces
+      enable = config.services.immich.mediaLocation != null; # Must define mediaLocation to enable immich
+      openFirewall = true;
+      accelerationDevices = null;
+    };
+
+    # tailscale.serve.services = {
+    #   "immich" = {
+    #     endpoints = {
+    #       "tcp:${toString port}" = "http://localhost:${toString port}";
+    #     };
+    #     advertised = true;
+    #   };
+    # };
   };
 
   users.users = {

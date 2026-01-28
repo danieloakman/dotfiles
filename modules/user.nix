@@ -3,6 +3,8 @@
 { inputs, pkgs, env, config, ... }:
 {
   home-manager = {
+    # useGlobalPkgs = true;
+    # useUserPackages = true;
     extraSpecialArgs = let inherit (config) sops; in { inherit inputs env sops; };
     users = {
       ${env.user} = import ./home.${env.user}.nix;

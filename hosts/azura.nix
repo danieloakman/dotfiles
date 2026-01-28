@@ -39,7 +39,6 @@
     # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
 
-    ../modules/system.nix
     ../modules/ssh.nix
     ../modules/desktop-pkgs.nix
     ../modules/power-management.nix
@@ -51,6 +50,7 @@
     ../modules/stylix.nix
     ../modules/zsh.nix
     ../modules/network.nix
+    ../modules/kitty.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -67,20 +67,31 @@
 
   # Required config for imported modules:
   stylix.image = ../files/assets/azura-wallpaper.jpeg;
-  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings = {
-    monitor = [
-      "eDP-1, 1366x768, 0x0, 1.0"
-    ];
-    # Window rules
-    windowrulev2 = [
-      "workspace 1, class:^(vivaldi-bin)$"
-      "workspace 2, class:^(Cursor)$"
-      "workspace 2, class:^(code)$"
-      "workspace 3, class:^(Spotify)$"
-      "workspace 4, class:^(obsidian)$"
-      "workspace 5, class:^(Discord)$"
-      "workspace 6, class:^(Steam)$"
-    ];
+  home-manager.users.${env.user} = {
+    wayland.windowManager.hyprland.settings = {
+      monitor = [
+        "eDP-1, 1366x768, 0x0, 1.0"
+      ];
+      # Window rules
+      windowrulev2 = [
+        "workspace 1, class:^(vivaldi-bin)$"
+        "workspace 2, class:^(Cursor)$"
+        "workspace 2, class:^(code)$"
+        "workspace 3, class:^(Spotify)$"
+        "workspace 4, class:^(obsidian)$"
+        "workspace 5, class:^(Discord)$"
+        "workspace 6, class:^(Steam)$"
+      ];
+    };
+
+    services.hyprpaper.settings =
+      let
+        wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/azura-wallpaper.jpeg";
+      in
+      {
+        preload = [ wallpaperPath ];
+        wallpaper = [ "eDP-1,${wallpaperPath}" ];
+      };
   };
 
   # This value determines the NixOS release from which the default
@@ -92,12 +103,22 @@
   system.stateVersion = "23.05"; # Did you read the comment?
 
   # Configure remote builders
-  nix.buildMachines = [{
-    hostName = "akatosh";
-    system = "x86_64-linux";
-    maxJobs = 8;
-    speedFactor = 2;
-    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-    mandatoryFeatures = [ ];
-  }];
+  nix.buildMachines = [
+    {
+      hostName = "akatosh";
+      system = "x86_64-linux";
+      maxJobs = 8;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+      mandatoryFeatures = [ ];
+    }
+    {
+      hostName = "mara";
+      system = "x86_64-linux";
+      maxJobs = 3;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+      mandatoryFeatures = [ ];
+    }
+  ];
 }

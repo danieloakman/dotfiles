@@ -1,7 +1,12 @@
-{ env, ... }: {
+{ env, ... }:
+let
+  port = 5678;
+in
+{
   services.n8n = {
     enable = true;
     openFirewall = true;
+    environment.N8N_PORT = port;
   };
 
   home-manager.users.${env.user} = {
@@ -12,7 +17,7 @@
       {
         n8n = {
           name = "N8N Automation Platform";
-          exec = webapp "http://localhost:5678";
+          exec = webapp "http://localhost:${toString port}";
           categories = [ "Network" "WebBrowser" ];
           icon = "vivaldi";
           startupNotify = true;

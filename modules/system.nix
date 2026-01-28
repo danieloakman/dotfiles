@@ -38,10 +38,6 @@
 
   services = {
     xserver = {
-      # Enable the X11 windowing system.
-      # This is apparently needed on wayland systems as well. Quite strange. It's worth trying to disable it in the future
-      # to see if it works without it.
-      enable = true;
       # Configure keymap in X11
       xkb = {
         layout = "us";
@@ -75,11 +71,10 @@
 
 
   # Enable sound with pipewire.
-  # sound.enable = true;
   services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
+  security.rtkit.enable = env.deviceType != "server";
   services.pipewire = {
-    enable = true;
+    enable = env.deviceType != "server";
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
@@ -129,6 +124,7 @@
       zip
       jq
       rsync
+      home-manager
 
       # Network utilities
       wakeonlan
@@ -202,7 +198,7 @@
     };
 
     localsend = {
-      enable = true;
+      enable = env.deviceType != "server";
       openFirewall = true;
     };
 

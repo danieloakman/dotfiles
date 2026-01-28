@@ -1,7 +1,7 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, inputs, env, config, lib, ... }:
+{ pkgs, env, config, lib, ... }:
 let
   startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
     ${pkgs.pyprland}/bin/pypr &
@@ -33,8 +33,8 @@ let
       hyprctl dispatch dpms on
     fi
   '';
-  hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
-  hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
+  # hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
+  # hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
 in
 {
   imports = [
@@ -74,7 +74,6 @@ in
   programs = {
     hyprland = {
       enable = true;
-      package = hyprPkgs.hyprland;
     };
     seahorse.enable = true; # optional GUI tool for Gnome keyring
   };
@@ -92,12 +91,11 @@ in
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland = {
       enable = true;
-      package = hyprPkgs.hyprland;
       # systemd.variables = ["--all"];
 
-      plugins = [
-        # hyprPlugins.borders-plus-plus
-      ];
+      # plugins = [
+      #   # hyprPlugins.borders-plus-plus
+      # ];
 
       settings = {
         # Keep this a list, so other nix modules can add to it.
@@ -383,18 +381,12 @@ in
     services = {
       hyprpaper = {
         enable = true;
-        settings =
-          let
-            wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/${config.networking.hostName}-wallpaper.jpeg";
-          in
-          {
-            ipc = "on";
-            splash = false;
-            splash_offset = 2.0;
-            preload = [ wallpaperPath ];
-            # TODO: this will need to be moved to the host root config, as the monitor name is not known here.
-            wallpaper = [ "eDP-1,${wallpaperPath}" ];
-          };
+        settings = {
+          ipc = "on";
+          splash = false;
+          splash_offset = 2;
+          # prelod and wallpaper settings are set in the host root config.
+        };
       };
 
       playerctld.enable = true; # Media player control daemon
@@ -427,7 +419,6 @@ in
         };
       };
       swayosd = {
-        # This is supposed to popup with volume changes and other notifications like that but isn't?
         enable = true;
       };
     };

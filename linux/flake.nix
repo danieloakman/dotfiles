@@ -17,18 +17,18 @@
     };
     # devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
-    hyprland = {
-      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
-    hyprgrass = {
-      url = "github:horriblename/hyprgrass";
-      # inputs.hyprland.follows = "hyprland";
-    };
+    # hyprland = {
+    #   # url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    #   url = "github:nixos/nixpkgs/c633f572eded8c4f3c75b8010129854ed404a6ce";
+    # };
+    # hyprland-plugins = {
+    #   url = "github:hyprwm/hyprland-plugins";
+    #   inputs.hyprland.follows = "hyprland";
+    # };
+    # hyprgrass = {
+    #   url = "github:horriblename/hyprgrass";
+    #   # inputs.hyprland.follows = "hyprland";
+    # };
     stylix.url = "github:danth/stylix";
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
     astal = {
@@ -80,16 +80,14 @@
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
-          # This requires env, which is currently defined in the host/configuration.nix, so it can't be imported here (for now).
-          # (import ./modules/system.nix { inherit lib inputs config pkgs env; })
+          ../modules/system.nix
           ../modules/user.nix
           ../modules/secrets.nix
-          ../modules/kitty.nix
           ../modules/password-store.nix
         ];
       };
-      createEnv = { user, home, isLaptop, isOnWayland, hasGPU }: {
-        inherit user home isLaptop isOnWayland hasGPU;
+      createEnv = { user, home, deviceType, isOnWayland, hasGPU }: {
+        inherit user home deviceType isOnWayland hasGPU;
         platform = "linux";
         selectPlatform = config: config.linux or { }; # For platform specific configs. Will always return the linux config.
       };
@@ -102,7 +100,7 @@
               env = createEnv {
                 user = "dano";
                 home = "/home/dano";
-                isLaptop = false;
+                deviceType = "desktop";
                 isOnWayland = true;
                 hasGPU = true;
               };
@@ -116,13 +114,14 @@
             ../hosts/akatosh.nix
           ];
         };
+
         azura = nixpkgs.lib.nixosSystem {
           specialArgs =
             let
               env = createEnv {
                 user = "dano";
                 home = "/home/dano";
-                isLaptop = true;
+                deviceType = "laptop";
                 isOnWayland = true;
                 hasGPU = false;
               };
@@ -136,14 +135,15 @@
             ../hosts/azura.nix
           ];
         };
-        djo-tiny-laptop = nixpkgs.lib.nixosSystem {
+
+        mara = nixpkgs.lib.nixosSystem {
           specialArgs =
             let
               env = createEnv {
                 user = "dano";
                 home = "/home/dano";
-                isLaptop = true;
-                isOnWayland = true;
+                deviceType = "server";
+                isOnWayland = false;
                 hasGPU = false;
               };
             in
@@ -153,7 +153,7 @@
             { }
             createNixCache
             { }
-            ../hosts/djo-tiny-laptop.nix
+            ../hosts/mara.nix
           ];
         };
       };

@@ -1,11 +1,26 @@
-_: {
-  networking.firewall.allowedTCPPorts = [ 22 ];
+{ env, ... }: {
+  networking.firewall = {
+    allowedTCPPorts = [
+      22 # SSH
+    ];
+
+    # Open the DNS ports in the firewall for tailscale.
+    trustedInterfaces = [ "tailscale0" ];
+  };
 
   services = {
     tailscale = {
       enable = true;
       openFirewall = true;
+      # Enables the Tailscale Serve configs:
+      serve.enable = false;
+      extraSetFlags = [
+        "--operator=${env.user}"
+        "--accept-routes=true"
+        "--shields-up=false"
+      ];
     };
+
     # Enable the OpenSSH daemon:
     openssh = {
       enable = true;
@@ -25,8 +40,8 @@ _: {
     };
   };
 
-  # home-manager.users.${env.user} = {
-  #   # Starts the ssh-agent
-  #   services.ssh-agent.enable = true;
-  # };
+  home-manager.users.${env.user} = {
+    # Starts the tailscale-systray, which is a tray icon for tailscale.
+    services.tailscale-systray.enable = true;
+  };
 }

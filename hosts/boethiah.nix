@@ -1,7 +1,7 @@
 { self, pkgs, system, env, ... }: {
   imports = [
     # ../modules/aerospace.nix
-    ../modules/skhd.nix
+    # ../modules/skhd.nix # Couldn't reliably get this to stay running
     ../modules/zsh.nix
     ../modules/mobile-dev.nix
     ../modules/docker.nix
@@ -18,6 +18,10 @@
       # Let Home Manager install and manage itself.
       programs.home-manager.enable = true;
 
+      programs.zsh.shellAliases = {
+        "brew-up" = "brew update && brew upgrade --greedy";
+      };
+
       home = {
         username = env.user;
         homeDirectory = env.home;
@@ -29,7 +33,6 @@
         };
 
         file = {
-
           ".gitconfig".text = ''
             [user]
               name = Daniel (Oakman) Brown
@@ -77,6 +80,25 @@
           '';
           "Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
           ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
+          ".ssh/config".text = ''
+            Host github github.com
+            IdentityFile ~/.ssh/djo-personal
+            IdentitiesOnly yes
+            AddKeysToAgent yes
+
+            Host github github.com stash
+            ControlPath ~/.ssh/control-%h-%p-%r
+            ControlMaster auto
+            ControlPersist yes
+            ServerAliveInterval 30
+
+            Host azura tail9f1d8 mara akatosh 100.116.141.37 100.67.189.19
+            User dano
+            IdentityFile ~/.ssh/djo-personal
+            IdentitiesOnly yes
+            AddKeysToAgent yes
+            SetEnv TERM=xterm-256color
+          '';
         };
       };
     };
@@ -235,6 +257,8 @@
     activationScripts.postActivation.text = ''
       # Check if any settings have been changed and apply them without a logout/login cycle:
       sudo -u daniel.brown /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+
+      echo "NOTE: Run 'brew-up' to upgrade Homebrew packages."
     '';
   };
 
@@ -269,10 +293,6 @@
       "cliclick"
       "cocoapods"
       {
-        name = "tailscale";
-        restart_service = "changed";
-      }
-      {
         name = "syncthing";
         restart_service = "changed";
       }
@@ -290,6 +310,7 @@
       "docker-desktop"
       "private-internet-access"
       "gimp"
+      "tailscale-app"
     ];
 
     masApps = {

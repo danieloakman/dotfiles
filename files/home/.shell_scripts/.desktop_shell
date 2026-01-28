@@ -23,7 +23,6 @@ fi
 
 # gcp is taken by git cherry pick
 alias gcp="/usr/bin/gcp"
-alias ts="sudo tailscale"
 alias clock="clockify-cli"
 alias gs="ghostscript"
 

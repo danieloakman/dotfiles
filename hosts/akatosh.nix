@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ env, config, pkgs, lib, modulesPath, ... }:
+{ env, config, lib, modulesPath, ... }:
 let
   # nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.production
   nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -71,7 +71,6 @@ in
     # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
 
-    ../modules/system.nix
     ../modules/ssh.nix
     ../modules/desktop-pkgs.nix
     ../modules/power-management.nix
@@ -83,12 +82,13 @@ in
     ../modules/rofi.nix
     ../modules/syncthing.nix
     ../modules/wakeonlan.nix
-    ../modules/immich.nix
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    ../modules/streaming.nix
-    # ../modules/n8n.nix
+    ../modules/kitty.nix
+
+    ../modules/services/immich.nix
+    ../modules/services/streaming.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -108,37 +108,48 @@ in
   networking.hostName = "akatosh"; # Define your hostname.
 
   # Required config for imported modules:
-  stylix.image = pkgs.fetchurl {
-    url = "https://images5.alphacoders.com/131/1315219.jpeg";
-    sha256 = "sha256-BldA8qVEfFCqkHgG/reI3T++D+l91In7gABcmwv3e0g=";
-  };
-  home-manager.users.${env.user}.wayland.windowManager.hyprland.settings = {
-    monitor = [
-      "DVI-D-1, 1920x1080, 0x0, 1.0"
-      "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
-      "HDMI-A-1, 1920x1080, 5360x0, 1.0"
-    ];
-    # This host basically links its 3 monitors to 3 workspaces:
-    workspace = [
-      "1, monitor:DVI-D-1"
-      "2, monitor:DP-2"
-      "3, monitor:HDMI-A-1"
-    ];
-    # Window rules
-    windowrulev2 = [
-      "workspace 1, class:^(vivaldi-bin)$"
-      "workspace 1, class:^(vivaldi)$"
-      "workspace 1, class:^(chromium)$"
-      "workspace 1, class:^(chrome)$"
-      "workspace 1, class:^(firefox)$"
-      "workspace 1, class:^(google-chrome)$"
-      "workspace 2, class:^(Cursor)$"
-      "workspace 2, class:^(code)$"
-      "workspace 3, class:^(Spotify)$"
-      "workspace 2, class:^(obsidian)$"
-      "workspace 3, class:^(Discord)$"
-      "workspace 3, class:^(Steam)$"
-    ];
+  stylix.image = ../files/assets/akatosh-wallpaper.jpeg;
+  home-manager.users.${env.user} = {
+    wayland.windowManager.hyprland.settings = {
+      monitor = [
+        "DVI-D-1, 1920x1080, 0x0, 1.0"
+        "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
+        "HDMI-A-1, 1920x1080, 5360x0, 1.0"
+      ];
+      # This host basically links its 3 monitors to 3 workspaces:
+      workspace = [
+        "1, monitor:DVI-D-1"
+        "2, monitor:DP-2"
+        "3, monitor:HDMI-A-1"
+      ];
+      # Window rules
+      windowrulev2 = [
+        "workspace 1, class:^(vivaldi-bin)$"
+        "workspace 1, class:^(vivaldi)$"
+        "workspace 1, class:^(chromium)$"
+        "workspace 1, class:^(chrome)$"
+        "workspace 1, class:^(firefox)$"
+        "workspace 1, class:^(google-chrome)$"
+        "workspace 2, class:^(Cursor)$"
+        "workspace 2, class:^(code)$"
+        "workspace 3, class:^(Spotify)$"
+        "workspace 2, class:^(obsidian)$"
+        "workspace 3, class:^(Discord)$"
+        "workspace 3, class:^(Steam)$"
+      ];
+    };
+    services.hyprpaper.settings =
+      let
+        wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/akatosh-wallpaper.jpeg";
+      in
+      {
+        preload = [ wallpaperPath ];
+        wallpaper = [
+          "DVI-D-1,${wallpaperPath}"
+          "DP-2,${wallpaperPath}"
+          "HDMI-A-1,${wallpaperPath}"
+        ];
+      };
   };
 
   specialisation = {
