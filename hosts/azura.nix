@@ -50,7 +50,6 @@
     ../modules/stylix.nix
     ../modules/zsh.nix
     ../modules/network.nix
-    ../modules/kitty.nix
 
     # ../modules/gnome
     ../modules/hyprland

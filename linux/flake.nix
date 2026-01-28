@@ -84,6 +84,7 @@
           ../modules/user.nix
           ../modules/secrets.nix
           ../modules/password-store.nix
+          ../modules/kitty.nix
         ];
       };
       createEnv = { user, home, deviceType, isOnWayland, hasGPU }: {

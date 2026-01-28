@@ -85,7 +85,6 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    ../modules/kitty.nix
 
     ../modules/services/immich.nix
     ../modules/services/streaming.nix

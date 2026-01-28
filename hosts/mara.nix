@@ -49,7 +49,7 @@
     };
   };
 
-  services.immich.mediaLocation = "/run/media/HDD_1/immich";
+  # services.immich.mediaLocation = "/run/media/HDD_1/immich";
 
   swapDevices = [
     {
