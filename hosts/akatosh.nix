@@ -86,8 +86,7 @@ in
     ../modules/network.nix
     ../modules/comma.nix
 
-    ../modules/services/immich.nix
-    ../modules/services/streaming.nix
+    ../modules/services/streaming.nix # TODO: remove once we move stuff to mara
 
     # ../modules/gnome
     ../modules/hyprland
