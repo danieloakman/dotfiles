@@ -10,7 +10,7 @@ in
     immich = {
       inherit user group port;
       host = "0.0.0.0"; # Open to all interfaces
-      enable = config.services.immich.mediaLocation != null; # Must define mediaLocation to enable immich
+      enable = true;
       openFirewall = true;
       accelerationDevices = null;
     };
