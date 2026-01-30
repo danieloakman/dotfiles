@@ -1,5 +1,5 @@
 # Power management configuration, including CPU frequency scaling, power profiles, etc
-{ env, lib, ... }:
+{ env, lib, pkgs, ... }:
 {
   services = {
     # Better scheduling for CPU cycles:
@@ -26,21 +26,36 @@
     };
   };
 
-  # Enable powertop to see power usage
-  powerManagement.powertop.enable = true;
+  powerManagement = {
+    # Enable powertop to see power usage
+    powertop.enable = true;
 
-  # Server-specific power management options
-  # For servers, use powersave governor which scales up when needed but saves power at idle
-  # Alternative: "ondemand" - more responsive but slightly higher idle power
-  powerManagement.cpuFreqGovernor = if env.deviceType == "server" then "powersave" else null;
+    # Server-specific power management options
+    # For servers, use powersave governor which scales up when needed but saves power at idle
+    # Alternative: "ondemand" - more responsive but slightly higher idle power
+    cpuFreqGovernor = if env.deviceType == "server" then "ondemand" else null;
+  };
+
+  environment.systemPackages = with pkgs; [ powertop ];
 
   # Enable CPU idle states (C-states) for better power savings at idle
   # This allows CPUs to enter deeper sleep states when idle
   # Note: kernelParams merge automatically, so this will add to any existing params
-  boot.kernelParams = lib.mkIf (env.deviceType == "server") [
-    # Limit to C1 or C4 for stability. 0 is often too aggressive.
-    "intel_idle.max_cstate=1" 
-    # Also consider adding this to prevent the Ethernet ULP error:
-    "e1000e.SmartPowerDownEnable=0"
-  ];
+  boot = lib.mkIf (env.deviceType == "server") {
+    kernelParams = [
+      # 1. Stop the CPU from falling into deep sleep 'traps'
+      "intel_idle.max_cstate=1"
+
+      # 2. Disable Ethernet Power Management (Fixes the ULP error)
+      "e1000e.SmartPowerDownEnable=0"
+
+      # 3. Disable PCIe Active State Power Management (Often fixes iwlwifi/e1000e conflicts)
+      "pcie_aspm=off"
+    ];
+    extraModprobeConfig = ''
+      options iwlwifi power_save=0
+      options e1000e IntMode=1,1,1
+    '';
+  };
+
 }
