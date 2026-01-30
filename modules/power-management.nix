@@ -31,7 +31,7 @@
   powerManagement = {
     enable = true;
     # Enable powertop to see power usage
-    powertop.enable = lib.deviceType == "laptop";
+    powertop.enable = env.deviceType == "laptop";
 
     # Server-specific power management options
     # For servers, use powersave governor which scales up when needed but saves power at idle
