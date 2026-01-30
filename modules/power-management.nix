@@ -38,9 +38,9 @@
   # This allows CPUs to enter deeper sleep states when idle
   # Note: kernelParams merge automatically, so this will add to any existing params
   boot.kernelParams = lib.mkIf (env.deviceType == "server") [
-    # Enable all CPU idle states for maximum power savings
-    # 0 = unlimited, allows all C-states (C1-C10)
-    # Alternative: limit to C6 for stability if needed: "intel_idle.max_cstate=6"
-    "intel_idle.max_cstate=0"
+    # Limit to C1 or C4 for stability. 0 is often too aggressive.
+    "intel_idle.max_cstate=1" 
+    # Also consider adding this to prevent the Ethernet ULP error:
+    "e1000e.SmartPowerDownEnable=0"
   ];
 }
