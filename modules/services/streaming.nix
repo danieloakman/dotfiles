@@ -14,6 +14,14 @@ in
   };
 
   config = lib.mkIf config.streaming.enable {
+    environment.systemPackages = with pkgs; [
+      (writeShellScriptBin "tailscale-svc-jellyfin-up" ''
+        tailscale serve --service=svc:jellyfin --https=443 127.0.0.1:${toString jellyfinPort}
+      '')
+      (writeShellScriptBin "tailscale-svc-jellyfin-down" ''
+        tailscale serve clear svc:jellyfin
+      '')
+    ];
     services = {
       jellyfin = {
         enable = true;

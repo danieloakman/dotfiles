@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   port = 9092;
   host = config.networking.hostName;
@@ -13,14 +13,14 @@ in
       openFirewall = true;
       listenPort = port;
     };
-
-    # tailscale.serve.services = {
-    #   "homepage" = {
-    #     endpoints = {
-    #       "tcp:${toString port}" = "http://localhost:${toString port}";
-    #     };
-    #     advertised = true;
-    #   };
-    # };
   };
+
+  environment.systemPackages = with pkgs; [
+    (writeShellScriptBin "tailscale-svc-homepage-up" ''
+      tailscale serve --service=svc:homepage --https=443 127.0.0.1:${toString port}
+    '')
+    (writeShellScriptBin "tailscale-svc-homepage-down" ''
+      tailscale serve clear svc:homepage
+    '')
+  ];
 }

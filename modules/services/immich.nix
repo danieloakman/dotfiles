@@ -14,15 +14,6 @@ in
       openFirewall = true;
       accelerationDevices = null;
     };
-
-    # tailscale.serve.services = {
-    #   "immich" = {
-    #     endpoints = {
-    #       "tcp:${toString port}" = "http://localhost:${toString port}";
-    #     };
-    #     advertised = true;
-    #   };
-    # };
   };
 
   users.users = {
@@ -36,6 +27,12 @@ in
 
   environment.systemPackages = with pkgs; [
     immich-cli
+    (writeShellScriptBin "tailscale-svc-immich-up" ''
+      tailscale serve --service=svc:immich --https=443 127.0.0.1:${toString port}
+    '')
+    (writeShellScriptBin "tailscale-svc-immich-down" ''
+      tailscale serve clear svc:immich
+    '')
   ];
 
   networking.firewall = {

@@ -1,4 +1,4 @@
-{ env, ... }:
+{ env, pkgs, ... }:
 let
   port = 5678;
 in
@@ -8,6 +8,15 @@ in
     openFirewall = true;
     environment.N8N_PORT = port;
   };
+
+  environment.systemPackages = with pkgs; [
+    (writeShellScriptBin "tailscale-svc-n8n-up" ''
+      tailscale serve --service=svc:n8n --https=443 127.0.0.1:${toString port}
+    '')
+    (writeShellScriptBin "tailscale-svc-n8n-down" ''
+      tailscale serve clear svc:n8n
+    '')
+  ];
 
   home-manager.users.${env.user} = {
     xdg.desktopEntries =

@@ -13,6 +13,7 @@
       enable = true;
       openFirewall = true;
       # Enables the Tailscale Serve configs:
+      # For some reason, this doesn't work at the moment. So I'm just going to add enable and disable scripts for each service.
       serve.enable = false;
       extraSetFlags = [
         "--operator=${env.user}"

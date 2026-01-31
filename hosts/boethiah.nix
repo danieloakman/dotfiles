@@ -92,7 +92,7 @@
             ControlPersist yes
             ServerAliveInterval 30
 
-            Host azura tail9f1d8 mara akatosh 100.116.141.37 100.67.189.19
+            Host azura tail9f1d8 dinosaur-crocodile mara akatosh 100.116.141.37 100.67.189.19
             User dano
             IdentityFile ~/.ssh/djo-personal
             IdentitiesOnly yes
