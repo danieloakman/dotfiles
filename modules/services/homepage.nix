@@ -16,14 +16,14 @@ in
         {
           resources = {
             cpu = true;
-            disk = "/";
+            disk = [
+              "/"
+              "/run/media/HDD_1"
+            ];
             memory = true;
-          };
-        }
-        {
-          resources = {
-            label = "HDD_1";
-            disk = "/run/media/HDD_1";
+            units = "metric";
+            cputemp = true;
+            expanded = true;
           };
         }
         # {
@@ -52,7 +52,7 @@ in
           {
             "Immich" = {
               description = "Image hosting and management";
-              href = "http://immich.dinosaur-crocodile.ts.net";
+              href = "http://mara:2283";
             };
           }
           {
