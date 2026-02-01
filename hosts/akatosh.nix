@@ -86,8 +86,6 @@ in
     ../modules/network.nix
     ../modules/comma.nix
 
-    ../modules/services/streaming.nix # TODO: remove once we move stuff to mara
-
     # ../modules/gnome
     ../modules/hyprland
   ];
@@ -148,13 +146,6 @@ in
           "HDMI-A-1,${wallpaperPath}"
         ];
       };
-  };
-
-  specialisation = {
-    streaming.configuration = {
-      system.nixos.tags = [ "streaming" ];
-      streaming.enable = true;
-    };
   };
 
   hardware = {
