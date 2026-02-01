@@ -9,9 +9,72 @@ in
   services = {
     homepage-dashboard = {
       enable = true;
-      allowedHosts = "${host}:${toString port},localhost:${toString port}";
+      allowedHosts = "${host}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
       openFirewall = true;
       listenPort = port;
+      widgets = [
+        {
+          resources = {
+            cpu = true;
+            disk = "/";
+            memory = true;
+          };
+        }
+        {
+          resources = {
+            label = "HDD_1";
+            disk = "/run/media/HDD_1";
+          };
+        }
+        # {
+        #   search = {
+        #     provider = "google";
+        #     target = "_blank";
+        #   };
+        # }
+        # {
+        #   adguard = {
+        #     url = "mara.dinosaur-crocodile.ts.net";
+        #     username = "dano";
+        #     password = "";
+        #   };
+        # }
+      ];
+      services = [{
+        "Services" = [
+          {
+            "Cockpit" = {
+              description = "System management";
+              # href = "http://mara-cockpit.dinosaur-crocodile.ts.net";
+              href = "http://mara:9090";
+            };
+          }
+          {
+            "Immich" = {
+              description = "Image hosting and management";
+              href = "http://immich.dinosaur-crocodile.ts.net";
+            };
+          }
+          {
+            "N8N" = {
+              description = "Automation platform";
+              href = "https://n8n.dinosaur-crocodile.ts.net";
+            };
+          }
+          {
+            "Stirling PDF" = {
+              description = "PDF Utilities";
+              href = "https://stirling-pdf.dinosaur-crocodile.ts.net";
+            };
+          }
+          {
+            "Jellyfin" = {
+              description = "Media server";
+              href = "https://jellyfin.dinosaur-crocodile.ts.net";
+            };
+          }
+        ];
+      }];
     };
   };
 
