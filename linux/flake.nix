@@ -44,9 +44,10 @@
       url = "github:Fuwn/pia.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    copyparty.url = "github:9001/copyparty";
   };
 
-  outputs = { self, nixpkgs, pia, ... }@inputs:
+  outputs = { self, nixpkgs, pia, copyparty, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -106,7 +107,7 @@
                 hasGPU = true;
               };
             in
-            { inherit inputs system env pia; };
+            { inherit inputs system env pia copyparty; };
           modules = [
             commonImports
             { }
