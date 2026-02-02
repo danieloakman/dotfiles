@@ -54,11 +54,5 @@ in
   ];
 
   # Start after sops-nix so secrets are available
-  systemd = {
-    services.copyparty.after = [ "sops-nix.service" ];
-    tmpfiles.rules = [
-      "d /home/${env.user} 0770 ${user} ${group} -"
-      "d /run/media/HDD_1 0770 ${user} ${group} -"
-    ];
-  };
+  systemd.services.copyparty.after = [ "sops-nix.service" ];
 }
