@@ -11,7 +11,7 @@
       secrets = [
         "password_store_git_url" # Git URL for password store
         "pia_credentials" # Private Internet Access credentials 
-        "djb_pwd" # DJB's password
+        "dano_pwd" # Dano's password
       ];
     in
     {

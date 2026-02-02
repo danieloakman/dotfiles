@@ -1,15 +1,39 @@
-{ pkgs, ... }:
+{ pkgs, config, env, ... }:
 let
   copypartyPort = 3923;
 in
 {
   services.copyparty = {
     enable = true;
+
     # directly maps to values in the [global] section of the copyparty config.
     # see `copyparty --help` for available options
     settings = {
       i = "0.0.0.0";
       p = copypartyPort;
+    };
+
+    accounts = {
+      ${env.user} = {
+        passwordFile = config.sops.secrets.dano_pwd.path;
+      };
+    };
+
+    # groups = {};
+
+    volumes = {
+      "/" = {
+        path = "/home/${env.user}";
+        access = {
+          rw = [ env.user ];
+        };
+      };
+      "HDD_1" = {
+        path = "/run/media/HDD_1";
+        access = {
+          rw = [ env.user ];
+        };
+      };
     };
   };
 
