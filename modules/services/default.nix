@@ -5,6 +5,7 @@ _: {
     ./adblocker.nix
     # ./caddy.nix
     ./cockpit.nix
+    ./copyparty.nix
     ./homepage.nix
     ./immich.nix
     # ./n8n.nix
