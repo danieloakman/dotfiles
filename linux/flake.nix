@@ -81,6 +81,7 @@
         # Imports inherit inputs system; used across all host configurations:
         imports = [
           inputs.home-manager.nixosModules.home-manager
+          copyparty.nixosModules.default
           ../modules/system.nix
           ../modules/user.nix
           ../modules/secrets.nix

@@ -1,10 +1,8 @@
-{ copyparty, pkgs, ... }:
+{ pkgs, ... }:
 let
   copypartyPort = 3210;
 in
 {
-  imports = [ copyparty.nixosModules.default ];
-
   services.copyparty = {
     enable = true;
     # directly maps to values in the [global] section of the copyparty config.
