@@ -6,7 +6,7 @@ let
 in
 {
   # Allow the copyparty user to access secrets:
-  users.users.${user}.extraGroups = [ "secrets" ];
+  users.users.${user}.extraGroups = [ "secrets" "keys" ];
 
   services.copyparty = {
     enable = true;
@@ -34,7 +34,8 @@ in
           rw = [ env.user ];
         };
       };
-      "HDD_1" = {
+      # Volume section headers must be path-style (e.g. [/HDD_1]), not bare names
+      "/HDD_1" = {
         path = "/run/media/HDD_1";
         access = {
           rw = [ env.user ];
@@ -51,4 +52,7 @@ in
       tailscale serve clear svc:copyparty
     '')
   ];
+
+  # Start after sops-nix so secrets are available
+  systemd.services.copyparty.after = [ "sops-nix.service" ];
 }
