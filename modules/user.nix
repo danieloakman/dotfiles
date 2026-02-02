@@ -19,7 +19,6 @@
       "networkmanager"
       "wheel"
       "uinput"
-      "secrets"
       "video" # Possible fix for djo-laptop-tiny cam not working
     ];
     shell = pkgs.zsh;
