@@ -1,4 +1,4 @@
-{ inputs, config, env, ... }:
+{ inputs, env, ... }:
 let
   # List of secrets to allow the user to access without sudo.
   # Some of these aren't security concerns if they were exposed, but it's better to just hide them anyway.
@@ -7,8 +7,7 @@ let
     "pia_credentials" # Private Internet Access credentials 
     "dano_pwd" # Dano's password
   ];
-  group = "secrets"; # Assign this group to users who need access to the secrets
-  owner = config.users.users.${env.user}.name;
+  group = "secrets";
 in
 {
   imports = [
@@ -32,7 +31,9 @@ in
       (secret: {
         name = secret;
         value = {
-          inherit group owner;
+          inherit group;
+          owner = env.user;
+          mode = "0440"; # Readable by group
         };
       })
       secrets);
