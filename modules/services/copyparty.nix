@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  copypartyPort = 3210;
+  copypartyPort = 3923;
 in
 {
   services.copyparty = {
