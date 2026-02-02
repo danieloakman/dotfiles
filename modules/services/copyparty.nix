@@ -1,10 +1,16 @@
 { pkgs, config, env, ... }:
 let
   copypartyPort = 3923;
+  user = "copyparty";
+  group = "copyparty";
 in
 {
+  # Allow the copyparty user to access secrets:
+  users.users.${user}.extraGroups = [ "secrets" ];
+
   services.copyparty = {
     enable = true;
+    inherit user group;
 
     # directly maps to values in the [global] section of the copyparty config.
     # see `copyparty --help` for available options

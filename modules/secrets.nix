@@ -13,6 +13,8 @@
         "pia_credentials" # Private Internet Access credentials 
         "dano_pwd" # Dano's password
       ];
+      group = "secrets"; # Assign this group to users who need access to the secrets
+      owner = config.users.users.${env.user}.name;
     in
     {
       defaultSopsFile = ../secrets/secrets.yaml;
@@ -23,7 +25,7 @@
         (secret: {
           name = secret;
           value = {
-            owner = config.users.users.${env.user}.name;
+            inherit group owner;
           };
         })
         secrets);
