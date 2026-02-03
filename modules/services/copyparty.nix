@@ -32,6 +32,7 @@ in
     # groups = {};
 
     volumes = {
+      # Had problems accessing the home directory, so disabled it for now.
       # "/" = {
       #   path = "/home/${env.user}";
       #   access = {

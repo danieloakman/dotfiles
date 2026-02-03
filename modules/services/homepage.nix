@@ -73,6 +73,12 @@ in
               href = "https://jellyfin.dinosaur-crocodile.ts.net";
             };
           }
+          {
+            "Copyparty" = {
+              description = "File sharing";
+              href = "https://copyparty.dinosaur-crocodile.ts.net";
+            };
+          }
         ];
       }];
     };
