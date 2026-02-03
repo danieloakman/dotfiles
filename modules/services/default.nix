@@ -14,5 +14,4 @@ _: {
   ];
 
   services.tailscale.useRoutingFeatures = "server";
-  streaming.enable = true; # Enables streaming.nix module
 }
