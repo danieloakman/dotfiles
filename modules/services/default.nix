@@ -5,7 +5,7 @@ _: {
     ./adblocker.nix
     # ./caddy.nix
     ./cockpit.nix
-    ./copyparty.nix
+    # ./copyparty.nix # Very ram instensive, disabling for now
     ./homepage.nix
     ./immich.nix
     # ./n8n.nix
