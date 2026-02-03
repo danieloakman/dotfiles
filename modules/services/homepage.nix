@@ -43,6 +43,12 @@ in
       services = [{
         "Services" = [
           {
+            "Adguard Home" = {
+              description = "Adblocking";
+              href = "http://100.116.141.37";
+            };
+          }
+          {
             "Cockpit" = {
               description = "System management";
               # href = "http://mara-cockpit.dinosaur-crocodile.ts.net";
@@ -71,6 +77,12 @@ in
             "Jellyfin" = {
               description = "Media server";
               href = "https://jellyfin.dinosaur-crocodile.ts.net";
+            };
+          }
+          {
+            "Copyparty" = {
+              description = "File sharing";
+              href = "https://copyparty.dinosaur-crocodile.ts.net";
             };
           }
         ];

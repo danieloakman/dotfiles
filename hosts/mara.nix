@@ -48,6 +48,9 @@
       fsType = "ntfs";
     };
   };
+  systemd.tmpfiles.rules = [
+    "d /run/media/HDD_1 0770 root storage -"
+  ];
 
   services.immich.mediaLocation = "/run/media/HDD_1/immich";
 
