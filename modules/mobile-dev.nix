@@ -19,10 +19,11 @@
       };
       linux = {
         environment.systemPackages = with pkgs; [
-          android-studio
           android-tools
+          # androidenv.androidPkgs.all.packages.platforms.v9
+          android-studio-tools
           scrcpy # For mirroring the screen of your phone to your computer
-        ];
+        ] ++ (if env.deviceType != "server" then [ android-studio ] else [ ]);
         home-manager.users.${env.user}.home = {
           sessionVariables = {
             ANDROID_HOME = "${env.home}/Android/Sdk";
