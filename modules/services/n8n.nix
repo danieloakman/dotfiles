@@ -10,6 +10,7 @@ in
       N8N_PORT = port;
       N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;
       WEBHOOK_URL = "https://n8n.dinosaur-crocodile.ts.net";
+      N8N_RUNNERS_ENABLED = false;
     };
   };
 
