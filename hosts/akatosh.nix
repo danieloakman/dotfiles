@@ -85,6 +85,7 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
+    ../modules/espanso.nix
 
     # ../modules/gnome
     ../modules/hyprland
