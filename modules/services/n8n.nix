@@ -10,9 +10,16 @@ in
       N8N_PORT = port;
       N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;
       WEBHOOK_URL = "https://n8n.dinosaur-crocodile.ts.net";
-      N8N_RUNNERS_ENABLED = false;
+      # N8N_RUNNERS_ENABLED = false; # Disables task runners, which also disables the ability to run code in python nodes.
     };
   };
+
+  # Needed for the n8n service to work:
+  systemd.services.n8n.path = with pkgs; [
+    nodejs_24
+    python3
+    coreutils
+  ];
 
   environment.systemPackages = with pkgs; [
     (writeShellScriptBin "tailscale-svc-n8n-up" ''
