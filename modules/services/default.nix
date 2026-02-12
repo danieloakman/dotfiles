@@ -8,7 +8,9 @@ _: {
     # ./copyparty.nix # Very ram instensive, disabling for now
     ./homepage.nix
     ./immich.nix
+    ./llama-cpp.nix
     ./n8n.nix
+    # ./ollama.nix
     ./stirling-pdf.nix
     ./streaming.nix
   ];

@@ -10,6 +10,7 @@ in
       N8N_PORT = port;
       N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;
       WEBHOOK_URL = "https://n8n.dinosaur-crocodile.ts.net";
+      NODE_FUNCTION_ALLOW_EXTERNAL = "cheerio";
       # N8N_RUNNERS_ENABLED = false; # Disables task runners, which also disables the ability to run code in python nodes.
     };
   };
@@ -20,6 +21,11 @@ in
     python3
     coreutils
   ];
+
+  # Install npm packages for n8n Code nodes (allowed via NODE_FUNCTION_ALLOW_EXTERNAL):
+  systemd.services.n8n.preStart = ''
+    ${pkgs.nodejs_24}/bin/npm install cheerio --prefix /var/lib/n8n
+  '';
 
   environment.systemPackages = with pkgs; [
     (writeShellScriptBin "tailscale-svc-n8n-up" ''

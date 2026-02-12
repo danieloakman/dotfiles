@@ -1,4 +1,4 @@
-{ config, env, pkgs, ... }:
+{ env, pkgs, ... }:
 let
   user = "immich";
   group = "immich";
@@ -28,7 +28,7 @@ in
   environment.systemPackages = with pkgs; [
     immich-cli
     (writeShellScriptBin "tailscale-svc-immich-up" ''
-      tailscale serve --service=svc:immich --https=443 127.0.0.1:${toString port}
+      tailscale serve --service=svc:immich --https=443 0.0.0.0:${toString port}
     '')
     (writeShellScriptBin "tailscale-svc-immich-down" ''
       tailscale serve clear svc:immich
