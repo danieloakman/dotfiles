@@ -1,4 +1,4 @@
-{ env, pkgs, ... }:
+{ env, pkgs, config, lib, ... }:
 let
   port = 5678;
 in
@@ -16,11 +16,28 @@ in
     };
   };
 
-  # Needed for the n8n service to work:
+  users = {
+    groups.n8n = {};
+    users.n8n = {
+      isSystemUser = true;
+      group = "n8n";
+      extraGroups = [
+        # Allow the n8n user to access secrets:
+        "secrets"
+      ];
+    };
+  };
+
   systemd.services.n8n.path = with pkgs; [
+    # Needed for the n8n service to work:
     nodejs_24
     python3
     coreutils
+
+    # Wrap the cursor-agent command with our cursor api key:
+    (writeShellScriptBin "cursor-agent" ''
+      CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})" ${lib.getExe cursor-cli} "$@"
+    '')
   ];
 
   # Install npm packages for n8n Code nodes (allowed via NODE_FUNCTION_ALLOW_EXTERNAL):
