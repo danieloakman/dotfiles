@@ -11,6 +11,7 @@ in
       N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;
       WEBHOOK_URL = "https://n8n.dinosaur-crocodile.ts.net";
       NODE_FUNCTION_ALLOW_EXTERNAL = "cheerio";
+      NODES_EXCLUDE = "[]"; # Allow all nodes to be used by default
       # N8N_RUNNERS_ENABLED = false; # Disables task runners, which also disables the ability to run code in python nodes.
     };
   };
