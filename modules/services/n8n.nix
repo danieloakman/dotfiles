@@ -1,6 +1,7 @@
-{ env, pkgs, config, lib, ... }:
+{ env, pkgs, ... }:
 let
   port = 5678;
+  # userDir = "/var/lib/n8n";
 in
 {
   services.n8n = {
@@ -9,15 +10,17 @@ in
     environment = {
       N8N_PORT = port;
       N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;
+      N8N_LOG_LEVEL = "debug";
       WEBHOOK_URL = "https://n8n.dinosaur-crocodile.ts.net";
+      # N8N_USER_FOLDER = lib.mkForce userDir; # Got errors saying this dir is read only and it's set multiple times
       NODE_FUNCTION_ALLOW_EXTERNAL = "cheerio";
-      NODES_EXCLUDE = "[]"; # Allow all nodes to be used by default
+      # NODES_EXCLUDE = "[]"; # Allow all nodes to be used by default, including the "Execute Command" node.
       # N8N_RUNNERS_ENABLED = false; # Disables task runners, which also disables the ability to run code in python nodes.
     };
   };
 
   users = {
-    groups.n8n = {};
+    groups.n8n = { };
     users.n8n = {
       isSystemUser = true;
       group = "n8n";
@@ -34,10 +37,12 @@ in
     python3
     coreutils
 
-    # Wrap the cursor-agent command with our cursor api key:
-    (writeShellScriptBin "cursor-agent" ''
-      CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})" ${lib.getExe cursor-cli} "$@"
-    '')
+    # Wrap the cursor-agent command with our cursor api key.
+    # Didn't end up working as the Execute Command node would just hang when cursor-agent was used.
+    # (writeShellScriptBin "cursor-agent" ''
+    #   CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
+    #   ${lib.getExe pkgs.cursor-cli} --api-key "$CURSOR_API_KEY" --workspace ${userDir} "$@"
+    # '')
   ];
 
   # Install npm packages for n8n Code nodes (allowed via NODE_FUNCTION_ALLOW_EXTERNAL):
