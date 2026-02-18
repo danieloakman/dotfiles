@@ -18,6 +18,8 @@ in
     };
   };
   config = {
+    environment.systemPackages = [ pkgs.llama-cpp ];
+
     services = {
       # Disabled: llama-swap starts llama-server via cmd when a model is requested.
       # Enabling both would have both try to bind to llamaCppPort (11343).
