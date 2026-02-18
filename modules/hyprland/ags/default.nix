@@ -1,7 +1,7 @@
 { env, inputs, pkgs, lib, ... }:
 let
   astalPkgs = inputs.astal.packages.${pkgs.system};
-  startAgs = pkgs.writeShellScriptBin "start-ags" ''
+  agsStart = pkgs.writeShellScriptBin "ags-start" ''
     cd ~/repos/personal/dotfiles/modules/hyprland/ags && PASSWORD_STORE_DIR="${env.home}/repos/personal/pwd-store" bun start > /tmp/ags.log 2>&1
   '';
 in
@@ -11,7 +11,7 @@ in
   environment.systemPackages = with pkgs; [
     bun # To run the ags app
     libcava # Audio visualizer cli
-    startAgs
+    agsStart
 
     # node2nix # To generate the node-default.nix file
   ] ++ (with astalPkgs; [
@@ -35,7 +35,7 @@ in
           # We're running it directly from here so we get access to node_modules
           # It'd be possible to package an ags derivation ourselves that installs and includes node_modules, but for now
           # it's too much work.
-          "${lib.getExe startAgs}"
+          "${lib.getExe agsStart}"
         ];
 
         bind = [
