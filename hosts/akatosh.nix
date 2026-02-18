@@ -85,7 +85,7 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    ../modules/services/llama-cpp.nix
+    # ../modules/services/llama-cpp.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -148,10 +148,10 @@ in
         ];
       };
   };
-  services.llama-cpp = {
-    threadCount = 16;
-    gpuLayerCount = 256;
-  };
+  # services.llama-cpp = {
+  #   threadCount = 16;
+  #   gpuLayerCount = 256;
+  # };
 
   hardware = {
     enableRedistributableFirmware = true;

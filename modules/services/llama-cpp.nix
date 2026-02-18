@@ -46,6 +46,7 @@ in
           let
             llama-cpp = pkgs.llama-cpp;
             llama-server = lib.getExe' llama-cpp "llama-server";
+            # TODO: fix why this isn't downloading anymore when it's put here instead of the top of the file
             defaultModel = pkgs.fetchurl {
               url = "https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf";
               hash = "sha256-b4WmQKl88r9bjnZAh7HoPaD9tR18n6t9D+zpOFYR34M=";
