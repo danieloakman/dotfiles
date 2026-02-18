@@ -85,6 +85,7 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
+    ../modules/services/llama-cpp.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -146,6 +147,10 @@ in
           "HDMI-A-1,${wallpaperPath}"
         ];
       };
+  };
+  services.llama-cpp = {
+    threadCount = 16;
+    gpuLayerCount = 256;
   };
 
   hardware = {
