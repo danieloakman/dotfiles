@@ -1,13 +1,19 @@
 /// <reference types="bun-types" />
+
+import { $ } from 'bun';
+
 /**
  * OpenAI-compatible HTTP API that forwards requests to the cursor-agent CLI.
  * Supports GET /v1/models, POST /v1/chat/completions, and POST /v1/responses.
  */
 
-const CURSOR_AGENT_BIN = process.env.CURSOR_AGENT_BIN ?? 'cursor-agent';
-const CURSOR_API_KEY = process.env.CURSOR_API_KEY ?? '';
-const MODEL_ID = process.env.CURSOR_AGENT_MODEL_ID ?? 'cursor-agent';
-const DEFAULT_TIMEOUT_MS = parseInt(process.env.CURSOR_AGENT_TIMEOUT ?? '300', 10) * 1000;
+const {
+  CURSOR_AGENT_BIN = 'cursor-agent',
+  CURSOR_API_KEY = '',
+  // CURSOR_AGENT_MODEL_ID = 'cursor-agent',
+  CURSOR_AGENT_TIMEOUT = '300',
+} = process.env;
+const DEFAULT_TIMEOUT_MS = parseInt(CURSOR_AGENT_TIMEOUT, 10) * 1000;
 
 function log(level: 'info' | 'warn' | 'error' | 'debug', msg: string, ...args: unknown[]) {
   const ts = new Date().toISOString();
@@ -15,10 +21,10 @@ function log(level: 'info' | 'warn' | 'error' | 'debug', msg: string, ...args: u
     level === 'error'
       ? console.error
       : level === 'warn'
-        ? console.warn
-        : level === 'debug'
-          ? console.debug
-          : console.log;
+      ? console.warn
+      : level === 'debug'
+      ? console.debug
+      : console.log;
   fn(`[${ts}] [${level.toUpperCase()}] ${msg}`, ...args);
 }
 
@@ -80,18 +86,22 @@ function inputItemsToPrompt(items: ResponseInputItem[]): string {
 }
 
 async function checkCursorCLI() {
-  const proc = Bun.spawn([CURSOR_AGENT_BIN, '--version'], { env: process.env });
+  const proc = Bun.spawn([CURSOR_AGENT_BIN, '--version'], { env: { ...process.env, CURSOR_API_KEY }, stderr: 'pipe' });
   await proc.exited;
-  if (proc.exitCode !== 0)
-    throw new Error(`cursor-agent not found: ${proc.stderr}`);
+  if (proc.exitCode !== 0) {
+    const stderr = await new Response(proc.stderr).text();
+    throw new Error(`cursor-agent not found: ${stderr}`);
+  }
 }
 
 async function runCursorAgent(
   prompt: string,
   {
+    model = 'auto',
     timeoutMs = DEFAULT_TIMEOUT_MS,
     sessionId,
   }: {
+    model?: string;
     timeoutMs?: number;
     sessionId?: string;
   } = {}
@@ -99,7 +109,16 @@ async function runCursorAgent(
   if (!CURSOR_API_KEY) throw new Error('CURSOR_API_KEY is not set');
   await checkCursorCLI();
   const proc = Bun.spawn(
-    [CURSOR_AGENT_BIN, '-p', '--output-format', 'json', ...(sessionId ? ['--resume', sessionId] : []), prompt],
+    [
+      CURSOR_AGENT_BIN,
+      '-p',
+      '--output-format',
+      'json',
+      ...(sessionId ? ['--resume', sessionId] : []),
+      '--model',
+      model,
+      prompt,
+    ],
     {
       env: { ...process.env, CURSOR_API_KEY },
       stdout: 'pipe',
@@ -174,17 +193,25 @@ function openaiChatCompletion(content: string, model: string, requestId: string)
   };
 }
 
-function openaiModelsList(): object {
+async function openaiModelsList() {
+  const models = await $`${CURSOR_AGENT_BIN} models`.text();
   return {
     object: 'list',
-    data: [
-      {
-        id: MODEL_ID,
-        object: 'model',
-        created: Math.floor(Date.now() / 1000),
-        owned_by: 'cursor',
-      },
-    ],
+    data: models
+      .split('\n')
+      .map((line) => {
+        line = line.trim();
+        if (!line) return null;
+        const [id, name] = line.split(' - ').map((s) => s.trim());
+        if (!id || !name) return null;
+        return {
+          id,
+          object: 'model',
+          created: Math.floor(Date.now() / 1000),
+          owned_by: 'cursor',
+        };
+      })
+      .filter(Boolean),
   };
 }
 
@@ -229,7 +256,7 @@ async function handleChatCompletions(req: Request): Promise<Response> {
       error: { message: "Missing or empty 'messages'" },
     });
   }
-  const model = (data.model as string) ?? MODEL_ID;
+  const model = (data.model as string) ?? 'auto';
   if (data.stream === true) {
     log('info', 'Streaming requested but not supported');
     return jsonResponse(501, {
@@ -246,7 +273,7 @@ async function handleChatCompletions(req: Request): Promise<Response> {
   }
   log('info', 'Chat completion request', { model, promptLength: prompt.length, timeoutSec });
   try {
-    const responseText = await runCursorAgent(prompt, { timeoutMs: timeoutSec * 1000 });
+    const responseText = await runCursorAgent(prompt, { timeoutMs: timeoutSec * 1000, model });
     const elapsed = Date.now() - start;
     log('info', 'Chat completion success', { model, elapsedMs: elapsed, responseLength: responseText.length });
     const requestId = `chatcmpl-${Math.floor(Date.now() / 1000)}`;
@@ -275,7 +302,7 @@ async function handleResponses(req: Request): Promise<Response> {
       error: { message: `Invalid JSON: ${(err as Error).message}` },
     });
   }
-  const model = (data.model as string) ?? MODEL_ID;
+  const model = (data.model as string) ?? 'auto';
   let prompt: string;
   const input = data.input;
   const instructions = typeof data.instructions === 'string' ? data.instructions.trim() : '';
@@ -315,7 +342,7 @@ async function handleResponses(req: Request): Promise<Response> {
     timeoutSec,
   });
   try {
-    const responseText = await runCursorAgent(prompt, { timeoutMs: timeoutSec * 1000 });
+    const responseText = await runCursorAgent(prompt, { timeoutMs: timeoutSec * 1000, model });
     const elapsed = Date.now() - start;
     log('info', 'Responses success', {
       model,
@@ -353,7 +380,7 @@ async function handleRequest(req: Request): Promise<Response> {
   const url = new URL(req.url);
   log('info', `${req.method} ${url.pathname || '/'}`);
   if (url.pathname === '/v1/models' && req.method === 'GET') {
-    return jsonResponse(200, openaiModelsList());
+    return jsonResponse(200, await openaiModelsList());
   }
   if (url.pathname === '/' || url.pathname === '/health' || url.pathname === '/healthz') {
     return ok;
