@@ -79,6 +79,13 @@ function inputItemsToPrompt(items: ResponseInputItem[]): string {
   return parts.join('\n\n') || '';
 }
 
+async function checkCursorCLI() {
+  const proc = Bun.spawn([CURSOR_AGENT_BIN, '--version'], { env: process.env });
+  await proc.exited;
+  if (proc.exitCode !== 0)
+    throw new Error(`cursor-agent not found: ${proc.stderr}`);
+}
+
 async function runCursorAgent(
   prompt: string,
   {
@@ -90,6 +97,7 @@ async function runCursorAgent(
   } = {}
 ): Promise<string> {
   if (!CURSOR_API_KEY) throw new Error('CURSOR_API_KEY is not set');
+  await checkCursorCLI();
   const proc = Bun.spawn(
     [CURSOR_AGENT_BIN, '-p', '--output-format', 'json', ...(sessionId ? ['--resume', sessionId] : []), prompt],
     {

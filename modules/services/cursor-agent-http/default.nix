@@ -44,6 +44,7 @@ in
     };
 
     script = ''
+      # export here so only the script has the api_key
       export CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
       cd ${src}
       exec bun start
