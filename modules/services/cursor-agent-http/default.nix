@@ -1,8 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   host = "0.0.0.0";
   port = 8222;
   src = ./.;
+  cursorAgentBin = lib.getExe pkgs.cursor-cli;
 in
 {
   users = {
@@ -37,6 +38,7 @@ in
     environment = {
       PORT = toString port;
       HOST = host;
+      CURSOR_AGENT_BIN = cursorAgentBin;
       CURSOR_AGENT_MODEL_ID = "cursor-agent";
       CURSOR_AGENT_TIMEOUT = "300";
     };

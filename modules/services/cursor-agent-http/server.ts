@@ -4,7 +4,7 @@
  * Supports GET /v1/models, POST /v1/chat/completions, and POST /v1/responses.
  */
 
-const CURSOR_AGENT_BIN = 'cursor-agent';
+const CURSOR_AGENT_BIN = process.env.CURSOR_AGENT_BIN ?? 'cursor-agent';
 const CURSOR_API_KEY = process.env.CURSOR_API_KEY ?? '';
 const MODEL_ID = process.env.CURSOR_AGENT_MODEL_ID ?? 'cursor-agent';
 const DEFAULT_TIMEOUT_MS = parseInt(process.env.CURSOR_AGENT_TIMEOUT ?? '300', 10) * 1000;
@@ -90,38 +90,24 @@ async function runCursorAgent(
   } = {}
 ): Promise<string> {
   if (!CURSOR_API_KEY) throw new Error('CURSOR_API_KEY is not set');
-  const args = [CURSOR_AGENT_BIN, '-p', '--output-format', 'json', ...(sessionId ? ['--resume', sessionId] : []), prompt];
-  const proc = Bun.spawn(args, {
-    env: { ...process.env, CURSOR_API_KEY },
-    stdout: 'pipe',
-    stderr: 'pipe',
-  });
+  const proc = Bun.spawn(
+    [CURSOR_AGENT_BIN, '-p', '--output-format', 'json', ...(sessionId ? ['--resume', sessionId] : []), prompt],
+    {
+      env: { ...process.env, CURSOR_API_KEY },
+      stdout: 'pipe',
+      stderr: 'pipe',
+    }
+  );
 
   const timeout = setTimeout(() => {
     proc.kill();
   }, timeoutMs);
 
-  const exitCode = await proc.exited;
   const [stdout, stderr] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()]);
+  const exitCode = await proc.exited;
   clearTimeout(timeout);
 
   if (exitCode !== 0) {
-    const cmdPreview =
-      args.length > 1
-        ? `${args[0]} ${args.slice(1, -1).join(' ')} <prompt ${prompt.length} chars>`
-        : `${args[0]} <prompt ${prompt.length} chars>`;
-    log('error', 'cursor-agent non-zero exit', {
-      exitCode,
-      signal: proc.signalCode ?? null,
-      killed: proc.killed ?? null,
-      pid: proc.pid ?? null,
-      cmd: cmdPreview,
-      stderr: stderr || '(empty)',
-      stdout: stdout ? (stdout.length > 2000 ? stdout.slice(0, 2000) + '...[truncated]' : stdout) : '(empty)',
-      promptLength: prompt.length,
-      sessionId: sessionId ?? null,
-      timeoutMs,
-    });
     throw new Error(`cursor-agent failed (exit ${exitCode}): ${stderr || stdout || 'unknown error'}`);
   }
 
