@@ -5,6 +5,7 @@ _: {
     ./adblocker.nix
     # ./caddy.nix
     ./cockpit.nix
+    ./cursor-agent-http
     # ./copyparty.nix # Very ram instensive, disabling for now
     ./homepage.nix
     ./immich.nix
