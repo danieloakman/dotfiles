@@ -86,12 +86,8 @@ function inputItemsToPrompt(items: ResponseInputItem[]): string {
 }
 
 async function checkCursorCLI() {
-  const proc = Bun.spawn([CURSOR_AGENT_BIN, '--version'], { env: { ...process.env, CURSOR_API_KEY }, stderr: 'pipe' });
-  await proc.exited;
-  if (proc.exitCode !== 0) {
-    const stderr = await new Response(proc.stderr).text();
-    throw new Error(`cursor-agent not found: ${stderr}`);
-  }
+  const proc = await $`${CURSOR_AGENT_BIN} --version`;
+  if (proc.exitCode !== 0) throw new Error(`cursor-agent not found`);
 }
 
 async function runCursorAgent(
