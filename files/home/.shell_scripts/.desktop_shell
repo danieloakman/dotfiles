@@ -19,6 +19,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
   alias clip="pbcopy"
 else
   alias clip="xclip -sel clip"
+  alias open="xdg-open"
 fi
 
 # gcp is taken by git cherry pick
