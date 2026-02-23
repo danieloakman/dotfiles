@@ -10,7 +10,7 @@
     (modulesPath + "/installer/scan/not-detected.nix")
 
     ../modules/ssh.nix
-    ../modules/dev.nix
+    ../modules/dev
     ../modules/mobile-dev.nix
     ../modules/docker.nix
     ../modules/syncthing.nix

@@ -77,7 +77,7 @@ in
     ../modules/mobile-dev.nix
     ../modules/games.nix
     ../modules/stylix.nix
-    ../modules/dev.nix
+    ../modules/dev
     ../modules/docker.nix
     ../modules/rofi.nix
     ../modules/syncthing.nix
