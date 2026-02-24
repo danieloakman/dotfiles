@@ -292,6 +292,7 @@
       "lazydocker"
       "cliclick"
       "cocoapods"
+      "llmfit" # CLI tool for fitting LLMs to your data
       {
         name = "syncthing";
         restart_service = "changed";
