@@ -45,7 +45,7 @@ in
   config = lib.mkIf pkgs.stdenv.isDarwin {
     services.skhd = {
       enable = true;
-      skhdConfig = skhdConfig;
+      inherit skhdConfig;
     };
 
     home-manager.users.${env.user} = {

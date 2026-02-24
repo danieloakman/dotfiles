@@ -1,4 +1,4 @@
-_:{
+_: {
   imports = [
     ./ai.nix
     ./pkgs.nix

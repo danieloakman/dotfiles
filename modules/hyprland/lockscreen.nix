@@ -1,29 +1,29 @@
 # The way this is setup with greetd is not fully secure. It's possible somebody could bypass the lock screen.
 { env, pkgs, lib, ... }:
 let
-  hypridleStatus = (pkgs.writeShellScriptBin "hypridle-status" ''
+  hypridleStatus = pkgs.writeShellScriptBin "hypridle-status" ''
     if systemctl --user is-active --quiet hypridle.service; then
       echo "enabled"
     else
       echo "disabled"
     fi
-  '');
-  hypridleStart = (pkgs.writeShellScriptBin "hypridle-start" ''
+  '';
+  hypridleStart = pkgs.writeShellScriptBin "hypridle-start" ''
     systemctl --user start hypridle.service
     echo "enabled"
-  '');
-  hypridleStop = (pkgs.writeShellScriptBin "hypridle-stop" ''
+  '';
+  hypridleStop = pkgs.writeShellScriptBin "hypridle-stop" ''
     systemctl --user stop hypridle.service
     echo "disabled"
-  '');
-  hypridleToggle = (pkgs.writeShellScriptBin "hypridle-toggle" ''
+  '';
+  hypridleToggle = pkgs.writeShellScriptBin "hypridle-toggle" ''
     STATUS=$(${lib.getExe hypridleStatus})
     if [ "$STATUS" = "enabled" ]; then
       ${lib.getExe hypridleStop}
     else
       ${lib.getExe hypridleStart}
     fi
-  '');
+  '';
 in
 {
   security.pam.services = {

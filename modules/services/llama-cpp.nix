@@ -28,7 +28,7 @@ in
         package = pkgs.llama-cpp; # CPU-only by default in nixpkgs
         port = llamaCppPort;
         openFirewall = true;
-        host = host;
+        inherit host;
         extraFlags = [
           "-ngl" # Offload layers to GPU
           "${lib.toString config.services.llama-cpp.gpuLayerCount}"
@@ -44,7 +44,7 @@ in
         listenAddress = host;
         settings =
           let
-            llama-cpp = pkgs.llama-cpp;
+            inherit (pkgs) llama-cpp;
             llama-server = lib.getExe' llama-cpp "llama-server";
             # TODO: fix why this isn't downloading anymore when it's put here instead of the top of the file
             defaultModel = pkgs.fetchurl {

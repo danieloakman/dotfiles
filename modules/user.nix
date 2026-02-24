@@ -12,7 +12,7 @@
   };
 
   users = {
-    groups.storage = {}; # Define a group for storage devices
+    groups.storage = { }; # Define a group for storage devices
 
     users.${env.user} = {
       isNormalUser = true;

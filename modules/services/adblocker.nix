@@ -8,6 +8,6 @@ in
   services.adguardhome = {
     enable = true;
     openFirewall = true;
-    port = port;
+    inherit port;
   };
 }
