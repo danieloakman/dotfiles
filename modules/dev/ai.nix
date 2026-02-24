@@ -5,6 +5,8 @@
     # claude-code
     cursor-cli
     libnotify # Add `notify-send` command
+    opencode # CLI tool to utilise free LLMs to write code
+    openclaw # LLM-powered daemon
 
     # Ralph AI loop: run `ralph <iterations>` in a project with plans/prd.json and progress.md
     (writeShellScriptBin "ralph" ''
