@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ env, config, lib, modulesPath, ... }:
+{ env, config, lib, modulesPath, pkgs, ... }:
 let
   # nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.production
   nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -85,7 +85,7 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
-    # ../modules/services/llama-cpp.nix
+    ../modules/services/llama-cpp.nix
 
     # ../modules/gnome
     ../modules/hyprland
@@ -120,20 +120,21 @@ in
         "3, monitor:HDMI-A-1"
       ];
       # Window rules
-      windowrulev2 = [
-        "workspace 1, class:^(vivaldi-bin)$"
-        "workspace 1, class:^(vivaldi)$"
-        "workspace 1, class:^(chromium)$"
-        "workspace 1, class:^(chrome)$"
-        "workspace 1, class:^(firefox)$"
-        "workspace 1, class:^(google-chrome)$"
-        "workspace 2, class:^(Cursor)$"
-        "workspace 2, class:^(code)$"
-        "workspace 3, class:^(Spotify)$"
-        "workspace 2, class:^(obsidian)$"
-        "workspace 3, class:^(Discord)$"
-        "workspace 3, class:^(Steam)$"
-      ];
+      # TODO: add window rules again after finding what isn't deprecated
+      # windowrulev2 = [
+      #   "workspace 1, class:^(vivaldi-bin)$"
+      #   "workspace 1, class:^(vivaldi)$"
+      #   "workspace 1, class:^(chromium)$"
+      #   "workspace 1, class:^(chrome)$"
+      #   "workspace 1, class:^(firefox)$"
+      #   "workspace 1, class:^(google-chrome)$"
+      #   "workspace 2, class:^(Cursor)$"
+      #   "workspace 2, class:^(code)$"
+      #   "workspace 3, class:^(Spotify)$"
+      #   "workspace 2, class:^(obsidian)$"
+      #   "workspace 3, class:^(Discord)$"
+      #   "workspace 3, class:^(Steam)$"
+      # ];
     };
     services.hyprpaper.settings =
       let
@@ -148,10 +149,23 @@ in
         ];
       };
   };
-  # services.llama-cpp = {
-  #   threadCount = 16;
-  #   gpuLayerCount = 256;
-  # };
+
+  systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
+  services.llama-cpp = {
+    threadCount = 16;
+    gpuLayerCount = 256;
+    models = {
+      default = {
+        path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
+        # path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+        # path = pkgs.fetchurl {
+        #   url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+        #   hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        # };
+      };
+      # "DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf".path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+    };
+  };
 
   hardware = {
     enableRedistributableFirmware = true;

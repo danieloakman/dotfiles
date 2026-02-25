@@ -1,12 +1,11 @@
 { pkgs, ... }: {
   environment.systemPackages = with pkgs; [
-    # llmfit # CLI tool to find what LLMs can run on our hardware
+    llmfit # CLI tool to find what LLMs can run on our hardware
     gemini-cli
     # claude-code
     cursor-cli
     libnotify # Add `notify-send` command
     opencode # CLI tool to utilise free LLMs to write code
-    openclaw # LLM-powered daemon
 
     # Ralph AI loop: run `ralph <iterations>` in a project with plans/prd.json and progress.md
     (writeShellScriptBin "ralph" ''

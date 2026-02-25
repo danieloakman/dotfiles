@@ -72,15 +72,15 @@
         "eDP-1, 1366x768, 0x0, 1.0"
       ];
       # Window rules
-      windowrulev2 = [
-        "workspace 1, class:^(vivaldi-bin)$"
-        "workspace 2, class:^(Cursor)$"
-        "workspace 2, class:^(code)$"
-        "workspace 3, class:^(Spotify)$"
-        "workspace 4, class:^(obsidian)$"
-        "workspace 5, class:^(Discord)$"
-        "workspace 6, class:^(Steam)$"
-      ];
+      # windowrulev2 = [
+      #   "workspace 1, class:^(vivaldi-bin)$"
+      #   "workspace 2, class:^(Cursor)$"
+      #   "workspace 2, class:^(code)$"
+      #   "workspace 3, class:^(Spotify)$"
+      #   "workspace 4, class:^(obsidian)$"
+      #   "workspace 5, class:^(Discord)$"
+      #   "workspace 6, class:^(Steam)$"
+      # ];
     };
 
     services.hyprpaper.settings =
