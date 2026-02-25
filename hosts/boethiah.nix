@@ -143,17 +143,17 @@
         wakeonlan 4c:ed:fb:96:ee:3d
       '')
 
-      python3
-      (python3.withPackages (ps: with ps; [
-        # TODO: comment out most of this in favour of using a nix shell and locally installed packages instead
-        pip
-        requests
-        black
-        urllib3
-        virtualenv
-        # pipx
-        huggingface-hub
-      ]))
+      # python3
+      # (python3.withPackages (ps: with ps; [
+      #   # TODO: comment out most of this in favour of using a nix shell and locally installed packages instead
+      #   pip
+      #   requests
+      #   black
+      #   urllib3
+      #   virtualenv
+      #   # pipx
+      #   huggingface-hub
+      # ]))
     ];
   };
 
