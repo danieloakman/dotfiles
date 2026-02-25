@@ -322,7 +322,7 @@
       "visual-studio-code"
       # "warp"
       "zoom"
-      "spotify"
+      # "spotify" # Spotify always comes up with an error on boot. So installing this manually for now.
       "obsidian"
       "localsend"
       "docker-desktop"
