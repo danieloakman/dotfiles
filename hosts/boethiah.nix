@@ -293,9 +293,12 @@
       "cliclick"
       "cocoapods"
       "llmfit" # CLI tool for fitting LLMs to your data
-      "llama.cpp" # Run LLMs locally on your machine
       {
         name = "syncthing";
+        restart_service = "changed";
+      }
+      {
+        name = "mlx-lm";
         restart_service = "changed";
       }
     ];
