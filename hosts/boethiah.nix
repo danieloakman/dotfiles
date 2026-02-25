@@ -292,6 +292,7 @@
       "lazydocker"
       "cliclick"
       "cocoapods"
+      "uv" # Python package manager, can install packages and run them adhoc
       "llmfit" # CLI tool for fitting LLMs to your data
       {
         name = "syncthing";
