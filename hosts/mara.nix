@@ -53,6 +53,7 @@
   ];
 
   services.immich.mediaLocation = "/run/media/HDD_1/immich";
+  services.paperless.mediaDir = "/run/media/HDD_1/paperless";
 
   swapDevices = [
     {

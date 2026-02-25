@@ -80,11 +80,18 @@ in
             };
           }
           {
-            "Copyparty" = {
-              description = "File sharing";
-              href = "https://copyparty.dinosaur-crocodile.ts.net";
+            "Paperless" = {
+              description = "Document management";
+              # href = "https://paperless.dinosaur-crocodile.ts.net";
+              href = "http://mara:28981";
             };
           }
+          # {
+          #   "Copyparty" = {
+          #     description = "File sharing";
+          #     href = "https://copyparty.dinosaur-crocodile.ts.net";
+          #   };
+          # }
         ];
       }];
     };

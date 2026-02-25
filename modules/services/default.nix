@@ -13,6 +13,7 @@ _: {
     ./n8n.nix
     # ./ollama.nix
     ./stirling-pdf.nix
+    ./paperless.nix
     ./streaming.nix
   ];
 
