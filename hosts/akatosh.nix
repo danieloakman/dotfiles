@@ -85,6 +85,8 @@ in
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/comma.nix
+    ../modules/btop.nix
+
     ../modules/services/llama-cpp.nix
 
     # ../modules/gnome

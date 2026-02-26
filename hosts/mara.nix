@@ -20,6 +20,7 @@
     ../modules/network.nix
     # ../modules/comma.nix
     ../modules/tmux.nix
+    ../modules/btop.nix
 
     ../modules/services
   ];
