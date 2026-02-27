@@ -15,9 +15,9 @@ in
 {
   options = {
     services.llama-cpp = {
-      threadCount = lib.mkOption {
-        default = 6;
-        description = "The number of threads to use for the llama-cpp service";
+      cpuCoreCount = lib.mkOption {
+        default = 1;
+        description = "The number of physical CPU cores to use for the llama-cpp service";
       };
       gpuLayerCount = lib.mkOption {
         default = 0; # Default 0 layers, meaning CPU-only

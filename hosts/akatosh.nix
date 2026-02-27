@@ -154,7 +154,7 @@ in
 
   systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
   services.llama-cpp = {
-    threadCount = 16;
+    cpuCoreCount = 6;
     gpuLayerCount = 256;
     models = {
       # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
