@@ -59,7 +59,7 @@ in
           "-t"
           "${lib.toString config.services.llama-cpp.threadCount}"
         ];
-        model = config.services.llama-cpp.models.default;
+        # model = config.services.llama-cpp.models.default;
       };
       llama-swap = {
         enable = true;
@@ -73,7 +73,7 @@ in
           {
             healthCheckTimeout = 60;
             models = builtins.mapAttrs
-              (name: model: {
+              (_: model: {
                 cmd = "${llama-server} --port ${toString llamaCppPort} -m ${model.path} -ngl ${lib.toString config.services.llama-cpp.gpuLayerCount} -t ${lib.toString config.services.llama-cpp.threadCount}";
                 proxy = "http://${host}:${toString llamaCppPort}";
               } // lib.optionalAttrs (model.aliases != [ ]) { aliases = model.aliases; }
@@ -92,12 +92,27 @@ in
     };
 
     home-manager.users.${env.user} = {
-      xdg.desktopEntries = {
-        llama-swap = {
-          name = "Llama Swap";
-          exec = "uwsm app -- vivaldi --ozone-platform=wayland --app=\"http://localhost:${toString llamaSwapPort}\"";
-        };
-      };
+      xdg.desktopEntries =
+        let
+          webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
+        in
+        {
+          llama-swap = {
+            name = "Llama Swap";
+            exec = webapp "http://localhost:${toString llamaSwapPort}/ui/models";
+            categories = [ "Network" "WebBrowser" ];
+            icon = "llama-swap";
+            startupNotify = true;
+          };
+        } // (builtins.mapAttrs
+          (name: _: {
+            name = "Llama Chat with ${name}";
+            exec = webapp "http://localhost:${toString llamaSwapPort}/upstream/${name}";
+            categories = [ "Network" "WebBrowser" ];
+            icon = "llama-swap";
+            startupNotify = true;
+          })
+          config.services.llama-cpp.models);
     };
   };
 }
