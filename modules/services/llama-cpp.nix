@@ -59,7 +59,6 @@ in
           "-t"
           "${lib.toString config.services.llama-cpp.threadCount}"
         ];
-        # model = config.services.llama-cpp.models.default;
       };
       llama-swap = {
         enable = true;
