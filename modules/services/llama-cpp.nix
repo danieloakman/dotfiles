@@ -57,7 +57,7 @@ in
           "-ngl" # Offload layers to GPU
           "${lib.toString config.services.llama-cpp.gpuLayerCount}"
           "-t"
-          "${lib.toString config.services.llama-cpp.threadCount}"
+          "${lib.toString config.services.llama-cpp.cpuCoreCount}"
         ];
       };
       llama-swap = {
@@ -73,7 +73,7 @@ in
             healthCheckTimeout = 60;
             models = builtins.mapAttrs
               (_: model: {
-                cmd = "${llama-server} --port ${toString llamaCppPort} -m ${model.path} -ngl ${lib.toString config.services.llama-cpp.gpuLayerCount} -t ${lib.toString config.services.llama-cpp.threadCount}";
+                cmd = "${llama-server} --port ${toString llamaCppPort} -m ${model.path} -ngl ${lib.toString config.services.llama-cpp.gpuLayerCount} -t ${lib.toString config.services.llama-cpp.cpuCoreCount}";
                 proxy = "http://${host}:${toString llamaCppPort}";
               } // lib.optionalAttrs (model.aliases != [ ]) { aliases = model.aliases; }
               // lib.optionalAttrs (model.proxy != null) { proxy = model.proxy; }
