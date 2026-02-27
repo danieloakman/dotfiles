@@ -165,7 +165,7 @@ in
       #   };
       # };
       default.path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
-      "DeepSeek-R1-Distill-Qwen-7B-Q6_K".path = "/home/dano/.cache/huggingface/hub/models--lmstudio-community--DeepSeek-R1-Distill-Qwen-7B-GGUF/snapshots/959510a4c8eff7bae27769e9232dca7d3d2b4ed3/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+      "DeepSeek-R1-Distill-Qwen-7B-Q6_K".path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
     };
   };
 
