@@ -166,6 +166,7 @@ in
       # };
       "Qwen2.5-coder-1.5b-instruct-Q8_0".path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
       "DeepSeek-R1-Distill-Qwen-7B-Q6_K".path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+      "Qwen2.5-VL-7B-Instruct-Q6_K".path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
     };
   };
 
