@@ -157,15 +157,15 @@ in
     threadCount = 16;
     gpuLayerCount = 256;
     models = {
-      default = {
-        path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
-        # path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-        # path = pkgs.fetchurl {
-        #   url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-        #   hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-        # };
-      };
-      # "DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf".path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+      # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
+      # someModel = {
+      #   path = pkgs.fetchurl {
+      #     url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+      #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      #   };
+      # };
+      default.path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
+      "DeepSeek-R1-Distill-Qwen-7B-Q6_K".path = "/home/dano/.cache/huggingface/hub/models--lmstudio-community--DeepSeek-R1-Distill-Qwen-7B-GGUF/snapshots/959510a4c8eff7bae27769e9232dca7d3d2b4ed3/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
     };
   };
 
