@@ -1,10 +1,29 @@
-{ pkgs, env, config, ... }: {
+{ pkgs, env, config, ... }:
+let
+  # When llama-cpp.nix is used, default cclocal model to first configured model name (llama-swap key).
+  defaultLocalModel = let
+    models = (config.services.llama-cpp or { }).models or { };
+    names = builtins.attrNames models;
+  in if names != [ ] then builtins.head names else "local";
+in
+{
   environment.systemPackages = with pkgs; [
     llmfit # CLI tool to find what LLMs can run on our hardware
     gemini-cli
     cursor-cli
     libnotify # Add `notify-send` command
     opencode # CLI tool to utilise free LLMs to write code
+
+    # Claude Code → local llama (llama-swap in modules/services/llama-cpp.nix). Select model in Llama Swap first. Override: ANTHROPIC_MODEL=<key> cclocal; port: cclocal <port>.
+    (writeShellScriptBin "claude-local" ''
+      default_port="11344"
+      default_model="${defaultLocalModel}"
+      port="''${1:-$default_port}"
+      if [[ "$port" =~ ^[0-9]+$ ]]; then shift; else port=$default_port; fi
+      export ANTHROPIC_BASE_URL="http://127.0.0.1:$port"
+      export ANTHROPIC_MODEL="''${ANTHROPIC_MODEL:-$default_model}"
+      exec claude "$@"
+    '')
 
     # Ralph AI loop: run `ralph <iterations>` in a project with plans/prd.json and progress.md
     (writeShellScriptBin "ralph" ''
@@ -44,6 +63,8 @@
   home-manager.users.${env.user} = {
     programs.claude-code = {
       enable = true;
+      # Avoid telemetry 404s when using cclocal (ANTHROPIC_BASE_URL → local llama-server)
+      settings = { env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"; };
       rules = {
         response-to-user = ''
           When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
