@@ -1,8 +1,7 @@
-{ pkgs, ... }: {
+{ pkgs, env, config, ... }: {
   environment.systemPackages = with pkgs; [
     llmfit # CLI tool to find what LLMs can run on our hardware
     gemini-cli
-    # claude-code
     cursor-cli
     libnotify # Add `notify-send` command
     opencode # CLI tool to utilise free LLMs to write code
@@ -41,4 +40,26 @@
       done
     '')
   ];
+
+  home-manager.users.${env.user} = {
+    programs.claude-code = {
+      enable = true;
+      rules = {
+        response-to-user = ''
+          When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
+        '';
+      };
+      mcpServers = {
+        google-calendar = {
+          command = "npx";
+          args = [ "@cocal/google-calendar-mcp" ];
+          env = {
+            GOOGLE_OAUTH_CREDENTIALS = config.sops.secrets.google_calendar_mcp_oath_json.path;
+          };
+        };
+      };
+      # skills = {
+      # };
+    };
+  };
 }
