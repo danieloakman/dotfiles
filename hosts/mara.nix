@@ -21,6 +21,7 @@
     # ../modules/comma.nix
     ../modules/tmux.nix
     ../modules/btop.nix
+    ../modules/scripts
 
     ../modules/services
   ];

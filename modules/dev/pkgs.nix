@@ -10,7 +10,6 @@
     dust # A better `du` command. Just prints out size of directories in the CWD
     ncdu # Similar to `dust`, but provides a UI to delete directories
     tldr
-    gcalcli
     zbar # Can scan QR & bar codes using this
     lf # Terminal file system manager
     wine # For running Windows applications on Linux

@@ -51,6 +51,7 @@
     ../modules/zsh.nix
     ../modules/network.nix
     ../modules/btop.nix
+    ../modules/scripts
 
     # ../modules/gnome
     ../modules/hyprland

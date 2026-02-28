@@ -45,9 +45,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     copyparty.url = "github:9001/copyparty";
+    bun2nix = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, pia, copyparty, ... }@inputs:
+  outputs = { self, nixpkgs, pia, copyparty, bun2nix, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -108,7 +112,7 @@
                 hasGPU = true;
               };
             in
-            { inherit inputs system env pia copyparty; };
+            { inherit inputs system env pia copyparty bun2nix; };
           modules = [
             commonImports
             { }

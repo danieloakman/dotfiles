@@ -5,10 +5,12 @@ let
   secrets = [
     "password_store_git_url" # Git URL for password store
     "pia_credentials" # Private Internet Access credentials 
-    "dano_pwd" # Dano's password
-    "cursor_api_key" # Cursor API key
+    "dano_pwd"
+    "cursor_api_key"
+    "google_client_id" 
+    "google_client_secret"
   ];
-  group = "secrets";
+  group = "secrets"; # Group to access the secrets
 in
 {
   imports = [

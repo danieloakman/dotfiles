@@ -86,6 +86,7 @@ in
     ../modules/network.nix
     ../modules/comma.nix
     ../modules/btop.nix
+    ../modules/scripts
 
     ../modules/services/llama-cpp.nix
 
