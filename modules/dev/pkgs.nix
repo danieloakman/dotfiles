@@ -1,6 +1,6 @@
 # Settings for general developer tools and other related things that only apply to using the system as a developer.
 
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   environment.systemPackages = with pkgs; [
     # rclone # Don't need anymore as it was just used for Obsidian syncing
     gnat13 # Provides gcc, g++, etc
@@ -13,6 +13,11 @@
     zbar # Can scan QR & bar codes using this
     lf # Terminal file system manager
     wine # For running Windows applications on Linux
+    (writeShellScriptBin "gcalcli" ''
+      CLIENT_ID=$(cat ${config.sops.secrets.google_client_id.path})
+      CLIENT_SECRET=$(cat ${config.sops.secrets.google_client_secret.path})
+      exec ${lib.getExe gcalcli} --client-id "$CLIENT_ID" --client-secret "$CLIENT_SECRET" "$@"
+    '')
 
     # Node and Javascript related packages:
     nodejs_24
@@ -32,17 +37,6 @@
 
     # Fly.io control:
     flyctl
-
-    python3
-    (python3.withPackages (ps: with ps; [
-      # TODO: comment out most of this in favour of using a nix shell and locally installed packages instead
-      pip
-      requests
-      black
-      urllib3
-      virtualenv
-      # pipx
-    ]))
 
     awscli2
     mprocs
