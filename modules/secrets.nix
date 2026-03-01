@@ -9,7 +9,7 @@ let
     "cursor_api_key"
     "google_client_id" 
     "google_client_secret"
-    "google_calendar_mcp_oath_json"
+    "google_calendar_mcp_oath.json"
   ];
   group = "secrets"; # Group to access the secrets
 in

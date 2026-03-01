@@ -1,6 +1,6 @@
 { pkgs, env, config, ... }:
 let
-  # When llama-cpp.nix is used, default cclocal model to first configured model name (llama-swap key).
+  # When llama-cpp.nix is used, default claude-local model to first configured model name (llama-swap key).
   defaultLocalModel = let
     models = (config.services.llama-cpp or { }).models or { };
     names = builtins.attrNames models;
@@ -14,7 +14,7 @@ in
     libnotify # Add `notify-send` command
     opencode # CLI tool to utilise free LLMs to write code
 
-    # Claude Code → local llama (llama-swap in modules/services/llama-cpp.nix). Select model in Llama Swap first. Override: ANTHROPIC_MODEL=<key> cclocal; port: cclocal <port>.
+    # Claude Code → local llama (llama-swap in modules/services/llama-cpp.nix). Select model in Llama Swap first. Override: ANTHROPIC_MODEL=<key> claude-local; port: claude-local <port>.
     (writeShellScriptBin "claude-local" ''
       default_port="11344"
       default_model="${defaultLocalModel}"
@@ -63,7 +63,7 @@ in
   home-manager.users.${env.user} = {
     programs.claude-code = {
       enable = true;
-      # Avoid telemetry 404s when using cclocal (ANTHROPIC_BASE_URL → local llama-server)
+      # Avoid telemetry 404s when using claude-local (ANTHROPIC_BASE_URL → local llama-server)
       settings = { env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"; };
       rules = {
         response-to-user = ''
@@ -75,7 +75,7 @@ in
           command = "npx";
           args = [ "@cocal/google-calendar-mcp" ];
           env = {
-            GOOGLE_OAUTH_CREDENTIALS = config.sops.secrets.google_calendar_mcp_oath_json.path;
+            GOOGLE_OAUTH_CREDENTIALS = config.sops.secrets."google_calendar_mcp_oath.json".path;
           };
         };
       };
