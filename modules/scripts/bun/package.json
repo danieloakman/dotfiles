@@ -26,7 +26,6 @@
   },
   "bin": {
     "3ds-backup": "dist/3ds-backup.js",
-    "gcalcli": "dist/gcalcli.js",
     "move-mouse": "dist/move-mouse.js",
     "passs": "dist/passs.js"
   }
