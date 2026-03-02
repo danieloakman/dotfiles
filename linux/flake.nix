@@ -133,7 +133,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env; };
+            { inherit inputs system env pia copyparty bun2nix; };
           modules = [
             commonImports
             { }
@@ -154,7 +154,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env; };
+            { inherit inputs system env pia copyparty bun2nix; };
           modules = [
             commonImports
             { }
