@@ -49,12 +49,14 @@ gcalcli quick "Dinner with Alex 7pm tomorrow"
 gcalcli quick "Meeting in Room 4 at 2pm next Monday"
 ```
 
-**Add** (detailed; use `--details` for non-interactive):
+**Add** (detailed):
 
 ```bash
 gcalcli add
 gcalcli --calendar "Work" add --title "Standup" --when "9am" --duration 15
 ```
+
+- With `--noprompt`: you **must** pass `--duration N` (minutes) or `--end`, otherwise gcalcli errors with "Duration time is invalid: None". Example: `gcalcli --calendar "test" add --title "test" --when "9am tomorrow" --duration 60 --noprompt`.
 
 ## Calendar selection
 
@@ -85,6 +87,18 @@ gcalcli delete "old meeting"
 # Remind: run notify-send 10 min before events (e.g. from cron)
 gcalcli remind 10
 ```
+
+## Deleting events
+
+```bash
+gcalcli --calendar "Name" delete "search_text" [start] [end]
+```
+
+- **Search**: Case-insensitive; matches event title (and possibly other fields). Without `start`/`end`, lists all matching events and prompts per event.
+- **Narrow by date**: Use `start` and `end` in **YYYY-MM-DD** format so only events in that range are shown (e.g. `delete "test" "2026-03-03" "2026-03-04"`). Avoids deleting the wrong event.
+- **Confirm non-interactively**: Pipe one `y` to accept: `printf 'y\n' | gcalcli --calendar "test" delete "test" "2026-03-03" "2026-03-04"`.
+- **Stored date**: "tomorrow" / natural language can resolve to a different year than you expect. Use `gcalcli --calendar "Name" search "title"` first to see the actual stored date before delete.
+- **Skip prompt**: `--iamaexpert` deletes without asking; still use start/end to limit which event is deleted.
 
 ## Output options
 
