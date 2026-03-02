@@ -82,10 +82,10 @@ in
         };
       };
       skills = {
-        gcalcli = ../../files/home/.cursor/skills/gcalcli.md;
+        gcalcli = ../../files/ai/skills/gcalcli.md;
       };
     };
 
-    home.file.".cursor/skills/gcalcli".source = ../../files/home/.cursor/skills/gcalcli.md;
+    home.file.".cursor/skills/gcalcli".source = ../../files/ai/skills/gcalcli.md;
   };
 }

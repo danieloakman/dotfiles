@@ -94,6 +94,7 @@ gcalcli remind 10
 gcalcli --calendar "Name" delete "search_text" [start] [end]
 ```
 
+- **IMPORTANT** MUST display a confirm prompt before executing the deletion! Display information about what is being deleted.
 - **Search**: Case-insensitive; matches event title (and possibly other fields). Without `start`/`end`, lists all matching events and prompts per event.
 - **Narrow by date**: Use `start` and `end` in **YYYY-MM-DD** format so only events in that range are shown (e.g. `delete "test" "2026-03-03" "2026-03-04"`). Avoids deleting the wrong event.
 - **Confirm non-interactively**: Pipe one `y` to accept: `printf 'y\n' | gcalcli --calendar "test" delete "test" "2026-03-03" "2026-03-04"`.
