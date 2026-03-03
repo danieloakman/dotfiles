@@ -22,6 +22,7 @@
         # rofi-file-browser # Would rather just use lf
         # rofi-screenshot # Would rather just use gnome-screenshot
       ];
+      # TODO: this should be set somewhere in the gnome or hyprland modules instead.
       terminal = "${pkgs.gnome-console}/bin/gnome-console";
     };
   };
