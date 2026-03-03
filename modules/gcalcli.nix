@@ -21,7 +21,7 @@ in
   ];
   home-manager.users.${env.user} = {
     # Add AI Skills for gcalcli:
-    home.file.".cursor/skills/gcalcli".source = gcalcliSkillPath;
+    home.file.".cursor/skills/gcalcli.md".source = gcalcliSkillPath;
     programs.claude-code.skills.gcalcli = gcalcliSkillPath;
   };
 }
