@@ -52,6 +52,7 @@
     ../modules/network.nix
     ../modules/btop.nix
     ../modules/scripts
+    ../modules/gcalcli.nix
 
     # ../modules/gnome
     ../modules/hyprland

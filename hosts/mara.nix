@@ -22,6 +22,7 @@
     ../modules/tmux.nix
     ../modules/btop.nix
     ../modules/scripts
+    ../modules/gcalcli.nix
 
     ../modules/services
   ];

@@ -6,6 +6,7 @@
     ../modules/mobile-dev.nix
     ../modules/docker.nix
     ../modules/ghostty.nix
+    ../modules/gcalcli.nix
   ];
 
   networking.hostName = "boethiah";

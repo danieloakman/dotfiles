@@ -87,6 +87,7 @@ in
     ../modules/comma.nix
     ../modules/btop.nix
     ../modules/scripts
+    ../modules/gcalcli.nix
 
     ../modules/services/llama-cpp.nix
 
