@@ -7,7 +7,7 @@ let
     "pia_credentials" # Private Internet Access credentials 
     "dano_pwd"
     "cursor_api_key"
-    "google_client_id" 
+    "google_client_id"
     "google_client_secret"
     "google_calendar_mcp_oath.json"
   ];
@@ -29,7 +29,7 @@ in
   sops = {
     defaultSopsFile = ../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
-    age.keyFile = "/var/lib/sops-nix/key.txt";
+    age.keyFile = "${env.home}/.config/sops/age/keys.txt";
 
     secrets = builtins.listToAttrs (map
       (secret: {
