@@ -30,6 +30,7 @@ in
             aliases = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; description = "Optional aliases for this model"; };
             proxy = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; description = "Override proxy URL"; };
             concurrencyLimit = lib.mkOption { type = lib.types.nullOr lib.types.int; default = null; description = "Max concurrent requests"; };
+            extraServerArgs = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; description = "Extra args for llama-server (e.g. [ \"-c\" \"4096\" \"--parallel\" \"1\" ])"; };
           };
         });
         default = { };
@@ -73,7 +74,7 @@ in
             healthCheckTimeout = 60;
             models = builtins.mapAttrs
               (_: model: {
-                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString config.services.llama-cpp.gpuLayerCount} -t ${lib.toString config.services.llama-cpp.cpuCoreCount}";
+                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString config.services.llama-cpp.gpuLayerCount} -t ${lib.toString config.services.llama-cpp.cpuCoreCount} ${lib.escapeShellArgs model.extraServerArgs}";
                 proxy = "http://${host}:${toString llamaCppPort}";
               } // lib.optionalAttrs (model.aliases != [ ]) { aliases = model.aliases; }
               // lib.optionalAttrs (model.proxy != null) { proxy = model.proxy; }
