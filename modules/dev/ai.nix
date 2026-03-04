@@ -18,11 +18,11 @@ in
 
     # Claude Code → local llama (llama-swap in modules/services/llama-cpp.nix). Select model in Llama Swap first. Override: ANTHROPIC_MODEL=<key> claude-local; port: claude-local <port>.
     (writeShellScriptBin "claude-local" ''
-      default_port="11344"
+      default_port="11343"
       default_model="${defaultLocalModel}"
       port="''${1:-$default_port}"
       if [[ "$port" =~ ^[0-9]+$ ]]; then shift; else port=$default_port; fi
-      export ANTHROPIC_BASE_URL="http://127.0.0.1:$port"
+      export ANTHROPIC_BASE_URL="http://localhost:$port/v1"
       export ANTHROPIC_MODEL="''${ANTHROPIC_MODEL:-$default_model}"
       exec claude "$@"
     '')
