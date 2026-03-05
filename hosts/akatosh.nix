@@ -157,7 +157,7 @@ in
   systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
   services.llama-cpp = {
     cpuCoreCount = 6;
-    gpuLayerCount = 256;
+    gpuLayerCount = 99;
     models = {
       # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
       # someModel = {
@@ -167,7 +167,10 @@ in
       #   };
       # };
       "Qwen2.5-coder-1.5b-instruct-Q8_0".path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
-      "DeepSeek-R1-Distill-Qwen-7B-Q6_K".path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+      "DeepSeek-R1-Distill-Qwen-7B-Q6_K" = {
+        path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+        extraServerArgs = [ "-c" "4096" "--parallel" "1" ];
+      };
       "Qwen2.5-VL-7B-Instruct-Q6_K".path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
     };
   };
