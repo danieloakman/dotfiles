@@ -6,7 +6,7 @@
     ../modules/mobile-dev.nix
     ../modules/docker.nix
     ../modules/ghostty.nix
-    ../modules/gcalcli.nix
+    # ../modules/gws.nix # TODO: add when gws is added in darwin flake
   ];
 
   networking.hostName = "boethiah";

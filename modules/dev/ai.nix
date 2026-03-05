@@ -12,7 +12,6 @@ in
   environment.systemPackages = with pkgs; [
     llmfit # CLI tool to find what LLMs can run on our hardware
     gemini-cli
-    cursor-cli
     libnotify # Add `notify-send` command
 
     # Claude Code → local llama (llama-swap in modules/services/llama-cpp.nix). Select model in Llama Swap first. Override: ANTHROPIC_MODEL=<key> claude-local; port: claude-local <port>.
@@ -61,6 +60,8 @@ in
     '')
   ];
 
+  programs.cursor-cli.enable = true;
+
   home-manager.users.${env.user} = {
     programs = {
       claude-code = {
@@ -72,15 +73,7 @@ in
             When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
           '';
         };
-        mcpServers = {
-          google-calendar = {
-            command = "npx";
-            args = [ "@cocal/google-calendar-mcp" ];
-            env = {
-              GOOGLE_OAUTH_CREDENTIALS = config.sops.secrets."google_calendar_mcp_oath.json".path;
-            };
-          };
-        };
+        mcpServers = { };
       };
 
       # Use free or locally hosted LLMs for coding

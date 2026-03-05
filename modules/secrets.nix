@@ -7,9 +7,10 @@ let
     "pia_credentials" # Private Internet Access credentials 
     "dano_pwd"
     "cursor_api_key"
+    "gcloud_access_token"
+    "gcloud_credentials.json"
     "google_client_id"
     "google_client_secret"
-    "google_calendar_mcp_oath.json"
   ];
   group = "secrets"; # Group to access the secrets
 in
