@@ -4,53 +4,39 @@
   # See https://lazamar.co.uk/nix-versions/ for specific hashes to nixpkgs commits
   # Look for another website like this if this doesn't work like: 
   # https://www.nixhub.io/packages/
-  inputs = {
-    # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+  inputs =
+    let
+      urlThatFollowsNixPkgs = url: { inherit url; inputs.nixpkgs.follows = "nixpkgs"; };
+    in
+    {
+      # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
+      nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+      home-manager = urlThatFollowsNixPkgs "github:nix-community/home-manager";
+      sops-nix = urlThatFollowsNixPkgs "github:Mic92/sops-nix";
+      # devenv.url = "github:cachix/devenv";
+      openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
+      # hyprland = {
+      #   # url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+      #   url = "github:nixos/nixpkgs/c633f572eded8c4f3c75b8010129854ed404a6ce";
+      # };
+      # hyprland-plugins = {
+      #   url = "github:hyprwm/hyprland-plugins";
+      #   inputs.hyprland.follows = "hyprland";
+      # };
+      # hyprgrass = {
+      #   url = "github:horriblename/hyprgrass";
+      #   # inputs.hyprland.follows = "hyprland";
+      # };
+      stylix.url = "github:danth/stylix";
+      guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
+      astal = urlThatFollowsNixPkgs "github:aylur/astal";
+      ags = urlThatFollowsNixPkgs "github:aylur/ags";
+      # zen-browser.url = "github:MarceColl/zen-browser-flake";
+      pia = urlThatFollowsNixPkgs "github:Fuwn/pia.nix";
+      copyparty.url = "github:9001/copyparty";
+      bun2nix = urlThatFollowsNixPkgs "github:nix-community/bun2nix";
+      qws = urlThatFollowsNixPkgs "github:googleworkspace/cli";
     };
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # devenv.url = "github:cachix/devenv";
-    openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
-    # hyprland = {
-    #   # url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-    #   url = "github:nixos/nixpkgs/c633f572eded8c4f3c75b8010129854ed404a6ce";
-    # };
-    # hyprland-plugins = {
-    #   url = "github:hyprwm/hyprland-plugins";
-    #   inputs.hyprland.follows = "hyprland";
-    # };
-    # hyprgrass = {
-    #   url = "github:horriblename/hyprgrass";
-    #   # inputs.hyprland.follows = "hyprland";
-    # };
-    stylix.url = "github:danth/stylix";
-    guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
-    astal = {
-      url = "github:aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    ags = {
-      url = "github:aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # zen-browser.url = "github:MarceColl/zen-browser-flake";
-    pia = {
-      url = "github:Fuwn/pia.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    copyparty.url = "github:9001/copyparty";
-    bun2nix = {
-      url = "github:nix-community/bun2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
   outputs = { self, nixpkgs, pia, copyparty, bun2nix, ... }@inputs:
     let
       system = "x86_64-linux";
