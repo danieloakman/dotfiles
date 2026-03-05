@@ -20,6 +20,7 @@ in
     home = {
       sessionVariables = {
         GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = config.sops.secrets."gcloud_credentials.json".path;
+        # TODO: see if we can add env vars that have a value like: $(pass api_keys/...)
       };
     };
     programs = {
