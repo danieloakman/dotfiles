@@ -60,8 +60,6 @@ in
     '')
   ];
 
-  programs.cursor-cli.enable = true;
-
   home-manager.users.${env.user} = {
     programs = {
       claude-code = {

@@ -1,8 +1,13 @@
 { env, lib, pkgs, config, ... }:
+let
+  cursor-cli = pkgs.writeShellScriptBin "cursor-cli" ''
+    CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
+    ${lib.getExe pkgs.cursor-cli} --api-key "$CURSOR_API_KEY" "$@"
+  '';
+in
 {
   options = {
     programs.cursor-cli = {
-      enable = lib.mkEnableOption "Enable Cursor";
       mcpServers = lib.mkOption {
         type = lib.types.attrsOf (lib.types.submodule {
           options = {
@@ -31,7 +36,14 @@
   };
 
   config = {
-    environment.systemPackages = with pkgs; if config.programs.cursor-cli.enable then [ cursor-cli ] else [ ];
+    environment.systemPackages = with pkgs; [
+      cursor-cli
+      code-cursor
+      (writeShellScriptBin "open-cursor" ''
+        # Opens the cursor editor in the current directory
+        ${lib.getExe code-cursor} . &> /tmp/cursor.log &
+      '')
+    ];
     home-manager.users.${env.user} = {
       home.file = {
         ".cursor/mcp.json" = {

@@ -40,11 +40,6 @@
 
     # Editors that can be ssh'd into and used:
     vscode
-    code-cursor
-    (writeShellScriptBin "open-cursor" ''
-      # Opens the cursor editor in the current directory
-      ${code-cursor}/bin/cursor . &> /tmp/cursor.log &
-    '')
 
     # Nix shells:
     (pkgs.buildFHSEnv {
