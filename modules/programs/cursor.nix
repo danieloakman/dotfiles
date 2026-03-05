@@ -18,6 +18,7 @@
         description = "MCP servers to enable for Cursor";
       };
 
+      # TODO: it turns out you can just use ~/.agents/skills to store skills. So this should be refactored into another ai or agents module.
       skills = lib.mkOption {
         type = lib.types.oneOf [
           (lib.types.attrsOf lib.types.path)
