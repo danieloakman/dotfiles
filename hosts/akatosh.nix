@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running 'nixos-help').
 
-{ env, config, lib, modulesPath, pkgs, ... }:
+{ env, config, lib, modulesPath, ... }:
 let
   # nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.production
   nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.stable;
