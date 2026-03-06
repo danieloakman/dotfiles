@@ -142,18 +142,21 @@ in
       #   "workspace 3, class:^(Steam)$"
       # ];
     };
-    services.hyprpaper.settings =
-      let
-        wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/akatosh-wallpaper.jpeg";
-      in
-      {
-        preload = [ wallpaperPath ];
-        wallpaper = [
-          "DVI-D-1,${wallpaperPath}"
-          "DP-2,${wallpaperPath}"
-          "HDMI-A-1,${wallpaperPath}"
-        ];
-      };
+    services = {
+      hyprpaper.settings =
+        let
+          wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/akatosh-wallpaper.jpeg";
+        in
+        {
+          preload = [ wallpaperPath ];
+          wallpaper = [
+            "DVI-D-1,${wallpaperPath}"
+            "DP-2,${wallpaperPath}"
+            "HDMI-A-1,${wallpaperPath}"
+          ];
+        };
+      remmina.enable = true; # RDP client for connecting to remote desktops
+    };
   };
 
   systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
