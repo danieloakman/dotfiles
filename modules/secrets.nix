@@ -11,6 +11,7 @@ let
     "gcloud_credentials.json"
     "google_client_id"
     "google_client_secret"
+    "main_gh_token"
   ];
   group = "secrets"; # Group to access the secrets
 in
