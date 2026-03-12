@@ -1,7 +1,5 @@
 import meow from 'meow';
-import { launchBrowser } from './utils/browser';
-import { AUTH_FILE } from './utils/env';
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 
 if (import.meta.main) {
 	const { flags } = meow(
