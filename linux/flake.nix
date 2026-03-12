@@ -53,9 +53,14 @@
       url = "github:googleworkspace/cli";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    bun-scripts = {
+      url = "path:../modules/scripts/bun";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.bun2nix.follows = "bun2nix";
+    };
   };
 
-  outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, ... }@inputs:
+  outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -116,7 +121,7 @@
                 hasGPU = true;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; };
+            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }
@@ -137,7 +142,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; };
+            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }
@@ -158,7 +163,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; };
+            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }

@@ -8,38 +8,43 @@ import { attempt } from '@danoaky/js-utils';
 import { mkdir } from 'fs/promises';
 
 function panic(message: string, code = 1): never {
-  console.error(message);
-  process.exit(code);
+	console.error(message);
+	process.exit(code);
 }
 
-async function downloadFilesFrom(client: Client, srcDir: string, globFile: string[], destDir: string) {
-  const { data: list, error } = await attempt(client.list(srcDir));
-  if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
+async function downloadFilesFrom(
+	client: Client,
+	srcDir: string,
+	globFile: string[],
+	destDir: string
+) {
+	const { data: list, error } = await attempt(client.list(srcDir));
+	if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
 
-  for (const stat of list) {
-    if (!stat.isFile || !micromatch.isMatch(stat.name, globFile)) continue;
-    const srcPath = Path.join(srcDir, stat.name);
-    const destPath = Path.join(destDir, srcPath);
-    await mkdir(Path.dirname(destPath), { recursive: true });
-    const { error } = await attempt(client.downloadTo(destPath, srcPath));
-    if (error) panic(`Failed to download "${destPath}": ${error.message}`);
-    console.log(`Downloaded file: "${destPath}"`);
-  }
+	for (const stat of list) {
+		if (!stat.isFile || !micromatch.isMatch(stat.name, globFile)) continue;
+		const srcPath = Path.join(srcDir, stat.name);
+		const destPath = Path.join(destDir, srcPath);
+		await mkdir(Path.dirname(destPath), { recursive: true });
+		const { error } = await attempt(client.downloadTo(destPath, srcPath));
+		if (error) panic(`Failed to download "${destPath}": ${error.message}`);
+		console.log(`Downloaded file: "${destPath}"`);
+	}
 }
 
 async function downloadDirFrom(client: Client, srcDir: string, destDir: string) {
-  const destPath = Path.join(destDir, srcDir); // Copy dir to same directory structure as the source directory
-  const { error } = await attempt(client.downloadToDir(destPath, srcDir));
-  if (error) panic(`Failed to download directory "${srcDir}": ${error.message}`);
-  console.log(`Downloaded directory: "${destPath}"`);
+	const destPath = Path.join(destDir, srcDir); // Copy dir to same directory structure as the source directory
+	const { error } = await attempt(client.downloadToDir(destPath, srcDir));
+	if (error) panic(`Failed to download directory "${srcDir}": ${error.message}`);
+	console.log(`Downloaded directory: "${destPath}"`);
 }
 
 if (import.meta.main) {
-  const {
-    input,
-    flags: { verbose, user, password },
-  } = meow(
-    `
+	const {
+		input,
+		flags: { verbose, user, password }
+	} = meow(
+		`
     Usage: 3ds-backup <ip:port>
 
     Options:
@@ -48,48 +53,48 @@ if (import.meta.main) {
       -u, --user      Username
       -p, --password  Password
     `,
-    {
-      importMeta: import.meta,
-      flags: {
-        verbose: {
-          type: 'boolean',
-          default: false,
-          shortFlag: 'v',
-        },
-        user: {
-          type: 'string',
-          shortFlag: 'u',
-        },
-        password: {
-          type: 'string',
-          shortFlag: 'p',
-        },
-      },
-    },
-  );
+		{
+			importMeta: import.meta,
+			flags: {
+				verbose: {
+					type: 'boolean',
+					default: false,
+					shortFlag: 'v'
+				},
+				user: {
+					type: 'string',
+					shortFlag: 'u'
+				},
+				password: {
+					type: 'string',
+					shortFlag: 'p'
+				}
+			}
+		}
+	);
 
-  const [host, port] = input[0]?.split(':') ?? [];
-  if (!host || !port || isNaN(parseInt(port))) panic('Invalid input');
+	const [host, port] = input[0]?.split(':') ?? [];
+	if (!host || !port || isNaN(parseInt(port))) panic('Invalid input');
 
-  console.log(`Connecting to ${host}:${port} as ${user ?? 'anonymous'}`);
-  await using defer = new Deferral();
-  const client = new Client(10000);
-  client.ftp.verbose = verbose;
-  await client
-    .access({
-      host,
-      port: parseInt(port),
-      user,
-      password,
-    })
-    .then(() => console.log(`Connected to ${host}:${port}`))
-    .catch((err: Error) => panic(`Failed to access ${host}:${port}: ${err.message}`));
-  defer.add(() => client.close());
+	console.log(`Connecting to ${host}:${port} as ${user ?? 'anonymous'}`);
+	await using defer = new Deferral();
+	const client = new Client(10000);
+	client.ftp.verbose = verbose;
+	await client
+		.access({
+			host,
+			port: parseInt(port),
+			user,
+			password
+		})
+		.then(() => console.log(`Connected to ${host}:${port}`))
+		.catch((err: Error) => panic(`Failed to access ${host}:${port}: ${err.message}`));
+	defer.add(() => client.close());
 
-  const destDir = Path.join(homedir(), 'Sync/3ds-backup');
-  await mkdir(destDir, { recursive: true });
+	const destDir = Path.join(homedir(), 'Sync/3ds-backup');
+	await mkdir(destDir, { recursive: true });
 
-  await downloadDirFrom(client, '3ds/Checkpoint/saves', destDir);
-  await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], destDir);
-  await downloadFilesFrom(client, 'roms/gba', ['*.s*'], destDir);
+	await downloadDirFrom(client, '3ds/Checkpoint/saves', destDir);
+	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], destDir);
+	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], destDir);
 }

@@ -13,6 +13,7 @@
     zbar # Can scan QR & bar codes using this
     lf # Terminal file system manager
     wine # For running Windows applications on Linux
+    nix-prefetch-github
 
     # Node and Javascript related packages:
     nodejs_24
