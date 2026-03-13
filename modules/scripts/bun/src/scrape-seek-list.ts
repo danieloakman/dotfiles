@@ -27,7 +27,7 @@ const idRe = /\| (\d+)$/;
 const ACTIONS = [
 	'1: Open URL',
 	'2: Update: Applied',
-	'3: Update: Low relevance',
+	'3: Update: Relevance',
 	'4: Delete',
 	'5: Back'
 ] as const;
@@ -62,7 +62,7 @@ if (import.meta.main) {
 		jobLoop: while (true) {
 			const job = (await readJob(id)) ?? raise('Job not found');
 			const choice =
-				(await $`echo ${ACTIONS_JOINED} | fzf --header "${[job.title, job.company, job.location].filter(Boolean).join(' | ')}" || echo "${ACTIONS.at(-1)}"`.text()) as Action;
+				(await $`echo ${ACTIONS_JOINED} | fzf --header "${[`R${job.relevance}${job.isQuickApply ? ' Q' : ''}`, job.title, job.company, job.location].filter(Boolean).join(' | ')}" || echo "${ACTIONS.at(-1)}"`.text()) as Action;
 			switch (choice.trim()) {
 				case '1: Open URL':
 					await open(job.url);
@@ -71,10 +71,12 @@ if (import.meta.main) {
 					await updateJob(id, { applied: true });
 					console.log(`Applied to job ${id}: ${job.title}`);
 					break jobLoop;
-				case '3: Update: Low relevance':
-					await updateJob(id, { relevance: 1 });
-					console.log(`Low relevance to job ${id}: ${job.title}`);
-					break jobLoop;
+				case '3: Update: Relevance':
+					const relevance = await question(`Relevance currently at ${job.relevance}/100. Update to? `);
+					const relevanceInt = safeParseInt(relevance) ?? raise('Invalid relevance input');
+					await updateJob(id, { relevance: relevanceInt });
+					console.log(`Update relevance to job ${id}: ${job.title}`);
+					break;
 				case '4: Delete':
 					const confirm = await question('Are you sure you want to delete this job? (y/n) ', 'n');
 					if (confirm.trim().toLowerCase() === 'y') await deleteJob(id);
