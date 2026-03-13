@@ -3,8 +3,12 @@ import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir, tmpdir as osTmpdir } from 'os';
 
+export const projectdir = join(__dirname, '../../');
+
+export const projectCachedir = join(projectdir, '.cache');
+
 export const cachedir = once(() => {
-	const dir = IS_DEV ? join(__dirname, '../../.cache') : join(homedir(), '.cache', 'bun-scripts');
+	const dir = IS_DEV ? projectCachedir : join(homedir(), '.cache', 'bun-scripts');
 	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 	return dir;
 });
