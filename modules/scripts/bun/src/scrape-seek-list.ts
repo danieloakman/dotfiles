@@ -5,8 +5,8 @@ import { Dayjs, raise, safeParseInt, question } from '@danoaky/js-utils';
 import { readJob, updateJob, deleteJob } from './db/jobs';
 import { open } from './utils/misc';
 
-const readAllNotAppliedJobs = () =>
-	db
+const readAllNotAppliedJobs = async () =>
+	(await db())
 		.select({
 			id: jobs.id,
 			url: jobs.url,
@@ -37,6 +37,10 @@ const ACTIONS_JOINED = ACTIONS.join('\n');
 if (import.meta.main) {
 	while (true) {
 		const results = await readAllNotAppliedJobs();
+		if (!results.length) {
+			console.log('No jobs to show');
+			break;
+		}
 		const selectJobs = results
 			.map(({ title, relevance, postedAt, id, isQuickApply }) =>
 				[
