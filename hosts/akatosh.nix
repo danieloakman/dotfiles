@@ -155,7 +155,10 @@ in
             "HDMI-A-1,${wallpaperPath}"
           ];
         };
-      remmina.enable = true; # RDP client for connecting to remote desktops
+      remmina = {
+        enable = true; # RDP client for connecting to remote desktops
+        systemdService.enable = false;
+      };
     };
   };
 
