@@ -29,7 +29,7 @@ let
     }
     {
       name = "Search & Kill Process";
-      command = "kill-processes";
+      command = "rofi-kill-processes";
       binding = "<Super>k";
     }
     {

@@ -137,7 +137,7 @@ in
         bind = [
           "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"
           "$mod, S, exec, rofi-google-search"
-          "$mod, K, exec, kill-processes"
+          "$mod, K, exec, rofi-kill-processes"
           "alt, F4, killactive"
           "$mod, C, killactive"
           "$mod, V, togglefloating"
