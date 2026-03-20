@@ -45,6 +45,7 @@ in
             platform-tools
             emulator
             ndk-29-0-14206865
+            cmake-4-1-2
           ]);
         sdkPath = ".android";
       in
