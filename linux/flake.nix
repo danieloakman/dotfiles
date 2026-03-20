@@ -58,9 +58,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.bun2nix.follows = "bun2nix";
     };
+    android-nixpkgs = {
+      url = "github:tadfisher/android-nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, ... }@inputs:
+  outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -121,7 +125,7 @@
                 hasGPU = true;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
+            { inherit inputs system env pia copyparty bun2nix gws android-nixpkgs; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }
@@ -142,7 +146,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
+            { inherit inputs system env pia copyparty bun2nix gws android-nixpkgs; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }
@@ -163,7 +167,7 @@
                 hasGPU = false;
               };
             in
-            { inherit inputs system env pia copyparty bun2nix gws; bunScriptsPackage = bun-scripts.packages.${system}.default; };
+            { inherit inputs system env pia copyparty bun2nix gws android-nixpkgs; bunScriptsPackage = bun-scripts.packages.${system}.default; };
           modules = [
             commonImports
             { }

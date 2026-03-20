@@ -74,7 +74,6 @@ in
     ../modules/ssh.nix
     ../modules/desktop-pkgs.nix
     ../modules/power-management.nix
-    ../modules/mobile-dev.nix
     ../modules/games.nix
     ../modules/stylix.nix
     ../modules/dev

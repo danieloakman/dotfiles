@@ -11,7 +11,6 @@
 
     ../modules/ssh.nix
     ../modules/dev
-    ../modules/mobile-dev.nix
     ../modules/docker.nix
     ../modules/syncthing.nix
     ../modules/power-management.nix
@@ -66,6 +65,12 @@
       size = 8192; # MB
     }
   ];
+
+  my = {
+    programs = {
+      # mobile-dev.enable = false;
+    };
+  };
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

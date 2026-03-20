@@ -9,6 +9,9 @@
     users = {
       ${env.user} = import ./home.${env.user}.nix;
     };
+    # This is the extension for backup files when home-manager finds a file that already exists in a
+    # spot that it wants to put something in. This prevents the backup files from being overwritten
+    backupFileExtension = ".bak";
   };
 
   users = {

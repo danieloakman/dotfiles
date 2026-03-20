@@ -3,7 +3,6 @@
     # ../modules/aerospace.nix
     ../modules/skhd.nix # Even though I can't get this to reliably stay running, leaving it in for now since it gives permission warnings on every login
     ../modules/zsh.nix
-    ../modules/mobile-dev.nix
     ../modules/docker.nix
     ../modules/ghostty.nix
     # ../modules/gws.nix # TODO: add when gws is added in darwin flake
@@ -14,6 +13,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = ".bak";
     # extraSpecialArgs = { inherit inputs system env self; };
     users.${env.user} = {
       # Let Home Manager install and manage itself.
