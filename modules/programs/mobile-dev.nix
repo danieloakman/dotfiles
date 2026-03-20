@@ -65,6 +65,9 @@ in
           (writeShellScriptBin "android-emulator-create" ''
             ${finalSdkPkgs}/bin/avdmanager create avd --name $1 --package "${systemImageStr}" --device $2 --path $ANDROID_AVD_ROOT --sdcard "2048M"
           '')
+          (writeShellScriptBin "android-emulator-delete" ''
+            ${finalSdkPkgs}/bin/avdmanager delete avd --name $1
+          '')
         ];
         home-manager.users.${env.user} = {
           home = {
