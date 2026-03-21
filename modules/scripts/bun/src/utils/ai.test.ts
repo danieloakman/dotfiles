@@ -1,5 +1,5 @@
 import { describe, test as it, expect } from 'bun:test';
-import { structuredCompletion, getBestCodingModelId } from './ai';
+import { structuredPrompt, getBestCodingModelId } from './ai';
 import z from 'zod';
 
 describe('ai', () => {
@@ -15,7 +15,7 @@ describe('ai', () => {
 				)
 			})
 			.describe('places');
-		const res = await structuredCompletion(
+		const res = await structuredPrompt(
 			await getBestCodingModelId(),
 			'France | Paris | 48.8566, 2.3522\nGermany | Berlin | 52.5244, 13.4105',
 			schema

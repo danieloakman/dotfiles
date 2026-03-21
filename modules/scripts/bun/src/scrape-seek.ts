@@ -5,8 +5,8 @@ import { deferral } from '@danoaky/js-utils/disposables';
 import { $ } from 'bun';
 import { existsSync } from 'fs';
 import { selectJobSchema, type Job } from './db';
-import { attempt, Dayjs, once, safeParseInt } from '@danoaky/js-utils';
-import { getBestCodingModelId, structuredCompletion } from './utils/ai';
+import { attempt, Dayjs, once, safeParseInt, iife } from '@danoaky/js-utils';
+import { getBestCodingModelId, structuredPrompt } from './utils/ai';
 import { createJob, jobExists } from './db/jobs';
 import { AUTH_FILE } from './utils/env';
 import z from 'zod';
@@ -24,7 +24,7 @@ const relevanceSchema = z
 	})
 	.describe('Relevance');
 
-const resumeText = once(downloadResumeText);
+const resumeText = once(() => downloadResumeText());
 
 function parseJobId(href: string) {
 	if (!href.includes('/job/')) return null;
@@ -164,7 +164,7 @@ ${parsedJobData.description}
 ---
 	`;
 	const { status: relevanceStatus, data: relevanceData } = await attempt(
-		structuredCompletion(await getBestCodingModelId(), relevancePrompt, relevanceSchema)
+		structuredPrompt(await getBestCodingModelId(), relevancePrompt, relevanceSchema)
 	);
 	if (relevanceStatus !== 'success') {
 		console.warn(`Failed to calculate relevance for job url: ${url}, status: ${relevanceStatus}`);
@@ -335,8 +335,16 @@ PLAYWRIGHT_AUTH_FILE     Path to an auth file to load
 		? await connectToBrowser(flags.remote)
 		: await launchBrowser({ headless: flags.headless });
 	const context = await browser.newContext({ storageState: AUTH_FILE });
+	const firstPage = await iife(async () => {
+		if (flags.headless) return null;
+		// Open a page so that the browser doesn't continually close and re-open.
+		const page = await context.newPage();
+		await page.goto(SEEK_BASE_URL, { waitUntil: 'domcontentloaded', timeout: 10000 });
+		return page;
+	});
 	defer(async () => {
 		await context.storageState({ path: AUTH_FILE });
+		await firstPage?.close();
 		await context.close();
 		await browser.close();
 	});

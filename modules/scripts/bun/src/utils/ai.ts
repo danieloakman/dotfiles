@@ -10,15 +10,18 @@ const llamaSwap = new OpenAI({
 	apiKey: 'dummy'
 });
 
-export function listModels() {
-	return llamaSwap.models.list();
-}
+export const listModels = once(() => llamaSwap.models.list());
 
 const codingRe = /cod(ing|er)/i;
 export const getBestCodingModelId = once(async () => {
 	const models = await listModels();
 	return models.data.find((model) => codingRe.test(model.id))?.id ?? raise('No coding model found');
 });
+
+export const getBiggestParameterModelId = once(async () => {
+	const { data} = await listModels();
+	return data[0]?.id ?? raise('No models found');
+})
 
 export function prompt(model: string, input: Exclude<AIInput, string>) {
 	return llamaSwap.chat.completions.create({
@@ -27,7 +30,7 @@ export function prompt(model: string, input: Exclude<AIInput, string>) {
 	});
 }
 
-export async function structuredCompletion<T extends z.ZodTypeAny>(
+export async function structuredPrompt<T extends z.ZodTypeAny>(
 	model: string,
 	input: string,
 	schema: T
