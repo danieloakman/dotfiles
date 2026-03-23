@@ -28,6 +28,7 @@
         { from = 8000; to = 8100; }
         { from = 5170; to = 5180; } # typically 5173 for vite, and the same idea for the one below
         { from = 4170; to = 4180; }
+        { from = 8080; to = 8090; } # Expo dev server uses these, as well as other common servers
       ];
       # Open ports in the firewall for tiny.work:
       trustedInterfaces = [ "tun0" "tun" ]; # For tiny.work VPN
