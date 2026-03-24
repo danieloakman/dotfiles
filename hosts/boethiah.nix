@@ -4,7 +4,8 @@
     ../modules/skhd.nix # Even though I can't get this to reliably stay running, leaving it in for now since it gives permission warnings on every login
     ../modules/zsh.nix
     ../modules/docker.nix
-    ../modules/ghostty.nix
+    # ../modules/ghostty.nix
+    # ../modules/secrets.nix
     # ../modules/gws.nix # TODO: add when gws is added in darwin flake
   ];
 
@@ -330,6 +331,7 @@
       "private-internet-access"
       "gimp"
       "tailscale-app"
+      "iterm2"
     ];
 
     masApps = {
