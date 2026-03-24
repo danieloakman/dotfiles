@@ -1,7 +1,7 @@
 import { and, eq, desc, lt, gt } from 'drizzle-orm';
 import { db, jobs } from './db';
 import { $ } from 'bun';
-import { Dayjs, raise, safeParseInt, question, once, txt, addTimeout } from '@danoaky/js-utils';
+import { Dayjs, raise, safeParseInt, question, once, txt, addTimeout, truncate } from '@danoaky/js-utils';
 import { readJob, updateJob, deleteJob } from './db/jobs';
 import { open } from './utils/misc';
 import { getBiggestParameterModelId, prompt } from './utils/ai';
@@ -23,10 +23,11 @@ const readAllNotAppliedJobs = async () =>
 		})
 		.from(jobs)
 		.where(and(eq(jobs.applied, false), gt(jobs.postedAt, CUTOFF_TIME)))
-		.orderBy(desc(jobs.isQuickApply), desc(jobs.relevance), desc(jobs.postedAt))
+		.orderBy(desc(jobs.relevance), desc(jobs.isQuickApply), desc(jobs.postedAt))
+		.limit(100)
 		.execute();
 
-const idRe = /\| (\d+)$/;
+const idRe = /\| *(\d+)$/;
 
 const resumeText = once(() => downloadResumeText());
 
@@ -46,13 +47,13 @@ if (import.meta.main) {
 		const selectJobs = results
 			.map(({ title, relevance, postedAt, id, isQuickApply }) =>
 				[
-					`R${relevance}${isQuickApply ? ' Q' : ''}`,
-					postedAt && Dayjs(postedAt).fromNow(),
-					title,
+					`R${relevance?.toString().padEnd(3, ' ')}${isQuickApply ? ' Q' : '  '}`,
+					postedAt && Dayjs(postedAt).fromNow().padEnd(12, ' '),
+					truncate(title.padEnd(60, ' '), { length: 60 }),
 					id
 				]
 					.filter(Boolean)
-					.join(' | ')
+					.join('|')
 			)
 			.join('\n');
 		const rawSelected =
