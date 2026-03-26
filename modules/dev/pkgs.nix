@@ -15,7 +15,6 @@
     wine # For running Windows applications on Linux
     nix-prefetch-github
     ripgrep # We could use the home-manager ripgrep package instead if we needed to give it some specific arguments everytime
-    defuddle-cli # CLI for downloading webpages to clean markdown
 
     # Node and Javascript related packages:
     nodejs_24

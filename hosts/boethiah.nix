@@ -133,7 +133,6 @@
       pnpm-shell-completion
       pet # CLI tool for keeping a list of commands and executing them later
       cursor-cli
-      defuddle-cli # CLI for downloading webpages to clean markdown
 
       # Golang & related tools:
       go
