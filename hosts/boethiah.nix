@@ -324,7 +324,7 @@
       "visual-studio-code"
       # "warp"
       "zoom"
-      # "spotify" # Spotify always comes up with an error on boot. So installing this manually for now.
+      "spotify" # idk why but this causes an message to pop up to delete the spotify app. But uninstalling it and reinstalling it seems to fix it.
       "obsidian"
       "localsend"
       "docker-desktop"
