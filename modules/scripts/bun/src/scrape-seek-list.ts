@@ -30,7 +30,8 @@ const readAllNotAppliedJobs = async () =>
 			company: jobs.company,
 			isQuickApply: jobs.isQuickApply,
 			relevance: jobs.relevance,
-			postedAt: jobs.postedAt
+			postedAt: jobs.postedAt,
+			description: jobs.description,
 			// location: jobs.location
 		})
 		.from(jobs)
