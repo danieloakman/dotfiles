@@ -1,12 +1,24 @@
 import { and, eq, desc, lt, gt } from 'drizzle-orm';
 import { db, jobs } from './db';
 import { $ } from 'bun';
-import { Dayjs, raise, safeParseInt, question, once, txt, addTimeout, truncate } from '@danoaky/js-utils';
+import {
+	Dayjs,
+	raise,
+	safeParseInt,
+	question,
+	once,
+	txt,
+	addTimeout,
+	truncate,
+	attempt,
+	pick
+} from '@danoaky/js-utils';
 import { readJob, updateJob, deleteJob } from './db/jobs';
 import { open } from './utils/misc';
-import { getBiggestParameterModelId, prompt } from './utils/ai';
+import { getBestCodingModelId, getBiggestParameterModelId, prompt, structuredPrompt } from './utils/ai';
 import { downloadResumeText } from './utils/my-resume';
 import clipboard from 'clipboardy';
+import { relevanceSchema } from './scrape-seek';
 
 const CUTOFF_TIME = Dayjs().subtract(28, 'day').toDate();
 const readAllNotAppliedJobs = async () =>
@@ -153,13 +165,41 @@ if (import.meta.main) {
 					await question('Press Enter to continue... (Copied to clipboard)');
 					return ActionStatus.Continue;
 				},
-				'6: Delete': async () => {
+				'6: Re-evaluate relevance with AI': async () => {
+					const relevancePrompt = `
+Here is my current resume:
+---
+${await resumeText()}
+---
+
+Now find the relevance score (integer value between 0 and 100) of the following job description to my resume:
+---
+${JSON.stringify(pick(job, ['title', 'company', 'description', 'location', 'workType']))}
+---
+	`;
+					const { status, data } = await attempt(
+						structuredPrompt(await getBestCodingModelId(), relevancePrompt, relevanceSchema)
+					);
+					if (status !== 'success') {
+						console.warn(
+							`Failed to calculate relevance for job id: ${id}, status: ${status}`
+						);
+						return ActionStatus.Continue;
+					}
+					const response = await question(`AI wants to update the relevance from ${job.relevance} to ${data.relevance}. Update? (y/n) `);
+					if (response.trim().toLowerCase() === 'y') {
+						await updateJob(id, { relevance: data.relevance });
+						console.log(`Updated relevance for job ${id}: ${job.title}`);
+					}
+					return ActionStatus.Continue;
+				},
+				'7: Delete': async () => {
 					const confirm = await question('Are you sure you want to delete this job? (y/n) ', 'n');
 					if (confirm.trim().toLowerCase() === 'y') await deleteJob(id);
 					console.log(`Deleted job ${id}: ${job.title}`);
 					return ActionStatus.BreakJobLoop;
 				},
-				'7: Back': async () => {
+				'8: Back': async () => {
 					return ActionStatus.BreakJobLoop;
 				}
 			};

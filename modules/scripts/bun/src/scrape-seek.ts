@@ -5,7 +5,7 @@ import { deferral } from '@danoaky/js-utils/disposables';
 import { $ } from 'bun';
 import { existsSync } from 'fs';
 import { selectJobSchema, type Job } from './db';
-import { attempt, Dayjs, once, safeParseInt, iife } from '@danoaky/js-utils';
+import { attempt, Dayjs, once, safeParseInt, iife, pick } from '@danoaky/js-utils';
 import { getBestCodingModelId, structuredPrompt } from './utils/ai';
 import { createJob, jobExists } from './db/jobs';
 import { AUTH_FILE } from './utils/env';
@@ -14,7 +14,7 @@ import { downloadResumeText } from './utils/my-resume';
 
 export const SEEK_BASE_URL = 'https://www.seek.com.au';
 
-const relevanceSchema = z
+export const relevanceSchema = z
 	.object({
 		relevance: z
 			.number()
@@ -160,7 +160,7 @@ ${await resumeText()}
 
 Now find the relevance score (integer value between 0 and 100) of the following job description to my resume:
 ---
-${parsedJobData.description}
+${JSON.stringify(pick(parsedJobData, ['title', 'company', 'description', 'location', 'workType']))}
 ---
 	`;
 	const { status: relevanceStatus, data: relevanceData } = await attempt(
