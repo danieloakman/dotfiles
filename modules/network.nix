@@ -13,6 +13,19 @@
       plugins = with pkgs; [
         networkmanager-openvpn
       ];
+      settings = {
+        connection-wifi = {
+          "match-device" = "type:wifi";
+          "ipv4.route-metric" = 600;
+          "ipv6.route-metric" = 600;
+        };
+        # Prefer Ethernet over Wi-Fi for default route.
+        connection-ethernet = {
+          "match-device" = "type:ethernet";
+          "ipv4.route-metric" = 100;
+          "ipv6.route-metric" = 100;
+        };
+      };
     };
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     # Configure network proxy if necessary
