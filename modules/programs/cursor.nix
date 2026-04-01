@@ -22,16 +22,6 @@ in
         default = { };
         description = "MCP servers to enable for Cursor";
       };
-
-      # TODO: it turns out you can just use ~/.agents/skills to store skills. So this should be refactored into another ai or agents module.
-      skills = lib.mkOption {
-        type = lib.types.oneOf [
-          (lib.types.attrsOf lib.types.path)
-          (lib.types.attrsOf lib.types.str)
-        ];
-        default = { };
-        description = "Skills to enable for Cursor";
-      };
     };
   };
 
@@ -52,16 +42,7 @@ in
             mcpServers = config.programs.cursor-cli.mcpServers;
           };
         };
-      } // builtins.mapAttrs
-        (name: skill: {
-          ".cursor/skills/${name}.md" =
-            if lib.isPath skill then {
-              source = skill;
-            } else {
-              text = skill;
-            };
-        })
-        config.programs.cursor-cli.skills;
+      };
     };
   };
 }

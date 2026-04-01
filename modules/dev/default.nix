@@ -1,7 +1,6 @@
 _: {
   imports = [
-    ./ai.nix
+    ./ai
     ./pkgs.nix
-    ./ui-design-brain-skill.nix
   ];
 }
