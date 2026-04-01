@@ -20,7 +20,7 @@ in
       exec ${gcalcliExe} --client-id "$CLIENT_ID" --client-secret "$CLIENT_SECRET" "$@"
     '')
   ];
-  programs.cursor-cli.skills.gcalcli = gcalcliSkillPath;
+  my.ai.skills.gcalcli.source = gcalcliSkillPath;
   home-manager.users.${env.user} = {
     # Add AI Skills for gcalcli:
     programs.claude-code.skills.gcalcli = gcalcliSkillPath;
