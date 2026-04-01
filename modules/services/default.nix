@@ -14,6 +14,7 @@ _: {
     # ./ollama.nix
     ./stirling-pdf.nix
     ./paperless.nix
+    ./periodic-reboot.nix
     ./remote-desktop.nix
     ./streaming.nix
   ];

@@ -58,6 +58,12 @@
 
   services.immich.mediaLocation = "/run/media/HDD_1/immich";
   services.paperless.mediaDir = "/run/media/HDD_1/paperless";
+  my.services.periodicReboot = {
+    # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
+    enable = true;
+    # Every day at 1am
+    schedule = "0 1 * * *";
+  };
 
   swapDevices = [
     {
