@@ -4,8 +4,8 @@
   ];
   my.ai = {
     rootContext = builtins.readFile (pkgs.fetchurl {
-      url = "https://github.com/drona23/claude-token-efficient/blob/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
-      sha256 = "DElYTY1TQ9stBDMm/2IHIY9oiMqxuH51vBHfzsiQJJI=";
+      url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
+      sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
     });
     skills = {
       "grill-me" = ''
