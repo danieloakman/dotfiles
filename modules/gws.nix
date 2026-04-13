@@ -1,5 +1,5 @@
 # Module for Google Workspace CLI tools, gmail, g-calendar, drive, etc.
-{ pkgs, gws, system, env, config, ... }:
+{ pkgs, gws, system, env, ... }:
 let
   gwsMcp = {
     command = "gws";
@@ -17,11 +17,6 @@ in
   ];
   programs.cursor-cli.mcpServers.gws = gwsMcp;
   home-manager.users.${env.user} = {
-    home = {
-      sessionVariables = {
-        # GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = config.sops.secrets."gcloud_credentials.json".path;
-      };
-    };
     programs = {
       mcp = {
         enable = true;

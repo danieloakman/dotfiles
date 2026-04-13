@@ -22,18 +22,6 @@
               fi
             '';
             linux = ''
-              if [ -z "$GOOGLE_WORKSPACE_CLI_CLIENT_ID" ]; then 
-                export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(cat ${config.sops.secrets.google_client_id.path})"
-              fi
-              if [ -z "$GOOGLE_WORKSPACE_CLI_CLIENT_SECRET" ]; then
-                export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(cat ${config.sops.secrets.google_client_secret.path})"
-              fi
-              # Just straight up copy the file to `.config`:
-              mkdir -p $HOME/.config/gws
-              cp ${config.sops.secrets."gcloud_credentials.json".path} $HOME/.config/gws/client_secret.json
-              if [ -z $GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE ]; then
-                export GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE="$HOME/.config/gws/client_secret.json"
-              fi
               if [ -z "$CURSOR_API_KEY" ]; then
                 export CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
               fi
