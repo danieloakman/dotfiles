@@ -1,10 +1,16 @@
 { env, lib, pkgs, config, inputs, system, ... }:
 let
+  # Pinned nixpkgs’ legacyPackages use default config and reject unfree cursor-cli.
+  cursorPinnedPkgs = import inputs.cursor-cli {
+    inherit system;
+    config.allowUnfree = true;
+  };
+  cursorCliPkg = cursorPinnedPkgs.cursor-cli;
+  codeCursorPkg = cursorPinnedPkgs.code-cursor;
   cursor-cli = pkgs.writeShellScriptBin "cursor-cli" ''
     CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
-    ${lib.getExe inputs.cursor-cli.legacyPackages.${system}.cursor-cli} --api-key "$CURSOR_API_KEY" "$@"
+    ${lib.getExe cursorCliPkg} --api-key "$CURSOR_API_KEY" "$@"
   '';
-  code-cursor = inputs.code-cursor.legacyPackages.${system}.code-cursor;
 in
 {
   options = {
@@ -29,10 +35,10 @@ in
   config = {
     environment.systemPackages = [
       cursor-cli
-      code-cursor
+      codeCursorPkg
       (pkgs.writeShellScriptBin "open-cursor" ''
         # Opens the cursor editor in the current directory
-        ${lib.getExe code-cursor} . &> /tmp/cursor.log &
+        ${lib.getExe codeCursorPkg} . &> /tmp/cursor.log &
       '')
     ];
     home-manager.users.${env.user} = {

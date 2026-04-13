@@ -64,13 +64,10 @@
       url = "github:tadfisher/android-nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    code-cursor.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # 2.6.22
-    # At time of commit:
-    # ```
-    # $ cursor-agent -v
-    # 2026.04.08-a41fba1
-    # ```
-    cursor-cli.url = "github:nixos/nixpkgs/83e29f2b8791f6dec20804382fcd9a666d744c07"; # 0-unstable-2026-03-30
+    # At time of commit: code-cursor 2.6.22; `cursor-agent -v` → 2026.04.08-a41fba1
+    cursor-cli.url = "github:nixos/nixpkgs/83e29f2b8791f6dec20804382fcd9a666d744c07";
+    # Same nixpkgs snapshot: `code-cursor` is missing on older pins (e.g. guake at 5fd8536…).
+    code-cursor.follows = "cursor-cli";
   };
 
   outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, ... }@inputs:
