@@ -2,7 +2,7 @@
 let
   cursor-cli = pkgs.writeShellScriptBin "cursor-cli" ''
     CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
-    ${lib.getExe pkgs.cursor-cli} --api-key "$CURSOR_API_KEY" "$@"
+    ${lib.getExe inputs.cursor-cli.legacyPackages.${system}.cursor-cli} --api-key "$CURSOR_API_KEY" "$@"
   '';
   code-cursor = inputs.code-cursor.legacyPackages.${system}.code-cursor;
 in
