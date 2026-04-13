@@ -27,10 +27,10 @@ in
   };
 
   config = {
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = [
       cursor-cli
       code-cursor
-      (writeShellScriptBin "open-cursor" ''
+      (pkgs.writeShellScriptBin "open-cursor" ''
         # Opens the cursor editor in the current directory
         ${lib.getExe code-cursor} . &> /tmp/cursor.log &
       '')
