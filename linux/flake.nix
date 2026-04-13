@@ -1,9 +1,11 @@
 {
   description = "Main NixOS Flake";
 
-  # See https://lazamar.co.uk/nix-versions/ for specific hashes to nixpkgs commits
-  # Look for another website like this if this doesn't work like: 
-  # https://www.nixhub.io/packages/
+  # Map package versions → nixpkgs commits:
+  #   https://www.nixhub.io/packages/
+  #   https://lazamar.co.uk/nix-versions/
+  #   https://history.nix-packages.com/
+  # Package search (often shows the nixpkgs revision): https://search.nixos.org/
   inputs = {
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -62,6 +64,7 @@
       url = "github:tadfisher/android-nixpkgs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    code-cursor.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # 2.6.22
   };
 
   outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, ... }@inputs:
