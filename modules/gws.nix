@@ -15,14 +15,9 @@ in
     gws.packages.${system}.default
     google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
   ];
-  programs.cursor-cli.mcpServers.gws = gwsMcp;
+  # Fan-out to Cursor, Claude Code, and programs.mcp is handled in modules/dev/ai/config.nix.
+  my.ai.mcp.gws = gwsMcp;
   home-manager.users.${env.user} = {
-    programs = {
-      mcp = {
-        enable = true;
-        servers.gws = gwsMcp;
-      };
-      claude-code.mcpServers.gws = gwsMcp;
-    };
+    programs.mcp.enable = true;
   };
 }
