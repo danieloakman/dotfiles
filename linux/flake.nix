@@ -68,6 +68,7 @@
     cursor-cli.url = "github:nixos/nixpkgs/83e29f2b8791f6dec20804382fcd9a666d744c07";
     # Same nixpkgs snapshot: `code-cursor` is missing on older pins (e.g. guake at 5fd8536…).
     code-cursor.follows = "cursor-cli";
+    llama-cpp.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 8069 (d5dfc33)
   };
 
   outputs = { self, nixpkgs, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, ... }@inputs:

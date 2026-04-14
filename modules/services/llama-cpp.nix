@@ -1,10 +1,10 @@
-{ config, pkgs, lib, env, ... }:
+{ config, pkgs, lib, env, inputs, system, ... }:
 let
   llamaCppPort = 11343;
   llamaSwapPort = 11344;
   host = "0.0.0.0";
   # nixpkgs default CUDA archs omit Pascal (6.1); include 61 for GTX 1080 Ti and similar.
-  baseLlamaCpp = pkgs.llama-cpp.override { cudaSupport = env.hasGPU; };
+  baseLlamaCpp = inputs.llama-cpp.packages.${system}.default.override { cudaSupport = env.hasGPU; };
   llamaCppPkg =
     if env.hasGPU then
       baseLlamaCpp.overrideAttrs
