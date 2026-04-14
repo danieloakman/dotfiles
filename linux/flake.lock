@@ -501,6 +501,22 @@
         "type": "github"
       }
     },
+    "llama-cpp": {
+      "locked": {
+        "lastModified": 1771861243,
+        "narHash": "sha256-mz05b1VyLWoTkNg8iJr3yXFJF7HDlwIUKI3ln39RacY=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "80d901ec0377e19ac3f7bb8c035201e2e098cc97",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "80d901ec0377e19ac3f7bb8c035201e2e098cc97",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1748162331,
@@ -640,6 +656,7 @@
         "guake": "guake",
         "gws": "gws",
         "home-manager": "home-manager",
+        "llama-cpp": "llama-cpp",
         "nixpkgs": "nixpkgs_2",
         "openvpn24": "openvpn24",
         "pia": "pia",
