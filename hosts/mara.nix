@@ -3,30 +3,80 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, lib, modulesPath, ... }:
-
 {
   imports = [
     # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
-
-    ../modules/ssh.nix
-    ../modules/dev
-    ../modules/docker.nix
-    ../modules/syncthing.nix
-    ../modules/power-management.nix
-    # ../modules/wakeonlan.nix # TODO: re-enable when mara is connected via ethernet cable
-    ../modules/zsh.nix
-    ../modules/network.nix
-    # ../modules/comma.nix
-    ../modules/tmux.nix
-    ../modules/btop.nix
-    ../modules/scripts
-    ../modules/gws.nix
-
-    ../modules/programs
-
-    ../modules/services
   ];
+
+  my = {
+    dev = {
+      pkgs.enable = true;
+      ai.enable = true;
+    };
+    programs = {
+      cursor.enable = true;
+      # mobile-dev.enable = false;
+      gws.enable = true;
+      tmux.enable = true;
+      kitty.enable = true; # Needed for when we ssh into this host
+    };
+    scripts.bun.enable = true;
+    services = {
+      dnsAdBlock.enable = true;
+      cockpit = let port = 9090; in {
+        enable = true;
+        port = port;
+        allowedOrigins = [
+          "https://mara:${toString port}"
+          "https://mara-cockpit.tail9f1d8.ts.net"
+          "https://mara-cockpit.dinosaur-crocodile.ts.net"
+        ];
+      };
+      docker.enable = true;
+      homepage = let port = 9092; in {
+        inherit port;
+        enable = true;
+        allowedHosts = "${config.networking.hostName}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
+      };
+      immich = {
+        enable = true;
+        mediaLocation = "/run/media/HDD_1/immich";
+      };
+      n8n.enable = true;
+      paperless = {
+        enable = true;
+        domain = "paperless.dinosaur-crocodile.ts.net";
+        mediaDir = "/run/media/HDD_1/paperless";
+      };
+      postiz = let port = 10322; in {
+        enable = false;
+        inherit port;
+        # publicBaseUrl = "https://postiz.dinosaur-crocodile.ts.net";
+        publicBaseUrl = "http://mara:${toString port}";
+        jwtSecretFile = config.sops.secrets.postiz_jwt_secret.path;
+      };
+      # periodicReboot = {
+      #   # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
+      #   enable = true;
+      #   # Every day at 1am
+      #   schedule = "0 1 * * *";
+      # };
+      stirlingPdf.enable = true;
+      streaming.jellyfin.enable = true;
+      syncthing.enable = true;
+      # wakeonlan.enable = true; # TODO: try this out
+    };
+  };
+
+  # Perhaps move to a tailscale module?
+  services.tailscale = {
+    useRoutingFeatures = "server";
+    extraSetFlags = [
+      "--advertise-exit-node"
+      "--exit-node-allow-lan-access"
+    ];
+  };
 
   boot = {
     initrd = {
@@ -56,27 +106,12 @@
     "d /run/media/HDD_1 0770 root storage -"
   ];
 
-  services.immich.mediaLocation = "/run/media/HDD_1/immich";
-  services.paperless.mediaDir = "/run/media/HDD_1/paperless";
-  my.services.periodicReboot = {
-    # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
-    enable = true;
-    # Every day at 1am
-    schedule = "0 1 * * *";
-  };
-
   swapDevices = [
     {
       device = "/var/lib/swapfile";
       size = 8192; # MB
     }
   ];
-
-  my = {
-    programs = {
-      # mobile-dev.enable = false;
-    };
-  };
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -100,11 +135,6 @@
   # Configure console keymap
   console.keyMap = "us";
 
-  services.tailscale.extraSetFlags = [
-    "--advertise-exit-node"
-    "--exit-node-allow-lan-access"
-  ];
-
   # Configure remote builders
   nix.buildMachines = [
     {
@@ -125,8 +155,10 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
 
-  specialisation.remote-desktop.configuration = {
-    system.nixos.tags = [ "remote-desktop" ];
-    services.remote-desktop.enable = true;
+  specialisation = {
+    remote-desktop.configuration = {
+      system.nixos.tags = [ "remote-desktop" ];
+      my.services.remoteDesktop.enable = true;
+    };
   };
 }

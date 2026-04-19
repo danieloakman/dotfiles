@@ -3,6 +3,9 @@
 # and in the NixOS manual (accessible by running 'nixos-help').
 
 { env, config, lib, modulesPath, ... }:
+let
+  wallpaperPath = ../files/assets/azura-wallpaper.jpeg;
+in
 {
   boot = {
     initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
@@ -38,26 +41,37 @@
   imports = [
     # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
-
-    ../modules/ssh.nix
-    ../modules/desktop-pkgs.nix
-    ../modules/power-management.nix
-    ../modules/dev
-    ../modules/rofi.nix
-    ../modules/syncthing.nix
-    ../modules/docker.nix
-    ../modules/stylix.nix
-    ../modules/zsh.nix
-    ../modules/network.nix
-    ../modules/btop.nix
-    ../modules/scripts
-    ../modules/gws.nix
-
-    ../modules/programs
-
-    # ../modules/gnome
-    ../modules/hyprland
   ];
+
+  my = {
+    dev = {
+      pkgs.enable = true;
+      ai.enable = true;
+    };
+    desktop = {
+      hyprland.enable = true;
+    };
+    programs = {
+      cursor.enable = true;
+      onscreenKeyboard.enable = true;
+      gws.enable = true;
+      localsend.enable = true;
+      desktopPkgs.enable = true;
+      kitty.enable = true;
+      rofi.enable = true;
+      ydotool.enable = true;
+      neovim.enable = true;
+    };
+    scripts.bun.enable = true;
+    services = {
+      syncthing.enable = true;
+      stylix = {
+        enable = true;
+        wallpaper = wallpaperPath;
+      };
+      # docker.enable = true;
+    };
+  };
 
   # Bootloader.
   boot.loader.grub = {
@@ -68,8 +82,8 @@
 
   networking.hostName = "azura"; # Define your hostname. `echo $HOST`
 
+  # TODO: move this to the hyprland module as required/asserted options
   # Required config for imported modules:
-  stylix.image = ../files/assets/azura-wallpaper.jpeg;
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland.settings = {
       monitor = [

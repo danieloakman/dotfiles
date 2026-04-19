@@ -4,10 +4,69 @@
 
 { env, config, lib, modulesPath, ... }:
 let
-  # nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.production
-  nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.stable;
+  nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+    version = "580.126.09";
+    sha256_64bit = "sha256-TKxT5I+K3/Zh1HyHiO0kBZokjJ/YCYzq/QiKSYmG7CY=";
+    settingsSha256 = "sha256-4SfCWp3swUp+x+4cuIZ7SA5H7/NoizqgPJ6S9fm90fA=";
+    persistencedSha256 = "sha256-J1UwS0o/fxz45gIbH9uaKxARW+x4uOU1scvAO4rHU5Y=";
+  };
+  wallpaperPath = ../files/assets/akatosh-wallpaper.jpeg;
 in
 {
+  my = {
+    dev = {
+      pkgs.enable = true;
+      ai.enable = true;
+    };
+    desktop = {
+      hyprland.enable = true;
+      # gnome.enable = true;
+    };
+    programs = {
+      cursor.enable = true;
+      games.enable = true;
+      gws.enable = true;
+      localsend.enable = true;
+      desktopPkgs.enable = true;
+      kitty.enable = true;
+      rofi.enable = true;
+      ydotool.enable = true;
+      neovim.enable = true;
+      comma.enable = true;
+    };
+    scripts.bun.enable = true;
+    services = {
+      stylix = {
+        enable = true;
+        wallpaper = wallpaperPath;
+      };
+      docker.enable = true;
+      llama-cpp = {
+        enable = true;
+        cpuCoreCount = 6;
+        gpuLayerCount = 99;
+        models = {
+          # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
+          # someModel = {
+          #   path = pkgs.fetchurl {
+          #     url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+          #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+          #   };
+          # };
+          "Qwen2.5-coder-1.5b-instruct-Q8_0".path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
+          "DeepSeek-R1-Distill-Qwen-7B-Q6_K" = {
+            path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
+            extraServerArgs = [ "-c" "4096" "--parallel" "1" ];
+          };
+          "Qwen2.5-VL-7B-Instruct-Q6_K".path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
+        };
+      };
+      wakeonlan.enable = true;
+      syncthing.enable = true;
+    };
+  };
+  systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
+
   boot = {
     initrd = {
       availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" ];
@@ -64,36 +123,13 @@ in
   # networking.interfaces.enp0s31f6.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
 
+  nixpkgs.config.nvidia.acceptLicense = true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   imports = [
     # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
-
-    ../modules/ssh.nix
-    ../modules/desktop-pkgs.nix
-    ../modules/power-management.nix
-    ../modules/games.nix
-    ../modules/stylix.nix
-    ../modules/dev
-    ../modules/docker.nix
-    ../modules/rofi.nix
-    ../modules/syncthing.nix
-    ../modules/wakeonlan.nix
-    ../modules/zsh.nix
-    ../modules/network.nix
-    ../modules/comma.nix
-    ../modules/btop.nix
-    ../modules/scripts
-    ../modules/gws.nix
-
-    ../modules/services/llama-cpp.nix
-
-    ../modules/programs
-
-    # ../modules/gnome
-    ../modules/hyprland
   ];
 
   # Bootloader
@@ -109,8 +145,8 @@ in
 
   networking.hostName = "akatosh"; # Define your hostname.
 
+  # TODO: move these hyprland settings to the hyprland module and make them required.
   # Required config for imported modules:
-  stylix.image = ../files/assets/akatosh-wallpaper.jpeg;
   home-manager.users.${env.user} = {
     wayland.windowManager.hyprland.settings = {
       monitor = [
@@ -161,27 +197,6 @@ in
     };
   };
 
-  systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
-  services.llama-cpp = {
-    cpuCoreCount = 6;
-    gpuLayerCount = 99;
-    models = {
-      # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
-      # someModel = {
-      #   path = pkgs.fetchurl {
-      #     url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-      #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-      #   };
-      # };
-      "Qwen2.5-coder-1.5b-instruct-Q8_0".path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
-      "DeepSeek-R1-Distill-Qwen-7B-Q6_K" = {
-        path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-        extraServerArgs = [ "-c" "4096" "--parallel" "1" ];
-      };
-      "Qwen2.5-VL-7B-Instruct-Q6_K".path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
-    };
-  };
-
   hardware = {
     enableRedistributableFirmware = true;
 
@@ -192,6 +207,8 @@ in
     # See https://nixos.wiki/wiki/Nvidia for more information.
     nvidia = {
       modesetting.enable = true;
+      # GTX 1080 Ti + pinned 580.126.09 driver: disable GSP because this build does not provide GSP firmware.
+      gsp.enable = false;
       # Enable power management for suspend to work properly
       # Fine-grained requires PRIME offload (needs Turing+ GPU), so use regular PM
       powerManagement.enable = true;

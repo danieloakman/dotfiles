@@ -1,0 +1,54 @@
+# This module is for adding general desktop, system level packages. Stuff that has a GUI:
+{ pkgs, lib, config, env, ... }:
+let
+  cfg = config.my.programs.desktopPkgs;
+in
+{
+  options.my.programs.desktopPkgs.enable = lib.mkEnableOption "Enable and include various desktop only packages that have a GUI.";
+
+  config = lib.mkIf cfg.enable (env.selectPlatform {
+    linux = {
+      environment.systemPackages = with pkgs; [
+        # thunderbird # Email client and also has calendar
+        # birdtray # Thunderbird tray icon
+        # zed-editor # Trying this out as an alternative to vscode
+        google-drive-ocamlfuse
+        # Was trying this out for a week or two. I think guake is just overall a better choice. `pass` autocomplete no longer worked for one. And making the terminal a paid subscription gave me the ick.
+        # warp-terminal
+        discord
+        zoom-us
+        slack
+        spotify
+        vlc # For video playback
+        gimp
+        obsidian
+        syncthing
+        libreoffice # Just so we can open docx files and things
+        # teams-for-linux # Doesn't work very well. Teams in the browser is better.
+        filezilla # For FTP/SFTP/etc. Could maybe replace with a ftp tui in the future, since this is quite large
+        textadept # For quick text editing in a GUI.
+        qbittorrent
+
+        # Web browser(s)
+        # firefox
+        google-chrome
+        vivaldi
+        # inputs.zen-browser.packages."${system}".default
+
+        # rambox # A single app that contains all sorts of web apps. The free version only allows 1 current computer session at a time though
+        # valent # Was trying this out for tethering with mobile. But couldn't find my phone through bluetooth
+        # dropbox # Was trying this out for syncing with mobile. But offline sync on mobile is only available for paid users.
+        # ventoy # For creating bootable USBs. It's really cool, just drag and drop ISOs onto the USB and you can select which one to boot from
+        # foot # Maybe can use this for quick to load terminal that's a replacement for dmenu in gnome wayland
+        # testdisk # For recovering lost partitions and files. Used this for recovering jpg files on an sd card once.
+        # ocrmypdf # Generates OCR text metadata for any PDF.
+      ];
+    };
+    # TODO: move desktop GUI packages/brew casks to here:
+    darwin = {
+      environment.systemPackages = with pkgs; [
+        raycast
+      ];
+    };
+  });
+}

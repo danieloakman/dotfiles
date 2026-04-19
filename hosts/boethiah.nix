@@ -1,13 +1,19 @@
 { self, pkgs, system, env, ... }: {
-  imports = [
-    # ../modules/aerospace.nix
-    ../modules/skhd.nix # Even though I can't get this to reliably stay running, leaving it in for now since it gives permission warnings on every login
-    ../modules/zsh.nix
-    ../modules/docker.nix
-    # ../modules/ghostty.nix
-    # ../modules/secrets.nix
-    # ../modules/gws.nix # TODO: add when gws is added in darwin flake
-  ];
+  my = {
+    dev = {
+      pkgs.enable = true;
+      ai.enable = true;
+    };
+    services = {
+      docker.enable = true;
+      podman.enable = true;
+    };
+    programs = {
+      localsend.enable = true;
+      cursor.enable = true;
+      desktopPkgs.enable = true;
+    };
+  };
 
   networking.hostName = "boethiah";
 
@@ -112,50 +118,22 @@
     hostPlatform = system;
   };
 
-  nix = {
-    # Necessary for using flakes on this system.
-    settings.experimental-features = "nix-command flakes";
-    # Use Determinate Nix:
-    enable = false;
-  };
+  # Use Determinate Nix:
+  nix.enable = false;
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment = {
     systemPackages = with pkgs; [
-      nixpkgs-fmt
-      statix
-      nil
-      raycast
-      nodejs_24
-      bun
-      pnpm
-      pnpm-shell-completion
-      pet # CLI tool for keeping a list of commands and executing them later
-      cursor-cli
-
-      # Golang & related tools:
-      go
-      gopls
-      delve
-
+      # TODO: merge this to the system.nix module:
       # Network utilities
       wakeonlan
       (pkgs.writeShellScriptBin "wake-akatosh" ''
-        wakeonlan 4c:ed:fb:96:ee:3d
+        ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
       '')
-
-      # python3
-      # (python3.withPackages (ps: with ps; [
-      #   # TODO: comment out most of this in favour of using a nix shell and locally installed packages instead
-      #   pip
-      #   requests
-      #   black
-      #   urllib3
-      #   virtualenv
-      #   # pipx
-      #   huggingface-hub
-      # ]))
+      (pkgs.writeShellScriptBin "wake-mara" ''
+        ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
+      '')
     ];
   };
 
@@ -294,20 +272,19 @@
       "gemini-cli"
       "fastfetch"
       "pinentry-mac"
-      "btop"
       "fzf"
       "starship"
       "dust"
       "zbar"
       "awscli"
       "mprocs"
-      "entr" # Run some command when file(s) change
       "mas"
-      "lazydocker"
       "cliclick"
       "cocoapods"
       "uv" # Python package manager, can install packages and run them adhoc
       "llmfit" # CLI tool for fitting LLMs to your data
+      "just" # Task runner, like `make`
+      "rtk" # More efficient token usage for LLMs
       {
         name = "syncthing";
         restart_service = "changed";
@@ -319,15 +296,12 @@
     ];
 
     casks = [
-      "cursor"
       "vivaldi"
       "visual-studio-code"
       # "warp"
       "zoom"
       "spotify" # idk why but this causes an message to pop up to delete the spotify app. But uninstalling it and reinstalling it seems to fix it.
       "obsidian"
-      "localsend"
-      "docker-desktop"
       "private-internet-access"
       "gimp"
       "tailscale-app"

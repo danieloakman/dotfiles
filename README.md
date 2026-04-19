@@ -20,7 +20,7 @@ We need to rebuild the OS as a flake with:
 sudo nixos-rebuild switch --flake ./#HOST_NAME
 # Or
 nh os swtich # If the command is available and the $FLAKE variable is set.
-make switch
+just switch
 ```
 
 ## Development or making changes
@@ -28,13 +28,15 @@ make switch
 - When updating the flake, i.e. the `flake.lock` file, always make a new branch for those changes.
 - Small changes can be made directly to the `main` branch.
 - Otherwise large features should have a new branch.
+- Modules are stored in `./modules`. Any path continaing `darwin` or `linux` can only be imported by that platform/system, otherwise all modules are recursively imported except for `*/_*.nix` and `flake.nix` files.
+- Most modules should be defined with a set of option(s) to enable or tweak the module to suit the host machine. That is unless the module is always loaded on every host.
 
 ## Secrets
 
 #### See https://www.youtube.com/watch?v=G5f6GC7SnhU for more info if needed.
 Secrets file is located at *./secrets/secret.yaml* and it's encrypted.
 Also need to have your age secret key present in `~/.config/sops/age/keys.txt`
-- To edit: `sops secrets/secret.yaml` OR `make edit-secrets`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
+- To edit: `sops secrets/secret.yaml` OR `just edit-secrets`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
 - Access to secrets in builds is done like:
 ```nix
 text = ''

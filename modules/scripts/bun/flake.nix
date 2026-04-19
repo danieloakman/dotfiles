@@ -16,7 +16,10 @@
   outputs = { self, nixpkgs, flake-utils, bun2nix }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowDeprecatedx86_64Darwin = true;
+        };
         fetchBunDeps = bun2nix.packages.${system}.default.fetchBunDeps;
         hook = bun2nix.packages.${system}.default.hook;
         otherPackages = with pkgs; [
@@ -29,7 +32,7 @@
           version = "0.1.0";
           src = ./.;
           nativeBuildInputs = with pkgs; [ hook bun makeWrapper ] ++ otherPackages;
-          bunDeps = fetchBunDeps { bunNix = ./bun.nix; };
+          bunDeps = fetchBunDeps { bunNix = ./_bun.nix; };
           buildPhase = ''bun run build'';
           installPhase = ''
             mkdir -p $out/dist $out/bin $out/src/db $out/src/utils

@@ -1,5 +1,6 @@
 { lib, env, config, ... }:
 let
+  cfg = config.my.dev.ai;
   mcpServerOpts = { ... }: {
     options = {
       command = lib.mkOption {
@@ -20,7 +21,8 @@ let
   };
 in
 {
-  options.my.ai = {
+  options.my.dev.ai = {
+    enable = lib.mkEnableOption "Enable AI features and tools.";
     rootContext = lib.mkOption {
       type = lib.types.lines;
       default = "";
@@ -46,15 +48,21 @@ in
       '';
     };
   };
-  config = {
-    programs.cursor-cli.mcpServers = config.my.ai.mcp;
+
+  config = lib.mkIf cfg.enable ({
     home-manager.users.${env.user} = {
       home.file = {
-        ".agents/AGENTS.md".text = config.my.ai.rootContext;
-        ".config/agents/AGENTS.md".text = config.my.ai.rootContext;
-        ".claude/CLAUDE.md".text = config.my.ai.rootContext;
+        ".agents/AGENTS.md".text = cfg.rootContext;
+        ".config/agents/AGENTS.md".text = cfg.rootContext;
+        ".claude/CLAUDE.md".text = cfg.rootContext;
         # Cursor uses a list of rules defined in the .cursor/rules directory. So for now we're just adding a global rule. Cursor may not even support reading rules from files like this... Maybe remove in the future.
-        ".cursor/rules/global.md".text = config.my.ai.rootContext;
+        ".cursor/rules/global.md".text = cfg.rootContext;
+        ".cursor/mcp.json" = {
+          force = true;
+          text = builtins.toJSON {
+            mcpServers = cfg.mcp;
+          };
+        };
       } // lib.mapAttrs'
         (name: dir: {
           name = ".claude/skills/${name}";
@@ -63,18 +71,19 @@ in
             recursive = true;
           };
         })
-        config.my.ai.skillDirs;
+        cfg.skillDirs;
       programs = {
         claude-code = {
           # At the moment, cursor supports finding skills in the .claude/skills directory, as do many other agents.
           # If for some reason in the future they don't we could probably just run an activate block that symlinks from claude/skills to whatever other directory we want to use also.
-          skills = config.my.ai.skills;
-          mcpServers = config.my.ai.mcp;
+          skills = cfg.skills;
+          mcpServers = cfg.mcp;
         };
         mcp = {
-          servers = config.my.ai.mcp;
+          enable = true;
+          servers = cfg.mcp;
         };
       };
     };
-  };
+  });
 }
