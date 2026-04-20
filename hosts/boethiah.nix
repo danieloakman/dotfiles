@@ -1,12 +1,22 @@
-{ self, pkgs, system, env, ... }: {
+{
+  self,
+  pkgs,
+  system,
+  env,
+  ...
+}:
+{
   my = {
     dev = {
       pkgs.enable = true;
       ai.enable = true;
     };
     services = {
-      docker.enable = false;
-      podman.enable = true;
+      # docker.enable = true;
+      podman = {
+        enable = true;
+        dockerAlias = true;
+      };
     };
     programs = {
       localsend.enable = true;
@@ -201,13 +211,21 @@
         "com.apple.symbolichotkeys" = {
           AppleSymbolicHotKeys = {
             # Disable '^ + Space' for selecting the previous input source
-            "60" = { enabled = false; };
+            "60" = {
+              enabled = false;
+            };
             # Disable '^ + Option + Space' for selecting the next input source
-            "61" = { enabled = false; };
+            "61" = {
+              enabled = false;
+            };
             # Disable 'Cmd + Space' for Spotlight Search
-            "64" = { enabled = false; };
+            "64" = {
+              enabled = false;
+            };
             # Disable 'Cmd + Alt + Space' for Finder search window
-            "65" = { enabled = false; };
+            "65" = {
+              enabled = false;
+            };
           };
         };
         "com.apple.TimeMachine".DoNotOfferNewDisksForBackup = true;
