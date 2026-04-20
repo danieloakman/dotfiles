@@ -1,32 +1,19 @@
-{ env, ... }:
+# TODO: remove once tailscale module and associated ssh usage through tailscale is stable, as this module would no longer be needed once that's the case.
+{ config, env, lib, ... }:
+let
+  cfg = config.my.services.ssh;
+in
 {
-  # options.my.services.ssh.enable = lib.mkEnableOption "Enable the SSH daemon and tailscale services (enabled by default).";
+  options.my.services.ssh = {
+    enable = lib.mkEnableOption "Enable the SSH daemon";
+  };
 
-  config = env.selectPlatform {
+  config = lib.mkIf cfg.enable (env.selectPlatform {
     linux = {
-      networking.firewall = {
-        allowedTCPPorts = [
-          22 # SSH
-        ];
+      networking.firewall.allowedTCPPorts = [ 22 ];
 
-        # Open the DNS ports in the firewall for tailscale.
-        trustedInterfaces = [ "tailscale0" ];
-      };
 
       services = {
-        tailscale = {
-          enable = true;
-          openFirewall = true;
-          # Enables the Tailscale Serve configs:
-          # For some reason, this doesn't work at the moment. So I'm just going to add enable and disable scripts for each service.
-          serve.enable = false;
-          extraSetFlags = [
-            "--operator=${env.user}"
-            "--accept-routes=true"
-            "--shields-up=false"
-          ];
-        };
-
         # Enable the OpenSSH daemon:
         openssh = {
           enable = true;
@@ -40,18 +27,11 @@
             ClientAliveCountMax = 3;
             # Ensure SSH daemon starts after network is ready
             UsePAM = true;
-            # Allow connections from Tailscale interface
-            ListenAddress = "0.0.0.0";
+            # Restrict sshd to local loopback; remote access should use Tailscale SSH.
+            ListenAddress = "127.0.0.1";
           };
         };
       };
-
-      home-manager.users.${env.user} = {
-        # Starts the tailscale-systray, which is a tray icon for tailscale.
-        services.tailscale-systray.enable = true;
-      };
     };
-    # TODO: move ssh and tailscale config from boethiah to here:
-    darwin = { };
-  };
+  });
 }

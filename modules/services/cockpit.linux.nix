@@ -41,8 +41,7 @@ in
 
     my.services.homepage.services."Cockpit" = {
       description = "System management";
-      # href = "http://mara-cockpit.dinosaur-crocodile.ts.net";
-      href = "http://${config.networking.hostName}:${toString cfg.port}";
+      href = "http://mara-cockpit.dinosaur-crocodile.ts.net";
     };
   });
 }

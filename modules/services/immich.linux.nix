@@ -27,8 +27,8 @@ in
       immich = {
         inherit user group;
         inherit (cfg) port;
-        # TODO: Rethink opening to all interfaces, maybe just open to the tailscale interface?
-        host = "0.0.0.0"; # Open to all interfaces
+        # Bind to loopback and expose to tailnet via tailscale serve.
+        host = "127.0.0.1";
         enable = true;
         openFirewall = true;
         accelerationDevices = null;
@@ -48,7 +48,7 @@ in
     environment.systemPackages = with pkgs; [
       immich-cli
       (writeShellScriptBin "tailscale-svc-immich-up" ''
-        tailscale serve --service=svc:immich --https=443 0.0.0.0:${toString cfg.port}
+        tailscale serve --service=svc:immich --https=443 127.0.0.1:${toString cfg.port}
       '')
       (writeShellScriptBin "tailscale-svc-immich-down" ''
         tailscale serve clear svc:immich
@@ -62,7 +62,8 @@ in
 
     my.services.homepage.services."Immich" = {
       description = "Image hosting and management";
-      href = "http://${config.networking.hostName}:${toString cfg.port}";
+      # href = "http://${config.networking.hostName}:${toString cfg.port}";
+      href = "https://immich.dinosaur-crocodile.ts.net";
     };
 
     home-manager.users.${env.user} = {

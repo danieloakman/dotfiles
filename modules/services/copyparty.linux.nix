@@ -40,7 +40,7 @@ in
       # directly maps to values in the [global] section of the copyparty config.
       # see `copyparty --help` for available options
       settings = {
-        i = "0.0.0.0";
+        i = "127.0.0.1";
         p = cfg.port;
       };
 

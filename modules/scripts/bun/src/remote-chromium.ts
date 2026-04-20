@@ -29,10 +29,10 @@ if (import.meta.main) {
 	const server = await chromium.launchServer({
 		port: flags.port,
 		headless: flags.headless,
-		host: '0.0.0.0'
+		host: '127.0.0.1'
 		// args: [
 		// 	`--remote-debugging-port=${flags.port}`
-		// 	// '--remote-debugging-address=0.0.0.0'
+		// 	// '--remote-debugging-address=127.0.0.1'
 		// ]
 	});
 	const endpoint = server.wsEndpoint();
@@ -41,7 +41,7 @@ if (import.meta.main) {
 	// 	headless: flags.headless,
 	// 	args: [
 	// 		`--remote-debugging-port=${flags.port}`,
-	// 		'--remote-debugging-address=0.0.0.0'
+	// 		'--remote-debugging-address=127.0.0.1'
 	// 	]
 	// });
 	// const context = await browser.newContext({ storageState: DEFAULT_AUTH_FILE });

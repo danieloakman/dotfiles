@@ -56,26 +56,21 @@
         publicBaseUrl = "http://mara:${toString port}";
         jwtSecretFile = config.sops.secrets.postiz_jwt_secret.path;
       };
-      # periodicReboot = {
-      #   # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
-      #   enable = true;
-      #   # Every day at 1am
-      #   schedule = "0 1 * * *";
-      # };
+      periodicReboot = {
+        # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
+        enable = true;
+        # Every day at 1am
+        schedule = "0 1 * * *";
+      };
       stirlingPdf.enable = true;
       streaming.jellyfin.enable = true;
       syncthing.enable = true;
+      tailscale = {
+        enableAsExitNode = true;
+        useRoutingFeatures = "server";
+      };
       # wakeonlan.enable = true; # TODO: try this out
     };
-  };
-
-  # Perhaps move to a tailscale module?
-  services.tailscale = {
-    useRoutingFeatures = "server";
-    extraSetFlags = [
-      "--advertise-exit-node"
-      "--exit-node-allow-lan-access"
-    ];
   };
 
   boot = {

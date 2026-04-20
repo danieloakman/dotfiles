@@ -2,7 +2,7 @@
 let
   cfg = config.my.services.paperless;
   port = cfg.port;
-  hostname = "0.0.0.0";
+  hostname = "127.0.0.1";
   user = "paperless";
 in
 {
@@ -50,7 +50,7 @@ in
 
     environment.systemPackages = with pkgs; [
       (writeShellScriptBin "tailscale-svc-paperless-up" ''
-        tailscale serve --service=svc:paperless --https=443 127.0.0.1:${toString port}
+        tailscale serve --service=svc:paperless --https=443 ${hostname}:${toString port}
       '')
       (writeShellScriptBin "tailscale-svc-paperless-down" ''
         tailscale serve clear svc:paperless
@@ -59,7 +59,7 @@ in
 
     my.services.homepage.services."Paperless" = {
       description = "Document management";
-      href = "http://${config.networking.hostName}:${toString cfg.port}";
+      href = "https://paperless.dinosaur-crocodile.ts.net";
     };
   });
 }

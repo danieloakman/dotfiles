@@ -47,13 +47,8 @@ in
           };
         };
       };
-
-      my.services.homepage.services."Syncthing (On Mara)" = {
-        description = "File synchronization";
-        href = "http://${config.networking.hostName}:8384";
-      };
     };
     # TODO: add syncthing config for darwin:
-    darwin = {};
+    darwin = { };
   });
 }

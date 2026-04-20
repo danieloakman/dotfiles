@@ -367,7 +367,7 @@ async function handleResponses(req: Request): Promise<Response> {
   }
 }
 
-const host = process.env.HOST ?? '0.0.0.0';
+const host = process.env.HOST ?? '127.0.0.1';
 const port = parseInt(process.env.PORT ?? '8222', 10);
 
 const ok = jsonResponse(200, { status: 'ok' });

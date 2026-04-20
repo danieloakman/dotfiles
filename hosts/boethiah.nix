@@ -304,7 +304,6 @@
       "obsidian"
       "private-internet-access"
       "gimp"
-      "tailscale-app"
       "iterm2"
     ];
 

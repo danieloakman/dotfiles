@@ -3,7 +3,7 @@ let
   cfg = config.my.services.llama-cpp;
   llamaCppPort = cfg.port;
   llamaSwapPort = cfg.port + 1;
-  host = "0.0.0.0";
+  host = "127.0.0.1";
   # nixpkgs default CUDA archs omit Pascal (6.1); include 61 for GTX 1080 Ti and similar.
   importedLlamaCpp = import inputs.llama-cpp {
     inherit system;

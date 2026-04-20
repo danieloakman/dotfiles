@@ -21,7 +21,7 @@ in
         package = if env.hasGPU then pkgs.ollama else pkgs.ollama-cpu;
         enable = true;
         openFirewall = true;
-        host = "0.0.0.0";
+        host = "127.0.0.1";
         loadModels = [
           # General purpose models:
           "llama3.2"
@@ -45,7 +45,7 @@ in
       nextjs-ollama-llm-ui = {
         enable = true;
         port = ollamaUiPort;
-        hostname = "0.0.0.0";
+        hostname = "127.0.0.1";
         ollamaUrl = "http://localhost:${toString ollamaPort}";
       };
     };
