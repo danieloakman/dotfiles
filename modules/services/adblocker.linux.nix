@@ -19,10 +19,5 @@ in
       openFirewall = true;
       inherit (cfg) port;
     };
-
-    my.services.homepage.services."Adguard Home" = {
-      description = "Adblocking";
-      href = "http://${config.networking.hostName}";
-    };
   });
 }

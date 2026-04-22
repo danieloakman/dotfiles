@@ -60,12 +60,6 @@ in
       allowedUDPPorts = [ cfg.port ];
     };
 
-    my.services.homepage.services."Immich" = {
-      description = "Image hosting and management";
-      # href = "http://${config.networking.hostName}:${toString cfg.port}";
-      href = "https://immich.dinosaur-crocodile.ts.net";
-    };
-
     home-manager.users.${env.user} = {
       xdg.desktopEntries =
         let

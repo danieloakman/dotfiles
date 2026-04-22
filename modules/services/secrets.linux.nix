@@ -7,12 +7,18 @@ let
     "pia_credentials" # Private Internet Access credentials 
     "dano_pwd"
     "cursor_api_key"
+    "main_gh_token"
+    "postiz_jwt_secret"
+    "jellyfin_api_key"
+    "immich_api_key"
     "gcloud_access_token"
     "gcloud_credentials.json"
     "google_client_id"
     "google_client_secret"
-    "main_gh_token"
-    "postiz_jwt_secret"
+    "adguard_username"
+    "adguard_pwd"
+    "paperless_username"
+    "paperless_pwd"
   ];
   group = "secrets"; # Group to access the secrets
 in

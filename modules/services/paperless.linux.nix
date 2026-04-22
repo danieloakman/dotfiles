@@ -56,10 +56,5 @@ in
         tailscale serve clear svc:paperless
       '')
     ];
-
-    my.services.homepage.services."Paperless" = {
-      description = "Document management";
-      href = "https://paperless.dinosaur-crocodile.ts.net";
-    };
   });
 }

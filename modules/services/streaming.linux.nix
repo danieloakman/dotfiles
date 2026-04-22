@@ -103,10 +103,5 @@ in
           # };
         };
     };
-
-    my.services.homepage.services."Jellyfin" = lib.mkIf cfg.jellyfin.enable {
-      description = "Media streaming";
-      href = "https://jellyfin.dinosaur-crocodile.ts.net";
-    };
   };
 }
