@@ -72,8 +72,15 @@ in
         if command -v rtk >/dev/null 2>&1; then
           rtk_status="$(rtk init --show 2>/dev/null || true)"
           if [[ "$rtk_status" == *"[--]"* ]] || [[ "$rtk_status" == *"not configured"* ]]; then
-            rtk init -g --auto-patch &>/dev/null || true
-            rtk init -g --auto-patch --agent cursor &> /dev/null || true
+            if [[ -e "$HOME/.claude/CLAUDE.md" ]] && [[ ! -w "$HOME/.claude/CLAUDE.md" ]]; then
+              # Some setups manage ~/.claude/CLAUDE.md as read-only (e.g. Nix home.file), so
+              # full `init -g` fails when it tries to inject @RTK.md into that file.
+              rtk init -g --hook-only --auto-patch &>/dev/null || true
+              rtk init -g --hook-only --agent cursor --auto-patch &>/dev/null || true
+            else
+              rtk init -g --auto-patch &>/dev/null || true
+              rtk init -g --auto-patch --agent cursor &>/dev/null || true
+            fi
           fi
         fi
       '';
