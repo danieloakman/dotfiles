@@ -13,6 +13,7 @@
     dev = {
       pkgs.enable = true;
       ai.enable = true;
+      ai.rtk.enable = true;
     };
     programs = {
       cursor.enable = true;
@@ -20,7 +21,6 @@
       gws.enable = true;
       tmux.enable = true;
       kitty.enable = true; # Needed for when we ssh into this host
-      # rtkAi.enable = true;
     };
     scripts.bun.enable = true;
     services = {

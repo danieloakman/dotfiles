@@ -2,7 +2,7 @@
 # https://github.com/rtk-ai/rtk
 { env, config, lib, pkgs, ... }:
 let
-  cfg = config.my.programs.rtkAi;
+  cfg = config.my.dev.ai.rtk;
   version = "0.37.2";
 
   rtk = pkgs.stdenvNoCC.mkDerivation {
@@ -60,7 +60,7 @@ let
   };
 in
 {
-  options.my.programs.rtkAi.enable = lib.mkEnableOption ''
+  options.my.dev.ai.rtk.enable = lib.mkEnableOption ''
     RTK (rtk-ai/rtk): install the release binary and ensure `rtk init -g` has been applied when missing
   '';
 
@@ -68,7 +68,7 @@ in
     home-manager.users.${env.user} = {
       home.packages = [ rtk ];
       programs.zsh.initContent = lib.mkOrder 1500 ''
-        # RTK (my.programs.rtkAi): install global hooks if not already present
+        # RTK (my.dev.ai.rtk): install global hooks if not already present
         if command -v rtk >/dev/null 2>&1; then
           rtk_status="$(rtk init --show 2>/dev/null || true)"
           if [[ "$rtk_status" == *"[--]"* ]] || [[ "$rtk_status" == *"not configured"* ]]; then

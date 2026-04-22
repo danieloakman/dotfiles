@@ -17,6 +17,7 @@ in
     dev = {
       pkgs.enable = true;
       ai.enable = true;
+      ai.rtk.enable = true;
     };
     desktop = {
       hyprland.enable = true;
