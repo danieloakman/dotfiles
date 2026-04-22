@@ -1,9 +1,8 @@
-{
-  self,
-  pkgs,
-  system,
-  env,
-  ...
+{ self
+, pkgs
+, system
+, env
+, ...
 }:
 {
   my = {
@@ -323,6 +322,7 @@
       "private-internet-access"
       "gimp"
       "iterm2"
+      "claude-code" # For Boethiah, npmjs registry is blocked. So we have to get claude-code from homebrew and not using the home-manager option
     ];
 
     masApps = {
