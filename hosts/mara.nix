@@ -70,6 +70,7 @@
         enableAsExitNode = true;
         useRoutingFeatures = "server";
       };
+      tandoor.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
     };
   };
