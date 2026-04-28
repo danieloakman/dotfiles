@@ -58,13 +58,39 @@ in
             ${finalSdkPkgs}/bin/avdmanager list avd
           '')
           (writeShellScriptBin "android-emulator-start" ''
-            ${finalSdkPkgs}/bin/emulator -avd $1
+            set -euo pipefail
+
+            if [[ $# -lt 1 ]]; then
+              echo "usage: android-emulator-start <avd-name> [extra-emulator-args...]" >&2
+              exit 1
+            fi
+
+            avd_name="$1"
+            shift
+
+            # Prefer host acceleration when an NVIDIA GPU is available.
+            gpu_mode="auto"
+            if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null 2>&1; then
+              gpu_mode="host"
+            fi
+
+            ${android.finalSdkPkgs}/bin/emulator -avd "$avd_name" -gpu "$gpu_mode" "$@"
           '')
           (writeShellScriptBin "android-emulator-shutdown" ''
             ${finalSdkPkgs}/bin/emulator -avd $1 -shutdown
           '')
-          (writeShellScriptBin "android-emulator-create" ''
-            ${finalSdkPkgs}/bin/avdmanager create avd --name $1 --package "${systemImageStr}" --device $2 --path $ANDROID_AVD_ROOT --sdcard "2048M"
+           (writeShellScriptBin "android-emulator-create" ''
+            set -euo pipefail
+
+            if [[ $# -lt 2 ]]; then
+              echo "usage: android-emulator-create <avd-name> <device-id>" >&2
+              exit 1
+            fi
+
+            avd_name="$1"
+            device_id="$2"
+
+            ${android.finalSdkPkgs}/bin/avdmanager create avd --name "$avd_name" --package "${systemImageStr}" --device "$device_id" --sdcard "2048M" --force
           '')
           (writeShellScriptBin "android-emulator-delete" ''
             ${finalSdkPkgs}/bin/avdmanager delete avd --name $1
