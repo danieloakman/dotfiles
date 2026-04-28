@@ -11,6 +11,7 @@ let
     "postiz_jwt_secret"
     "jellyfin_api_key"
     "immich_api_key"
+    "tandoor_secret_key"
     "gcloud_access_token"
     "gcloud_credentials.json"
     "google_client_id"
