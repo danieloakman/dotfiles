@@ -20,6 +20,7 @@ in
         pet # CLI tool for keeping a list of commands and executing them later
         entr
         ripgrep # We could use the home-manager ripgrep package instead if we needed to give it some specific arguments everytime
+        just-lsp # LSP for Just files
 
         # Golang & related tools:
         go
