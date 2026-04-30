@@ -75,6 +75,8 @@ in
             if [[ -e "$HOME/.claude/CLAUDE.md" ]] && [[ ! -w "$HOME/.claude/CLAUDE.md" ]]; then
               # Some setups manage ~/.claude/CLAUDE.md as read-only (e.g. Nix home.file), so
               # full `init -g` fails when it tries to inject @RTK.md into that file.
+              rtk init -g &>/dev/null || true # This will fail, but at least create @RTK.md in the right place.
+              # Then the following will succeed in doing the rest:
               rtk init -g --hook-only --auto-patch &>/dev/null || true
               rtk init -g --hook-only --agent cursor --auto-patch &>/dev/null || true
             else
