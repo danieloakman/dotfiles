@@ -302,6 +302,7 @@
       "llmfit" # CLI tool for fitting LLMs to your data
       "just" # Task runner, like `make`
       "rtk" # More efficient token usage for LLMs
+      "pandoc" # Document converter
       {
         name = "syncthing";
         restart_service = "changed";
