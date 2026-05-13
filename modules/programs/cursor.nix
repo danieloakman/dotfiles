@@ -1,4 +1,10 @@
-{ lib, pkgs, config, env, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  env,
+  ...
+}:
 let
   cfg = config.my.programs.cursor;
   cursor-cli = pkgs.writeShellScriptBin "cursor-cli" ''
@@ -9,18 +15,23 @@ in
 {
   options.my.programs.cursor.enable = lib.mkEnableOption "Enable the Cursor code editor";
 
-  config = lib.mkIf cfg.enable (env.selectPlatform {
-    linux = {
-      environment.systemPackages = [
-        pkgs.code-cursor
-        cursor-cli
-        (pkgs.writeShellScriptBin "open-cursor" ''
-          # Opens the cursor editor in the current directory
-            ${lib.getExe pkgs.code-cursor} . &> /tmp/cursor.log &
-        '')
+  config = lib.mkIf cfg.enable (
+    env.selectPlatform {
+      linux = {
+        environment.systemPackages = [
+          pkgs.code-cursor
+          cursor-cli
+          (pkgs.writeShellScriptBin "open-cursor" ''
+            # Opens the cursor editor in the current directory
+              ${lib.getExe pkgs.code-cursor} . &> /tmp/cursor.log &
+          '')
+        ];
+      };
+      # TODO: migrate cursor config from boethiah to here.
+      darwin.homebrew.casks = [
+        "cursor"
+        "cursor-cli"
       ];
-    };
-    # TODO: migrate cursor config from boethiah to here.
-    darwin.homebrew.casks = [ "cursor" ];
-  });
+    }
+  );
 }
