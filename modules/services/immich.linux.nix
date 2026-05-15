@@ -60,20 +60,11 @@ in
       allowedUDPPorts = [ cfg.port ];
     };
 
-    home-manager.users.${env.user} = {
-      xdg.desktopEntries =
-        let
-          webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
-        in
-        {
-          immich-webapp = {
-            name = "Immich Webapp";
-            exec = webapp "http://localhost:${toString cfg.port}";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "immich";
-            startupNotify = true;
-          };
-        };
+    my.programs.webapps = {
+      "Immich" = {
+        url = "http://localhost:${toString cfg.port}";
+        icon = "folder-pictures";
+      };
     };
   });
 }

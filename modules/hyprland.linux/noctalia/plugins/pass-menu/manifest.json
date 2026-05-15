@@ -1,0 +1,19 @@
+{
+  "id": "pass-menu",
+  "name": "Pass menu",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "3.9.0",
+  "author": "dano",
+  "license": "MIT",
+  "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+  "description": "Browse password-store entries and copy a password with pass -c.",
+  "tags": ["LauncherProvider", "Pass", "Password"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "launcherProvider": "LauncherProvider.qml"
+  },
+  "metadata": {
+    "defaultSettings": {},
+    "commandPrefix": "pass"
+  }
+}

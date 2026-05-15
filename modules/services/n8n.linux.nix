@@ -68,26 +68,17 @@ in
       '')
     ];
 
-    home-manager.users.${env.user} = {
-      xdg.desktopEntries =
-        let
-          webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
-        in
-        {
-          n8n = {
-            name = "N8N Automation Platform";
-            exec = webapp "http://localhost:${toString cfg.port}";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "vivaldi";
-            startupNotify = true;
-          };
-        };
-    };
-
-    my.services.homepage.services."N8N" = {
-      description = "Automation platform";
-      # href = "http://${config.networking.hostName}:${toString cfg.port}";
-      href = "https://n8n.dinosaur-crocodile.ts.net";
+    my = {
+      services.homepage.services."N8N" = {
+        description = "Automation platform";
+        # href = "http://${config.networking.hostName}:${toString cfg.port}";
+        href = "https://n8n.dinosaur-crocodile.ts.net";
+      };
+      programs.webapps."N8N Automation Platform" = {
+        url = "http://localhost:${toString cfg.port}";
+        icon = "web-browser";
+        categories = [ "Network" "WebBrowser" ];
+      };
     };
   });
 }

@@ -1,13 +1,18 @@
-{ env, pkgs, lib, config, ... }: {
-  options.my.programs.waybar.enable = lib.mkEnableOption "Enable the Waybar status bar/shell for Hyprland";
+{ env, pkgs, lib, config, ... }:
+let
+  cfgEnabled = config.my.desktop.uiShell == "waybar";
+in
+{
 
-  config = lib.mkIf config.my.programs.waybar.enable ({
+  config = lib.mkIf cfgEnabled ({
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;
         message = "Waybar requires Hyprland to be enabled";
       }
     ];
+
+    # If we ever decided to use waybar again, we would need to enable other modules like blueman, lockscreen, etc.
 
     home-manager.users.${env.user} = {
       wayland.windowManager.hyprland = {

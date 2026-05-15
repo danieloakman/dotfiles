@@ -17,10 +17,18 @@ in
           stores = [
             "${env.home}/repos/personal/pwd-store"
           ];
+          extraConfig = ''
+            URL_field='url'
+            USERNAME_field='username'
+            AUTOTYPE_field='autotype'
+            default_autotype='username :tab pass :tab url :tab notes'
+            backend='wtype'
+            EDITOR='nano'
+          '';
         };
         modes = [
-          "emoji"
           "drun"
+          "emoji"
         ];
         plugins = with pkgs; [
           rofi-emoji
@@ -33,6 +41,8 @@ in
       };
     };
     environment.systemPackages = with pkgs; [
+      wtype
+
       # Specify this in gnome keyboard shortcuts or some other shortcut manager.
       (writeShellScriptBin "rofi-google-search" ''
         # Create history file if it doesn't exist

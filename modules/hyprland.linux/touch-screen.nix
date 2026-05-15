@@ -30,6 +30,10 @@
           exec-once = [
             "wvkbd-mobintl --hidden" # Init the on-screen keyboard
           ];
+
+          bind = [
+            "SUPER_SHIFT, S, exec, onscreen-keyboard-toggle"
+          ];
         };
 
         # Guard plugin-specific keywords to prevent errors during initial parse

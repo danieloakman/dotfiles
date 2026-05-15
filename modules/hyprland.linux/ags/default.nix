@@ -1,20 +1,36 @@
 { env, inputs, pkgs, lib, config, ... }:
 let
+  cfgEnabled = config.my.desktop.uiShell == "ags";
   astalPkgs = inputs.astal.packages.${pkgs.stdenv.hostPlatform.system};
   agsStart = pkgs.writeShellScriptBin "ags-start" ''
     cd ~/repos/personal/dotfiles/modules/hyprland.linux/ags && PASSWORD_STORE_DIR="${env.home}/repos/personal/pwd-store" bun start > /tmp/ags.log 2>&1
   '';
 in
 {
-  options.my.programs.ags.enable = lib.mkEnableOption "Enable the AGS desktop shell for Hyprland";
 
-  config = lib.mkIf config.my.programs.ags.enable ({
+  config = lib.mkIf cfgEnabled ({
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;
         message = "AGS requires Hyprland to be enabled";
       }
     ];
+
+    my = {
+      services = {
+        blueman.enable = true;
+        hyprlock.enable = true;
+        hypridle.enable = true;
+      };
+      programs.swayUtils = {
+        enable = true;
+        notifications.enable = true;
+        volume.enable = true;
+        brightness.enable = true;
+        capsLock.enable = true;
+        playerctl.enable = true;
+      };
+    };
 
     services.gvfs.enable = true; # Caches network cover art for mpris with spotify usage
 
@@ -50,6 +66,8 @@ in
 
           bind = [
             "$mod, Q, exec, ags request toggle password-search"
+            "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons" # Open app launcher. TODO: use the AGS app launcher instead.
+            "$mod, S, exec, rofi-google-search"
           ];
         };
       };
@@ -75,6 +93,38 @@ in
           # TODO: include these once we know it's working
           # powerprofiles
         ]);
+      };
+
+      xdg.desktopEntries = {
+        # System management:
+        shutdown = {
+          name = "Shutdown";
+          exec = "shutdown -P now";
+          categories = [ "System" ];
+          icon = "system-shutdown";
+          startupNotify = true;
+        };
+        reboot = {
+          name = "Reboot";
+          exec = "reboot";
+          categories = [ "System" ];
+          icon = "system-reboot";
+          startupNotify = true;
+        };
+        suspend = {
+          name = "Suspend";
+          exec = "systemctl suspend";
+          categories = [ "System" ];
+          icon = "preferences-system";
+          startupNotify = true;
+        };
+        logout = {
+          name = "Logout";
+          exec = "logout";
+          categories = [ "System" ];
+          icon = "system-log-out";
+          startupNotify = true;
+        };
       };
     };
   });

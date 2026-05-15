@@ -22,6 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree.url = "github:vic/import-tree";
+    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules"; # https://birdeehub.github.io/nix-wrapper-modules
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";

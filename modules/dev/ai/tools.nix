@@ -85,8 +85,7 @@
     home-manager.users.${env.user} = {
       programs = {
         claude-code = {
-          # TODO: refactor claude-code to another module, since it get's it from npm
-          enable = false;
+          enable = env.platform != "darwin";
           # Avoid telemetry 404s when using claude-local (ANTHROPIC_BASE_URL → local llama-server)
           settings = { env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"; };
           rules = {

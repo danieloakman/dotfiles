@@ -646,6 +646,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1775579569,
+        "narHash": "sha256-/m3yyS/EnXqoPGBJYVy4jTOsirdgsEZ3JdN2gGkBr14=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "dfd9566f82a6e1d55c30f861879186440614696e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nur": {
       "inputs": {
         "flake-parts": [
@@ -730,7 +746,8 @@
         "pia": "pia",
         "sops-nix": "sops-nix",
         "stirling-pdf": "stirling-pdf",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "wrapper-modules": "wrapper-modules"
       }
     },
     "sops-nix": {
@@ -957,6 +974,24 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "wrapper-modules": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1777489553,
+        "narHash": "sha256-zR4vCp+LXrfTOCrjEHrxhD8FAs8KdWqOUomJgF+ds08=",
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
+        "rev": "d3e027abcbf37f6185b1e131836490ef8764ec68",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
         "type": "github"
       }
     }

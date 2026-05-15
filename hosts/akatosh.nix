@@ -21,6 +21,13 @@ in
     };
     desktop = {
       hyprland.enable = true;
+      uiShell = "noctalia";
+      noctalia = {
+        bar.monitors = [ "DP-2" ];
+        location.name = "Sydney";
+        notifications.monitors = [ "DP-2" ];
+        # hooks.session = ''noctalia-shell ipc call state all > "${env.home}/repos/personal/dotfiles/modules/hyprland.linux/noctalia/noctalia.json"'';
+      };
       # gnome.enable = true;
     };
     programs = {

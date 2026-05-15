@@ -1,8 +1,9 @@
-{ env, lib, config, ... }: {
-
-  options.my.programs.quickshell.enable = lib.mkEnableOption "Enable the Quickshell desktop shell for Hyprland";
-
-  config = lib.mkIf config.my.programs.quickshell.enable ({
+{ env, lib, config, ... }:
+let
+  cfgEnabled = config.my.desktop.uiShell == "quickshell";
+in
+{
+  config = lib.mkIf cfgEnabled ({
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;

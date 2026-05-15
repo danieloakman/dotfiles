@@ -102,33 +102,22 @@ in
       };
     };
 
-    home-manager.users.${env.user} = {
-      xdg.desktopEntries =
-        let
-          webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
-        in
-        {
-          llama-swap = {
-            name = "Llama Swap";
-            exec = webapp "http://localhost:${toString llamaSwapPort}";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "llama-swap";
-            startupNotify = true;
-          };
-        } // (builtins.mapAttrs
-          (name: _: {
-            name = "Llama Chat with ${name}";
-            exec = webapp "http://localhost:${toString llamaSwapPort}/upstream/${name}";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "llama-swap";
-            startupNotify = true;
-          })
-          cfg.models);
-    };
-
-    my.services.homepage.services."Llama Swap" = {
-      description = "Llama Chat";
-      href = "http://${config.networking.hostName}:${toString llamaSwapPort}";
+    my = {
+      services.homepage.services."Llama Swap" = {
+        description = "Llama Chat";
+        href = "http://${config.networking.hostName}:${toString llamaSwapPort}";
+      };
+      programs.webapps = {
+        "Llama Swap" = {
+          url = "http://localhost:${toString llamaSwapPort}";
+          icon = "executable";
+        };
+      } // lib.concatMapAttrs (name: _: {
+        "Llama Chat with ${name}" = {
+          url = "http://localhost:${toString llamaSwapPort}/upstream/${name}";
+          icon = "executable";
+        };
+      }) cfg.models;
     };
   });
 }

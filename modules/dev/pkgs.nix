@@ -59,63 +59,6 @@ in
 
         # Editors that can be ssh'd into and used:
         vscode
-
-        # Nix shells:
-        (pkgs.buildFHSEnv {
-          name = "sh-fhs";
-          targetPkgs = pkgs: (with pkgs; [
-            tesseract
-            python3
-            (python3.withPackages (ps: with ps; [
-              pip
-              virtualenv
-              # pipx
-            ]))
-            swig
-            glibc
-            glib.dev
-            libffi
-            ffmpeg
-            libsmf
-            libGL
-            libz
-            libzip
-            libgcc
-            zlib
-            pango
-            fontconfig
-            # libstdcxx5 Apparently outdated
-            opencv
-            cmake
-            pixman
-            cairo
-            libjpeg
-            giflib
-            librsvg
-            pkg-config
-            # cairomm_1_16
-
-            # Needed for prisma:
-            openssl
-            prisma-engines
-          ]) ++ (with pkgs; [
-            libx11
-            libxext
-            libsm
-          ]);
-          # nativeBuildInputs = pkgs: (with pkgs; [
-          #   pkg-config
-          # ]);
-          # multiPkgs = pkgs: (with pkgs; [
-          #   # Nothing for now
-          # ]);
-          profile = ''
-            # Required for prisma:
-            export PRISMA_QUERY_ENGINE_BINARY=/usr/bin/query-engine;
-            export PRISMA_SCHEMA_ENGINE_BINARY=/usr/bin/schema-engine;
-          '';
-          runScript = "zsh";
-        })
       ];
     };
 

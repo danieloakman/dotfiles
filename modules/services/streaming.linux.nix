@@ -25,6 +25,34 @@ in
         tailscale serve clear svc:jellyfin
       '')
     ]);
+    my.programs.webapps = {
+      "Jellyfin" = lib.mkIf cfg.jellyfin.enable {
+        url = "http://localhost:${toString jellyfinPort}";
+        icon = "video";
+        categories = [ "Network" "WebBrowser" ];
+      };
+      # TODO: Refactor below to use the same pattern as Jellyfin above.
+      # sonarr-webapp = webapp "http://localhost:${toString sonarrPort}" {
+      #   name = "Sonarr Webapp";
+      #   comment = "*arr service for automatically downloading TV shows";
+      # };
+      # radarr-webapp = webapp "http://localhost:${toString radarrPort}" {
+      #   name = "Radarr Webapp";
+      #   comment = "*arr service for automatically downloading movies";
+      # };
+      # bazarr-webapp = webapp "http://localhost:${toString bazarrPort}" {
+      #   name = "Bazarr Webapp";
+      #   comment = "Automatically downloads subtitles for Sonarr and Radarr";
+      # };
+      # transmission-webapp = webapp "http://localhost:${toString transmissionPort}" {
+      #   name = "Transmission Webapp";
+      #   comment = "Download manager for torrents";
+      # };
+      # prowlarr-webapp = webapp "http://localhost:${toString prowlarrPort}" {
+      #   name = "Prowlarr Webapp";
+      #   comment = "Meta-indexer for automatically downloading TV shows and movies";
+      # };
+    };
     services = {
       jellyfin = lib.mkIf cfg.jellyfin.enable ({
         enable = true;
@@ -64,44 +92,6 @@ in
       #   openFirewall = true;
       #   port = flaresolverrPort;
       # };
-    };
-
-    home-manager.users.${env.user} = {
-      xdg.desktopEntries =
-        let
-          webapp = url: extraArgs: {
-            exec = "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "vivaldi";
-            startupNotify = true;
-          } // extraArgs;
-        in
-        {
-          jellyfin-webapp = lib.mkIf cfg.jellyfin.enable (webapp "http://localhost:${toString jellyfinPort}" {
-            name = "Jellyfin Webapp";
-            comment = "For watching the content you download";
-          });
-          # sonarr-webapp = webapp "http://localhost:${toString sonarrPort}" {
-          #   name = "Sonarr Webapp";
-          #   comment = "*arr service for automatically downloading TV shows";
-          # };
-          # radarr-webapp = webapp "http://localhost:${toString radarrPort}" {
-          #   name = "Radarr Webapp";
-          #   comment = "*arr service for automatically downloading movies";
-          # };
-          # bazarr-webapp = webapp "http://localhost:${toString bazarrPort}" {
-          #   name = "Bazarr Webapp";
-          #   comment = "Automatically downloads subtitles for Sonarr and Radarr";
-          # };
-          # transmission-webapp = webapp "http://localhost:${toString transmissionPort}" {
-          #   name = "Transmission Webapp";
-          #   comment = "Download manager for torrents";
-          # };
-          # prowlarr-webapp = webapp "http://localhost:${toString prowlarrPort}" {
-          #   name = "Prowlarr Webapp";
-          #   comment = "Meta-indexer for automatically downloading TV shows and movies";
-          # };
-        };
     };
   };
 }

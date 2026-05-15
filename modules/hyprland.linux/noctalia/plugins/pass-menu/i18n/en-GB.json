@@ -1,0 +1,18 @@
+{
+  "bar": {
+    "tooltip": "Password store"
+  },
+  "panel": {
+    "title": "Password store",
+    "search": "Search entries",
+    "empty": "No entries found.",
+    "settings": "Widget settings"
+  },
+  "menu": {
+    "settings": "Widget settings"
+  },
+  "toast": {
+    "title": "Pass",
+    "copied": "copied to clipboard"
+  }
+}

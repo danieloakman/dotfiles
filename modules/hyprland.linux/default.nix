@@ -37,38 +37,47 @@ let
   '';
   # hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
   # hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
+  vivaldiExe = lib.getExe pkgs.vivaldi;
 in
 {
-  # TODO: remove once refactor done:
-  # imports = [
-  #   ./bluetooth.nix
-  #   ./lockscreen.nix
-  #   ./terminal.nix
-  #   ./touch-screen.nix
-  #   ./ydotool.nix
-
-  #   # UI Shells:
-  #   # ./waybar.nix
-  #   ./ags
-  #   # ./quickshell
-  # ];
-  options.my = {
-    desktop.hyprland.enable = lib.mkEnableOption "Enable the Hyprland desktop environment.";
+  options.my.desktop = {
+    hyprland.enable = lib.mkEnableOption "Enable the Hyprland desktop environment.";
+    # Reason why we this isn't hyprland.uiShell is because technically some of these are wayland compositor agnostic. So in the future we may want to try one of them with Niri for example.
+    uiShell = lib.mkOption {
+      type = lib.types.enum [ "ags" "noctalia" "quickshell" "waybar" null ];
+      default = null;
+      description = "The UI shell to use for the desktop environment.";
+    };
   };
 
   config = lib.mkIf cfg.enable ({
     my = {
-      services = {
-        blueman.enable = true;
-        hyprlock.enable = true;
-      };
       programs = {
-        ags.enable = true;
         kitty.enable = true;
         ydotool.enable = true;
-        # quickshell.enable = true;
-        # waybar.enable = true;
         rofi.enable = true;
+        webapps = {
+          YouTube.url = "https://www.youtube.com";
+          Twitch.url = "https://www.twitch.tv";
+          Reddit.url = "https://www.reddit.com";
+          "Instagram Chats".url = "https://www.instagram.com/direct/inbox/";
+          "Claude AI".url = "https://claude.ai/chat";
+          "Gemini AI".url = "https://gemini.google.com";
+          "Google Drive".url = "https://drive.google.com";
+          Gmail.url = "https://mail.google.com";
+          "Google Calendar".url = "https://calendar.google.com";
+          "NixOS Search Packages".url = "https://search.nixos.org/packages?channel=unstable";
+          "NixOS Home Manager Configuration Search".url =
+            "https://home-manager-options.extranix.com/?query=&release=master";
+          "Google Taskboard".url = "https://tasksboard.com/app";
+          "Google Photos".url = "https://photos.google.com";
+          "Google Mobile Messages".url = "https://messages.google.com/web/conversations";
+          "Disney Plus".url = "https://www.disneyplus.com";
+          Netflix.url = "https://www.netflix.com";
+          Stan.url = "https://www.stan.com.au";
+          "Amazon Prime".url = "https://www.primevideo.com/";
+          Audible.url = "https://www.audible.com.au/library";
+        };
       };
     };
 
@@ -84,7 +93,7 @@ in
         brightnessctl # Control backlight brightness
         libnotify # Adds notification commands like `notify-send`
         wev # Wayland event viewer. Useful for finding uncommon key codes
-        uwsm # Universal Wayland session manager. Can do `uwsm `
+        uwsm # Universal Wayland session manager.
         hyprshot # Screenshot tool # TODO: move to programs.hyprshot.enable
         rofi-network-manager # Rofi network manager GUI
         nautilus # File explorer
@@ -129,28 +138,8 @@ in
 
           "$mod" = "SUPER";
           "$files" = "nautilus";
-          "$browser" = "uwsm app -- vivaldi --ozone-platform=wayland";
+          "$browser" = "uwsm app -- ${vivaldiExe} --ozone-platform=wayland";
           "$webapp" = "$browser --app";
-
-          # `l` flag denotes these will also work when an input inhibitor is active
-          bindl = [
-            ", XF86MonBrightnessUp, exec, swayosd-client --brightness 5"
-            ", XF86MonBrightnessDown, exec, swayosd-client --brightness -5"
-            ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume 2"
-            ", XF86AudioLowerVolume, exec, swayosd-client --output-volume -2"
-            "alt, F7, exec, swayosd-client --output-volume 2" # Need these because XF86 volume keys don't work sometimes
-            "alt, F6, exec, swayosd-client --output-volume -2"
-            ", XF86AudioMicMute, exec, swayosd-client --input-volume mute-toggle"
-            ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
-            ", XF86AudioPlay, exec, swayosd-client --playerctl play-pause"
-            ", XF86AudioPrev, exec, swayosd-client --playerctl prev"
-            ", XF86AudioNext, exec, swayosd-client --playerctl next"
-          ];
-
-          bindr = [
-            "CAPS, Caps_Lock, exec, swayosd-client --caps-lock"
-            # "NUM, Num_Lock, exec, swayosd-client --num-lock" # TODO: fix this
-          ];
 
           bindm = [
             # mouse movements
@@ -159,9 +148,8 @@ in
           ];
 
           bind = [
-            "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"
-            "$mod, S, exec, rofi-google-search"
             "$mod, K, exec, rofi-kill-processes"
+            # "$mod, Q, exec, rofi-pass"
             "alt, F4, killactive"
             "$mod, C, killactive"
             "$mod, V, togglefloating"
@@ -420,203 +408,25 @@ in
           enable = true;
           systemdTargets = [ "hyprland-session.target" ];
         };
-
-        # Don't need these anymore if we're using AGS and its custom notification backend.
-        swaync = {
-          enable = true; # Notification daemon
-          settings = {
-            # positionX = "center";
-            # positionY = "top";
-            # layer = "overlay";
-            # control-center-layer = "top";
-            # layer-shell = true;
-            # cssPriority = "application";
-            # control-center-margin-top = 0;
-            # control-center-margin-bottom = 0;
-            # control-center-margin-right = 0;
-            # control-center-margin-left = 0;
-            # notification-2fa-action = true;
-            # notification-inline-replies = false;
-            # notification-icon-size = 64;
-            # notification-body-image-height = 100;
-            # notification-body-image-width = 200;
-          };
-        };
-        swayosd = {
-          enable = true;
-        };
       };
+    };
 
-      xdg.desktopEntries =
-        let
-          webapp = url: "uwsm app -- vivaldi --ozone-platform=wayland --app=\"${url}\"";
-        in
-        {
-          # Webapps:
-          youtube = {
-            name = "YouTube";
-            exec = webapp "https://www.youtube.com";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "youtube";
-            startupNotify = true;
-          };
-          twitch = {
-            name = "Twitch";
-            exec = webapp "https://www.twitch.tv";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "twitch";
-            startupNotify = true;
-          };
-          reddit = {
-            name = "Reddit";
-            exec = webapp "https://www.reddit.com";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "reddit";
-            startupNotify = true;
-          };
-          instagram-chats = {
-            name = "Instagram Chats";
-            exec = webapp "https://www.instagram.com/direct/inbox/";
-            categories = [ "Network" "Chat" ];
-            icon = "instagram";
-            startupNotify = true;
-          };
-          claude = {
-            name = "Claude AI";
-            exec = webapp "https://claude.ai/chat";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "claude";
-            startupNotify = true;
-          };
-          gemini = {
-            name = "Gemini";
-            exec = webapp "https://gemini.google.com";
-            categories = [ "Network" "WebBrowser" ];
-            icon = "gemini";
-            startupNotify = true;
-          };
-          google-drive = {
-            name = "Google Drive";
-            exec = webapp "https://drive.google.com";
-            categories = [ "Network" "FileTransfer" ];
-            icon = "google-drive";
-            startupNotify = true;
-          };
-          gmail = {
-            name = "Gmail";
-            exec = webapp "https://mail.google.com";
-            categories = [ "Network" "Email" ];
-            icon = "gmail";
-            startupNotify = true;
-          };
-          google-calendar = {
-            name = "Google Calendar";
-            exec = webapp "https://calendar.google.com";
-            categories = [ "Network" "Calendar" ];
-            icon = "google-calendar";
-            startupNotify = true;
-          };
-          nixos-search-packages = {
-            name = "NixOS Search Packages";
-            exec = webapp "https://search.nixos.org/packages?channel=unstable";
-            categories = [ "System" "Development" ];
-            icon = "nixos";
-            startupNotify = true;
-          };
-          home-manager-config = {
-            name = "NixOS Home Manager Configuration Search";
-            exec = webapp "https://home-manager-options.extranix.com/?query=&release=master";
-            categories = [ "System" "Development" ];
-            icon = "home-manager";
-            startupNotify = true;
-          };
-          google-taskboard = {
-            name = "Google Taskboard";
-            exec = webapp "https://tasksboard.com/app";
-            categories = [ "Network" ];
-            icon = "google-tasks";
-            startupNotify = true;
-          };
-          google-photos = {
-            name = "Google Photos";
-            exec = webapp "https://photos.google.com";
-            categories = [ "Network" ];
-            icon = "google-photos";
-            startupNotify = true;
-          };
-          google-mobile-messages = {
-            name = "Google Mobile Messages";
-            exec = webapp "https://messages.google.com/web/conversations";
-            categories = [ "Network" "Chat" ];
-            icon = "google-messages";
-            startupNotify = true;
-          };
-          disney-plus = {
-            name = "Disney Plus";
-            exec = webapp "https://www.disneyplus.com";
-            categories = [ "Network" ];
-            icon = "disney-plus";
-            startupNotify = true;
-          };
-          netflix = {
-            name = "Netflix";
-            exec = webapp "https://www.netflix.com";
-            categories = [ "Network" ];
-            icon = "netflix";
-            startupNotify = true;
-          };
-          stan = {
-            name = "Stan";
-            exec = webapp "https://www.stan.com.au";
-            categories = [ "Network" ];
-            icon = "stan";
-            startupNotify = true;
-          };
-          amazon-prime = {
-            name = "Amazon Prime";
-            exec = webapp "https://www.primevideo.com/";
-            categories = [ "Network" ];
-            icon = "amazon-prime";
-            startupNotify = true;
-          };
-          audible = {
-            name = "Audible";
-            exec = webapp "https://www.audible.com.au/library";
-            categories = [ "Network" ];
-            icon = "audible";
-            startupNotify = true;
-          };
-
-          # System management:
-          shutdown = {
-            name = "Shutdown";
-            exec = "shutdown -P now";
-            categories = [ "System" ];
-            icon = "shutdown";
-            startupNotify = true;
-          };
-          reboot = {
-            name = "Reboot";
-            exec = "reboot";
-            categories = [ "System" ];
-            icon = "reboot";
-            startupNotify = true;
-          };
-          suspend = {
-            name = "Suspend";
-            exec = "systemctl suspend";
-            categories = [ "System" ];
-            icon = "suspend";
-            startupNotify = true;
-          };
-          logout = {
-            name = "Logout";
-            exec = "logout";
-            categories = [ "System" ];
-            icon = "logout";
-            startupNotify = true;
-          };
+    # greetd must be enabled for Hyprland to start at boot. It used to live only in
+    # hyprlock.nix (pulled in by the AGS module), so switching uiShell to noctalia
+    # turned greetd off and left a TTY at boot.
+    #
+    # If you use another display manager (e.g. GDM with GNOME), disable greetd in the host:
+    #   services.greetd.enable = lib.mkForce false;
+    security.pam.services.greetd.enableGnomeKeyring = true;
+    services.greetd = {
+      enable = true;
+      settings = rec {
+        initial_session = {
+          command = "${lib.getExe hyprlandPkg} > /dev/null 2>&1";
+          user = env.user;
         };
+        default_session = initial_session;
+      };
     };
   });
 }

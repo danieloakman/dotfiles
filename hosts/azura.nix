@@ -51,6 +51,7 @@ in
     };
     desktop = {
       hyprland.enable = true;
+      uiShell = "ags";
     };
     programs = {
       cursor.enable = true;
