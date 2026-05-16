@@ -5,11 +5,6 @@
 let
   cfg = config.my.desktop.hyprland;
   hyprlandPkg = inputs.hyprland.legacyPackages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-  startupScript = pkgs.pkgs.writeShellScriptBin "start" ''
-    ${pkgs.pyprland}/bin/pypr &
-
-    sleep 1
-  '';
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
@@ -79,6 +74,8 @@ in
           Audible.url = "https://www.audible.com.au/library";
         };
       };
+      # Haven't found a need for this again:
+      services.pyprland.enable = false;
     };
 
     environment = {
@@ -86,7 +83,6 @@ in
         NIXOS_OZONE_WL = "1";
       };
       systemPackages = with pkgs; [
-        pyprland # Extra Hyprland utils/tools
         hyprpicker # Color picker
         # hyprcursor # Cursor. Stylix seems to handle cursors on wayland, so don't need this.
         rofi # Make sure it's installed, even though we have imported rofi.nix
@@ -132,11 +128,6 @@ in
         # ];
 
         settings = {
-          # Keep this a list, so other nix modules can add to it.
-          exec-once = [
-            ''${lib.getExe startupScript}''
-          ];
-
           "$mod" = "SUPER";
           "$files" = "nautilus";
           "$browser" = "uwsm app -- ${vivaldiExe} --ozone-platform=wayland";
@@ -376,12 +367,6 @@ in
           ELECTRON_OZONE_PLATFORM_HINT = "wayland";
         };
 
-        file = {
-          ".config/pypr/config.toml".text = ''
-            [pyprland]
-            terminal = "kitty"
-          '';
-        };
       };
 
       programs = {
