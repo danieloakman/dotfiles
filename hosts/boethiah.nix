@@ -29,7 +29,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    backupFileExtension = ".bak";
+    backupFileExtension = "bak";
     # extraSpecialArgs = { inherit inputs system env self; };
     users.${env.user} = {
       # Let Home Manager install and manage itself.

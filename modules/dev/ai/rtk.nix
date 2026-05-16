@@ -61,7 +61,7 @@ let
 in
 {
   options.my.dev.ai.rtk.enable = lib.mkEnableOption ''
-    RTK (rtk-ai/rtk): install the release binary and ensure `rtk init -g` has been applied when missing
+    RTK (rtk-ai/rtk): install the release binary and remind at shell startup if global init is missing
   '';
 
   config = lib.mkIf cfg.enable {
@@ -69,29 +69,30 @@ in
       home.packages = [ rtk ];
       programs = {
         zsh.initContent = lib.mkOrder 1500 ''
-          # RTK (my.dev.ai.rtk): install global hooks if not already present
+          # RTK (my.dev.ai.rtk): remind to configure global hooks if missing
           if command -v rtk >/dev/null 2>&1; then
             rtk_status="$(rtk init --show 2>/dev/null || true)"
-            if [[ "$rtk_status" == *"[--]"* ]] || [[ "$rtk_status" == *"not configured"* ]]; then
-              if [[ -e "$HOME/.claude/CLAUDE.md" ]] && [[ ! -w "$HOME/.claude/CLAUDE.md" ]]; then
-                # Some setups manage ~/.claude/CLAUDE.md as read-only (e.g. Nix home.file), so
-                # full `init -g` fails when it tries to inject @RTK.md into that file.
-                rtk init -g &>/dev/null || true # This will fail, but at least create @RTK.md in the right place.
-                # Then the following will succeed in doing the rest:
-                rtk init -g --hook-only --auto-patch &>/dev/null || true
-                rtk init -g --hook-only --agent cursor --auto-patch &>/dev/null || true
-              else
-                rtk init -g --auto-patch &>/dev/null || true
-                rtk init -g --auto-patch --agent cursor &>/dev/null || true
-              fi
-
-              rtk init -g --gemini --auto-patch &>/dev/null || true
+            # Hook not configured, remind to configure
+            if [[ "$rtk_status" == *"[--] Hook"* ]]; then
+              echo 'RTK: global hooks not configured — run: rtk init -g' >&2
+            fi
+            if [[ "$rtk_status" == *"[--] Cursor hook"* ]]; then
+              echo 'RTK: Cursor hook not configured — run: rtk init -g --agent cursor' >&2
             fi
           fi
         '';
-        claude-code.context = ''
-          @RTK.md
-        '';
+        claude-code = {
+          context = ''
+            @RTK.md
+          '';
+          settings.hooks.PreToolUse = [{
+            matcher = "Bash";
+            hooks = [{
+              type = "command";
+              command = "rtk hook claude";
+            }];
+          }];
+        };
       };
     };
   };

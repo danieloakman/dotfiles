@@ -124,6 +124,7 @@ in
       wayland.windowManager.hyprland = {
         enable = true;
         package = hyprlandPkg;
+        configType = "hyprlang";
         # systemd.variables = ["--all"];
 
         # plugins = [

@@ -118,6 +118,14 @@ let
     settings = finalSettings;
   };
   noctaliaCmd = lib.getExe noctaliaPkg;
+
+  # IPC discovers the running shell via the user runtime dir; many terminals leave
+  # XDG_RUNTIME_DIR unset, so `noctalia-shell ipc` cannot see the compositor instance.
+  noctaliaSessionEnv = ''
+    if [ -z "''${XDG_RUNTIME_DIR:-}" ] && [ -d "/run/user/$(id -u)" ]; then
+      export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+    fi
+  '';
 in
 {
   options.my.desktop.noctalia = {
@@ -313,16 +321,24 @@ in
 
     environment.systemPackages = with pkgs; lib.mkMerge [
       ([
-        noctaliaPkg
+        # Shim and wrapped pkg both install bin/noctalia-shell; hiPrio/lowPrio resolve the
+        # clash so PATH uses the shim while the rest of noctaliaPkg (e.g. dump-noctalia-shell) stays installed.
+        (lib.lowPrio noctaliaPkg)
+        (lib.hiPrio (writeShellScriptBin "noctalia-shell" ''
+          ${noctaliaSessionEnv}
+          exec ${noctaliaCmd} "$@"
+        ''))
         kdePackages.qtdeclarative # Required for qmlls, the QT lanaguage server
 
         pass
         wl-clipboard
         wtype # Required for pass-menu
         (writeShellScriptBin "noctalia-shell-save-settings" ''
+          ${noctaliaSessionEnv}
           ${noctaliaCmd} ipc call state all > "$DOTFILES_DIR/modules/hyprland.linux/noctalia/noctalia.json"
         '')
         (writeShellScriptBin "noctalia-shell-ipc-show" ''
+          ${noctaliaSessionEnv}
           ${noctaliaCmd} ipc show
         '')
       ])
