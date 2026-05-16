@@ -377,7 +377,7 @@ in
         };
 
         file = {
-          ".config/hypr/pyprland.toml".text = ''
+          ".config/pypr/config.toml".text = ''
             [pyprland]
             terminal = "kitty"
           '';
