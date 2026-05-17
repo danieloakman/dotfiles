@@ -10,10 +10,14 @@
   "tags": ["LauncherProvider", "Pass", "Password"],
   "entryPoints": {
     "main": "Main.qml",
-    "launcherProvider": "LauncherProvider.qml"
+    "launcherProvider": "LauncherProvider.qml",
+    "settings": "Settings.qml"
   },
   "metadata": {
-    "defaultSettings": {},
+    "defaultSettings": {
+      "passwordStoreDir": "~/.password-store",
+      "sorting": "alphabetical"
+    },
     "commandPrefix": "pass"
   }
 }

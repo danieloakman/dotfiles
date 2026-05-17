@@ -9,6 +9,7 @@ Item {
 
   property var pluginApi: null
 
+  // TODO: add sorting via plugin settings:
   property var passEntries: []
 
   function refreshEntries() {
@@ -30,6 +31,7 @@ Item {
     id: passListProc
 
     running: false
+    // TODO: add using passwordStoreDir from plugin settings:
     command: [
       "zsh",
       "-c",
