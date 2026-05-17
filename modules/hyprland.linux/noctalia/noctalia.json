@@ -32,6 +32,7 @@
         "left": [
           {
             "colorizeSystemIcon": "none",
+            "colorizeSystemText": "none",
             "customIconPath": "",
             "enableColorization": false,
             "icon": "rocket",
@@ -95,7 +96,7 @@
           },
           {
             "colorName": "primary",
-            "hideWhenIdle": false,
+            "hideWhenIdle": true,
             "id": "AudioVisualizer",
             "width": 200
           }
@@ -167,15 +168,6 @@
             "id": "plugin:tailscale"
           },
           {
-            "defaultSettings": {
-              "connectedColor": "primary",
-              "disableToastNotifications": false,
-              "disconnectedColor": "none",
-              "displayMode": "onhover"
-            },
-            "id": "plugin:network-manager-vpn"
-          },
-          {
             "deviceNativePath": "__default__",
             "displayMode": "graphic-clean",
             "hideIfIdle": false,
@@ -208,6 +200,7 @@
           {
             "colorizeDistroLogo": false,
             "colorizeSystemIcon": "none",
+            "colorizeSystemText": "none",
             "customIconPath": "",
             "enableColorization": true,
             "icon": "noctalia",
@@ -228,7 +221,7 @@
       "screenOverrides": []
     },
     "general": {
-      "avatarImage": "",
+      "avatarImage": "/home/dano/.face",
       "dimmerOpacity": 0.2,
       "showScreenCorners": false,
       "forceBlackScreenCorners": false,
@@ -795,10 +788,10 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1778697439000
+      "lastSeenTs": 1779039892000
     },
     "changelogState": {
-      "lastSeenVersion": "v4.7.5"
+      "lastSeenVersion": "v4.7.6"
     },
     "colorSchemesList": {
       "schemes": [],
