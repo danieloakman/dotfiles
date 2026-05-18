@@ -70,6 +70,7 @@
               # Set up passff-host for firefox password management with "Pass"
               # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
+              # TODO: need to refactor this to use be its own git module that can handle boethiah as well
               ".gitconfig".text = ''
                 [user]
                   name = Daniel (Oakman) Brown
@@ -102,6 +103,9 @@
                   helper = !/run/current-system/sw/bin/gh auth git-credential
                 [credential "https://gist.github.com"]
                   helper = 
+                  helper = !/run/current-system/sw/bin/gh auth git-credential
+                [credential "https://future-secure-ai.ghe.com"]
+                  helper =
                   helper = !/run/current-system/sw/bin/gh auth git-credential
               '';
 

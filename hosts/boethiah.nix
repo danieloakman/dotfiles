@@ -79,6 +79,9 @@
             [credential "https://gist.github.com"]
               helper = 
               helper = !/opt/homebrew/bin/gh auth git-credential
+            [credential "https://future-secure-ai.ghe.com"]
+              helper =
+              helper = !/opt/homebrew/bin/gh auth git-credential
           '';
           ".gitconfig-fsai".text = ''
             [user]
