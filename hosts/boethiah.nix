@@ -50,56 +50,12 @@
         };
 
         file = {
-          ".gitconfig".text = ''
-            [user]
-              name = Daniel (Oakman) Brown
-              email = 42539848+danieloakman@users.noreply.github.com
-              signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
-            [credential]
-              helper = cache --timeout 604800
-            [includeIf "gitdir/i:~/repos/fsai/"]
-              path = ~/.gitconfig-fsai
-            [commit]
-              gpgsign = true
-            [init]
-              defaultBranch = main
-            [gpg]
-              program = gpg
-            [pull]
-              ff = true
-            [core]
-              editor = nano
-            [http]
-              postBuffer = 524288000
-            [gpg "ssh"]
-              allowedSignersFile = ~/.config/git/allowed_signers
-            [credential "https://github.com"]
-              helper = 
-              helper = !/opt/homebrew/bin/gh auth git-credential
-            [credential "https://gist.github.com"]
-              helper = 
-              helper = !/opt/homebrew/bin/gh auth git-credential
-            [credential "https://future-secure-ai.ghe.com"]
-              helper =
-              helper = !/opt/homebrew/bin/gh auth git-credential
-          '';
-          ".gitconfig-fsai".text = ''
-            [user]
-              name = Daniel (Oakman) Brown
-              email = daniel.brown@futuresecure.ai
-              signingkey = ~/.ssh/id_rsa.pub
-            [gpg]
-              format = ssh
-            # [commit]
-            #   gpgsign = true
-          '';
           ".gnupg/gpg-agent.conf".text = ''
             default-cache-ttl 604800
             max-cache-ttl 604800
             pinentry-program /opt/homebrew/bin/pinentry-mac
           '';
           "Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
-          ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
           ".ssh/config".text = ''
             Host github github.com
             IdentityFile ~/.ssh/djo-personal

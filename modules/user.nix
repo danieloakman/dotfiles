@@ -70,72 +70,6 @@
               # Set up passff-host for firefox password management with "Pass"
               # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
-              # TODO: need to refactor this to use be its own git module that can handle boethiah as well
-              ".gitconfig".text = ''
-                [user]
-                  name = Daniel (Oakman) Brown
-                  email = 42539848+danieloakman@users.noreply.github.com
-                  signingkey = 8FB975523F3FEB6113801C04368C0A3C6913D768
-                [credential]
-                  helper = cache --timeout 604800
-                [includeIf "gitdir/i:~/repos/auxilis/"]
-                  path = ~/.gitconfig-auxilis
-                [includeIf "gitdir/i:~/repos/frogco/"]
-                  path = ~/.gitconfig-frogco
-                [includeIf "gitdir/i:~/repos/fsai/"]
-                  path = ~/.gitconfig-fsai
-                [commit]
-                  gpgsign = true
-                [init]
-                  defaultBranch = main
-                [gpg]
-                  program = gpg
-                [pull]
-                  ff = true
-                [core]
-                  editor = nano
-                [http]
-                  postBuffer = 524288000
-                [gpg "ssh"]
-                  allowedSignersFile = ~/.config/git/allowed_signers
-                [credential "https://github.com"]
-                  helper = 
-                  helper = !/run/current-system/sw/bin/gh auth git-credential
-                [credential "https://gist.github.com"]
-                  helper = 
-                  helper = !/run/current-system/sw/bin/gh auth git-credential
-                [credential "https://future-secure-ai.ghe.com"]
-                  helper =
-                  helper = !/run/current-system/sw/bin/gh auth git-credential
-              '';
-
-              # ".gitconfig-auxilis".text = ''
-              #   [user]
-              #     name = daniel.oakman
-              #     email = daniel.oakman@auxilis.com.au
-              #     # signingkey = ""
-              #   [commit]
-              #     gpgsign = false
-              # '';
-
-              # ".gitconfig-frogco".text = ''
-              #   [user]
-              #     name = Daniel (Oakman) Brown
-              #     email = d.oakman@frogco.live
-              #     signingkey = ~/.ssh/frogco.pub
-              #   [gpg]
-              #     format = ssh
-              # '';
-
-              ".gitconfig-fsai".text = ''
-                [user]
-                  name = Daniel (Oakman) Brown
-                  email = daniel.brown@futuresecure.ai
-                  signingkey = ~/.ssh/fsai.pub
-                [gpg]
-                  format = ssh
-              '';
-
               ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
 
               ".config/nixpkgs/config.nix".text = ''
@@ -144,8 +78,6 @@
                   allowUnfree = true;
                 }
               '';
-
-              ".config/git/allowed_signers".source = ../files/home/.config/git/allowed_signers;
             };
 
             activation = {
@@ -203,35 +135,6 @@
           # Let Home Manager install and manage itself.
           programs = {
             home-manager.enable = true;
-
-            # git = {
-            #   enable = true;
-            #   userName = "Daniel Brown";
-            #   userEmail = "42539848+danieloakman@users.noreply.github.com";
-            #   signing = {
-            #     gpgPath = "gpg";
-            #     key = "8FB975523F3FEB6113801C04368C0A3C6913D768";
-            #     signByDefault = true;
-            #   };
-            #   extraConfig = {
-            #     credential = {
-            #       helper = "cache --timeout 604800";
-            #     };
-            #     init = {
-            #       defaultBranch = "main";
-            #     };
-            #     pull = {
-            #       ff = true;
-            #     };
-            #     core = {
-            #       editor = "nano";
-            #     };
-            #     http = {
-            #       postbuffer = "524288000"; 
-            #     };
-            #     "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
-            #   };
-            # };
 
             # Some github cli extensions weren't available, so don't enalbe in home-manager for now
             # gh = {
