@@ -39,10 +39,12 @@ in
           helper = !${gh} auth git-credential
       '';
 
-      # TODO: move signing key to the main .gitconfig file and just sign everything using the ssh key, not gpg
+      # TODO: move signing key to the main .gitconfig file and just sign everything using the ssh key, not gpg.
+      # Also the signing key should just be id_rsa regardless of what machine its on.
       ".gitconfig-fsai".text = ''
         [user]
-          name = Daniel (Oakman) Brown
+          # Leaving out the (Oakman) part annoyingly because the new enterprise git server doesn't allow me to edit my name and put it in.
+          name = Daniel Brown
           email = daniel.brown@futuresecure.ai
           signingkey = ${if pkgs.stdenv.isDarwin then "~/.ssh/id_rsa.pub" else "~/.ssh/fsai.pub"}
         [gpg]
