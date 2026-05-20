@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "postinstall": "bun2nix -o bun.nix",
+    "postinstall": "bun2nix -o _bun.nix",
     "build": "NODE_ENV=production bun build --target bun --outdir dist --minify src/*.ts --external=playwright-core --external=@playwright/test",
     "upgrade-interactive": "bunx npm-check-updates -i",
     "format": "prettier --write ./src",
