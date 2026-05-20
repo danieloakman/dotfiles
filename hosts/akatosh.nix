@@ -172,22 +172,21 @@ in
         "2, monitor:DP-2"
         "3, monitor:HDMI-A-1"
       ];
-      # Window rules
-      # TODO: add window rules again after finding what isn't deprecated
-      # windowrulev2 = [
-      #   "workspace 1, class:^(vivaldi-bin)$"
-      #   "workspace 1, class:^(vivaldi)$"
-      #   "workspace 1, class:^(chromium)$"
-      #   "workspace 1, class:^(chrome)$"
-      #   "workspace 1, class:^(firefox)$"
-      #   "workspace 1, class:^(google-chrome)$"
-      #   "workspace 2, class:^(Cursor)$"
-      #   "workspace 2, class:^(code)$"
-      #   "workspace 3, class:^(Spotify)$"
-      #   "workspace 2, class:^(obsidian)$"
-      #   "workspace 3, class:^(Discord)$"
-      #   "workspace 3, class:^(Steam)$"
-      # ];
+      # Window rules — hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
+      windowrule = [
+        "workspace 1, match:class ^(vivaldi-bin)$"
+        "workspace 1, match:class ^(vivaldi)$"
+        "workspace 1, match:class ^(chromium)$"
+        "workspace 1, match:class ^(chrome)$"
+        "workspace 1, match:class ^(firefox)$"
+        "workspace 1, match:class ^(google-chrome)$"
+        "workspace 2, match:class ^(Cursor)$"
+        "workspace 2, match:class ^(code)$"
+        "workspace 3, match:class ^(Spotify)$"
+        "workspace 2, match:class ^(obsidian)$"
+        "workspace 3, match:class ^(Discord)$"
+        "workspace 3, match:class ^(Steam)$"
+      ];
     };
     services = {
       hyprpaper.settings =
