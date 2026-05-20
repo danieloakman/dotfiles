@@ -8,7 +8,14 @@
 let
   cfg = config.my.programs.cursor;
   cursor-cli = pkgs.writeShellScriptBin "cursor-cli" ''
-    CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
+    ${env.selectPlatform {
+      darwin = ''
+        CURSOR_API_KEY=$(pass api_keys/personal/cursor_ai)
+      '';
+      linux = ''
+        CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
+      '';
+    }}
     ${lib.getExe pkgs.code-cursor} --api-key "$CURSOR_API_KEY" "$@"
   '';
 in
