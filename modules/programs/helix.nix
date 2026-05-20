@@ -76,33 +76,47 @@ in
 {
   options.my.programs.helix = {
     enable = lib.mkEnableOption "Enable the Helix editor with custom configuration.";
-    vscodeKeybinds.enable = lib.mkEnableOption ''
+    enableVSCodeKeybinds = lib.mkEnableOption ''
       Map common VS Code / Cursor shortcuts in Helix.
       Uses Cmd on Darwin and Ctrl on Linux (see modules/programs/helix.nix).
     '';
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.${env.user}.programs.helix = {
-      enable = true;
+    home-manager.users.${env.user} = {
 
-      settings = lib.mkMerge [
-        {
-          theme = "autumn_night";
-          editor = {
-            line-number = "relative";
-            mouse = true;
-            cursor-shape = {
-              normal = "block";
-              insert = "bar";
-              select = "underline";
-            };
-          };
-        }
-        (lib.mkIf cfg.vscodeKeybinds.enable {
-          keys = vscodeKeys;
-        })
-      ];
+
+      programs = {
+        helix = {
+          enable = true;
+
+          defaultEditor = true;
+
+          settings = lib.mkMerge [
+            {
+              theme = lib.mkDefault "autumn_night";
+              editor = {
+                line-number = "relative";
+                mouse = true;
+                cursor-shape = {
+                  normal = "block";
+                  insert = "bar";
+                  select = "underline";
+                };
+              };
+            }
+            (lib.mkIf cfg.enableVSCodeKeybinds {
+              keys = vscodeKeys;
+            })
+          ];
+        };
+
+        zsh.shellAliases = {
+          "nvim" = "hx";
+          "vim" = "hx";
+          "editor" = "hx";
+        };
+      };
     };
   };
 }

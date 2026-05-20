@@ -39,7 +39,11 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      neovim.enable = true;
+      # neovim.enable = true;
+      helix = {
+        enable = true;
+        enableVSCodeKeybinds = true;
+      };
       comma.enable = true;
     };
     scripts.bun.enable = true;
