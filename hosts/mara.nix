@@ -21,6 +21,10 @@
       gws.enable = true;
       tmux.enable = true;
       kitty.enable = true; # Needed for when we ssh into this host
+      helix = {
+        enable = true;
+        enableVSCodeKeybinds = true;
+      };
     };
     scripts.bun.enable = true;
     services = {
