@@ -13,8 +13,6 @@ in
         # birdtray # Thunderbird tray icon
         # zed-editor # Trying this out as an alternative to vscode
         google-drive-ocamlfuse
-        # Was trying this out for a week or two. I think guake is just overall a better choice. `pass` autocomplete no longer worked for one. And making the terminal a paid subscription gave me the ick.
-        # warp-terminal
         discord
         zoom-us
         slack

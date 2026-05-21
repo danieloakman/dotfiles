@@ -25,6 +25,7 @@
         enable = true;
         enableVSCodeKeybinds = true;
       };
+      warp.enable = true;
     };
   };
 
@@ -279,7 +280,6 @@
     casks = [
       "vivaldi"
       "visual-studio-code"
-      "warp"
       "iterm2"
       "zoom"
       "spotify" # idk why but this causes an message to pop up to delete the spotify app. But uninstalling it and reinstalling it seems to fix it.
