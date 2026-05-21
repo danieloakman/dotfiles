@@ -62,7 +62,10 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      neovim.enable = true;
+      lazyvim = {
+        enable = true;
+        enableVSCodeKeybinds = true;
+      };
     };
     scripts.bun.enable = true;
     services = {

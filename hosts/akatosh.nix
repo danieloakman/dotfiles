@@ -39,8 +39,7 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      # neovim.enable = true;
-      helix = {
+      lazyvim = {
         enable = true;
         enableVSCodeKeybinds = true;
       };

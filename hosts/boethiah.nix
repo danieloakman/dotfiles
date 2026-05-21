@@ -21,6 +21,10 @@
       localsend.enable = true;
       cursor.enable = true;
       desktopPkgs.enable = true;
+      lazyvim = {
+        enable = true;
+        enableVSCodeKeybinds = true;
+      };
     };
   };
 

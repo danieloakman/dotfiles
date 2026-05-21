@@ -70,6 +70,10 @@
     # TODO: migrate hyprland config to v0.54+ or latest
     hyprland.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 0.53.3 (2026-01-24)
     stirling-pdf.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # v1.5.0, v2 changed a lot and broke a lot. Try it again in the future.
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, nix-darwin, home-manager, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, import-tree, stirling-pdf, ... }@inputs:

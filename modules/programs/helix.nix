@@ -1,15 +1,19 @@
 # Pickers (default): space-f (files), space-/ (project search), space-b (buffers).
 # https://docs.helix-editor.com/master/pickers.html
-{ config, lib, env, ... }:
+{
+  config,
+  lib,
+  env,
+  ...
+}:
 let
   cfg = config.my.programs.helix;
 
   # VS Code / Cursor use Cmd on macOS and Ctrl on Linux.
-  mod =
-    env.selectPlatform {
-      darwin = "Cmd";
-      linux = "C";
-    };
+  mod = env.selectPlatform {
+    darwin = "Cmd";
+    linux = "C";
+  };
 
   k = suffix: "${mod}-${suffix}";
 
@@ -83,9 +87,14 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !config.my.programs.lazyvim.enable;
+        message = "my.programs.helix and my.programs.lazyvim cannot both be enabled.";
+      }
+    ];
+
     home-manager.users.${env.user} = {
-
-
       programs = {
         helix = {
           enable = true;
