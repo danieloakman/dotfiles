@@ -78,19 +78,21 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf hyprlandEnabled {
-      home-manager.users.${env.user}.xdg.desktopEntries = lib.mapAttrs (
-        name: value:
-        let
-          launcher = mkWebappLauncher name value.url;
-        in
-        {
-          name = name;
-          exec = lib.getExe launcher;
-          categories = value.categories;
-          icon = webappIcons.${value.icon};
-          startupNotify = true;
-        }
-      ) cfg;
+      home-manager.users.${env.user}.xdg.desktopEntries = lib.mapAttrs
+        (
+          name: value:
+            let
+              launcher = mkWebappLauncher name value.url;
+            in
+            {
+              name = name;
+              exec = lib.getExe launcher;
+              categories = value.categories;
+              icon = webappIcons.${value.icon};
+              startupNotify = true;
+            }
+        )
+        cfg;
     })
     # Add other webapp desktop entries here that don't use uwsm (when needed):
   ];

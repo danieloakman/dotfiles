@@ -1,9 +1,8 @@
-{
-  env,
-  config,
-  lib,
-  pkgs,
-  ...
+{ env
+, config
+, lib
+, pkgs
+, ...
 }:
 let
   cfg = config.my.services.podman;

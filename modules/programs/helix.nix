@@ -1,10 +1,9 @@
 # Pickers (default): space-f (files), space-/ (project search), space-b (buffers).
 # https://docs.helix-editor.com/master/pickers.html
-{
-  config,
-  lib,
-  env,
-  ...
+{ config
+, lib
+, env
+, ...
 }:
 let
   cfg = config.my.programs.helix;

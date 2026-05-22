@@ -112,12 +112,14 @@ in
           url = "http://localhost:${toString llamaSwapPort}";
           icon = "executable";
         };
-      } // lib.concatMapAttrs (name: _: {
-        "Llama Chat with ${name}" = {
-          url = "http://localhost:${toString llamaSwapPort}/upstream/${name}";
-          icon = "executable";
-        };
-      }) cfg.models;
+      } // lib.concatMapAttrs
+        (name: _: {
+          "Llama Chat with ${name}" = {
+            url = "http://localhost:${toString llamaSwapPort}/upstream/${name}";
+            icon = "executable";
+          };
+        })
+        cfg.models;
     };
   });
 }

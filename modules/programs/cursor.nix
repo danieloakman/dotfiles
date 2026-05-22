@@ -1,9 +1,8 @@
-{
-  lib,
-  pkgs,
-  config,
-  env,
-  ...
+{ lib
+, pkgs
+, config
+, env
+, ...
 }:
 let
   cfg = config.my.programs.cursor;

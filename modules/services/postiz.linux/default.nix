@@ -107,8 +107,8 @@ in
           Type = "oneshot";
           RemainAfterExit = true;
           WorkingDirectory = composeDir;
-            ExecStart = "${startScript}";
-            ExecStop = "${stopScript}";
+          ExecStart = "${startScript}";
+          ExecStop = "${stopScript}";
           TimeoutStartSec = 0;
         };
       };

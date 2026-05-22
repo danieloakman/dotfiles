@@ -79,7 +79,7 @@ in
           (writeShellScriptBin "android-emulator-shutdown" ''
             ${finalSdkPkgs}/bin/emulator -avd $1 -shutdown
           '')
-           (writeShellScriptBin "android-emulator-create" ''
+          (writeShellScriptBin "android-emulator-create" ''
             set -euo pipefail
 
             if [[ $# -lt 2 ]]; then

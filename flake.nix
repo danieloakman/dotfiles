@@ -76,7 +76,21 @@
     };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, pia, copyparty, bun2nix, gws, bun-scripts, android-nixpkgs, import-tree, stirling-pdf, ... }@inputs:
+  outputs =
+    { self
+    , nixpkgs
+    , nix-darwin
+    , home-manager
+    , pia
+    , copyparty
+    , bun2nix
+    , gws
+    , bun-scripts
+    , android-nixpkgs
+    , import-tree
+    , stirling-pdf
+    , ...
+    }@inputs:
     let
       createNixCache = _: {
         nix = {
@@ -99,30 +113,47 @@
         };
       };
 
-      createEnv = { platform, user, home, deviceType, isOnWayland ? false, hasGPU ? false }: {
-        inherit user home deviceType isOnWayland hasGPU platform;
-        selectPlatform = cfg:
-          let
-            selected = cfg.${platform} or null;
-          in
-          if builtins.isAttrs selected then
-            nixpkgs.lib.mkMerge [
-              (selected)
-              (cfg.any or { })
-            ]
-          else if builtins.isList selected then
-            selected ++ (cfg.any or [ ])
-          else if builtins.isString selected then
-            selected + (cfg.any or "")
-          else if builtins.isInt selected then
-            selected + (cfg.any or 0)
-          else if builtins.isFloat selected then
-            selected + (cfg.any or 0.0)
-          else if builtins.isBool selected then
-            selected || (cfg.any or false)
-          else
-            cfg.any or { };
-      };
+      createEnv =
+        { platform
+        , user
+        , home
+        , deviceType
+        , isOnWayland ? false
+        , hasGPU ? false
+        ,
+        }:
+        {
+          inherit
+            user
+            home
+            deviceType
+            isOnWayland
+            hasGPU
+            platform
+            ;
+          selectPlatform =
+            cfg:
+            let
+              selected = cfg.${platform} or null;
+            in
+            if builtins.isAttrs selected then
+              nixpkgs.lib.mkMerge [
+                selected
+                (cfg.any or { })
+              ]
+            else if builtins.isList selected then
+              selected ++ (cfg.any or [ ])
+            else if builtins.isString selected then
+              selected + (cfg.any or "")
+            else if builtins.isInt selected then
+              selected + (cfg.any or 0)
+            else if builtins.isFloat selected then
+              selected + (cfg.any or 0.0)
+            else if builtins.isBool selected then
+              selected || (cfg.any or false)
+            else
+              cfg.any or { };
+        };
 
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin";
@@ -141,24 +172,36 @@
         };
       };
 
-      importLinuxModules = _: linuxPkgs.lib.pipe import-tree [
-        (i: i.filterNot (linuxPkgs.lib.hasInfix "flake")) # Skip other flake files
-        (i: i.filterNot (linuxPkgs.lib.hasInfix ".darwin.")) # Skip darwin files
-        (i: i ./modules)
-      ];
+      importLinuxModules =
+        _:
+        linuxPkgs.lib.pipe import-tree [
+          (i: i.filterNot (linuxPkgs.lib.hasInfix "flake")) # Skip other flake files
+          (i: i.filterNot (linuxPkgs.lib.hasInfix ".darwin.")) # Skip darwin files
+          (i: i ./modules)
+        ];
 
-      importDarwinModules = _: darwinPkgs.lib.pipe import-tree [
-        (i: i.filterNot (darwinPkgs.lib.hasInfix "flake")) # Skip other flake files
-        (i: i.filterNot (darwinPkgs.lib.hasInfix "linux")) # Skip .linux files
-        (i: i ./modules)
-      ];
+      importDarwinModules =
+        _:
+        darwinPkgs.lib.pipe import-tree [
+          (i: i.filterNot (darwinPkgs.lib.hasInfix "flake")) # Skip other flake files
+          (i: i.filterNot (darwinPkgs.lib.hasInfix "linux")) # Skip .linux files
+          (i: i ./modules)
+        ];
     in
     {
       nixosConfigurations = {
         akatosh = nixpkgs.lib.nixosSystem {
           specialArgs = {
             system = linuxSystem;
-            inherit inputs pia copyparty bun2nix gws android-nixpkgs import-tree;
+            inherit
+              inputs
+              pia
+              copyparty
+              bun2nix
+              gws
+              android-nixpkgs
+              import-tree
+              ;
             env = createEnv {
               platform = "linux";
               user = "dano";
@@ -183,7 +226,15 @@
         azura = nixpkgs.lib.nixosSystem {
           specialArgs = {
             system = linuxSystem;
-            inherit inputs pia copyparty bun2nix gws android-nixpkgs import-tree;
+            inherit
+              inputs
+              pia
+              copyparty
+              bun2nix
+              gws
+              android-nixpkgs
+              import-tree
+              ;
             env = createEnv {
               platform = "linux";
               user = "dano";
@@ -208,7 +259,15 @@
         mara = nixpkgs.lib.nixosSystem {
           specialArgs = {
             system = linuxSystem;
-            inherit inputs pia copyparty bun2nix gws android-nixpkgs import-tree;
+            inherit
+              inputs
+              pia
+              copyparty
+              bun2nix
+              gws
+              android-nixpkgs
+              import-tree
+              ;
             env = createEnv {
               platform = "linux";
               user = "dano";

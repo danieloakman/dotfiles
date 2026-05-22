@@ -59,9 +59,11 @@ let
         settings
       else
         lib.recursiveUpdate settings {
-          bar.widgets.left = lib.imap0 (
-            i: w: if i == hit.i then w // { onlySameOutput = ncfg.bar.taskbarOnlySameOutput; } else w
-          ) left;
+          bar.widgets.left = lib.imap0
+            (
+              i: w: if i == hit.i then w // { onlySameOutput = ncfg.bar.taskbarOnlySameOutput; } else w
+            )
+            left;
         };
 
   mergedSettings = applyTaskbarOnlySameOutput mergedAfterOverlays;

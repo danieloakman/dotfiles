@@ -1,9 +1,8 @@
-{
-  lib,
-  config,
-  env,
-  pkgs,
-  ...
+{ lib
+, config
+, env
+, pkgs
+, ...
 }:
 let
   cfg = config.my.programs.warp;

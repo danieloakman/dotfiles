@@ -1,4 +1,4 @@
-{ config, lib, pkgs,... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.my.services.tandoor;
   user = "tandoor_recipes";

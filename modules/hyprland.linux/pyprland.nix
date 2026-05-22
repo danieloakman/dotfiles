@@ -18,7 +18,8 @@ in
 
     home-manager.users.${env.user} = {
       wayland.windowManager.hyprland.settings.exec-once = [
-        lib.getExe startupScript
+        lib.getExe
+        startupScript
       ];
 
       home.file.".config/pypr/config.toml".text = ''
