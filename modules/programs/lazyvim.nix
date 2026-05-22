@@ -85,8 +85,12 @@ in
 
         extras.lang.nix.enable = true;
 
-        config = lib.mkIf cfg.enableVSCodeKeybinds {
-          keymaps = vscodeKeymaps;
+        config = {
+          options = ''
+            vim.opt.relativenumber = true
+            vim.opt.wrap = true
+          '';
+          keymaps = lib.mkIf cfg.enableVSCodeKeybinds vscodeKeymaps;
         };
       };
     };
