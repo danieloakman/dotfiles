@@ -8,7 +8,7 @@ in
     enable = lib.mkEnableOption "Enable remote desktop services";
   };
 
-  config = lib.mkIf (cfg.enable) (env.selectPlatform {
+  config = lib.mkIf cfg.enable (env.selectPlatform {
     linux = {
       services = {
         xserver = {

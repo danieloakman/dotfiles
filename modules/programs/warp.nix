@@ -11,17 +11,19 @@ in
 {
   options.my.programs.warp.enable = lib.mkEnableOption "Enable Warp terminal";
 
-  config = lib.mkIf (cfg.enable) env.selectPlatform ({
-    # any = {
-    #   home-manager.${env.user}.home.files = {};
-    # };
+  config = lib.mkIf (cfg.enable) (
+    env.selectPlatform {
+      # any = {
+      #   home-manager.${env.user}.home.files = {};
+      # };
 
-    linux = {
-      environment.systemPackages = with pkgs; [ warp-terminal ];
-    };
+      linux = {
+        environment.systemPackages = with pkgs; [ warp-terminal ];
+      };
 
-    darwin = {
-      homebrew.brews.casks = [ "warp" ];
-    };
-  });
+      darwin = {
+        homebrew.casks = [ "warp" ];
+      };
+    }
+  );
 }
