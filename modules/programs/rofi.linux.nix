@@ -23,7 +23,6 @@ in
             AUTOTYPE_field='autotype'
             default_autotype='username :tab pass :tab url :tab notes'
             backend='wtype'
-            EDITOR='nano'
           '';
         };
         modes = [
