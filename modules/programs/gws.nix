@@ -17,8 +17,8 @@ in
       wrappedGws
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
     ];
-    # Fan-out to Cursor, Claude Code, and programs.mcp is handled in modules/dev/ai/config.nix.
     my.dev.ai.mcp.gws = {
+      # TODO: this seems to be broken now for some reason.
       command = "gws";
       args = [
         "mcp"
