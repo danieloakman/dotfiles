@@ -80,17 +80,30 @@ in
     home-manager.users.${env.user} = {
       imports = [ inputs.lazyvim.homeManagerModules.default ];
 
-      programs.lazyvim = {
-        enable = true;
+      programs = {
+        lazyvim = {
+          enable = true;
 
-        extras.lang.nix.enable = true;
+          extras.lang.nix.enable = true;
 
-        config = {
-          options = ''
-            vim.opt.relativenumber = true
-            vim.opt.wrap = true
+          config = {
+            options = ''
+              vim.opt.relativenumber = true
+              vim.opt.wrap = true
+            '';
+            keymaps = lib.mkIf cfg.enableVSCodeKeybinds vscodeKeymaps;
+          };
+        };
+        zsh = {
+          shellAliases = {
+            "vim" = "nvim";
+            "editor" = "nvim";
+            "lvim" = "nvim";
+          };
+          initContent = ''
+            # Set the default editor to lazyvim
+            export EDITOR="nvim"
           '';
-          keymaps = lib.mkIf cfg.enableVSCodeKeybinds vscodeKeymaps;
         };
       };
     };
