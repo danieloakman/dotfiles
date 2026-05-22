@@ -3,8 +3,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir, tmpdir as osTmpdir } from 'os';
 
-export const PROJECT_DIR =
-	process.env.BUN_SCRIPTS_ROOT ?? join(__dirname, '../../');
+export const PROJECT_DIR = process.env.BUN_SCRIPTS_ROOT ?? join(__dirname, '../../');
 
 export const cachedir = once(() => {
 	const dir = join(homedir(), '.cache', 'bun-scripts');

@@ -4,7 +4,7 @@
 {
   options.my.scripts.bun.enable = lib.mkEnableOption "Enable the bun-scripts package";
 
-  config = lib.mkIf config.my.scripts.bun.enable ({
+  config = lib.mkIf config.my.scripts.bun.enable {
     environment.systemPackages = [ bunScriptsPackage ];
-  });
+  };
 }

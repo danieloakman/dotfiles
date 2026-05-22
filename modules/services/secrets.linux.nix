@@ -14,6 +14,7 @@ let
     "tandoor_secret_key"
     "gcloud_access_token"
     "gcloud_credentials.json"
+    "gws_auth.json"
     "google_client_id"
     "google_client_secret"
     "adguard_username"
