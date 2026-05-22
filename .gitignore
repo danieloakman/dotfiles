@@ -6,3 +6,4 @@ secrets/age-keys.txt
 @girs
 node_modules
 .goutputstream*
+.direnv
