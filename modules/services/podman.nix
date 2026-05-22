@@ -29,15 +29,15 @@ in
         };
       };
       darwin = {
-        environment.systemPackages = with pkgs; [
-          # Fixes Desktop startup on macOS: Podman Desktop uses the libkrun backend, which needs krunkit installed.
-          krunkit
-        ];
         homebrew = {
+          # krunkit must come from the slp/krun tap — the nixpkgs build omits the required
+          # firmware file (KRUN_EFI.silent.fd) that only ships in the pre-built release artifacts.
+          taps = [ "slp/krun" ];
           brews = [
             "podman"
             "podman-tui"
             "podman-compose"
+            "slp/krun/krunkit"
           ];
           # Keep Desktop installed with the CLI stack; it manages and starts the local Podman machine VM.
           casks = [ "podman-desktop" ];
