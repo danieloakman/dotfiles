@@ -25,6 +25,8 @@ let
   group = "secrets"; # Group to access the secrets
 in
 {
+  # This can be moved to two separate files for linux and darwin. services/secrets/import.linux.nix and services/secrets/import.darwin.nix.
+  # But boethiah was having trouble getting it to work.
   imports = [
     inputs.sops-nix.nixosModules.sops
   ];

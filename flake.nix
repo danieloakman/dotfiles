@@ -296,7 +296,7 @@
             system = darwinSystem;
             specialArgs = {
               system = darwinSystem;
-              inherit inputs self darwinPkgs;
+              inherit inputs self darwinPkgs gws;
               env = createEnv {
                 platform = "darwin";
                 user = "daniel.brown";
