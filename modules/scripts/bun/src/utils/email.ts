@@ -25,50 +25,36 @@ const gmailMessageListSchema = z.object({
 	messages: z.array(z.object({ id: z.string(), threadId: z.string() })).optional()
 });
 
-const gmailMessageSchema = z.object({
-	id: z.string(),
-	snippet: z.string().optional(),
-	payload: z
-		.object({
-			headers: z.array(z.object({ name: z.string(), value: z.string() })).optional()
-		})
-		.optional()
+const gmailAddressSchema = z.object({
+	name: z.string().nullable().optional(),
+	email: z.string()
 });
+
+const gmailReadSchema = z.object({
+	from: gmailAddressSchema,
+	to: z.array(gmailAddressSchema),
+	subject: z.string().optional(),
+	date: z.string().optional(),
+	body_text: z.string().optional(),
+	body_html: z.string().optional()
+});
+
+function formatAddress({ name, email }: z.infer<typeof gmailAddressSchema>): string {
+	return name ? `${name} <${email}>` : email;
+}
 
 async function fetchMessage(id: string): Promise<EmailMessage> {
 	const message = await gwsJson(
-		[
-			'gmail',
-			'users',
-			'messages',
-			'get',
-			'--params',
-			JSON.stringify({
-				userId: 'me',
-				id,
-				format: 'metadata',
-				metadataHeaders: ['Subject', 'From', 'To', 'Date']
-			}),
-			'--format',
-			'json'
-		],
-		gmailMessageSchema
+		['gmail', '+read', '--id', id, '--headers', '--format', 'json'],
+		gmailReadSchema
 	);
-	const headers =
-		message.payload?.headers?.reduce(
-			(acc, header) => {
-				acc[header.name] = header.value;
-				return acc;
-			},
-			{} as Record<string, string>
-		) ?? {};
 	return {
-		id: message.id,
-		subject: headers['Subject'] ?? '',
-		from: headers['From'] ?? '',
-		to: headers['To'] ?? '',
-		date: headers['Date'] ?? '',
-		body: message.snippet ?? '',
+		id,
+		subject: message.subject ?? '',
+		from: formatAddress(message.from),
+		to: message.to.map(formatAddress).join(', '),
+		date: message.date ?? '',
+		body: message.body_text ?? message.body_html ?? '',
 		attachments: []
 	};
 }
