@@ -17,14 +17,14 @@ in
       wrappedGws
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
     ];
-    my.dev.ai.mcp.gws = {
-      # TODO: this seems to be broken now for some reason.
-      command = "gws";
-      args = [
-        "mcp"
-        "-s"
-        "drive,gmail,calendar,tasks"
-      ];
-    };
+    my.dev.ai.skillDirs.gws =
+      (pkgs.fetchFromGitHub {
+        # https://github.com/googleworkspace/cli/tree/a3768d0e82ad83cca2da97724e46bea4ff0e6dbd/skills
+        owner = "googleworkspace";
+        repo = "cli";
+        rev = "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd";
+        sha256 = "sha256-YyNIHbyZrLlXYtWxZY8Um19MsnLharmS+nWGWO89fsA=";
+      })
+      + "/skills";
   });
 }
