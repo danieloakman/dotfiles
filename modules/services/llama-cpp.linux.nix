@@ -49,7 +49,7 @@ in
       };
     };
   };
-  config = lib.mkIf config.my.services.llama-cpp.enable ({
+  config = lib.mkIf config.my.services.llama-cpp.enable {
     environment.systemPackages = with pkgs; [
       llamaCppPkg
       python313Packages.huggingface-hub
@@ -87,9 +87,9 @@ in
               (_: model: {
                 cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString cfg.gpuLayerCount} -t ${lib.toString cfg.cpuCoreCount} ${lib.escapeShellArgs model.extraServerArgs}";
                 proxy = "http://${host}:${toString llamaCppPort}";
-              } // lib.optionalAttrs (model.aliases != [ ]) { aliases = model.aliases; }
-              // lib.optionalAttrs (model.proxy != null) { proxy = model.proxy; }
-              // lib.optionalAttrs (model.concurrencyLimit != null) { concurrencyLimit = model.concurrencyLimit; }
+              } // lib.optionalAttrs (model.aliases != [ ]) { inherit (model) aliases; }
+              // lib.optionalAttrs (model.proxy != null) { inherit (model) proxy; }
+              // lib.optionalAttrs (model.concurrencyLimit != null) { inherit (model) concurrencyLimit; }
               )
               cfg.models;
           };
@@ -121,5 +121,5 @@ in
         })
         cfg.models;
     };
-  });
+  };
 }

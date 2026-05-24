@@ -16,7 +16,7 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.cursorAgentHttp.enable ({
+  config = lib.mkIf config.my.services.cursorAgentHttp.enable {
     users = {
       groups.cursor-agent-http = { };
       users.cursor-agent-http = {
@@ -63,5 +63,5 @@ in
     };
 
     networking.firewall.allowedTCPPorts = [ config.my.services.cursor-agent-http.port ];
-  });
+  };
 }

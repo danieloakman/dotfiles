@@ -2,7 +2,7 @@
 {
   options.my.programs.aerospace.enable = lib.mkEnableOption "Enable the Aerospace tiling window manager for MacOS.";
 
-  config = lib.mkIf (pkgs.stdenv.isDarwin && config.my.programs.aerospace.enable) ({
+  config = lib.mkIf (pkgs.stdenv.isDarwin && config.my.programs.aerospace.enable) {
     home-manager.users.${env.user} = {
       # Ensure aerospace package installed
       home = {
@@ -189,5 +189,5 @@
         };
       };
     };
-  });
+  };
 }

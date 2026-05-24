@@ -11,7 +11,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ cfg.port ];
 
     services.adguardhome = {
@@ -19,5 +19,5 @@ in
       openFirewall = true;
       inherit (cfg) port;
     };
-  });
+  };
 }

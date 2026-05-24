@@ -20,7 +20,7 @@ in
     programs.ulauncher.enable = lib.mkEnableOption "Enable the Ulauncher application launcher";
   };
 
-  config = lib.mkIf config.my.programs.ulauncher.enable ({
+  config = lib.mkIf config.my.programs.ulauncher.enable {
     environment.systemPackages = [
       ulauncher
     ];
@@ -55,5 +55,5 @@ in
     #     }
     #   '';
     # };
-  });
+  };
 }

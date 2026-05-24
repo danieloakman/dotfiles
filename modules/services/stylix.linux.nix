@@ -25,11 +25,11 @@ let
   };
 in
 {
-  imports = (env.selectPlatform {
+  imports = env.selectPlatform {
     linux = [ inputs.stylix.nixosModules.stylix ];
     # Could not get both linux and darwin to work at once. So just linux for now since stylix on darwin only changes pkgs from home-manager.
     darwin = [ inputs.stylix.darwinModules.stylix ];
-  });
+  };
 
   options.my.services.stylix = {
     enable = lib.mkEnableOption "Enable the Stylix module for setting the wallpaper and theme of the desktop.";

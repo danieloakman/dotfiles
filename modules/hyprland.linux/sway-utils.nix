@@ -13,11 +13,11 @@ in
     numLock.enable = lib.mkEnableOption "Enable the Sway num lock OSD for keyboard num lock keys";
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
       services = {
         # Don't need these anymore if we're using AGS and its custom notification backend.
-        swaync = lib.mkIf cfg.notifications.enable ({
+        swaync = lib.mkIf cfg.notifications.enable {
           enable = true; # Notification daemon
           settings = {
             # positionX = "center";
@@ -36,7 +36,7 @@ in
             # notification-body-image-height = 100;
             # notification-body-image-width = 200;
           };
-        });
+        };
         swayosd = {
           enable = true;
         };
@@ -75,5 +75,5 @@ in
         ];
       };
     };
-  });
+  };
 }

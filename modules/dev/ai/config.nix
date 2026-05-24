@@ -1,7 +1,7 @@
 { lib, env, config, ... }:
 let
   cfg = config.my.dev.ai;
-  mcpServerOpts = { ... }: {
+  mcpServerOpts = _: {
     options = {
       command = lib.mkOption {
         type = lib.types.str;
@@ -49,7 +49,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
       home.file = {
         ".agents/AGENTS.md".text = cfg.rootContext;
@@ -76,7 +76,7 @@ in
           context = cfg.rootContext;
           # At the moment, cursor supports finding skills in the .claude/skills directory, as do many other agents.
           # If for some reason in the future they don't we could probably just run an activate block that symlinks from claude/skills to whatever other directory we want to use also.
-          skills = cfg.skills;
+          inherit (cfg) skills;
           mcpServers = cfg.mcp;
         };
         mcp = {
@@ -85,5 +85,5 @@ in
         };
       };
     };
-  });
+  };
 }

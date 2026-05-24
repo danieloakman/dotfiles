@@ -17,7 +17,7 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.immich.enable ({
+  config = lib.mkIf config.my.services.immich.enable {
     assertions = [{
       assertion = cfg.mediaLocation != null;
       message = "immich.mediaLocation must be set";
@@ -32,7 +32,7 @@ in
         enable = true;
         openFirewall = true;
         accelerationDevices = null;
-        mediaLocation = cfg.mediaLocation;
+        inherit (cfg) mediaLocation;
       };
     };
 
@@ -66,5 +66,5 @@ in
         icon = "folder-pictures";
       };
     };
-  });
+  };
 }

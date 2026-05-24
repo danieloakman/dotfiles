@@ -28,11 +28,11 @@ let
         controlCenter.diskPath = ncfg.controlCenter.diskPath;
       })
       (optionalAttrs (ncfg.hooks.session != null) { hooks.session = ncfg.hooks.session; })
-      ({ desktopWidgets.enabled = ncfg.desktopWidgets.enabled; })
+      { desktopWidgets.enabled = ncfg.desktopWidgets.enabled; }
       (optionalAttrs (ncfg.desktopWidgets.monitorWidgets != null) {
         desktopWidgets.monitorWidgets = ncfg.desktopWidgets.monitorWidgets;
       })
-      ({ dock.enabled = ncfg.dock.enabled; })
+      { dock.enabled = ncfg.dock.enabled; }
       (optionalAttrs (ncfg.dock.monitors != null) { dock.monitors = ncfg.dock.monitors; })
       (optionalAttrs (ncfg.notifications.monitors != null) {
         notifications.monitors = ncfg.notifications.monitors;
@@ -314,7 +314,7 @@ in
     };
   };
 
-  config = lib.mkIf cfgEnabled ({
+  config = lib.mkIf cfgEnabled {
     assertions = [{
       # If we eventually added niri or some other type of wayland compositor, we would need to adjust this assertion:
       assertion = config.my.desktop.hyprland.enable;
@@ -322,7 +322,7 @@ in
     }];
 
     environment.systemPackages = with pkgs; lib.mkMerge [
-      ([
+      [
         # Shim and wrapped pkg both install bin/noctalia-shell; hiPrio/lowPrio resolve the
         # clash so PATH uses the shim while the rest of noctaliaPkg (e.g. dump-noctalia-shell) stays installed.
         (lib.lowPrio noctaliaPkg)
@@ -343,7 +343,7 @@ in
           ${noctaliaSessionEnv}
           ${noctaliaCmd} ipc show
         '')
-      ])
+      ]
       (lib.mkIf (env.deviceType == "laptop") [
         upower # Required for battery status
       ])
@@ -391,5 +391,5 @@ in
         };
       };
     };
-  });
+  };
 }

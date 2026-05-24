@@ -17,12 +17,12 @@ in
       services.tailscale = {
         enable = true;
         extraSetFlags = lib.mkMerge [
-          ([
+          [
             "--operator=${env.user}"
             "--accept-routes=true"
             "--shields-up=false"
             "--ssh" # Always allow SSH access through Tailscale.
-          ])
+          ]
           (lib.mkIf cfg.enableAsExitNode [
             "--advertise-exit-node"
             "--exit-node-allow-lan-access"
@@ -32,7 +32,7 @@ in
         extraUpFlags = [
           "--advertise-tags=\"tag:${if env.deviceType == "server" then "server" else "client"}\""
         ];
-        useRoutingFeatures = cfg.useRoutingFeatures;
+        inherit (cfg) useRoutingFeatures;
         openFirewall = true;
         # Enables the Tailscale Serve configs:
         # For some reason, this doesn't work at the moment. So I'm just going to add enable and disable scripts for each service.

@@ -8,7 +8,7 @@ in
 {
   options.my.programs.gcalcli.enable = lib.mkEnableOption "Enable the Google Calendar CLI tool (gcalcli).";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       (writeShellScriptBin "gcalcli" ''
         ${env.selectPlatform {
@@ -25,5 +25,5 @@ in
       '')
     ];
     my.dev.ai.skills.gcalcli = gcalcliSkillPath;
-  });
+  };
 }

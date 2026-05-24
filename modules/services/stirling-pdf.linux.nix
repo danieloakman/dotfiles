@@ -1,7 +1,7 @@
 { pkgs, lib, config, env, stirlingPdfPackage, ... }:
 let
   cfg = config.my.services.stirlingPdf;
-  port = cfg.port;
+  inherit (cfg) port;
   portStr = toString port;
 in
 {
@@ -13,7 +13,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [ port ];
 
     services = {
@@ -41,5 +41,5 @@ in
       # href = "http://${config.networking.hostName}:${toString cfg.port}";
       href = "https://stirling-pdf.dinosaur-crocodile.ts.net";
     };
-  });
+  };
 }

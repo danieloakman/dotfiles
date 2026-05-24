@@ -5,7 +5,7 @@
   options.my = {
     desktop.gnome.enable = lib.mkEnableOption "Enable the GNOME desktop environment";
   };
-  config = lib.mkIf config.my.desktop.gnome.enable ({
+  config = lib.mkIf config.my.desktop.gnome.enable {
     my.programs.rofi.enable = true;
 
     # Not using anymore. I just prefer to use gmail in the browser:
@@ -85,5 +85,5 @@
       allowedTCPPortRanges = [{ from = 1716; to = 1764; }];
       allowedUDPPortRanges = [{ from = 1716; to = 1764; }];
     };
-  });
+  };
 }

@@ -15,7 +15,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     assertions = [{
       assertion = cfg.allowedOrigins != [ ];
       message = "allowedOrigins must be a non-empty list";
@@ -43,5 +43,5 @@ in
       description = "System management";
       href = "http://mara-cockpit.dinosaur-crocodile.ts.net";
     };
-  });
+  };
 }

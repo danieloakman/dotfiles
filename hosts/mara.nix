@@ -31,7 +31,7 @@
       dnsAdBlock.enable = true;
       cockpit = let port = 9090; in {
         enable = true;
-        port = port;
+        inherit port;
         allowedOrigins = [
           "https://mara:${toString port}"
           "https://mara-cockpit.tail9f1d8.ts.net"

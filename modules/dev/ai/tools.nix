@@ -1,5 +1,5 @@
 { pkgs, env, config, lib, ... }: {
-  config = lib.mkIf config.my.dev.ai.enable ({
+  config = lib.mkIf config.my.dev.ai.enable {
     my.dev.ai = {
       rootContext = builtins.readFile (builtins.fetchurl {
         url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
@@ -115,5 +115,5 @@
         };
       };
     };
-  });
+  };
 }

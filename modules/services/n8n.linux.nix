@@ -12,7 +12,7 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.n8n.enable ({
+  config = lib.mkIf config.my.services.n8n.enable {
     services.n8n = {
       enable = true;
       openFirewall = true;
@@ -80,5 +80,5 @@ in
         categories = [ "Network" "WebBrowser" ];
       };
     };
-  });
+  };
 }

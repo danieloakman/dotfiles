@@ -12,7 +12,7 @@ in
 {
   options.my.programs.gws.enable = lib.mkEnableOption "Enable the Google Workspace CLI tools, gmail, g-calendar, drive, etc.";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       wrappedGws
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
@@ -26,5 +26,5 @@ in
         sha256 = "sha256-YyNIHbyZrLlXYtWxZY8Um19MsnLharmS+nWGWO89fsA=";
       })
       + "/skills";
-  });
+  };
 }

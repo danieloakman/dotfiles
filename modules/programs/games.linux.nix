@@ -3,7 +3,7 @@
 {
   options.my.programs.games.enable = lib.mkEnableOption "Enable and include Steam, retroarch, and other game related programs and things.";
 
-  config = lib.mkIf config.my.programs.games.enable ({
+  config = lib.mkIf config.my.programs.games.enable {
     # See https://www.youtube.com/watch?v=qlfm3MEbqYA for more information on some of these settings.
 
     programs = {
@@ -28,5 +28,5 @@
 
     # **NOTE**: need to add these launch options to steam games:
     # `gamemoderun %command%`, `mangohud %command%, gamescope %command%`
-  });
+  };
 }

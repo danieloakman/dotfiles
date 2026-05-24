@@ -51,7 +51,7 @@ let
   ] else [ ]);
 in
 {
-  config = lib.mkIf config.my.desktop.gnome.enable ({
+  config = lib.mkIf config.my.desktop.gnome.enable {
     home-manager.users.${env.user} = {
       dconf.settings = {
         ${mediaKeys} = {
@@ -77,5 +77,5 @@ in
         '')
       ];
     };
-  });
+  };
 }

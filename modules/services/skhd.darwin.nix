@@ -45,7 +45,7 @@ in
 {
   options.my.services.skhd.enable = lib.mkEnableOption "Enable the skhd keybinds service.";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     services.skhd = {
       enable = true;
       inherit skhdConfig;
@@ -60,5 +60,5 @@ in
         config = skhdConfig;
       };
     };
-  });
+  };
 }

@@ -5,7 +5,7 @@
     programs.evolution.enable = lib.mkEnableOption "Enable the Evolution email and calendar app";
   };
 
-  config = lib.mkIf config.my.programs.evolution.enable ({
+  config = lib.mkIf config.my.programs.evolution.enable {
     programs = {
       # This seemes to be the best all round email and calendar app for gnome.
       evolution = {
@@ -15,5 +15,5 @@
         ];
       };
     };
-  });
+  };
 }

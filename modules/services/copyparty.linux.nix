@@ -20,7 +20,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     assertions = [{
       assertion = cfg.rootPath != null;
       message = "copyparty.rootPath must be set";
@@ -46,7 +46,7 @@ in
 
       accounts = {
         ${env.user} = {
-          passwordFile = cfg.passwordFile;
+          inherit (cfg) passwordFile;
         };
       };
 
@@ -86,5 +86,5 @@ in
       # href = "http://${config.networking.hostName}:${toString cfg.port}";
       href = "https://copyparty.dinosaur-crocodile.ts.net";
     };
-  });
+  };
 }

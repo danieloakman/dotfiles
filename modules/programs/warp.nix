@@ -10,7 +10,7 @@ in
 {
   options.my.programs.warp.enable = lib.mkEnableOption "Enable Warp terminal";
 
-  config = lib.mkIf (cfg.enable) (
+  config = lib.mkIf cfg.enable (
     env.selectPlatform {
       # any = {
       #   home-manager.${env.user}.home.files = {};

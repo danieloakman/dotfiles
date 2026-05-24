@@ -3,7 +3,7 @@ let
   cfgEnabled = config.my.desktop.uiShell == "quickshell";
 in
 {
-  config = lib.mkIf cfgEnabled ({
+  config = lib.mkIf cfgEnabled {
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;
@@ -29,5 +29,5 @@ in
         };
       };
     };
-  });
+  };
 }

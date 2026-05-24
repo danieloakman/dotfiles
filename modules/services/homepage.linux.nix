@@ -37,13 +37,13 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.homepage.enable ({
+  config = lib.mkIf config.my.services.homepage.enable {
     networking.firewall.allowedTCPPorts = [ cfg.port ];
 
     services = {
       homepage-dashboard = {
         enable = true;
-        allowedHosts = cfg.allowedHosts;
+        inherit (cfg) allowedHosts;
         openFirewall = true;
         listenPort = cfg.port;
         widgets = [
@@ -61,21 +61,6 @@ in
               expanded = true;
             };
           }
-        ]
-        ++ [
-          # {
-          #   search = {
-          #     provider = "google";
-          #     target = "_blank";
-          #   };
-          # }
-          # {
-          #   adguard = {
-          #     url = "mara.dinosaur-crocodile.ts.net";
-          #     username = "dano";
-          #     password = "";
-          #   };
-          # }
         ];
         services = [
           {
@@ -181,5 +166,5 @@ in
         tailscale serve clear svc:homepage
       '')
     ];
-  });
+  };
 }

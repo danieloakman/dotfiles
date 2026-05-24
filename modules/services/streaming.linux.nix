@@ -54,10 +54,10 @@ in
       # };
     };
     services = {
-      jellyfin = lib.mkIf cfg.jellyfin.enable ({
+      jellyfin = lib.mkIf cfg.jellyfin.enable {
         enable = true;
         openFirewall = true;
-      });
+      };
       # sonarr = {
       #   enable = true;
       #   openFirewall = true;

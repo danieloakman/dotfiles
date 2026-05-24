@@ -6,7 +6,7 @@ in
 {
   options.my.programs.rofi.enable = lib.mkEnableOption "Enable the Rofi launcher app";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
       programs.rofi = {
         enable = true;
@@ -78,5 +78,5 @@ in
         fi
       '')
     ];
-  });
+  };
 }

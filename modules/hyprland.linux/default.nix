@@ -45,7 +45,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     my = {
       programs = {
         kitty.enable = true;
@@ -409,10 +409,10 @@ in
       settings = rec {
         initial_session = {
           command = "${lib.getExe hyprlandPkg} > /dev/null 2>&1";
-          user = env.user;
+          inherit (env) user;
         };
         default_session = initial_session;
       };
     };
-  });
+  };
 }

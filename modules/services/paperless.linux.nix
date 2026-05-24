@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
 let
   cfg = config.my.services.paperless;
-  port = cfg.port;
+  inherit (cfg) port;
   hostname = "127.0.0.1";
   user = "paperless";
 in
@@ -22,7 +22,7 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.paperless.enable ({
+  config = lib.mkIf config.my.services.paperless.enable {
     assertions = [
       {
         assertion = cfg.domain != null;
@@ -38,7 +38,7 @@ in
       inherit port user;
       enable = true;
       address = hostname;
-      domain = cfg.domain;
+      inherit (cfg) domain;
     };
 
     users.users.${user}.extraGroups = [ "storage" ];
@@ -56,5 +56,5 @@ in
         tailscale serve clear svc:paperless
       '')
     ];
-  });
+  };
 }

@@ -6,7 +6,7 @@ in
 {
   options.my.programs.ydotool.enable = lib.mkEnableOption "Enable the ydotool package and daemon";
 
-  config = lib.mkIf cfg.enable ({
+  config = lib.mkIf cfg.enable {
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;
@@ -21,5 +21,5 @@ in
       inherit group;
     };
     users.users.${env.user}.extraGroups = [ group ];
-  });
+  };
 }

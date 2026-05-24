@@ -14,7 +14,7 @@ in
     };
   };
 
-  config = lib.mkIf config.my.services.ollama.enable ({
+  config = lib.mkIf config.my.services.ollama.enable {
     services = {
       ollama = {
         port = ollamaPort;
@@ -63,5 +63,5 @@ in
       description = "LLM Chat, hosted by ${config.networking.hostName}";
       href = "http://${config.networking.hostName}:${toString ollamaUiPort}";
     };
-  });
+  };
 }

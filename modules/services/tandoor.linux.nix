@@ -17,7 +17,7 @@ in
       inherit user;
       enable = true;
       address = "127.0.0.1";
-      port = cfg.port;
+      inherit (cfg) port;
       extraConfig = {
         SECRET_KEY_FILE = "${config.sops.secrets.tandoor_secret_key.path}";
         ALLOWED_HOSTS = "127.0.0.1,tandoor.dinosaur-crocodile.ts.net";
@@ -35,13 +35,13 @@ in
       };
     };
 
-    environment.systemPackages = (with pkgs; [
+    environment.systemPackages = with pkgs; [
       (writeShellScriptBin "tailscale-svc-tandoor-up" ''
         tailscale serve --service=svc:tandoor --https=443 127.0.0.1:${toString cfg.port}
       '')
       (writeShellScriptBin "tailscale-svc-tandoor-down" ''
         tailscale serve clear svc:tandoor
       '')
-    ]);
+    ];
   };
 }

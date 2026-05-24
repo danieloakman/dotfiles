@@ -3,7 +3,7 @@
     programs.guake.enable = lib.mkEnableOption "Enable the Guake terminal emulator";
   };
 
-  config = lib.mkIf config.my.programs.guake.enable ({
+  config = lib.mkIf config.my.programs.guake.enable {
     environment.systemPackages = [
       inputs.guake.legacyPackages.${system}.guake
     ];
@@ -65,5 +65,5 @@
       #   '';
       # };
     };
-  });
+  };
 }

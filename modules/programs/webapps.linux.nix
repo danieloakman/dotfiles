@@ -85,9 +85,9 @@ in
               launcher = mkWebappLauncher name value.url;
             in
             {
-              name = name;
+              inherit name;
               exec = lib.getExe launcher;
-              categories = value.categories;
+              inherit (value) categories;
               icon = webappIcons.${value.icon};
               startupNotify = true;
             }
