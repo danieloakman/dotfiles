@@ -1,6 +1,7 @@
 import meow from 'meow';
 import { emailClient } from './utils/email';
-import { Dayjs } from '@danoaky/js-utils';
+import { Dayjs, matches } from '@danoaky/js-utils';
+import { iter } from 'iteragain';
 
 if (import.meta.main) {
 	const {
@@ -19,5 +20,14 @@ if (import.meta.main) {
 		].join(' '),
 		max: 10
 	});
-	Bun.write('emails.json', JSON.stringify(emails, null, 2));
+	const jobs = iter(emails)
+		.flatMap(({ body }) => matches(/https:\/\/au\.seek\.com\/job\/(\d+)/g, body))
+		.filterMap((m) => {
+			const [url, jobId] = m;
+			if (!jobId || !url) return null;
+			return { url, jobId };
+		})
+		.unique(({ jobId }) => jobId)
+		.toArray();
+	await Bun.write('jobs.json', JSON.stringify(jobs, null, 2));
 }
