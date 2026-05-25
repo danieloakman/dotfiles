@@ -17,6 +17,7 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/bun": "latest",
+    "@types/cheerio": "^1.0.0",
     "@types/micromatch": "^4.0.10",
     "bun2nix": "^2.0.8",
     "npm-check-updates": "^19.6.3",
@@ -30,6 +31,7 @@
     "@playwright/test": "1.57",
     "basic-ftp": "^5.2.0",
     "better-sqlite3": "^12.6.2",
+    "cheerio": "^1.2.0",
     "clipboardy": "^5.3.1",
     "dayjs": "^1.11.20",
     "drizzle-kit": "^0.31.9",
