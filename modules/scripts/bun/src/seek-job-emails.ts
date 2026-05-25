@@ -32,7 +32,7 @@ if (import.meta.main) {
 		max: 10
 	});
 
-	const jobs = await iter(emails)
+	const jobs = iter(emails)
 		.flatMap(({ bodyText, subject }) => {
 			console.log('Subject:', subject);
 			return iter(matches(seekJobIdRe, bodyText)).filterMap((m) => {
@@ -46,7 +46,7 @@ if (import.meta.main) {
 
 	for (const { url, jobId, text } of jobs) {
 		const job = await readJob(jobId);
-		if (!job) 
+		if (!job)
 			await createJob({
 				applied: false,
 				company: '',
@@ -61,7 +61,10 @@ if (import.meta.main) {
 				postedAt: new Date(),
 				relevance: 0
 			});
+		else if (job.applied) continue;
+
 		console.log(text);
+
 		const answer = await question('Open in browser? (y/n)');
 		if (answer.toLowerCase() === 'y') {
 			await open(url);
