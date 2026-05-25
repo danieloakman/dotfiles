@@ -7,7 +7,8 @@ export interface EmailMessage {
 	from: string;
 	to: string;
 	date: string;
-	body: string;
+	bodyText: string;
+	bodyHtml: string;
 	attachments: unknown[];
 }
 
@@ -54,7 +55,8 @@ async function fetchMessage(id: string): Promise<EmailMessage> {
 		from: formatAddress(message.from),
 		to: message.to.map(formatAddress).join(', '),
 		date: message.date ?? '',
-		body: message.body_text ?? message.body_html ?? '',
+		bodyText: message.body_text ?? '',
+		bodyHtml: message.body_html ?? '',
 		attachments: []
 	};
 }
@@ -82,15 +84,9 @@ export const emailClient: EmailClient = {
 		return Promise.all(list.messages.map((message) => fetchMessage(message.id)));
 	},
 	async markAsRead(id) {
-		await gwsJson(
-			['gmail', 'users', 'messages', 'markAsRead', '--id', id],
-			z.unknown()
-		);
+		await gwsJson(['gmail', 'users', 'messages', 'markAsRead', '--id', id], z.unknown());
 	},
 	async markAsUnread(id) {
-		await gwsJson(
-			['gmail', 'users', 'messages', 'markAsUnread', '--id', id],
-			z.unknown()
-		);
+		await gwsJson(['gmail', 'users', 'messages', 'markAsUnread', '--id', id], z.unknown());
 	}
 };
