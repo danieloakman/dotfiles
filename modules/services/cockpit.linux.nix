@@ -7,7 +7,7 @@ in
     enable = lib.mkEnableOption "Enable the Cockpit service";
     port = lib.mkOption {
       type = lib.types.int;
-      default = 9090;
+      default = 19090;
     };
     allowedOrigins = lib.mkOption {
       type = lib.types.listOf lib.types.str;

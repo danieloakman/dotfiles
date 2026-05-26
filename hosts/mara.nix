@@ -29,7 +29,7 @@
     scripts.bun.enable = true;
     services = {
       dnsAdBlock.enable = true;
-      cockpit = let port = 9090; in {
+      cockpit = let port = 19090; in {
         enable = true;
         inherit port;
         allowedOrigins = [
