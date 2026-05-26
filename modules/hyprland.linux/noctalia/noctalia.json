@@ -105,7 +105,7 @@
           {
             "clockColor": "none",
             "customFont": "",
-            "formatHorizontal": "HH:mm ddd, MMM dd",
+            "formatHorizontal": "h:mm AP ddd, MMM dd",
             "formatVertical": "HH mm - dd MM",
             "id": "Clock",
             "tooltipFormat": "HH:mm ddd, MMM dd",
@@ -788,7 +788,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1779039892000
+      "lastSeenTs": 1779769857000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.6"
