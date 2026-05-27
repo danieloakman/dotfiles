@@ -24,6 +24,7 @@ in
     services = {
       cockpit = {
         enable = true;
+        port = cfg.port;
         openFirewall = true;
         allowed-origins = cfg.allowedOrigins;
       };
