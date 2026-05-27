@@ -48,7 +48,7 @@
         enable = true;
         mediaLocation = "/run/media/HDD_1/immich";
       };
-      n8n.enable = true;
+      # n8n.enable = true;
       paperless = {
         enable = true;
         domain = "paperless.dinosaur-crocodile.ts.net";
