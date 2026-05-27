@@ -5,8 +5,19 @@
   lib,
   ...
 }:
+let
+  enable = config.my.dev.ai.enable;
+  mattpocockSkills =
+    (pkgs.fetchFromGitHub {
+      owner = "mattpocock";
+      repo = "skills";
+      rev = "main";
+      sha256 = "sha256-Qwuu27f95xgAJ4hdv/4TNahHhprCMIxl1H9f9ymEsno=";
+    })
+    + "/skills";
+in
 {
-  config = lib.mkIf config.my.dev.ai.enable {
+  config = lib.mkIf enable {
     my.dev.ai = {
       rootContext = builtins.readFile (
         builtins.fetchurl {
@@ -26,14 +37,7 @@
           rev = "main";
           sha256 = "sha256-aOeR/qpkM+gRegRDvJp/SxWVEDLwH5pW0d5FbFkv/AE=";
         };
-        productivity =
-          (pkgs.fetchFromGitHub {
-            owner = "mattpocock";
-            repo = "skills";
-            rev = "main";
-            sha256 = "sha256-Qwuu27f95xgAJ4hdv/4TNahHhprCMIxl1H9f9ymEsno=";
-          })
-          + "/skills/productivity";
+        productivity = mattpocockSkills + "/productivity";
       };
     };
 
