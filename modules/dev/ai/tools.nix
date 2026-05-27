@@ -1,15 +1,24 @@
-{ pkgs, env, config, lib, ... }: {
+{
+  pkgs,
+  env,
+  config,
+  lib,
+  ...
+}:
+{
   config = lib.mkIf config.my.dev.ai.enable {
     my.dev.ai = {
-      rootContext = builtins.readFile (builtins.fetchurl {
-        url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
-        sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
-      });
-      skills = {
-        "grill-me" = ''
-          Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one. And finally, if a question can be answered by exploring the code base, explore the code base instead.
-        '';
-      };
+      rootContext = builtins.readFile (
+        builtins.fetchurl {
+          url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
+          sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
+        }
+      );
+      # skills = {
+      #   "grill-me" = ''
+      #     Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one. And finally, if a question can be answered by exploring the code base, explore the code base instead.
+      #   '';
+      # };
       skillDirs = {
         "ui-design-brain" = pkgs.fetchFromGitHub {
           owner = "carmahhawwari";
@@ -17,6 +26,14 @@
           rev = "main";
           sha256 = "sha256-aOeR/qpkM+gRegRDvJp/SxWVEDLwH5pW0d5FbFkv/AE=";
         };
+        productivity =
+          (pkgs.fetchFromGitHub {
+            owner = "mattpocock";
+            repo = "skills";
+            rev = "main";
+            sha256 = "sha256-Qwuu27f95xgAJ4hdv/4TNahHhprCMIxl1H9f9ymEsno=";
+          })
+          + "/skills/productivity";
       };
     };
 
