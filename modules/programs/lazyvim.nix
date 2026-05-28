@@ -83,16 +83,10 @@ in
       Map common VS Code / Cursor shortcuts on top of LazyVim defaults.
       Uses Cmd on Darwin and Ctrl on Linux (see modules/programs/lazyvim.nix).
     '';
+    isDefaultEditor = lib.mkEnableOption "Make LazyVim the default editor for the system.";
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = !config.my.programs.helix.enable;
-        message = "my.programs.lazyvim and my.programs.helix cannot both be enabled.";
-      }
-    ];
-
     home-manager.users.${env.user} = {
       imports = [ inputs.lazyvim.homeManagerModules.default ];
 
@@ -110,7 +104,7 @@ in
             keymaps = lib.mkIf cfg.enableVSCodeKeybinds vscodeKeymaps;
           };
         };
-        zsh = {
+        zsh = lib.mkIf cfg.isDefaultEditor {
           shellAliases = {
             "vim" = "nvim";
             "editor" = "nvim";

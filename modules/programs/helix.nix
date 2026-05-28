@@ -83,22 +83,16 @@ in
       Map common VS Code / Cursor shortcuts in Helix.
       Uses Cmd on Darwin and Ctrl on Linux (see modules/programs/helix.nix).
     '';
+    isDefaultEditor = lib.mkEnableOption "Make Helix the default editor for the system.";
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = !config.my.programs.lazyvim.enable;
-        message = "my.programs.helix and my.programs.lazyvim cannot both be enabled.";
-      }
-    ];
-
     home-manager.users.${env.user} = {
       programs = {
         helix = {
           enable = true;
 
-          defaultEditor = true;
+          defaultEditor = cfg.isDefaultEditor;
 
           settings = lib.mkMerge [
             {
@@ -119,7 +113,7 @@ in
           ];
         };
 
-        zsh.shellAliases = {
+        zsh.shellAliases = lib.mkIf cfg.isDefaultEditor {
           "nvim" = "hx";
           "vim" = "hx";
           "editor" = "hx";

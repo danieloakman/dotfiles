@@ -21,8 +21,14 @@
       gws.enable = true;
       tmux.enable = true;
       kitty.enable = true; # Needed for when we ssh into this host
+      helix = {
+        enable = true;
+        isDefaultEditor = true;
+        enableVSCodeKeybinds = true;
+      };
       lazyvim = {
         enable = true;
+        # isDefaultEditor = true;
         enableVSCodeKeybinds = true;
       };
     };
