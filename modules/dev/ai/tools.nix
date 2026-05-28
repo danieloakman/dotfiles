@@ -15,6 +15,8 @@ let
       sha256 = "sha256-Qwuu27f95xgAJ4hdv/4TNahHhprCMIxl1H9f9ymEsno=";
     })
     + "/skills";
+  # Other skill repos that could be added in the future:
+  # https://github.com/deepakness/google-ai-search-optimization - AI search optimization and general SEO
 in
 {
   config = lib.mkIf enable {
@@ -25,11 +27,12 @@ in
           sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
         }
       );
-      # skills = {
-      #   "grill-me" = ''
-      #     Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one by one. And finally, if a question can be answered by exploring the code base, explore the code base instead.
-      #   '';
-      # };
+      skills = {
+        grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
+        caveman = mattpocockSkills + "/productivity/caveman/SKILL.md";
+        handoff = mattpocockSkills + "/productivity/handoff/SKILL.md";
+        write-a-skill = mattpocockSkills + "/productivity/write-a-skill/SKILL.md";
+      };
       skillDirs = {
         "ui-design-brain" = pkgs.fetchFromGitHub {
           owner = "carmahhawwari";
@@ -37,7 +40,6 @@ in
           rev = "main";
           sha256 = "sha256-aOeR/qpkM+gRegRDvJp/SxWVEDLwH5pW0d5FbFkv/AE=";
         };
-        productivity = mattpocockSkills + "/productivity";
       };
     };
 
