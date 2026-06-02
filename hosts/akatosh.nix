@@ -44,6 +44,7 @@ in
         enableVSCodeKeybinds = true;
       };
       comma.enable = true;
+      ms-apps.enable = true;
     };
     scripts.bun.enable = true;
     services = {
