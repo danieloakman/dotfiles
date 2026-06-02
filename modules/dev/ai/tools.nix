@@ -9,10 +9,11 @@ let
   enable = config.my.dev.ai.enable;
   mattpocockSkills =
     (pkgs.fetchFromGitHub {
+      # https://github.com/mattpocock/skills/tree/aaf2453fbdfe7a15c07f11d861224f34ab4b53cb/skills
       owner = "mattpocock";
       repo = "skills";
-      rev = "main";
-      sha256 = "sha256-Qwuu27f95xgAJ4hdv/4TNahHhprCMIxl1H9f9ymEsno=";
+      rev = "aaf2453fbdfe7a15c07f11d861224f34ab4b53cb";
+      sha256 = "sha256-+Px3qIMHGKvi0PK2l5H4j/4YRQ448G9kuWX28cgqPCI=";
     })
     + "/skills";
   # Other skill repos that could be added in the future:
@@ -35,9 +36,10 @@ in
       };
       skillDirs = {
         "ui-design-brain" = pkgs.fetchFromGitHub {
+          # https://github.com/carmahhawwari/ui-design-brain/tree/38f04c5a1dee55d99c686a16643cef4e2ce0f7a2
           owner = "carmahhawwari";
           repo = "ui-design-brain";
-          rev = "main";
+          rev = "38f04c5a1dee55d99c686a16643cef4e2ce0f7a2";
           sha256 = "sha256-aOeR/qpkM+gRegRDvJp/SxWVEDLwH5pW0d5FbFkv/AE=";
         };
       };
