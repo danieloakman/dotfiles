@@ -12,6 +12,7 @@ let
     set -euo pipefail
     creds=${gwsCredentialsFile}
     mkdir -p "$(dirname "$creds")"
+    echo "Storing GWS credentials to $creds"
     # Export from local interactive auth (~/.config/gws), not the synced credentials file.
     unset GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE
     ${gwsExe} auth export --unmasked > "$creds.tmp"
