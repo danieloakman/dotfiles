@@ -14,7 +14,7 @@ let
     "tandoor_secret_key"
     "gcloud_access_token"
     "gcloud_credentials.json"
-    "gws_auth.json"
+    "gws_auth.json" # TODO remove as gws no longer needs it
     "google_client_id"
     "google_client_secret"
     "adguard_username"

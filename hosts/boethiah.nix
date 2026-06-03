@@ -26,6 +26,7 @@
         enableVSCodeKeybinds = true;
       };
       warp.enable = true;
+      gws.enable = true;
     };
   };
 

@@ -36,7 +36,7 @@ in
     skillDirs = lib.mkOption {
       type = lib.types.attrsOf lib.types.path;
       default = { };
-      description = "Skill directories that store skills. Will be added for all agents (Cursor, Claude, etc)";
+      description = "Skill directories to add for all AI agents. If a directory contains a SKILL.md it is treated as a single skill; otherwise each subdirectory is symlinked individually.";
     };
     mcp = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule mcpServerOpts);
@@ -62,14 +62,28 @@ in
             mcpServers = cfg.mcp;
           };
         };
-      } // lib.mapAttrs'
-        (name: dir: {
-          name = ".claude/skills/${name}";
-          value = {
-            source = dir;
-            recursive = true;
-          };
-        })
+      } // lib.concatMapAttrs
+        # If the dir is a single skill (has SKILL.md), symlink it directly; otherwise
+        # treat it as a collection and symlink each subdirectory individually.
+        (name: dir:
+          if builtins.pathExists "${dir}/SKILL.md" then
+            {
+              ".claude/skills/${name}" = {
+                source = dir;
+                recursive = true;
+              };
+            }
+          else
+            lib.mapAttrs'
+              (skillName: _: {
+                name = ".claude/skills/${skillName}";
+                value = {
+                  source = "${dir}/${skillName}";
+                  recursive = true;
+                };
+              })
+              (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
+        )
         cfg.skillDirs;
       programs = {
         claude-code = {
