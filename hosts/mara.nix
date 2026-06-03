@@ -17,6 +17,7 @@
     };
     programs = {
       cursor.enable = true;
+      opencode.enable = true;
       # mobile-dev.enable = false;
       gws.enable = true;
       tmux.enable = true;
