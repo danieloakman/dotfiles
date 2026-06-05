@@ -124,6 +124,14 @@ in
                   };
                 }
               ]
+              ++ lib.optionals config.my.programs.opencode.web.enable [
+                {
+                  OpenCode = {
+                    description = "AI agent web UI (Cursor, skills, local models)";
+                    href = "https://opencode.dinosaur-crocodile.ts.net";
+                  };
+                }
+              ]
               ++ lib.optionals config.services.immich.enable [
                 {
                   Immich = {

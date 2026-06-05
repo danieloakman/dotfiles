@@ -93,6 +93,9 @@ in
           inherit (cfg) skills;
           mcpServers = cfg.mcp;
         };
+        opencode = {
+          context = cfg.rootContext;
+        };
         mcp = {
           enable = true;
           servers = cfg.mcp;
