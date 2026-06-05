@@ -73,7 +73,6 @@ fi
 ### Environment variables ###
 
 export GDRIVE=$HOME/gdrive
-export ENV=$HOME/.env
 export AWSCREDS=$HOME/.aws/credentials
 export AWSCONFIG=$HOME/.aws/config
 # export TRASH=$HOME/.local/share/Trash # Doesn't actually have a Trash on WSL
@@ -90,9 +89,6 @@ alias ll="$exa -alF --sort=modified --reverse"
 alias la="$exa -aF"
 alias l="$exa -F"
 alias lt="$exa . -a -T -L"
-alias zshreload='exec zsh'
-alias awscreds="code $AWSCREDS $AWSCONFIG"
-alias awsconfig="code $AWSCREDS $AWSCONFIG"
 alias lg="lazygit"
 alias aliasg="alias | grep"
 alias wanip="curl ifconfig.me"
@@ -100,10 +96,6 @@ alias lanip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '
 alias passgl="pass git pull"
 alias passgp="pass git push"
 alias passgf="pass git fetch"
-alias tsn="node --require ts-node/register"
-alias tsnd="tsn --inspect"
-alias tsn-esm="tsn --loader ts-node/esm"
-alias tsnd-esm="tsn-esm --inspect"
 if command -v rtx &> /dev/null
 then
   alias python2="$HOME/.local/share/rtx/installs/python/2/bin/python"
