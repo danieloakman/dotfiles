@@ -39,8 +39,13 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      lazyvim = {
+      # lazyvim = {
+      #   enable = true;
+      #   enableVSCodeKeybinds = true;
+      # };
+      helix = {
         enable = true;
+        isDefaultEditor = true;
         enableVSCodeKeybinds = true;
       };
       comma.enable = true;
