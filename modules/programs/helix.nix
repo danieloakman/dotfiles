@@ -113,10 +113,16 @@ in
           ];
         };
 
-        zsh.shellAliases = lib.mkIf cfg.isDefaultEditor {
-          "nvim" = "hx";
-          "vim" = "hx";
-          "editor" = "hx";
+        zsh = {
+          shellAliases = lib.mkIf cfg.isDefaultEditor {
+            "nvim" = "hx";
+            "vim" = "hx";
+            "editor" = "hx";
+          };
+          initContent = ''
+            # Set the default editor to helix
+            export EDITOR="hx"
+          '';
         };
       };
     };
