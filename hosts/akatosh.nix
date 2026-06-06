@@ -40,10 +40,6 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      zellij = {
-        enable = true;
-        autoStart.enable = true;
-      };
       # lazyvim = {
       #   enable = true;
       #   enableVSCodeKeybinds = true;
