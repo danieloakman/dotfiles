@@ -49,24 +49,40 @@ let
     (toString cfg.web.port)
   ];
 
-  cursorWebBinPath = lib.makeBinPath [
-    pkgs.coreutils
-    pkgs.nodejs_24
-    pkgs.cursor-cli
-    cursorAgentWrapper
-  ];
+  webServiceBinPath = lib.makeBinPath (
+    [
+      pkgs.coreutils
+      pkgs.nodejs_24
+    ]
+    ++ lib.optionals cfg.cursorProvider.enable [
+      pkgs.cursor-cli
+      cursorAgentWrapper
+    ]
+    ++ lib.optionals cfg.claudeProvider.enable [
+      pkgs.claude-code
+    ]
+  );
 
-  cursorWebServiceEnv = lib.optionals cfg.cursorProvider.enable [
-    "CURSOR_AGENT_BIN=${lib.getExe cursorAgentWrapper}"
-    "NODE_BIN=${lib.getExe pkgs.nodejs_24}"
-    "CURSOR_PROXY_SCRIPT=${cursorProxyScript}"
-    "CURSOR_PROXY_QUIET=true"
-    "PATH=${cursorWebBinPath}:/run/current-system/sw/bin"
-  ];
+  webServiceEnv =
+    lib.optionals cfg.cursorProvider.enable [
+      "CURSOR_AGENT_BIN=${lib.getExe cursorAgentWrapper}"
+      "NODE_BIN=${lib.getExe pkgs.nodejs_24}"
+      "CURSOR_PROXY_SCRIPT=${cursorProxyScript}"
+      "CURSOR_PROXY_QUIET=true"
+    ]
+    ++ lib.optionals (cfg.cursorProvider.enable || cfg.claudeProvider.enable) [
+      "PATH=${webServiceBinPath}:/run/current-system/sw/bin"
+    ];
+
+  opencodePlugins =
+    lib.optionals cfg.claudeProvider.enable [ "opencode-claude-auth@latest" ]
+    ++ lib.optionals cfg.cursorProvider.enable [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ];
 
   opencodeSettings = lib.mkMerge [
+    (lib.mkIf (opencodePlugins != [ ]) {
+      plugin = opencodePlugins;
+    })
     (lib.mkIf cfg.cursorProvider.enable {
-      plugin = [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ];
       model = "cursor-acp/${cfg.cursorProvider.defaultModel}";
       small_model = "cursor-acp/${cfg.cursorProvider.defaultModel}";
     })
@@ -95,14 +111,10 @@ in
   options.my.programs.opencode = {
     enable = lib.mkEnableOption "Enable OpenCode (TUI, web, Cursor/llama providers)";
     cursorProvider = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = ''
-          Use Cursor models in OpenCode via a patched local cursor-proxy plugin
-          and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
-        '';
-      };
+      enable = lib.mkEnableOption ''
+        Use Cursor models in OpenCode via a patched local cursor-proxy plugin
+        and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
+      '';
       defaultModel = lib.mkOption {
         type = lib.types.str;
         default = "auto";
@@ -112,6 +124,14 @@ in
         '';
       };
     };
+
+    claudeProvider.enable = lib.mkEnableOption ''
+      Load `opencode-claude-auth` so Anthropic models use your Claude Code
+      subscription OAuth credentials (`~/.claude/.credentials.json` on Linux).
+      Run `claude login` once per host. Do not set `ANTHROPIC_API_KEY` if you
+      want subscription billing. Switch models in OpenCode to use Anthropic;
+      default model stays on Cursor when `cursorProvider` is enabled.
+    '';
 
     llama = {
       enable = lib.mkOption {
@@ -172,7 +192,7 @@ in
 
         # HM does not set Cursor proxy env on the web unit; extend its service.
         systemd.user.services.opencode-web = lib.mkIf (cfg.web.enable && env.platform == "linux") {
-          Service.Environment = cursorWebServiceEnv;
+          Service.Environment = webServiceEnv;
         };
 
         launchd.agents.opencode-web = lib.mkIf (cfg.web.enable && env.platform == "darwin") {

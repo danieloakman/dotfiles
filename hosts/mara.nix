@@ -17,9 +17,11 @@
     };
     programs = {
       cursor.enable = true;
-      opencode= {
+      opencode = {
         enable = true;
         web.enable = true;
+        cursorProvider.enable = true;
+        claudeProvider.enable = true;
       };
       # mobile-dev.enable = false;
       gws.enable = true;
