@@ -37,7 +37,7 @@ in
     home-manager.users.${env.user} = {
       programs.zellij = {
         enable = true;
-        enableZshIntegration = cfg.autoStart.enable;
+        enableZshIntegration = true;
         attachExistingSession = cfg.autoStart.attachExistingSession;
         exitShellOnExit = cfg.autoStart.exitShellOnExit;
         extraConfig = ''
