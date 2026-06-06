@@ -27,10 +27,10 @@
       # mobile-dev.enable = false;
       gws.enable = true;
       # tmux.enable = true;
-      zellij = {
-        enable = true;
-        autoStart.enable = true;
-      };
+      # zellij = {
+      #   enable = true;
+      #   autoStart.enable = true;
+      # };
       kitty.enable = true; # Needed for when we ssh into this host
       helix = {
         enable = true;
