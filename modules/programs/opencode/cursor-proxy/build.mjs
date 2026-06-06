@@ -6,7 +6,7 @@ const shared = {
   target: "node20",
   packages: "external",
   logLevel: "info",
-} satisfies esbuild.BuildOptions;
+};
 
 await esbuild.build({
   ...shared,
