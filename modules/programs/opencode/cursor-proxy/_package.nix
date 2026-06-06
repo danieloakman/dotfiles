@@ -1,5 +1,4 @@
 {
-  lib,
   stdenv,
   esbuild,
   typescript,
@@ -56,7 +55,7 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  meta = with lib; {
+  meta = {
     description = "OpenCode Cursor ACP proxy (TypeScript, esbuild)";
   };
 }
