@@ -206,7 +206,8 @@ in
     (lib.mkIf (cfg.enable && cfg.web.enable) (
       env.selectPlatform {
         linux = {
-          users.users.${env.user}.linger = true;
+          # Test out if this is needed.
+          # users.users.${env.user}.linger = true;
           environment.systemPackages = tailscaleServeScripts;
         };
         darwin = { };
