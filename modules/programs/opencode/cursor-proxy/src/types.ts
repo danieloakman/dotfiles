@@ -25,9 +25,18 @@ export type ChatMessage = {
 
 export type StreamEvent = {
   type?: string;
+  subtype?: string;
+  text?: string;
   result?: string;
   timestamp_ms?: number;
-  usage?: { inputTokens?: number; outputTokens?: number };
+  model_call_id?: string;
+  usage?: {
+    inputTokens?: number;
+    outputTokens?: number;
+    reasoningTokens?: number;
+    cacheReadTokens?: number;
+    cacheWriteTokens?: number;
+  };
   message?: { content?: ContentPart[] };
 };
 

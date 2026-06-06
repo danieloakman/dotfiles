@@ -28,6 +28,7 @@ function cursorModel(name: string) {
     name,
     limit: { context: 200000, input: 200000, output: 64000 },
     modalities: visionModalities,
+    interleaved: { field: "reasoning_content" },
   };
 }
 

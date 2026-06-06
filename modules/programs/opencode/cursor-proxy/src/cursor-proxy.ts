@@ -230,27 +230,19 @@ function parseLine(line: string): StreamEvent | null {
   }
 }
 
-class DeltaTracker {
-  text = "";
-  thinking = "";
-
-  nextText(newText: string): string {
-    if (!newText || newText === this.text) return "";
-    if (newText.startsWith(this.text)) {
-      let delta = newText.slice(this.text.length);
-      if (this.text && delta.startsWith(this.text)) {
-        delta = delta.slice(this.text.length);
-      }
-      if (!delta) return "";
-      this.text = newText;
-      return delta;
-    }
-    this.text = newText;
-    return newText;
-  }
+function isAssistantStreamDelta(ev: StreamEvent): boolean {
+  return typeof ev.timestamp_ms === "number" && !ev.model_call_id;
 }
 
-type Usage = { inputTokens?: number; outputTokens?: number };
+function assistantFragment(ev: StreamEvent): string {
+  if (!Array.isArray(ev.message?.content)) return "";
+  return ev.message.content
+    .filter((p) => p?.type === "text" && p.text)
+    .map((p) => p.text!)
+    .join("");
+}
+
+type Usage = NonNullable<StreamEvent["usage"]>;
 
 const server = http.createServer(async (req, res) => {
   res.on("error", () => {});
@@ -320,7 +312,8 @@ const server = http.createServer(async (req, res) => {
   const messages = Array.isArray(parsed.messages) ? parsed.messages : [];
   const stream = parsed.stream === true;
   const model = stripModelPrefix(parsed.model);
-  const usePartialOutput = process.env.CURSOR_PROXY_PARTIAL === "true";
+  const includeThinking = process.env.CURSOR_PROXY_INCLUDE_THINKING !== "false";
+  const useStreamPartial = process.env.CURSOR_PROXY_PARTIAL !== "false";
   const imagePaths = collectImagePaths(messages);
   const hasToolResults = messages.some((m) => m.role === "tool");
   const prompt = hasToolResults
@@ -345,7 +338,7 @@ const server = http.createServer(async (req, res) => {
     "--model",
     model,
   ];
-  if (usePartialOutput) args.push("--stream-partial-output");
+  if (useStreamPartial) args.push("--stream-partial-output");
 
   const child = spawn(CURSOR_BIN, args, {
     stdio: ["pipe", "pipe", "pipe"],
@@ -385,43 +378,69 @@ const server = http.createServer(async (req, res) => {
 
   let usage: Usage | null = null;
   let terminalResult = "";
-  let streamed = false;
+  let streamedContent = false;
+  let streamedReasoning = false;
+  let collectedReasoning = "";
+  let collectedContent = "";
 
-  const emitTextDelta = (tracker: DeltaTracker | null, text: string) => {
+  const emitContentDelta = (text: string) => {
     if (!stream || res.writableEnded || !text) return;
-    const delta = tracker ? tracker.nextText(text) : text;
-    if (!delta) return;
-    res.write(formatSseChunk(id, created, modelId, { content: delta }));
-    streamed = true;
+    res.write(formatSseChunk(id, created, modelId, { content: text }));
+    streamedContent = true;
   };
 
-  const parseOutputLine = (line: string, tracker: DeltaTracker) => {
+  const emitReasoningDelta = (text: string) => {
+    if (!stream || res.writableEnded || !text || !includeThinking) return;
+    res.write(formatSseChunk(id, created, modelId, { reasoning_content: text }));
+    streamedReasoning = true;
+  };
+
+  const parseOutputLine = (line: string) => {
     const ev = parseLine(line);
     if (!ev) return;
+
+    if (ev.type === "thinking" && includeThinking && ev.subtype === "delta" && ev.text) {
+      collectedReasoning += ev.text;
+      if (useStreamPartial) emitReasoningDelta(ev.text);
+      return;
+    }
 
     if (ev.type === "result") {
       if (ev.usage) usage = ev.usage;
       if (typeof ev.result === "string" && ev.result) {
         terminalResult = ev.result;
-        if (stream && !usePartialOutput) emitTextDelta(tracker, ev.result);
+        if (stream && !useStreamPartial) emitContentDelta(ev.result);
       }
       return;
     }
 
-    if (res.writableEnded || !usePartialOutput) return;
-
-    const isPartial = typeof ev.timestamp_ms === "number";
-    if (ev.type === "assistant" && Array.isArray(ev.message?.content)) {
-      if (stream && !isPartial) return;
-      for (const part of ev.message.content) {
-        if (part.type === "text" && part.text) {
-          emitTextDelta(tracker, part.text);
-        }
-      }
+    if (ev.type === "assistant") {
+      if (useStreamPartial && !isAssistantStreamDelta(ev)) return;
+      const fragment = assistantFragment(ev);
+      if (!fragment) return;
+      collectedContent += fragment;
+      if (stream && useStreamPartial) emitContentDelta(fragment);
+      return;
     }
   };
 
-  const buildFinalResponse = (content: string) => ({
+  const formatUsage = (u: Usage) => ({
+    prompt_tokens: (u.inputTokens || 0) + (u.cacheReadTokens || 0) + (u.cacheWriteTokens || 0),
+    completion_tokens: u.outputTokens || 0,
+    total_tokens:
+      (u.inputTokens || 0) +
+      (u.outputTokens || 0) +
+      (u.cacheReadTokens || 0) +
+      (u.cacheWriteTokens || 0),
+    ...(u.reasoningTokens
+      ? { completion_tokens_details: { reasoning_tokens: u.reasoningTokens } }
+      : {}),
+    ...(u.cacheReadTokens
+      ? { prompt_tokens_details: { cached_tokens: u.cacheReadTokens } }
+      : {}),
+  });
+
+  const buildFinalResponse = (content: string, reasoning = "") => ({
     id,
     object: "chat.completion",
     created,
@@ -429,17 +448,15 @@ const server = http.createServer(async (req, res) => {
     choices: [
       {
         index: 0,
-        message: { role: "assistant", content: content || "No response" },
+        message: {
+          role: "assistant",
+          content: content || "No response",
+          ...(reasoning ? { reasoning_content: reasoning } : {}),
+        },
         finish_reason: "stop",
       },
     ],
-    usage: usage
-      ? {
-          prompt_tokens: usage.inputTokens || 0,
-          completion_tokens: usage.outputTokens || 0,
-          total_tokens: (usage.inputTokens || 0) + (usage.outputTokens || 0),
-        }
-      : undefined,
+    usage: usage ? formatUsage(usage) : undefined,
   });
 
   const buildSseUsageChunk = () => {
@@ -452,11 +469,7 @@ const server = http.createServer(async (req, res) => {
         created,
         model: modelId,
         choices: [],
-        usage: {
-          prompt_tokens: usage.inputTokens || 0,
-          completion_tokens: usage.outputTokens || 0,
-          total_tokens: (usage.inputTokens || 0) + (usage.outputTokens || 0),
-        },
+        usage: formatUsage(usage),
       }) +
       "\n\n"
     );
@@ -472,30 +485,18 @@ const server = http.createServer(async (req, res) => {
       const stdout = Buffer.concat(stdoutChunks).toString().trim();
       const stderr = Buffer.concat(stderrChunks).toString().trim();
 
-      const tracker = new DeltaTracker();
-      let content = "";
-      for (const line of stdout.split("\n")) {
-        const ev = parseLine(line);
-        if (!ev) continue;
-        if (ev.type === "result") {
-          if (ev.usage) usage = ev.usage;
-          if (typeof ev.result === "string" && ev.result) content = ev.result;
-          continue;
-        }
-        if (usePartialOutput && ev.type === "assistant" && Array.isArray(ev.message?.content)) {
-          for (const part of ev.message.content) {
-            if (part.type === "text" && part.text) {
-              content += tracker.nextText(part.text);
-            }
-          }
-        }
-      }
+      collectedReasoning = "";
+      collectedContent = "";
+      for (const line of stdout.split("\n")) parseOutputLine(line);
+
+      let content = collectedContent || terminalResult;
+      const reasoning = collectedReasoning;
       if (code !== 0 || (stderr && !content)) {
         content = `Error: ${stderr || `cursor-agent exited with code ${code}`}`;
       }
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(buildFinalResponse(content)));
+      res.end(JSON.stringify(buildFinalResponse(content, reasoning)));
     });
     return;
   }
@@ -507,22 +508,21 @@ const server = http.createServer(async (req, res) => {
   });
 
   let buffer = "";
-  const tracker = new DeltaTracker();
 
   child.stdout.on("data", (chunk: Buffer) => {
     buffer += chunk.toString();
     const lines = buffer.split("\n");
     buffer = lines.pop() || "";
-    for (const line of lines) parseOutputLine(line, tracker);
+    for (const line of lines) parseOutputLine(line);
   });
 
   child.on("close", (code) => {
     clearTimeout(timeout);
-    if (buffer) parseOutputLine(buffer, tracker);
+    if (buffer) parseOutputLine(buffer);
     if (!res.writableEnded) {
-      const finalText = terminalResult || tracker.text;
-      if (stream && !streamed && finalText) {
-        emitTextDelta(tracker, finalText);
+      const finalText = terminalResult || collectedContent;
+      if (!streamedContent && finalText) {
+        emitContentDelta(finalText);
       }
       const usageChunk = buildSseUsageChunk();
       if (usageChunk) res.write(usageChunk);
@@ -530,7 +530,7 @@ const server = http.createServer(async (req, res) => {
       res.end();
     }
     proxyLog(
-      `[cursor-proxy] stream done id=${id} model=${model} code=${code} streamed=${streamed} chars=${(tracker.text || terminalResult).length}`
+      `[cursor-proxy] stream done id=${id} model=${model} code=${code} content=${streamedContent} reasoning=${streamedReasoning} chars=${(collectedContent || terminalResult).length}`
     );
   });
 
