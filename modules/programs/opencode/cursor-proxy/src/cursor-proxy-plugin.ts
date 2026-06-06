@@ -23,12 +23,49 @@ async function proxyReachable(port: number): Promise<boolean> {
 
 const visionModalities = { input: ["text", "image"], output: ["text"] } as const;
 
-function cursorModel(name: string) {
-  return {
+const CONTEXT_1M = 1_000_000;
+const CONTEXT_200K = 200_000;
+const DEFAULT_OUTPUT = 64_000;
+
+const MODEL_CONTEXT: Record<string, number> = {
+  "composer-2.5": CONTEXT_200K,
+  "claude-4.6-opus-high": CONTEXT_1M,
+  "claude-4.6-opus-max": CONTEXT_1M,
+  "claude-4.6-opus-max-thinking": CONTEXT_1M,
+  "claude-4.6-sonnet-medium": CONTEXT_1M,
+  "claude-4.6-sonnet-medium-thinking": CONTEXT_1M,
+  "gpt-5.5-none": CONTEXT_1M,
+  "gpt-5.5-low": CONTEXT_1M,
+  "gpt-5.5-medium": CONTEXT_1M,
+  "gpt-5.5-high": CONTEXT_1M,
+  "gpt-5.5-extra-high": CONTEXT_1M,
+};
+
+function isReasoningModel(name: string, modelId: string): boolean {
+  const haystack = `${modelId} ${name}`.toLowerCase();
+  return haystack.includes("thinking");
+}
+
+function cursorModel(
+  name: string,
+  modelId: string,
+  opts?: { omitLimit?: boolean },
+) {
+  const base = {
     name,
-    limit: { context: 200000, input: 200000, output: 64000 },
     modalities: visionModalities,
-    interleaved: { field: "reasoning_content" },
+    ...(isReasoningModel(name, modelId)
+      ? {
+          reasoning: true,
+          interleaved: { field: "reasoning_content" as const },
+        }
+      : {}),
+  };
+  if (opts?.omitLimit) return base;
+  const context = MODEL_CONTEXT[modelId] ?? CONTEXT_200K;
+  return {
+    ...base,
+    limit: { context, input: context, output: DEFAULT_OUTPUT },
   };
 }
 
@@ -41,18 +78,27 @@ function pluginApi(port: number) {
         npm: "@ai-sdk/openai-compatible",
         options: { baseURL: `http://127.0.0.1:${port}/v1` },
         models: {
-          auto: cursorModel("Auto"),
-          "composer-2.5": cursorModel("Composer 2.5"),
-          "claude-4.6-opus-high": cursorModel("Opus 4.6 High"),
-          "claude-4.6-opus-max": cursorModel("Opus 4.6 Max"),
-          "claude-4.6-opus-max-thinking": cursorModel("Opus 4.6 Max Thinking"),
-          "claude-4.6-sonnet-medium": cursorModel("Sonnet 4.6 Medium"),
-          "claude-4.6-sonnet-medium-thinking": cursorModel("Sonnet 4.6 Medium Thinking"),
-          "gpt-5.5-none": cursorModel("GPT 5.5 None"),
-          "gpt-5.5-low": cursorModel("GPT 5.5 Low"),
-          "gpt-5.5-medium": cursorModel("GPT 5.5 Medium"),
-          "gpt-5.5-high": cursorModel("GPT 5.5 High"),
-          "gpt-5.5-extra-high": cursorModel("GPT 5.5 Extra High"),
+          auto: cursorModel("Auto", "auto", { omitLimit: true }),
+          "composer-2.5": cursorModel("Composer 2.5", "composer-2.5"),
+          "claude-4.6-opus-high": cursorModel("Opus 4.6 High", "claude-4.6-opus-high"),
+          "claude-4.6-opus-max": cursorModel("Opus 4.6 Max", "claude-4.6-opus-max"),
+          "claude-4.6-opus-max-thinking": cursorModel(
+            "Opus 4.6 Max Thinking",
+            "claude-4.6-opus-max-thinking",
+          ),
+          "claude-4.6-sonnet-medium": cursorModel(
+            "Sonnet 4.6 Medium",
+            "claude-4.6-sonnet-medium",
+          ),
+          "claude-4.6-sonnet-medium-thinking": cursorModel(
+            "Sonnet 4.6 Medium Thinking",
+            "claude-4.6-sonnet-medium-thinking",
+          ),
+          "gpt-5.5-none": cursorModel("GPT 5.5 None", "gpt-5.5-none"),
+          "gpt-5.5-low": cursorModel("GPT 5.5 Low", "gpt-5.5-low"),
+          "gpt-5.5-medium": cursorModel("GPT 5.5 Medium", "gpt-5.5-medium"),
+          "gpt-5.5-high": cursorModel("GPT 5.5 High", "gpt-5.5-high"),
+          "gpt-5.5-extra-high": cursorModel("GPT 5.5 Extra High", "gpt-5.5-extra-high"),
         },
       };
     },
