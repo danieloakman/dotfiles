@@ -1,0 +1,14 @@
+{
+  "name": "opencode-cursor-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc -p tsconfig.json --noEmit",
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.0"
+  }
+}

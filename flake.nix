@@ -187,8 +187,26 @@
           (i: i.filterNot (darwinPkgs.lib.hasInfix "linux")) # Skip .linux files
           (i: i ./modules)
         ];
+      forAllSystems = fn: nixpkgs.lib.genAttrs [ linuxSystem darwinSystem ] (
+        system:
+        fn (
+          import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          }
+        )
+      );
     in
     {
+      packages = forAllSystems (pkgs: {
+        opencode-cursor-proxy = pkgs.callPackage ./modules/programs/opencode/cursor-proxy/_package.nix { };
+      });
+
+      checks = {
+        ${linuxSystem}.opencode-cursor-proxy = self.packages.${linuxSystem}.opencode-cursor-proxy;
+        ${darwinSystem}.opencode-cursor-proxy = self.packages.${darwinSystem}.opencode-cursor-proxy;
+      };
+
       nixosConfigurations = {
         akatosh = nixpkgs.lib.nixosSystem {
           specialArgs = {

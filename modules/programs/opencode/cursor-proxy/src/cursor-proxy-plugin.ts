@@ -1,28 +1,16 @@
-/**
- * Local OpenCode plugin: Cursor ACP via patched cursor-proxy.cjs
- * (replaces npm opencode-cursor-agent-proxy)
- */
-import { spawn } from "node:child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { proxyError, proxyLog } from "./logging.js";
+import type { OpenCodeConfig } from "./types.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROXY_SCRIPT =
   process.env.CURSOR_PROXY_SCRIPT || join(__dirname, "cursor-proxy.cjs");
 
-const QUIET = process.env.CURSOR_PROXY_QUIET === "true";
+let child: ChildProcess | null = null;
 
-let child = null;
-
-function proxyLog(...args) {
-  if (!QUIET) console.error("[cursor-proxy]", ...args);
-}
-
-function proxyError(...args) {
-  console.error("[cursor-proxy]", ...args);
-}
-
-async function proxyReachable(port) {
+async function proxyReachable(port: number): Promise<boolean> {
   try {
     const res = await fetch(`http://127.0.0.1:${port}/v1/models`, {
       signal: AbortSignal.timeout(2000),
@@ -31,6 +19,43 @@ async function proxyReachable(port) {
   } catch {
     return false;
   }
+}
+
+const visionModalities = { input: ["text", "image"], output: ["text"] } as const;
+
+function cursorModel(name: string) {
+  return {
+    name,
+    limit: { context: 200000, input: 200000, output: 64000 },
+    modalities: visionModalities,
+  };
+}
+
+function pluginApi(port: number) {
+  return {
+    config: (cfg: OpenCodeConfig) => {
+      cfg.provider = cfg.provider || {};
+      cfg.provider["cursor-acp"] = {
+        name: "Cursor ACP",
+        npm: "@ai-sdk/openai-compatible",
+        options: { baseURL: `http://127.0.0.1:${port}/v1` },
+        models: {
+          auto: cursorModel("Auto"),
+          "composer-2.5": cursorModel("Composer 2.5"),
+          "claude-4.6-opus-high": cursorModel("Opus 4.6 High"),
+          "claude-4.6-opus-max": cursorModel("Opus 4.6 Max"),
+          "claude-4.6-opus-max-thinking": cursorModel("Opus 4.6 Max Thinking"),
+          "claude-4.6-sonnet-medium": cursorModel("Sonnet 4.6 Medium"),
+          "claude-4.6-sonnet-medium-thinking": cursorModel("Sonnet 4.6 Medium Thinking"),
+          "gpt-5.5-none": cursorModel("GPT 5.5 None"),
+          "gpt-5.5-low": cursorModel("GPT 5.5 Low"),
+          "gpt-5.5-medium": cursorModel("GPT 5.5 Medium"),
+          "gpt-5.5-high": cursorModel("GPT 5.5 High"),
+          "gpt-5.5-extra-high": cursorModel("GPT 5.5 Extra High"),
+        },
+      };
+    },
+  };
 }
 
 export default async function cursorProxyPlugin() {
@@ -54,13 +79,12 @@ export default async function cursorProxyPlugin() {
       CURSOR_WORKSPACE: workspace,
       CURSOR_PROXY_QUIET: process.env.CURSOR_PROXY_QUIET ?? "true",
     },
-    // stderr → journal on errors; stdout ignored so it cannot leak into the web UI
     stdio: ["ignore", "ignore", "pipe"],
   });
 
   let stderrBuf = "";
 
-  child.stderr?.on("data", (chunk) => {
+  child.stderr?.on("data", (chunk: Buffer) => {
     const text = chunk.toString();
     stderrBuf += text;
     if (stderrBuf.length > 16_000) stderrBuf = stderrBuf.slice(-16_000);
@@ -107,41 +131,4 @@ export default async function cursorProxyPlugin() {
   }
 
   return pluginApi(port);
-}
-
-const visionModalities = { input: ["text", "image"], output: ["text"] };
-
-function cursorModel(name) {
-  return {
-    name,
-    limit: { context: 200000, input: 200000, output: 64000 },
-    modalities: visionModalities,
-  };
-}
-
-function pluginApi(port) {
-  return {
-    config: (cfg) => {
-      cfg.provider = cfg.provider || {};
-      cfg.provider["cursor-acp"] = {
-        name: "Cursor ACP",
-        npm: "@ai-sdk/openai-compatible",
-        options: { baseURL: `http://127.0.0.1:${port}/v1` },
-        models: {
-          auto: cursorModel("Auto"),
-          "composer-2.5": cursorModel("Composer 2.5"),
-          "claude-4.6-opus-high": cursorModel("Opus 4.6 High"),
-          "claude-4.6-opus-max": cursorModel("Opus 4.6 Max"),
-          "claude-4.6-opus-max-thinking": cursorModel("Opus 4.6 Max Thinking"),
-          "claude-4.6-sonnet-medium": cursorModel("Sonnet 4.6 Medium"),
-          "claude-4.6-sonnet-medium-thinking": cursorModel("Sonnet 4.6 Medium Thinking"),
-          "gpt-5.5-none": cursorModel("GPT 5.5 None"),
-          "gpt-5.5-low": cursorModel("GPT 5.5 Low"),
-          "gpt-5.5-medium": cursorModel("GPT 5.5 Medium"),
-          "gpt-5.5-high": cursorModel("GPT 5.5 High"),
-          "gpt-5.5-extra-high": cursorModel("GPT 5.5 Extra High"),
-        },
-      };
-    },
-  };
 }

@@ -34,11 +34,7 @@ let
 
   # Both plugin files must live in the same store path; separate home.file entries
   # break __dirname (each file gets its own /nix/store/...-hm_* path).
-  cursorProxyPlugin = pkgs.runCommand "opencode-cursor-proxy-local" { } ''
-    mkdir -p $out
-    cp ${./cursor-proxy.cjs} $out/cursor-proxy.cjs
-    cp ${./cursor-proxy-plugin.mjs} $out/cursor-proxy-plugin.mjs
-  '';
+  cursorProxyPlugin = pkgs.callPackage ./cursor-proxy/_package.nix { };
 
   cursorProxyPluginDir = "${env.home}/.config/opencode/plugins/cursor-proxy-local";
   cursorProxyScript = "${cursorProxyPlugin}/cursor-proxy.cjs";
