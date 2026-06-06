@@ -12,6 +12,7 @@
   my = {
     dev = {
       pkgs.enable = true;
+      jsPackageSecurity.enable = true;
       ai.enable = true;
       ai.rtk.enable = true;
     };
