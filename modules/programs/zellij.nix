@@ -43,8 +43,8 @@ in
         extraConfig = ''
           keybinds {
             normal {
-              bind "Ctrl Alt Equal" { NewPane "Right"; SwitchToMode "normal"; }
-              bind "Ctrl Alt Minus" { NewPane "Down"; SwitchToMode "normal"; }
+              bind "Ctrl Alt =" { NewPane "Right"; SwitchToMode "normal"; }
+              bind "Ctrl Alt -" { NewPane "Down"; SwitchToMode "normal"; }
             }
           }
         '';
