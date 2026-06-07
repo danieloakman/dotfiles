@@ -1,9 +1,7 @@
-{
-  pkgs,
-  env,
-  config,
-  lib,
-  ...
+{ pkgs
+, config
+, lib
+, ...
 }:
 let
   enable = config.my.dev.ai.enable;
@@ -45,32 +43,6 @@ in
           repo = "ui-design-brain";
           rev = "38f04c5a1dee55d99c686a16643cef4e2ce0f7a2";
           sha256 = "sha256-aOeR/qpkM+gRegRDvJp/SxWVEDLwH5pW0d5FbFkv/AE=";
-        };
-      };
-    };
-
-    environment.systemPackages = with pkgs; [
-      llmfit # CLI tool to find what LLMs can run on our hardware
-      gemini-cli
-      libnotify # Add `notify-send` command
-    ];
-
-    home-manager.users.${env.user} = {
-      programs = {
-        claude-code = {
-          enable = env.platform != "darwin";
-          # Avoid telemetry 404s when using claude-local (ANTHROPIC_BASE_URL → local llama-server)
-          settings = {
-            env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-            includeCoAuthoredBy = false;
-            theme = "dark";
-            effortLevel = "high"; # Ideally it'd be nice for us to be able to change this ourselves with /effort, but high is alright for now.
-          };
-          rules = {
-            response-to-user = ''
-              When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
-            '';
-          };
         };
       };
     };

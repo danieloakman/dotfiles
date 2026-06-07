@@ -27,6 +27,10 @@ in
         go
         gopls
         delve
+
+        llmfit # CLI tool to find what LLMs can run on our hardware
+        gemini-cli
+        libnotify # Add `notify-send` command
       ];
     };
     linux = {
