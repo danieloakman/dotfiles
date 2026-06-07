@@ -15,7 +15,36 @@ in
 {
   my = {
     desktop = {
-      hyprland.enable = true;
+      hyprland = {
+        enable = true;
+        monitors = [
+          "DVI-D-1, 1920x1080, 0x0, 1.0"
+          "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
+          "HDMI-A-1, 1920x1080, 5360x0, 1.0"
+        ];
+        # This host basically links its 3 monitors to 3 workspaces:
+        workspaces = [
+          "1, monitor:DVI-D-1"
+          "2, monitor:DP-2"
+          "3, monitor:HDMI-A-1"
+        ];
+        # Window rules — hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
+        windowRules = [
+          "workspace 1, match:class ^(vivaldi-bin)$"
+          "workspace 1, match:class ^(vivaldi)$"
+          "workspace 1, match:class ^(chromium)$"
+          "workspace 1, match:class ^(chrome)$"
+          "workspace 1, match:class ^(firefox)$"
+          "workspace 1, match:class ^(google-chrome)$"
+          "workspace 2, match:class ^(Cursor)$"
+          "workspace 2, match:class ^(code)$"
+          "workspace 3, match:class ^(Spotify)$"
+          "workspace 2, match:class ^(obsidian)$"
+          "workspace 3, match:class ^(Discord)$"
+          "workspace 3, match:class ^(Steam)$"
+        ];
+        hyprpaper.wallpaper = wallpaperPath;
+      };
       uiShell = "noctalia";
       noctalia = {
         bar.monitors = [ "DP-2" ];
@@ -176,54 +205,10 @@ in
 
   networking.hostName = "akatosh"; # Define your hostname.
 
-  # TODO: move these hyprland settings to the hyprland module and make them required.
-  # Required config for imported modules:
   home-manager.users.${env.user} = {
-    wayland.windowManager.hyprland.settings = {
-      monitor = [
-        "DVI-D-1, 1920x1080, 0x0, 1.0"
-        "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
-        "HDMI-A-1, 1920x1080, 5360x0, 1.0"
-      ];
-      # This host basically links its 3 monitors to 3 workspaces:
-      workspace = [
-        "1, monitor:DVI-D-1"
-        "2, monitor:DP-2"
-        "3, monitor:HDMI-A-1"
-      ];
-      # Window rules — hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
-      windowrule = [
-        "workspace 1, match:class ^(vivaldi-bin)$"
-        "workspace 1, match:class ^(vivaldi)$"
-        "workspace 1, match:class ^(chromium)$"
-        "workspace 1, match:class ^(chrome)$"
-        "workspace 1, match:class ^(firefox)$"
-        "workspace 1, match:class ^(google-chrome)$"
-        "workspace 2, match:class ^(Cursor)$"
-        "workspace 2, match:class ^(code)$"
-        "workspace 3, match:class ^(Spotify)$"
-        "workspace 2, match:class ^(obsidian)$"
-        "workspace 3, match:class ^(Discord)$"
-        "workspace 3, match:class ^(Steam)$"
-      ];
-    };
-    services = {
-      hyprpaper.settings =
-        let
-          wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/akatosh-wallpaper.jpeg";
-        in
-        {
-          preload = [ wallpaperPath ];
-          wallpaper = [
-            "DVI-D-1,${wallpaperPath}"
-            "DP-2,${wallpaperPath}"
-            "HDMI-A-1,${wallpaperPath}"
-          ];
-        };
-      remmina = {
-        enable = true; # RDP client for connecting to remote desktops
-        systemdService.enable = false;
-      };
+    services.remmina = {
+      enable = true; # RDP client for connecting to remote desktops
+      systemdService.enable = false;
     };
   };
 

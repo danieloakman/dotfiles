@@ -45,7 +45,13 @@ in
 
   my = {
     desktop = {
-      hyprland.enable = true;
+      hyprland = {
+        enable = true;
+        monitors = [
+          "eDP-1, 1366x768, 0x0, 1.0"
+        ];
+        hyprpaper.wallpaper = wallpaperPath;
+      };
       uiShell = "ags";
     };
     programs = {
@@ -86,35 +92,6 @@ in
   };
 
   networking.hostName = "azura"; # Define your hostname. `echo $HOST`
-
-  # TODO: move this to the hyprland module as required/asserted options
-  # Required config for imported modules:
-  home-manager.users.${env.user} = {
-    wayland.windowManager.hyprland.settings = {
-      monitor = [
-        "eDP-1, 1366x768, 0x0, 1.0"
-      ];
-      # Window rules
-      # windowrulev2 = [
-      #   "workspace 1, class:^(vivaldi-bin)$"
-      #   "workspace 2, class:^(Cursor)$"
-      #   "workspace 2, class:^(code)$"
-      #   "workspace 3, class:^(Spotify)$"
-      #   "workspace 4, class:^(obsidian)$"
-      #   "workspace 5, class:^(Discord)$"
-      #   "workspace 6, class:^(Steam)$"
-      # ];
-    };
-
-    services.hyprpaper.settings =
-      let
-        wallpaperPath = "${env.home}/repos/personal/dotfiles/files/assets/azura-wallpaper.jpeg";
-      in
-      {
-        preload = [ wallpaperPath ];
-        wallpaper = [ "eDP-1,${wallpaperPath}" ];
-      };
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

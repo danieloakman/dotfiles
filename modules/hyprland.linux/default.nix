@@ -5,6 +5,8 @@
 let
   cfg = config.my.desktop.hyprland;
   hyprlandPkg = inputs.hyprland.legacyPackages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  monitorConnector = monitor: lib.head (lib.splitString "," monitor);
+  wallpaperPath = lib.optionalString (cfg.hyprpaper.wallpaper != null) (toString cfg.hyprpaper.wallpaper);
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
@@ -36,7 +38,6 @@ let
 in
 {
   options.my.desktop = {
-    hyprland.enable = lib.mkEnableOption "Enable the Hyprland desktop environment.";
     # Reason why we this isn't hyprland.uiShell is because technically some of these are wayland compositor agnostic. So in the future we may want to try one of them with Niri for example.
     uiShell = lib.mkOption {
       type = lib.types.enum [ "ags" "noctalia" "quickshell" "waybar" null ];
@@ -45,12 +46,59 @@ in
     };
   };
 
+  options.my.desktop.hyprland = {
+    enable = lib.mkEnableOption "Enable the Hyprland desktop environment.";
+
+    monitors = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Per-machine Hyprland monitor lines (`settings.monitor`), e.g.
+        `"DP-1, 1920x1080, 0x0, 1.0"`.
+      '';
+    };
+
+    workspaces = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Optional workspace-to-monitor bindings (`settings.workspace`), e.g.
+        `"1, monitor:DP-1"`.
+      '';
+    };
+
+    windowRules = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Optional Hyprland window rules (`settings.windowrule`).";
+    };
+
+    hyprpaper = {
+      wallpaper = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Wallpaper image for hyprpaper on all configured monitors.";
+      };
+    };
+  };
+
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.monitors != [ ];
+        message = "my.desktop.hyprland.monitors must be set when Hyprland is enabled.";
+      }
+      {
+        assertion = cfg.hyprpaper.wallpaper != null;
+        message = "my.desktop.hyprland.hyprpaper.wallpaper must be set when Hyprland is enabled.";
+      }
+    ];
     my = {
       programs = {
         kitty.enable = true;
         ydotool.enable = true;
         rofi.enable = true;
+        hyprshot.enable = true;
         webapps = {
           YouTube.url = "https://www.youtube.com";
           Twitch.url = "https://www.twitch.tv";
@@ -90,7 +138,6 @@ in
         libnotify # Adds notification commands like `notify-send`
         wev # Wayland event viewer. Useful for finding uncommon key codes
         uwsm # Universal Wayland session manager.
-        hyprshot # Screenshot tool # TODO: move to programs.hyprshot.enable
         rofi-network-manager # Rofi network manager GUI
         nautilus # File explorer
         gnome-disk-utility # Gnome disk utility for formatting drives
@@ -128,6 +175,10 @@ in
         # ];
 
         settings = {
+          monitor = cfg.monitors;
+          workspace = cfg.workspaces;
+          windowrule = cfg.windowRules;
+
           "$mod" = "SUPER";
           "$files" = "nautilus";
           "$browser" = "uwsm app -- ${vivaldiExe} --ozone-platform=wayland";
@@ -148,7 +199,6 @@ in
             "$mod, F10, exec, ${lib.getExe gamemodeScript}"
             "$mod, F9, exec, ${lib.getExe screenSaveScript}" # Toggle turning display off and on
             "$mod, T, exec, $files"
-            ", Print, exec, hyprshot -o ~/Pictures/Screenshots -m region"
             "$mod, P, exec, hyprpicker -a"
             # "$mod, Q, exec, zsh -c 'passmenu'" # No longer needed as we have AGS based password search
             "$mod, B, exec, $browser"
@@ -372,8 +422,6 @@ in
       programs = {
         # Image viewer
         swayimg.enable = true;
-        # Screenshot tool.
-        # hyprshot.enable = true; # TODO: add this back in once it's available for our pinned version of home-manager
       };
 
       services = {
@@ -383,7 +431,8 @@ in
             ipc = "on";
             splash = false;
             splash_offset = 2;
-            # prelod and wallpaper settings are set in the host root config.
+            preload = [ wallpaperPath ];
+            wallpaper = map (conn: "${conn},${wallpaperPath}") (map monitorConnector cfg.monitors);
           };
         };
 
