@@ -1,4 +1,20 @@
 # Module for Google Workspace CLI tools, gmail, g-calendar, drive, etc.
+#
+# Auth on headless hosts (e.g. mara): interactive `gws auth login` is awkward on a
+# server, so credentials are exported from a desktop machine and synced via Syncthing.
+# Run `gws-auth-store` after logging in locally; wrapped `gws` reads the synced file.
+#
+# OAuth refresh tokens expire after 7 days when the GCP OAuth consent screen is External
+# + Testing (Google's rule for sensitive scopes like Gmail/Calendar/Drive).
+#
+# Publishing to In production removes that 7-day limit for newly issued tokens. You must
+# re-auth after publishing — an existing token from Testing mode keeps its original expiry.
+#   1. Find the project in ~/.config/gws/client_secret.json (project_id) or Cloud Console.
+#   2. OAuth consent screen → set publishing status to In production (Publish app).
+#      Personal single-user use does not require full verification; expect an
+#      "Unverified app" warning on login. Workspace orgs may prefer User type Internal.
+#   3. Re-auth and re-export so mara gets a production-era refresh token:
+#        gws auth login && gws-auth-store
 { pkgs, gws, system, lib, env, config, ... }:
 let
   cfg = config.my.programs.gws;
