@@ -29,9 +29,6 @@
                   fi
                 '';
                 linux = ''
-                  if [ -z "$CURSOR_API_KEY" ]; then
-                    export CURSOR_API_KEY="$(cat ${config.sops.secrets.cursor_api_key.path})"
-                  fi
                   if [ -z "$GH_TOKEN" ]; then
                     export GH_TOKEN="$(cat ${config.sops.secrets.main_gh_token.path})"
                   fi
