@@ -46,7 +46,7 @@ in
       gwsAuthStore
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
     ];
-    my.dev.ai.skillDirs.gws =
+    my.programs.agents.skillDirs.gws =
       (pkgs.fetchFromGitHub {
         # https://github.com/googleworkspace/cli/tree/a3768d0e82ad83cca2da97724e46bea4ff0e6dbd/skills
         owner = "googleworkspace";

@@ -6,9 +6,6 @@
 }:
 {
   my = {
-    dev = {
-      ai.enable = true;
-    };
     services = {
       # docker.enable = true;
       podman = {
@@ -17,6 +14,7 @@
       };
     };
     programs = {
+      agents.enable = true;
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;

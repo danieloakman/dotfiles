@@ -1,10 +1,6 @@
-{ pkgs
-, config
-, lib
-, ...
-}:
+{ pkgs, config, lib, ... }:
 let
-  enable = config.my.dev.ai.enable;
+  enable = config.my.programs.agents.enable;
   # Pin fetchFromGitHub to a commit rev (not a branch) so sha256 stays stable until
   # you bump rev. To upgrade: set rev to the new commit, then run
   #   nix flake prefetch github:owner/repo/<rev>
@@ -23,7 +19,7 @@ let
 in
 {
   config = lib.mkIf enable {
-    my.dev.ai = {
+    my.programs.agents = {
       rootContext = builtins.readFile (
         builtins.fetchurl {
           url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";

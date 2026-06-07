@@ -144,6 +144,6 @@ in
         exec ${gcalcliExe} --client-id "$CLIENT_ID" --client-secret "$CLIENT_SECRET" "$@"
       '')
     ];
-    my.dev.ai.skills.gcalcli = gcalcliSkill;
+    my.programs.agents.skills.gcalcli = gcalcliSkill;
   };
 }

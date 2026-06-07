@@ -14,9 +14,6 @@ let
 in
 {
   my = {
-    dev = {
-      ai.enable = true;
-    };
     desktop = {
       hyprland.enable = true;
       uiShell = "noctalia";
@@ -29,6 +26,7 @@ in
       # gnome.enable = true;
     };
     programs = {
+      agents.enable = true;
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;

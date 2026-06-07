@@ -44,14 +44,12 @@ in
   ];
 
   my = {
-    dev = {
-      ai.enable = true;
-    };
     desktop = {
       hyprland.enable = true;
       uiShell = "ags";
     };
     programs = {
+      agents.enable = true;
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;

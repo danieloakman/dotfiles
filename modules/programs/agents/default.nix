@@ -1,6 +1,6 @@
 { lib, env, config, ... }:
 let
-  cfg = config.my.dev.ai;
+  cfg = config.my.programs.agents;
   mcpServerOpts = _: {
     options = {
       command = lib.mkOption {
@@ -21,8 +21,8 @@ let
   };
 in
 {
-  options.my.dev.ai = {
-    enable = lib.mkEnableOption "Enable AI features and tools.";
+  options.my.programs.agents = {
+    enable = lib.mkEnableOption "Enable shared AI agent configuration (context, skills, MCP).";
     rootContext = lib.mkOption {
       type = lib.types.lines;
       default = "";
