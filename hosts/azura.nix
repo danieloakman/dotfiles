@@ -45,7 +45,6 @@ in
 
   my = {
     dev = {
-      jsPackageSecurity.enable = true;
       ai.enable = true;
     };
     desktop = {
@@ -54,6 +53,7 @@ in
     };
     programs = {
       devPkgs.enable = true;
+      jsPackageSecurity.enable = true;
       claude-code.enable = true;
       rtk.enable = true;
       cursor.enable = true;

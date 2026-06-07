@@ -2,7 +2,7 @@
 # https://github.com/lirantal/npm-security-best-practices
 { env, config, lib, ... }:
 let
-  cfg = config.my.dev.jsPackageSecurity;
+  cfg = config.my.programs.jsPackageSecurity;
 
   minReleaseAgeMinutes = cfg.minReleaseAgeDays * 24 * 60;
   minReleaseAgeSeconds = cfg.minReleaseAgeDays * 24 * 60 * 60;
@@ -16,7 +16,7 @@ let
   npmSecurityFragment =
     let
       lines = [
-        "# npm security defaults (dotfiles: my.dev.jsPackageSecurity)"
+        "# npm security defaults (dotfiles: my.programs.jsPackageSecurity)"
         "# https://github.com/lirantal/npm-security-best-practices"
         ""
         (lib.optionalString cfg.ignoreScripts "ignore-scripts=true")
@@ -37,7 +37,7 @@ let
   };
 
   bunfigToml = ''
-    # bun security defaults (dotfiles: my.dev.jsPackageSecurity)
+    # bun security defaults (dotfiles: my.programs.jsPackageSecurity)
     # https://github.com/lirantal/npm-security-best-practices
 
     [install]
@@ -61,7 +61,7 @@ let
   };
 in
 {
-  options.my.dev.jsPackageSecurity = {
+  options.my.programs.jsPackageSecurity = {
     enable = lib.mkEnableOption ''
       Harden npm, pnpm, and bun against supply-chain attacks (lifecycle scripts,
       git deps, release cooldown, pnpm trust policy).
