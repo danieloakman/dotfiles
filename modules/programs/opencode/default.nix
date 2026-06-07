@@ -16,18 +16,27 @@ let
 
   llamaSwapUrl = "http://127.0.0.1:${toString (llamaCppCfg.port + 1)}/v1";
 
-  llamaModelsFromService = lib.mapAttrs (name: _: {
-    name = name;
-  }
-  // lib.optionalAttrs (lib.hasInfix "VL" name) {
-    modalities = {
-      input = [
-        "image"
-        "text"
-      ];
-      output = [ "text" ];
-    };
-  }) llamaCppCfg.models;
+  llamaMaxOutputTokens = context: lib.min 8192 (lib.div context 2);
+
+  llamaModelsFromService = lib.mapAttrs (
+    name: model:
+    {
+      name = name;
+      limit = {
+        context = model.contextSize;
+        output = llamaMaxOutputTokens model.contextSize;
+      };
+    }
+    // lib.optionalAttrs (lib.hasInfix "VL" name) {
+      modalities = {
+        input = [
+          "image"
+          "text"
+        ];
+        output = [ "text" ];
+      };
+    }
+  ) llamaCppCfg.models;
 
   hasCursorApiKeyLinux =
     env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
@@ -114,6 +123,7 @@ let
             name = "llama-swap (local)";
             options = {
               baseURL = llamaSwapUrl;
+              includeUsage = true;
             };
             models = llamaModelsFromService;
           };
@@ -194,6 +204,14 @@ in
         {
           assertion = !cfg.providers.llama-cpp.enable || llamaCppCfg.models != { };
           message = "my.programs.opencode.providers.llama-cpp.enable requires at least one model in my.services.llama-cpp.models.";
+        }
+        {
+          assertion =
+            !cfg.providers.llama-cpp.enable
+            || builtins.all (model: model ? contextSize && model.contextSize > 0) (
+              builtins.attrValues llamaCppCfg.models
+            );
+          message = "my.programs.opencode.providers.llama-cpp.enable requires contextSize on every my.services.llama-cpp.models entry.";
         }
       ];
     }

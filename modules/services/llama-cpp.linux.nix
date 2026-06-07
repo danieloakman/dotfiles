@@ -16,6 +16,13 @@ let
         (prev: {
           cmakeFlags = (prev.cmakeFlags or [ ]) ++ [ "-DCMAKE_CUDA_ARCHITECTURES=61;75;80;86;89;90" ];
         }) else baseLlamaCpp;
+
+  llamaServerArgs = model: [
+    "-c"
+    (toString model.contextSize)
+    "--parallel"
+    (toString model.concurrencyLimit)
+  ];
 in
 {
   options.my = {
@@ -38,10 +45,21 @@ in
         type = lib.types.attrsOf (lib.types.submodule {
           options = {
             path = lib.mkOption { type = lib.types.path; description = "Path to the GGUF model"; };
+            contextSize = lib.mkOption {
+              type = lib.types.int;
+              description = ''
+                Context window in tokens for llama-server (`-c`) and OpenCode limits.
+                Use the model's native value from Hugging Face (e.g. `max_position_embeddings`);
+                lower it if VRAM is tight.
+              '';
+            };
+            concurrencyLimit = lib.mkOption {
+              type = lib.types.int;
+              default = 1;
+              description = "Max parallel requests for llama-server (`--parallel`) and llama-swap.";
+            };
             aliases = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; description = "Optional aliases for this model"; };
             proxy = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; description = "Override proxy URL"; };
-            concurrencyLimit = lib.mkOption { type = lib.types.nullOr lib.types.int; default = null; description = "Max concurrent requests"; };
-            extraServerArgs = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; description = "Extra args for llama-server (e.g. [ \"-c\" \"4096\" \"--parallel\" \"1\" ])"; };
           };
         });
         default = { };
@@ -85,11 +103,11 @@ in
             healthCheckTimeout = 60;
             models = builtins.mapAttrs
               (_: model: {
-                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString cfg.gpuLayerCount} -t ${lib.toString cfg.cpuCoreCount} ${lib.escapeShellArgs model.extraServerArgs}";
+                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString cfg.gpuLayerCount} -t ${lib.toString cfg.cpuCoreCount} ${lib.escapeShellArgs (llamaServerArgs model)}";
                 proxy = "http://${host}:${toString llamaCppPort}";
+                concurrencyLimit = model.concurrencyLimit;
               } // lib.optionalAttrs (model.aliases != [ ]) { inherit (model) aliases; }
               // lib.optionalAttrs (model.proxy != null) { inherit (model) proxy; }
-              // lib.optionalAttrs (model.concurrencyLimit != null) { inherit (model) concurrencyLimit; }
               )
               cfg.models;
           };

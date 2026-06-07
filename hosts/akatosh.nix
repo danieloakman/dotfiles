@@ -79,12 +79,18 @@ in
           #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
           #   };
           # };
-          "Qwen2.5-coder-1.5b-instruct-Q8_0".path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
+          "Qwen2.5-coder-1.5b-instruct-Q8_0" = {
+            path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
+            contextSize = 32768; # Qwen2.5-Coder-1.5B-Instruct native config
+          };
           "DeepSeek-R1-Distill-Qwen-7B-Q6_K" = {
             path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-            extraServerArgs = [ "-c" "4096" "--parallel" "1" ];
+            contextSize = 131072; # deepseek-ai/DeepSeek-R1-Distill-Qwen-7B max_position_embeddings
           };
-          "Qwen2.5-VL-7B-Instruct-Q6_K".path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
+          "Qwen2.5-VL-7B-Instruct-Q6_K" = {
+            path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
+            contextSize = 32768; # Qwen2.5-VL-7B-Instruct native config
+          };
         };
       };
       wakeonlan.enable = true;
