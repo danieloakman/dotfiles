@@ -1,10 +1,9 @@
 # OpenCode TUI/web agent: local llama provider + Cursor via patched cursor-proxy plugin.
-{
-  config,
-  lib,
-  pkgs,
-  env,
-  ...
+{ config
+, lib
+, pkgs
+, env
+, ...
 }:
 let
   cfg = config.my.programs.opencode;
@@ -18,25 +17,27 @@ let
 
   llamaMaxOutputTokens = context: lib.min 8192 (lib.div context 2);
 
-  llamaModelsFromService = lib.mapAttrs (
-    name: model:
-    {
-      name = name;
-      limit = {
-        context = model.contextSize;
-        output = llamaMaxOutputTokens model.contextSize;
-      };
-    }
-    // lib.optionalAttrs (lib.hasInfix "VL" name) {
-      modalities = {
-        input = [
-          "image"
-          "text"
-        ];
-        output = [ "text" ];
-      };
-    }
-  ) llamaCppCfg.models;
+  llamaModelsFromService = lib.mapAttrs
+    (
+      name: model:
+        {
+          inherit name;
+          limit = {
+            context = model.contextSize;
+            output = llamaMaxOutputTokens model.contextSize;
+          };
+        }
+        // lib.optionalAttrs (lib.hasInfix "VL" name) {
+          modalities = {
+            input = [
+              "image"
+              "text"
+            ];
+            output = [ "text" ];
+          };
+        }
+    )
+    llamaCppCfg.models;
 
   hasCursorApiKeyLinux =
     env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });

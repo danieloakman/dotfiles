@@ -29,7 +29,7 @@ let
 
   pnpmConfigYaml = lib.generators.toYAML { } {
     minimumReleaseAge = minReleaseAgeMinutes;
-    minimumReleaseAgeExclude = cfg.minimumReleaseAgeExclude;
+    inherit (cfg) minimumReleaseAgeExclude;
     trustPolicy = "no-downgrade";
     blockExoticSubdeps = true;
     strictDepBuilds = true;

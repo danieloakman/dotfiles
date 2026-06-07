@@ -1,9 +1,8 @@
-{
-  stdenv,
-  esbuild,
-  typescript,
-  fetchurl,
-  ...
+{ stdenv
+, esbuild
+, typescript
+, fetchurl
+, ...
 }:
 let
   typesNode = fetchurl {
