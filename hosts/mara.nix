@@ -21,8 +21,10 @@
       opencode = {
         enable = true;
         web.enable = true;
-        cursorProvider.enable = true;
-        claudeProvider.enable = true;
+        providers = {
+          cursor.enable = true;
+          claude.enable = true;
+        };
       };
       # mobile-dev.enable = false;
       gws.enable = true;

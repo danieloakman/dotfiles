@@ -8,6 +8,26 @@
 }:
 let
   cfg = config.my.programs.opencode;
+  llamaCppCfg = config.my.services.llama-cpp or {
+    enable = false;
+    port = 11343;
+    models = { };
+  };
+
+  llamaSwapUrl = "http://127.0.0.1:${toString (llamaCppCfg.port + 1)}/v1";
+
+  llamaModelsFromService = lib.mapAttrs (name: _: {
+    name = name;
+  }
+  // lib.optionalAttrs (lib.hasInfix "VL" name) {
+    modalities = {
+      input = [
+        "image"
+        "text"
+      ];
+      output = [ "text" ];
+    };
+  }) llamaCppCfg.models;
 
   hasCursorApiKeyLinux =
     env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
@@ -54,44 +74,48 @@ let
       pkgs.coreutils
       pkgs.nodejs_24
     ]
-    ++ lib.optionals cfg.cursorProvider.enable [
+    ++ lib.optionals cfg.providers.cursor.enable [
       pkgs.cursor-cli
       cursorAgentWrapper
     ]
-    ++ lib.optionals cfg.claudeProvider.enable [
+    ++ lib.optionals cfg.providers.claude.enable [
       pkgs.claude-code
     ]
   );
 
   webServiceEnv =
-    lib.optionals cfg.cursorProvider.enable [
+    lib.optionals cfg.providers.cursor.enable [
       "CURSOR_AGENT_BIN=${lib.getExe cursorAgentWrapper}"
       "NODE_BIN=${lib.getExe pkgs.nodejs_24}"
       "CURSOR_PROXY_SCRIPT=${cursorProxyScript}"
       "CURSOR_PROXY_QUIET=true"
     ]
-    ++ lib.optionals (cfg.cursorProvider.enable || cfg.claudeProvider.enable) [
+    ++ lib.optionals (cfg.providers.cursor.enable || cfg.providers.claude.enable) [
       "PATH=${webServiceBinPath}:/run/current-system/sw/bin"
     ];
 
   opencodePlugins =
-    lib.optionals cfg.claudeProvider.enable [ "opencode-claude-auth@latest" ]
-    ++ lib.optionals cfg.cursorProvider.enable [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ];
+    lib.optionals cfg.providers.claude.enable [ "opencode-claude-auth@latest" ]
+    ++ lib.optionals cfg.providers.cursor.enable [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ];
 
   opencodeSettings = lib.mkMerge [
     (lib.mkIf (opencodePlugins != [ ]) {
       plugin = opencodePlugins;
     })
-    (lib.mkIf cfg.cursorProvider.enable {
-      model = "cursor-acp/${cfg.cursorProvider.defaultModel}";
-      small_model = "cursor-acp/${cfg.cursorProvider.defaultModel}";
+    (lib.mkIf cfg.providers.cursor.enable {
+      model = "cursor-acp/${cfg.providers.cursor.defaultModel}";
+      small_model = "cursor-acp/${cfg.providers.cursor.defaultModel}";
     })
     {
       provider = lib.mkMerge [
-        (lib.mkIf cfg.llama.enable {
-          llama.options = {
-            url = cfg.llama.url;
-            model = cfg.llama.model;
+        (lib.mkIf (cfg.providers.llama-cpp.enable && llamaCppCfg.enable) {
+          "llama.cpp" = {
+            npm = "@ai-sdk/openai-compatible";
+            name = "llama-swap (local)";
+            options = {
+              baseURL = llamaSwapUrl;
+            };
+            models = llamaModelsFromService;
           };
         })
       ];
@@ -110,51 +134,45 @@ in
 {
   options.my.programs.opencode = {
     enable = lib.mkEnableOption "Enable OpenCode (TUI, web, Cursor/llama providers)";
-    cursorProvider = {
-      enable = lib.mkEnableOption ''
-        Use Cursor models in OpenCode via a patched local cursor-proxy plugin
-        and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
-      '';
-      defaultModel = lib.mkOption {
-        type = lib.types.str;
-        default = "auto";
-        description = ''
-          Default Cursor model id (without the cursor-acp/ prefix).
-          `auto` matches Cursor's usual cost-efficient routing.
+
+    providers = {
+      cursor = {
+        enable = lib.mkEnableOption ''
+          Use Cursor models in OpenCode via a patched local cursor-proxy plugin
+          and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
         '';
+        defaultModel = lib.mkOption {
+          type = lib.types.str;
+          default = "auto";
+          description = ''
+            Default Cursor model id (without the cursor-acp/ prefix).
+            `auto` matches Cursor's usual cost-efficient routing.
+          '';
+        };
       };
-    };
 
-    claudeProvider.enable = lib.mkEnableOption ''
-      Load `opencode-claude-auth` so Anthropic models use your Claude Code
-      subscription OAuth credentials (`~/.claude/.credentials.json` on Linux).
-      Run `claude login` once per host. Do not set `ANTHROPIC_API_KEY` if you
-      want subscription billing. Switch models in OpenCode to use Anthropic;
-      default model stays on Cursor when `cursorProvider` is enabled.
-    '';
+      claude.enable = lib.mkEnableOption ''
+        Load `opencode-claude-auth` so Anthropic models use your Claude Code
+        subscription OAuth credentials (`~/.claude/.credentials.json` on Linux).
+        Run `claude login` once per host. Do not set `ANTHROPIC_API_KEY` if you
+        want subscription billing. Switch models in OpenCode to use Anthropic;
+        default model stays on Cursor when the cursor provider is enabled.
+      '';
 
-    llama = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Expose local llama-swap (or compatible) OpenAI API as the llama provider.";
-      };
-      url = lib.mkOption {
-        type = lib.types.str;
-        default = "http://localhost:11343/v1";
-      };
-      model = lib.mkOption {
-        type = lib.types.str;
-        default = "DeepSeek-R1-Distill-Qwen-7B-Q6_K";
-      };
+      llama-cpp.enable = lib.mkEnableOption ''
+        Expose the local llama-swap OpenAI API in OpenCode.
+
+        Reads `my.services.llama-cpp.port` and `my.services.llama-cpp.models`
+        automatically; requires `my.services.llama-cpp.enable = true` on the host.
+      '';
     };
 
     web = {
       enable = lib.mkEnableOption ''
         Run OpenCode as a background user service (systemd on Linux, launchd on macOS).
 
-        Binds to 127.0.0.1 on `web.port` (default 15732), enables user lingering on Linux,
-        and installs `tailscale-svc-opencode-up` / `-down`. Expose via Tailscale only
+        Binds to 127.0.0.1 on `web.port` (default 15732),
+        installs `tailscale-svc-opencode-up` / `-down`. Expose via Tailscale only
         (no HTTP basic auth). Same HTTP server and web UI as `opencode web`, without opening a browser.
       '';
 
@@ -167,13 +185,25 @@ in
   };
 
   config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = !cfg.providers.llama-cpp.enable || llamaCppCfg.enable;
+          message = "my.programs.opencode.providers.llama-cpp.enable requires my.services.llama-cpp.enable on this host.";
+        }
+        {
+          assertion = !cfg.providers.llama-cpp.enable || llamaCppCfg.models != { };
+          message = "my.programs.opencode.providers.llama-cpp.enable requires at least one model in my.services.llama-cpp.models.";
+        }
+      ];
+    }
     (lib.mkIf cfg.enable {
       home-manager.users.${env.user} = {
         home.file.".config/opencode/plugins/cursor-proxy-local".source = cursorProxyPlugin;
 
-        home.packages = lib.mkIf cfg.cursorProvider.enable [ cursorAgentWrapper ];
+        home.packages = lib.mkIf cfg.providers.cursor.enable [ cursorAgentWrapper ];
 
-        home.sessionVariables = lib.mkIf cfg.cursorProvider.enable {
+        home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
           CURSOR_AGENT_BIN = "${lib.getExe cursorAgentWrapper}";
           # CURSOR_PROXY_QUIET = "true";
           NODE_BIN = "${lib.getExe pkgs.nodejs_24}";
@@ -196,7 +226,7 @@ in
         };
 
         launchd.agents.opencode-web = lib.mkIf (cfg.web.enable && env.platform == "darwin") {
-          config.EnvironmentVariables = lib.mkIf cfg.cursorProvider.enable {
+          config.EnvironmentVariables = lib.mkIf cfg.providers.cursor.enable {
             CURSOR_AGENT_BIN = lib.getExe cursorAgentWrapper;
             CURSOR_PROXY_QUIET = "true";
           };

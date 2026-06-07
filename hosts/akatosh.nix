@@ -33,6 +33,14 @@ in
     };
     programs = {
       cursor.enable = true;
+      opencode = {
+        enable = true;
+        providers = {
+          cursor.enable = true;
+          claude.enable = true;
+          llama-cpp.enable = true;
+        };
+      };
       games.enable = true;
       gws.enable = true;
       localsend.enable = true;
