@@ -1,9 +1,8 @@
-{
-  lib,
-  pkgs,
-  config,
-  env,
-  ...
+{ lib
+, pkgs
+, config
+, env
+, ...
 }:
 let
   cfg = config.my.programs.cursor;
@@ -16,11 +15,6 @@ in
       linux = {
         environment.systemPackages = [
           pkgs.code-cursor
-          # TODO: see if this script is still necessary on linux. Reason its here is because logs would be spewed out every time `cursor` was used from cli
-          (pkgs.writeShellScriptBin "open-cursor" ''
-            # Opens the cursor editor in the current directory
-              ${lib.getExe pkgs.code-cursor} . &> /tmp/cursor.log &
-          '')
         ];
       };
       darwin.homebrew.casks = [
