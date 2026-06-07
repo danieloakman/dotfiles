@@ -15,7 +15,6 @@ in
 {
   my = {
     dev = {
-      pkgs.enable = true;
       jsPackageSecurity.enable = true;
       ai.enable = true;
       ai.rtk.enable = true;
@@ -32,6 +31,8 @@ in
       # gnome.enable = true;
     };
     programs = {
+      devPkgs.enable = true;
+      claude-code.enable = true;
       cursor.enable = true;
       opencode = {
         enable = true;

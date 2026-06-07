@@ -7,7 +7,6 @@
 {
   my = {
     dev = {
-      pkgs.enable = true;
       jsPackageSecurity.enable = true;
       ai.enable = true;
     };
@@ -19,6 +18,8 @@
       };
     };
     programs = {
+      devPkgs.enable = true;
+      claude-code.enable = true;
       localsend.enable = true;
       cursor.enable = true;
       desktopPkgs.enable = true;

@@ -2,10 +2,10 @@
 
 { pkgs, lib, config, env, ... }:
 let
-  cfg = config.my.dev.pkgs;
+  cfg = config.my.programs.devPkgs;
 in
 {
-  options.my.dev.pkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
+  options.my.programs.devPkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
 
   config = lib.mkIf cfg.enable (env.selectPlatform {
     any = {
