@@ -13,11 +13,11 @@
     dev = {
       jsPackageSecurity.enable = true;
       ai.enable = true;
-      ai.rtk.enable = true;
     };
     programs = {
       devPkgs.enable = true;
       claude-code.enable = true;
+      rtk.enable = true;
       cursor.enable = true;
       opencode = {
         enable = true;

@@ -2,7 +2,7 @@
 # https://github.com/rtk-ai/rtk
 { env, config, lib, pkgs, ... }:
 let
-  cfg = config.my.dev.ai.rtk;
+  cfg = config.my.programs.rtk;
   version = "0.38.0";
 
   rtk = pkgs.stdenvNoCC.mkDerivation {
@@ -31,7 +31,7 @@ let
             sha256 = "152drfcpbnh0ngnnn78pnrccqp817ydjdpm2f7v23qc719sfflj0";
           };
         }.${pkgs.stdenv.hostPlatform.system}
-          or (throw "my.programs.rtkAi: unsupported system ${pkgs.stdenv.hostPlatform.system}");
+          or (throw "my.programs.rtk: unsupported system ${pkgs.stdenv.hostPlatform.system}");
 
     # Upstream assets are gzip-compressed tar with a single `rtk` file (not a raw ELF). Default Nix unpack
     # rejects "no directories" archives, so extract in installPhase.
@@ -60,7 +60,7 @@ let
   };
 in
 {
-  options.my.dev.ai.rtk.enable = lib.mkEnableOption ''
+  options.my.programs.rtk.enable = lib.mkEnableOption ''
     RTK (rtk-ai/rtk): install the release binary and remind at shell startup if global init is missing
   '';
 
@@ -69,7 +69,7 @@ in
       home.packages = [ rtk ];
       programs = {
         zsh.initContent = lib.mkOrder 1500 ''
-          # RTK (my.dev.ai.rtk): remind to configure global hooks if missing
+          # RTK (my.programs.rtk): remind to configure global hooks if missing
           if command -v rtk >/dev/null 2>&1; then
             rtk_status="$(rtk init --show 2>/dev/null || true)"
             # Hook not configured, remind to configure

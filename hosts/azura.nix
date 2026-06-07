@@ -47,7 +47,6 @@ in
     dev = {
       jsPackageSecurity.enable = true;
       ai.enable = true;
-      ai.rtk.enable = true;
     };
     desktop = {
       hyprland.enable = true;
@@ -56,6 +55,7 @@ in
     programs = {
       devPkgs.enable = true;
       claude-code.enable = true;
+      rtk.enable = true;
       cursor.enable = true;
       onscreenKeyboard.enable = true;
       gws.enable = true;
