@@ -45,7 +45,6 @@ in
         ncdu # Similar to `dust`, but provides a UI to delete directories
         tldr
         zbar # Can scan QR & bar codes using this
-        lf # Terminal file system manager
         wine # For running Windows applications on Linux
         nix-prefetch-github
 
