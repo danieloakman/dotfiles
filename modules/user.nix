@@ -147,19 +147,6 @@
             #   ];
             # };
             # gh-dash.enable = true;
-
-            lf = {
-              enable = true;
-              keybindings = {
-                "D" = "delete";
-                "~" = "cd ~";
-              };
-              # See https://github.com/gokcehan/lf/blob/master/doc.md#options
-              settings = {
-                hidden = true;
-                info = [ "size" "time" ];
-              };
-            };
           };
 
           services = {
