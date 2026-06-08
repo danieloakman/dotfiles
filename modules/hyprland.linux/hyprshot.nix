@@ -18,7 +18,7 @@ in
 
     home-manager.users.${env.user} = { lib, ... }: {
       home.activation.createHyprshotScreenshotDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        mkdir -p "$DRY_RUN_PREFIX${env.home}/Pictures/Screenshots"
+        $DRY_RUN_CMD mkdir -p "$HOME/Pictures/Screenshots"
       '';
 
       wayland.windowManager.hyprland.settings.bind = [
