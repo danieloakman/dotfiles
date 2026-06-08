@@ -1,13 +1,21 @@
-{ env, lib, ... }:
-let
-  lazygitSettings = lib.importYAML (builtins.readFile ../files/home/.config/lazygit/config.yml);
-in
+{ env, ... }:
 {
   home-manager.users.${env.user} = {
     programs.lazygit = {
       enable = true;
       enableZshIntegration = true;
-      settings = lazygitSettings;
+      # Keep in sync with files/home/.config/lazygit/config.yml
+      settings = {
+        git.overrideGpg = true;
+        customCommands = [
+          {
+            key = "F";
+            command = "git fetch --prune";
+            context = "localBranches";
+            output = "log";
+          }
+        ];
+      };
     };
   };
 }
