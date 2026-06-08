@@ -70,8 +70,6 @@
               # Set up passff-host for firefox password management with "Pass"
               # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
 
-              ".config/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
-
               ".config/nixpkgs/config.nix".text = ''
                 { ... }:
                 {

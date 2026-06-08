@@ -131,7 +131,6 @@ in
           # pinentry-qt
           eza
           bat
-          lazygit
           fzf
           sops
           age

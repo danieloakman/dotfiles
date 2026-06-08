@@ -61,7 +61,6 @@
             max-cache-ttl 604800
             pinentry-program /opt/homebrew/bin/pinentry-mac
           '';
-          "Library/Application Support/lazygit/config.yml".source = ../files/home/.config/lazygit/config.yml;
           ".ssh/config".text = ''
             Host github github.com
             IdentityFile ~/.ssh/djo-personal
@@ -248,7 +247,6 @@
       "git"
       "eza"
       "bat"
-      "lazygit"
       "pass"
       "pass-otp"
       "gemini-cli"
