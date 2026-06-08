@@ -70,6 +70,18 @@ in
         name = "Bibata-Modern-Ice";
         size = 24;
       };
+
+      # Stylix's Qt target installs generated Kvantum themes via recursive xdg linking.
+      # Stale store-backed theme paths block linkGeneration from moving files to .bak.
+      home-manager.users.${env.user} = { lib, ... }: {
+        home.activation.cleanupStylixKvantumThemes = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+          for theme in "$HOME/.config/Kvantum"/Base16*; do
+            if [ -e "$theme" ]; then
+              $DRY_RUN_CMD rm -rf "$theme"
+            fi
+          done
+        '';
+      };
     };
   });
 }
