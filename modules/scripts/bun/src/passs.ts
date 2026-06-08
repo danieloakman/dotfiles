@@ -103,7 +103,6 @@ async function main() {
 
 	await updatePriority(selectedPassword);
 
-	// TODO: fix wayland bug where copy flag makes the program hang
 	if (selectedPassword.startsWith('otp')) {
 		await sh(`pass otp ${selectedPassword}${cli.flags.copy ? ' -c' : ''}`);
 	} else if (!cli.flags.copy) {
