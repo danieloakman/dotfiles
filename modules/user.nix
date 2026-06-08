@@ -148,22 +148,6 @@
             # };
             # gh-dash.enable = true;
           };
-
-          services = {
-            gpg-agent = {
-              enable = true;
-              enableZshIntegration = true;
-              defaultCacheTtl = 604800; # 1 week
-              maxCacheTtl = 604800;
-              # pinentryPackage = pkgs.pinentry;
-            };
-
-            # Add gnome-keyring to handle auto gpg password entry, amongst other things:
-            gnome-keyring = {
-              enable = true;
-              components = [ "pkcs11" "secrets" "ssh" ];
-            };
-          };
         };
         # This is the extension for backup files when home-manager finds a file that already exists in a
         # spot that it wants to put something in. This prevents the backup files from being overwritten
