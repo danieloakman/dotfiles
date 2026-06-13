@@ -7,9 +7,14 @@ General dotfiles are kept in the *files/home* directory. *files/\** is for other
 See the [shell script readme](files/home/.shell_scripts/README.md) file for more information on utilising the shell scripts.
 
 ## Directory structure
-- `files/` general files that are symlinked or otherwise used as assets.
-- `modules/` nix modules.
-- `secrets/` sops secrets setup here.
+
+Single unified flake for NixOS and nix-darwin (no separate `linux/` or `darwin/` trees):
+
+- `flake.nix` — flake entry point; `nixosConfigurations` and `darwinConfigurations` live here.
+- `hosts/` — per-machine host modules (`akatosh`, `azura`, `mara`, `boethiah`, …).
+- `modules/` — shared Nix modules; platform-specific files use `.linux.nix` or `.darwin.nix` suffixes.
+- `files/` — general files symlinked or otherwise used as assets (`files/home/` for home-directory dotfiles).
+- `secrets/` — sops-encrypted secrets.
 
 ## Building
 
@@ -17,7 +22,8 @@ We need to rebuild the OS as a flake with:
 ```bash
 sudo nixos-rebuild switch --flake ./#HOST_NAME
 # Or
-nh os swtich # If the command is available and the $FLAKE variable is set.
+nh os switch # Linux, when nh is available and $FLAKE is set
+nh darwin switch # macOS
 just switch
 ```
 
@@ -26,15 +32,15 @@ just switch
 - When updating the flake, i.e. the `flake.lock` file, always make a new branch for those changes.
 - Small changes can be made directly to the `main` branch.
 - Otherwise large features should have a new branch.
-- Modules are stored in `./modules`. Any path continaing `darwin` or `linux` can only be imported by that platform/system, otherwise all modules are recursively imported except for `*/_*.nix` and `flake.nix` files.
+- Modules live in `./modules`. Files named `*.linux.nix` or `*.darwin.nix` are only imported on that platform; other modules are shared. Files matching `*/_*.nix` and `flake.nix` are skipped.
 - Most modules should be defined with a set of option(s) to enable or tweak the module to suit the host machine. That is unless the module is always loaded on every host.
 
 ## Secrets
 
 #### See https://www.youtube.com/watch?v=G5f6GC7SnhU for more info if needed.
-Secrets file is located at *./secrets/secret.yaml* and it's encrypted.
+Secrets file is located at *./secrets/secrets.yaml* and is encrypted.
 Also need to have your age secret key present in `~/.config/sops/age/keys.txt`
-- To edit: `sops secrets/secret.yaml` OR `just edit-secrets`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
+- To edit: `sops secrets/secrets.yaml` OR `just edit-secrets`. This should open nano with the unencrypted file, which you can make changes to. Save and exit, then commit the file.
 - Access to secrets in builds is done like:
 ```nix
 text = ''
@@ -47,7 +53,7 @@ text = ''
 
 ## Notes
 
-* Note the *#HOST_NAME*, this references the name of the config in `nixosConfigurations` in the relevant flake.nix file.
+* Note the *#HOST_NAME*, this references a key in `nixosConfigurations` or `darwinConfigurations` in `flake.nix` (e.g. `./#akatosh`, `./#boethiah`).
 * You can run `man home-configuration.nix` to get a list of useful home-manager settings and configurations.
 * When making new nix files, **make sure to commit them first**, otherwise nix will not be able to find them.
 * */boot/kernels* may occasionally fill up with unused linux kernels and need to be manually cleaned up, i.e. `sudo rm /boot/kernels/*6.6.33*`
