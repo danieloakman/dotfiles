@@ -43,11 +43,6 @@ in
 
     users.users.${user}.extraGroups = [ "storage" ];
 
-    networking.firewall = {
-      allowedTCPPorts = [ port ];
-      allowedUDPPorts = [ port ];
-    };
-
     environment.systemPackages = with pkgs; [
       (writeShellScriptBin "tailscale-svc-paperless-up" ''
         tailscale serve --service=svc:paperless --https=443 ${hostname}:${toString port}

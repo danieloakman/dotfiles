@@ -15,7 +15,8 @@ in
   config = lib.mkIf config.my.services.n8n.enable {
     services.n8n = {
       enable = true;
-      openFirewall = true;
+      # Expose via `tailscale-svc-n8n-up` (127.0.0.1 backend).
+      openFirewall = false;
       environment = {
         N8N_PORT = cfg.port;
         N8N_SKIP_AUTH_ON_OAUTH_CALLBACK = true;

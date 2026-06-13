@@ -62,8 +62,8 @@ in
 
     openFirewall = lib.mkOption {
       type = lib.types.bool;
-      default = true;
-      description = "Open the main Postiz TCP port on the firewall.";
+      default = false;
+      description = "Open the main Postiz TCP port on the firewall. Leave false when exposing via Tailscale serve only.";
     };
 
     openTemporalUiInFirewall = lib.mkOption {

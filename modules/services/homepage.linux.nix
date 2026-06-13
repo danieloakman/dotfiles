@@ -38,13 +38,12 @@ in
   };
 
   config = lib.mkIf config.my.services.homepage.enable {
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
-
     services = {
       homepage-dashboard = {
         enable = true;
         inherit (cfg) allowedHosts;
-        openFirewall = true;
+        # Loopback-only; expose via `tailscale-svc-homepage-up`.
+        openFirewall = false;
         listenPort = cfg.port;
         widgets = [
           {

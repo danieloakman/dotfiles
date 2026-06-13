@@ -56,7 +56,8 @@ in
     services = {
       jellyfin = lib.mkIf cfg.jellyfin.enable {
         enable = true;
-        openFirewall = true;
+        # Expose via `tailscale-svc-jellyfin-up` (127.0.0.1 backend).
+        openFirewall = false;
       };
       # sonarr = {
       #   enable = true;

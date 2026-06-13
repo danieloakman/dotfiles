@@ -14,8 +14,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    networking.firewall.allowedTCPPorts = [ port ];
-
     services = {
       stirling-pdf = {
         enable = true;

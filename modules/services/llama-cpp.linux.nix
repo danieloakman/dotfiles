@@ -81,7 +81,7 @@ in
         enable = false;
         package = llamaCppPkg;
         port = llamaCppPort;
-        openFirewall = true;
+        openFirewall = false;
         inherit host;
         extraFlags = [
           "-ngl" # Offload layers to GPU
@@ -93,7 +93,7 @@ in
       llama-swap = {
         enable = true;
         port = llamaSwapPort;
-        openFirewall = true;
+        openFirewall = false;
         listenAddress = host;
         settings =
           let

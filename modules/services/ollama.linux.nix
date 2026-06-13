@@ -20,7 +20,7 @@ in
         port = ollamaPort;
         package = if env.hasGPU then pkgs.ollama else pkgs.ollama-cpu;
         enable = true;
-        openFirewall = true;
+        openFirewall = false;
         host = "127.0.0.1";
         loadModels = [
           # General purpose models:

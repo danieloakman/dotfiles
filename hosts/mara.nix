@@ -51,8 +51,6 @@
         enable = true;
         inherit port;
         allowedOrigins = [
-          "https://mara:${toString port}"
-          "https://mara-cockpit.tail9f1d8.ts.net"
           "https://mara-cockpit.dinosaur-crocodile.ts.net"
         ];
       };

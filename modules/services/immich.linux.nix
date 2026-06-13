@@ -30,7 +30,7 @@ in
         # Bind to loopback and expose to tailnet via tailscale serve.
         host = "127.0.0.1";
         enable = true;
-        openFirewall = true;
+        openFirewall = false;
         accelerationDevices = null;
         inherit (cfg) mediaLocation;
       };
