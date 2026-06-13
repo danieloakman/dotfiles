@@ -24,10 +24,12 @@ async function proxyReachable(port: number): Promise<boolean> {
 const visionModalities = { input: ["text", "image"], output: ["text"] } as const;
 
 const CONTEXT_1M = 1_000_000;
+const CONTEXT_500K = 500_000;
 const CONTEXT_200K = 200_000;
 const DEFAULT_OUTPUT = 64_000;
 
 const MODEL_CONTEXT: Record<string, number> = {
+  auto: CONTEXT_500K,
   "composer-2.5": CONTEXT_200K,
   "claude-4.6-opus-high": CONTEXT_1M,
   "claude-4.6-opus-max": CONTEXT_1M,
@@ -46,11 +48,7 @@ function isReasoningModel(name: string, modelId: string): boolean {
   return haystack.includes("thinking");
 }
 
-function cursorModel(
-  name: string,
-  modelId: string,
-  opts?: { omitLimit?: boolean },
-) {
+function cursorModel(name: string, modelId: string) {
   const base = {
     name,
     modalities: visionModalities,
@@ -61,7 +59,6 @@ function cursorModel(
         }
       : {}),
   };
-  if (opts?.omitLimit) return base;
   const context = MODEL_CONTEXT[modelId] ?? CONTEXT_200K;
   return {
     ...base,
@@ -78,7 +75,7 @@ function pluginApi(port: number) {
         npm: "@ai-sdk/openai-compatible",
         options: { baseURL: `http://127.0.0.1:${port}/v1` },
         models: {
-          auto: cursorModel("Auto", "auto", { omitLimit: true }),
+          auto: cursorModel("Auto", "auto"),
           "composer-2.5": cursorModel("Composer 2.5", "composer-2.5"),
           "claude-4.6-opus-high": cursorModel("Opus 4.6 High", "claude-4.6-opus-high"),
           "claude-4.6-opus-max": cursorModel("Opus 4.6 Max", "claude-4.6-opus-max"),
