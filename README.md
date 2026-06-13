@@ -8,8 +8,6 @@ See the [shell script readme](files/home/.shell_scripts/README.md) file for more
 
 ## Directory structure
 - `files/` general files that are symlinked or otherwise used as assets.
-- `linux/` linux nix flake.
-- `darwin/` nix-darwin flake.
 - `modules/` nix modules.
 - `secrets/` sops secrets setup here.
 
