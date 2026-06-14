@@ -62,13 +62,20 @@ let
 
   retryTimes = lib.genList (i: startMins + i * cfg.retryInterval) retryCount;
 
+  pad2 =
+    n:
+    let
+      s = toString n;
+    in
+    if lib.stringLength s < 2 then "0${s}" else s;
+
   formatClock =
     mins:
     let
       hour = mins / 60;
       minute = lib.mod mins 60;
     in
-    "${lib.padStringWith 2 "0" (toString hour)}:${lib.padStringWith 2 "0" (toString minute)}:00";
+    "${pad2 hour}:${pad2 minute}:00";
 
   dayPrefix = if cronDow == "*" then "" else "${cronDowToSystemd cronDow} ";
 
@@ -78,14 +85,14 @@ let
     set -eu
 
     log() {
-      ${lib.getExe pkgs.systemd}/bin/logger -t periodic-reboot "$*"
+      ${pkgs.systemd}/bin/logger -t periodic-reboot "$*"
     }
 
     ${lib.optionalString cfg.requireNoInhibitors ''
-      if ${lib.getExe pkgs.gawk}/bin/awk '
+      if ${pkgs.gawk}/bin/awk '
         $6 ~ /(^|:)shutdown(:|$)/ { found = 1 }
         END { exit !found }
-      ' <($(${lib.getExe pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null || true)); then
+      ' <($(${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null || true)); then
         log "deferred: shutdown inhibitor active"
         exit 0
       fi
@@ -94,7 +101,7 @@ let
     ${lib.concatMapStrings (
       unit:
       ''
-        if ${lib.getExe pkgs.systemd}/bin/systemctl is-active --quiet ${lib.escapeShellArg unit}; then
+        if ${pkgs.systemd}/bin/systemctl is-active --quiet ${lib.escapeShellArg unit}; then
           log "deferred: ${unit} is active"
           exit 0
         fi
@@ -102,16 +109,16 @@ let
     ) cfg.deferWhileActive}
 
     ${lib.optionalString (cfg.maxLoad != null) ''
-      load=$(${lib.getExe pkgs.gawk}/bin/awk '{print $1}' /proc/loadavg)
+      load=$(${pkgs.gawk}/bin/awk '{print $1}' /proc/loadavg)
       maxLoad=${toString cfg.maxLoad}
-      if ${lib.getExe pkgs.gawk}/bin/awk -v load="$load" -v max="$maxLoad" 'BEGIN { exit !(load > max) }'; then
+      if ${pkgs.gawk}/bin/awk -v load="$load" -v max="$maxLoad" 'BEGIN { exit !(load > max) }'; then
         log "deferred: load $load exceeds $maxLoad"
         exit 0
       fi
     ''}
 
     log "conditions met, rebooting"
-    exec ${lib.getExe pkgs.systemd}/bin/systemctl reboot
+    exec ${pkgs.systemd}/bin/systemctl reboot
   '';
 in
 {
