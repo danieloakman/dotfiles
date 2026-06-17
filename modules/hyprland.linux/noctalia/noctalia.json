@@ -606,7 +606,7 @@
       "monitors": [
         "DP-2"
       ],
-      "location": "top_right",
+      "location": "top",
       "overlayLayer": true,
       "backgroundOpacity": 1,
       "respectExpireTimeout": false,
@@ -788,7 +788,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1779769857000
+      "lastSeenTs": 1781722850000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.6"
