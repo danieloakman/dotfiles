@@ -7,16 +7,35 @@ import { homedir } from 'os';
 import { attempt } from '@danoaky/js-utils';
 import { mkdir } from 'fs/promises';
 
+const DEFAULT_OUTPUT_DIR = Path.join(homedir(), 'Sync/3ds-backup');
+
 function panic(message: string, code = 1): never {
 	console.error(message);
 	process.exit(code);
+}
+
+async function listFilesRecursive(client: Client, srcDir: string): Promise<string[]> {
+	const { data: list, error } = await attempt(client.list(srcDir));
+	if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
+
+	const files: string[] = [];
+	for (const stat of list) {
+		const srcPath = Path.join(srcDir, stat.name);
+		if (stat.isDirectory) {
+			files.push(...(await listFilesRecursive(client, srcPath)));
+		} else if (stat.isFile) {
+			files.push(srcPath);
+		}
+	}
+	return files;
 }
 
 async function downloadFilesFrom(
 	client: Client,
 	srcDir: string,
 	globFile: string[],
-	destDir: string
+	destDir: string,
+	{ dryRun = false }: { dryRun?: boolean } = {}
 ) {
 	const { data: list, error } = await attempt(client.list(srcDir));
 	if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
@@ -25,6 +44,10 @@ async function downloadFilesFrom(
 		if (!stat.isFile || !micromatch.isMatch(stat.name, globFile)) continue;
 		const srcPath = Path.join(srcDir, stat.name);
 		const destPath = Path.join(destDir, srcPath);
+		if (dryRun) {
+			console.log(`Would download file: "${destPath}"`);
+			continue;
+		}
 		await mkdir(Path.dirname(destPath), { recursive: true });
 		const { error } = await attempt(client.downloadTo(destPath, srcPath));
 		if (error) panic(`Failed to download "${destPath}": ${error.message}`);
@@ -32,7 +55,20 @@ async function downloadFilesFrom(
 	}
 }
 
-async function downloadDirFrom(client: Client, srcDir: string, destDir: string) {
+async function downloadDirFrom(
+	client: Client,
+	srcDir: string,
+	destDir: string,
+	{ dryRun = false }: { dryRun?: boolean } = {}
+) {
+	if (dryRun) {
+		const files = await listFilesRecursive(client, srcDir);
+		for (const srcPath of files) {
+			console.log(`Would download file: "${Path.join(destDir, srcPath)}"`);
+		}
+		return;
+	}
+
 	const destPath = Path.join(destDir, srcDir); // Copy dir to same directory structure as the source directory
 	const { error } = await attempt(client.downloadToDir(destPath, srcDir));
 	if (error) panic(`Failed to download directory "${srcDir}": ${error.message}`);
@@ -42,16 +78,18 @@ async function downloadDirFrom(client: Client, srcDir: string, destDir: string) 
 if (import.meta.main) {
 	const {
 		input,
-		flags: { verbose, user, password }
+		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR }
 	} = meow(
 		`
-    Usage: 3ds-backup <ip:port>
+    Usage: 3ds-backup <ip:port> 
 
     Options:
-      -h, --help      Show help
-      -v, --verbose   Show verbose output
-      -u, --user      Username
-      -p, --password  Password
+      -h, --help       Show help
+      -v, --verbose    Show verbose output
+      -n, --dry-run    List files that would be downloaded without writing them
+      -u, --user       Username
+      -p, --password   Password
+			-o, --output     Output directory (default: ${DEFAULT_OUTPUT_DIR})
     `,
 		{
 			importMeta: import.meta,
@@ -61,6 +99,11 @@ if (import.meta.main) {
 					default: false,
 					shortFlag: 'v'
 				},
+				dryRun: {
+					type: 'boolean',
+					default: false,
+					shortFlag: 'n'
+				},
 				user: {
 					type: 'string',
 					shortFlag: 'u'
@@ -68,6 +111,10 @@ if (import.meta.main) {
 				password: {
 					type: 'string',
 					shortFlag: 'p'
+				},
+				output: {
+					type: 'string',
+					shortFlag: 'o'
 				}
 			}
 		}
@@ -91,10 +138,10 @@ if (import.meta.main) {
 		.catch((err: Error) => panic(`Failed to access ${host}:${port}: ${err.message}`));
 	defer.add(() => client.close());
 
-	const destDir = Path.join(homedir(), 'Sync/3ds-backup');
-	await mkdir(destDir, { recursive: true });
+	if (dryRun) console.log('Dry run: no files will be written');
+	else await mkdir(output, { recursive: true });
 
-	await downloadDirFrom(client, '3ds/Checkpoint/saves', destDir);
-	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], destDir);
-	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], destDir);
+	await downloadDirFrom(client, '3ds/Checkpoint/saves', output, { dryRun });
+	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, { dryRun });
+	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, { dryRun });
 }
