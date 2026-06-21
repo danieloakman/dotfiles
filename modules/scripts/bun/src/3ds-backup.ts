@@ -142,6 +142,7 @@ if (import.meta.main) {
 	else await mkdir(output, { recursive: true });
 
 	await downloadDirFrom(client, '3ds/Checkpoint/saves', output, { dryRun });
+	await downloadDirFrom(client, '3ds/open_agb_firm/saves', output, { dryRun });
 	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, { dryRun });
 	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, { dryRun });
 }
