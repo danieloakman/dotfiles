@@ -140,10 +140,9 @@ if (import.meta.main) {
 
 	if (dryRun) console.log('Dry run: no files will be written');
 	else await mkdir(output, { recursive: true });
-	await Promise.all([
-		downloadDirFrom(client, '3ds/Checkpoint/saves', output, { dryRun }),
-		downloadDirFrom(client, '3ds/open_agb_firm/saves', output, { dryRun }),
-		downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, { dryRun }),
-		downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, { dryRun }),
-	])
+
+	await downloadDirFrom(client, '3ds/Checkpoint/saves', output, { dryRun });
+	await downloadDirFrom(client, '3ds/open_agb_firm/saves', output, { dryRun });
+	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, { dryRun });
+	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, { dryRun });
 }
