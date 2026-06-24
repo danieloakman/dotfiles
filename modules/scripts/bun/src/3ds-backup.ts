@@ -80,19 +80,20 @@ if (import.meta.main) {
 		input,
 		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR }
 	} = meow(
-		`
-    Usage: 3ds-backup <ip:port> 
-
-    Options:
-      -h, --help       Show help
-      -v, --verbose    Show verbose output
-      -n, --dry-run    List files that would be downloaded without writing them
-      -u, --user       Username
-      -p, --password   Password
-			-o, --output     Output directory (default: ${DEFAULT_OUTPUT_DIR})
-    `,
 		{
 			importMeta: import.meta,
+			autoHelp: true,
+			help: `
+				Usage: 3ds-backup <ip:port> 
+
+				Options:
+				--help           Show help
+				-u, --user       Username (default: anonymous)
+				-p, --password   Password (default: empty)
+				-v, --verbose    Show verbose output
+				-n, --dry-run    List files that would be downloaded without writing them
+				-o, --output     Output directory (default: ${DEFAULT_OUTPUT_DIR})
+			`,
 			flags: {
 				verbose: {
 					type: 'boolean',
@@ -141,8 +142,9 @@ if (import.meta.main) {
 	if (dryRun) console.log('Dry run: no files will be written');
 	else await mkdir(output, { recursive: true });
 
-	await downloadDirFrom(client, '3ds/Checkpoint/saves', output, { dryRun });
-	await downloadDirFrom(client, '3ds/open_agb_firm/saves', output, { dryRun });
-	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, { dryRun });
-	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, { dryRun });
+	const options = { dryRun };
+	await downloadDirFrom(client, '3ds/Checkpoint/saves', output, options);
+	await downloadDirFrom(client, '3ds/open_agb_firm/saves', output, options);
+	await downloadFilesFrom(client, 'roms/nds/saves', ['*.s*'], output, options);
+	await downloadFilesFrom(client, 'roms/gba', ['*.s*'], output, options);
 }
