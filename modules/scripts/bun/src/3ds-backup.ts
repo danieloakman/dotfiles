@@ -78,12 +78,12 @@ async function downloadDirFrom(
 if (import.meta.main) {
 	const {
 		input,
-		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR }
-	} = meow(
-		{
-			importMeta: import.meta,
-			autoHelp: true,
-			help: `
+		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR },
+		showHelp
+	} = meow({
+		importMeta: import.meta,
+		autoHelp: true,
+		help: `
 				Usage: 3ds-backup <ip:port> 
 
 				Options:
@@ -94,35 +94,37 @@ if (import.meta.main) {
 				-n, --dry-run    List files that would be downloaded without writing them
 				-o, --output     Output directory (default: ${DEFAULT_OUTPUT_DIR})
 			`,
-			flags: {
-				verbose: {
-					type: 'boolean',
-					default: false,
-					shortFlag: 'v'
-				},
-				dryRun: {
-					type: 'boolean',
-					default: false,
-					shortFlag: 'n'
-				},
-				user: {
-					type: 'string',
-					shortFlag: 'u'
-				},
-				password: {
-					type: 'string',
-					shortFlag: 'p'
-				},
-				output: {
-					type: 'string',
-					shortFlag: 'o'
-				}
+		flags: {
+			verbose: {
+				type: 'boolean',
+				default: false,
+				shortFlag: 'v'
+			},
+			dryRun: {
+				type: 'boolean',
+				default: false,
+				shortFlag: 'n'
+			},
+			user: {
+				type: 'string',
+				shortFlag: 'u'
+			},
+			password: {
+				type: 'string',
+				shortFlag: 'p'
+			},
+			output: {
+				type: 'string',
+				shortFlag: 'o'
 			}
 		}
-	);
+	});
 
 	const [host, port] = input[0]?.split(':') ?? [];
-	if (!host || !port || isNaN(parseInt(port))) panic('Invalid input');
+	if (!host || !port || isNaN(parseInt(port))) {
+		console.error('Invalid input');
+		showHelp(1);
+	}
 
 	console.log(`Connecting to ${host}:${port} as ${user ?? 'anonymous'}`);
 	await using defer = new Deferral();
@@ -131,7 +133,7 @@ if (import.meta.main) {
 	await client
 		.access({
 			host,
-			port: parseInt(port),
+			port: parseInt(port ?? '5000'),
 			user,
 			password
 		})
