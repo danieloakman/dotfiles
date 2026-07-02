@@ -28,7 +28,7 @@ in
       );
       skills = {
         grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
-        caveman = mattpocockSkills + "/productivity/caveman/SKILL.md";
+        # caveman = mattpocockSkills + "/productivity/caveman/SKILL.md"; # not really using this atm
         handoff = mattpocockSkills + "/productivity/handoff/SKILL.md";
         write-a-skill = mattpocockSkills + "/productivity/write-a-skill/SKILL.md";
       };

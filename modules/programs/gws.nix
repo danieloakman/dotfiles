@@ -36,6 +36,44 @@ let
     mv "$creds.tmp" "$creds"
     echo "Wrote $creds (syncs via Syncthing general-sync folder)"
   '';
+  gwsSkillsSrc =
+    (pkgs.fetchFromGitHub {
+      # https://github.com/googleworkspace/cli/tree/a3768d0e82ad83cca2da97724e46bea4ff0e6dbd/skills
+      owner = "googleworkspace";
+      repo = "cli";
+      rev = "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd";
+      sha256 = "sha256-YyNIHbyZrLlXYtWxZY8Um19MsnLharmS+nWGWO89fsA=";
+    })
+    + "/skills";
+  # Gateway skill: registering ~70 sub-skills at the top level bloats every Claude
+  # session's startup context. Instead, expose a single "gws" umbrella whose body
+  # indexes the sub-skills (still on disk under ~/.claude/gws-skills/ but not
+  # auto-discovered). Claude reads the umbrella on demand and Read's the relevant
+  # sub-skill SKILL.md when needed.
+  gwsUmbrella = pkgs.runCommand "gws-umbrella-skill" { } ''
+    mkdir -p $out
+    {
+      echo '---'
+      echo 'name: gws'
+      echo 'description: "Google Workspace gateway (Gmail, Drive, Calendar, Docs, Sheets, Chat, Meet, Forms, Tasks, Slides, Apps Script, Classroom, Keep, People, Admin). Load this skill first to access the indexed sub-skills."'
+      echo '---'
+      echo ""
+      echo '# Google Workspace skills'
+      echo ""
+      echo 'Sub-skills are installed at `~/.claude/gws-skills/`. They are NOT auto-discovered as skills to keep the global skill list small. To use one, Read the relevant SKILL.md path below and follow its instructions.'
+      echo ""
+      echo '## Index'
+      echo ""
+      for dir in ${gwsSkillsSrc}/*/; do
+        name=$(basename "$dir")
+        if [ -f "$dir/SKILL.md" ]; then
+          desc=$(awk '/^description:/ { sub(/^description: */, ""); gsub(/^"|"$/, ""); print; exit }' "$dir/SKILL.md")
+          echo "- **$name** — $desc"
+          echo "  - \`~/.claude/gws-skills/$name/SKILL.md\`"
+        fi
+      done
+    } > $out/SKILL.md
+  '';
 in
 {
   options.my.programs.gws.enable = lib.mkEnableOption "Enable the Google Workspace CLI tools, gmail, g-calendar, drive, etc.";
@@ -46,14 +84,10 @@ in
       gwsAuthStore
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
     ];
-    my.programs.agents.skillDirs.gws =
-      (pkgs.fetchFromGitHub {
-        # https://github.com/googleworkspace/cli/tree/a3768d0e82ad83cca2da97724e46bea4ff0e6dbd/skills
-        owner = "googleworkspace";
-        repo = "cli";
-        rev = "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd";
-        sha256 = "sha256-YyNIHbyZrLlXYtWxZY8Um19MsnLharmS+nWGWO89fsA=";
-      })
-      + "/skills";
+    my.programs.agents.skillDirs.gws = gwsUmbrella;
+    home-manager.users.${env.user}.home.file.".claude/gws-skills" = {
+      source = gwsSkillsSrc;
+      recursive = true;
+    };
   };
 }
