@@ -40,22 +40,37 @@ let
           [ -n "$user" ] || user="?"
           [ -n "$cmd" ] || cmd="?"
         fi
+        if [ "$found" -eq 0 ]; then
+          printf '%-5s %-6s %-8s %s\n' "PORT" "PID" "USER" "COMMAND"
+          found=1
+        fi
         printf '%-5s %-6s %-8s %s\n' "$port/$proto" "''${pid:-?}" "$user" "$cmd"
       done < <("$SS" -H "$@" 2>/dev/null || true)
     }
 
+    found=0
+
     if [ $# -eq 0 ]; then
-      printf '%-5s %-6s %-8s %s\n' "PORT" "PID" "USER" "COMMAND"
       print_listeners tcp -tlnp
       print_listeners udp -ulnp
+      if [ "$found" -eq 0 ]; then
+        echo "No processes listening."
+      fi
       exit 0
     fi
 
-    printf '%-5s %-6s %-8s %s\n' "PORT" "PID" "USER" "COMMAND"
     for port_num in "$@"; do
       print_listeners tcp -tlnp "sport = :$port_num"
       print_listeners udp -ulnp "sport = :$port_num"
     done
+
+    if [ "$found" -eq 0 ]; then
+      if [ $# -eq 1 ]; then
+        echo "No process listening on port $1."
+      else
+        echo "No processes listening on ports: $*."
+      fi
+    fi
   '';
 in
 {
