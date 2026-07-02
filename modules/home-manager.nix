@@ -118,11 +118,7 @@
             sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
           };
 
-          gtk = {
-            enable = true;
-            # Silence HM 26.05+ default change while stateVersion < "26.05" (keep GTK3/4 theme in sync).
-            gtk4.theme = config.gtk.theme;
-          };
+          gtk.enable = true;
 
           # TODO: store Private internet access config in sops and load here somewhere
 

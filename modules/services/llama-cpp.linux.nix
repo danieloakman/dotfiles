@@ -80,15 +80,13 @@ in
         # Enabling both would have both try to bind to llamaCppPort (11343).
         enable = false;
         package = llamaCppPkg;
-        port = llamaCppPort;
         openFirewall = false;
-        inherit host;
-        extraFlags = [
-          "-ngl" # Offload layers to GPU
-          "${lib.toString config.services.llama-cpp.gpuLayerCount}"
-          "-t"
-          "${lib.toString config.services.llama-cpp.cpuCoreCount}"
-        ];
+        settings = {
+          inherit host;
+          port = llamaCppPort;
+          ngl = cfg.gpuLayerCount;
+          t = cfg.cpuCoreCount;
+        };
       };
       llama-swap = {
         enable = true;
