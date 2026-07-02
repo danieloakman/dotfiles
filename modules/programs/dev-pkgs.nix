@@ -3,6 +3,60 @@
 { pkgs, lib, config, env, ... }:
 let
   cfg = config.my.programs.devPkgs;
+
+  # ss only shows a short process name; this resolves PIDs to full executable + args.
+  showport = pkgs.writeShellScriptBin "showport" ''
+    set -euo pipefail
+
+    SS=${lib.getExe' pkgs.iproute2 "ss"}
+    PS=${lib.getExe' pkgs.procps "ps"}
+
+    extract_pid() {
+      sed -n 's/.*pid=\([0-9][0-9]*\).*/\1/p'
+    }
+
+    extract_port() {
+      local addr="$1"
+      addr="''${addr#[}"
+      addr="''${addr%]}"
+      echo "''${addr##*:}" | sed 's/,.*//'
+    }
+
+    print_listeners() {
+      local proto="$1"
+      shift
+
+      while IFS= read -r line; do
+        [ -z "$line" ] && continue
+
+        local port pid user cmd
+        port="$(extract_port "$(awk '{print $4}' <<< "$line")")"
+        pid="$(extract_pid <<< "$line")"
+        user="?"
+        cmd="?"
+        if [ -n "$pid" ]; then
+          user="$("$PS" -o user= -p "$pid" 2>/dev/null | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          cmd="$("$PS" -ww -o args= -p "$pid" 2>/dev/null | sed 's/^[[:space:]]*//')"
+          [ -n "$user" ] || user="?"
+          [ -n "$cmd" ] || cmd="?"
+        fi
+        printf '%-5s %-6s %-8s %s\n' "$port/$proto" "''${pid:-?}" "$user" "$cmd"
+      done < <("$SS" -H "$@" 2>/dev/null || true)
+    }
+
+    if [ $# -eq 0 ]; then
+      printf '%-5s %-6s %-8s %s\n' "PORT" "PID" "USER" "COMMAND"
+      print_listeners tcp -tlnp
+      print_listeners udp -ulnp
+      exit 0
+    fi
+
+    printf '%-5s %-6s %-8s %s\n' "PORT" "PID" "USER" "COMMAND"
+    for port_num in "$@"; do
+      print_listeners tcp -tlnp "sport = :$port_num"
+      print_listeners udp -ulnp "sport = :$port_num"
+    done
+  '';
 in
 {
   options.my.programs.devPkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
@@ -61,6 +115,7 @@ in
         awscli2
         mprocs
         entr # Run some command when file(s) change
+        showport # List processes listening on a port, with full executable + args
 
         # Editors that can be ssh'd into and used:
         vscode
