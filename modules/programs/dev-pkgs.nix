@@ -22,6 +22,7 @@ in
         ripgrep # We could use the home-manager ripgrep package instead if we needed to give it some specific arguments everytime
         just-lsp # LSP for Just files
         fd # A better `find` command
+        killport # Kill processes listening on a port
 
         # Golang & related tools:
         go
