@@ -235,6 +235,18 @@ in
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
+  # Configure remote builders
+  nix.buildMachines = [
+    {
+      hostName = "mara";
+      system = "x86_64-linux";
+      maxJobs = 3;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+      mandatoryFeatures = [ ];
+    }
+  ];
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It's perfectly fine and recommended to leave
