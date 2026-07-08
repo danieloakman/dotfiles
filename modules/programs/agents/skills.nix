@@ -20,12 +20,13 @@ in
 {
   config = lib.mkIf enable {
     my.programs.agents = {
-      rootContext = builtins.readFile (
-        builtins.fetchurl {
-          url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
-          sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
-        }
-      ) + ''
+      rootContext = builtins.readFile
+        (
+          builtins.fetchurl {
+            url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
+            sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
+          }
+        ) + ''
         ## Git
         - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them. Do not add co-authoring of an agent to the commit message.
       '';

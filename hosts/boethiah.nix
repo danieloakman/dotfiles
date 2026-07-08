@@ -1,9 +1,8 @@
-{
-  self,
-  pkgs,
-  system,
-  env,
-  ...
+{ self
+, pkgs
+, system
+, env
+, ...
 }:
 {
   my = {

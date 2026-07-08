@@ -15,7 +15,7 @@ let
   # Prefer a Tailscale MagicDNS origin for homepage links (must be https://).
   publicHref =
     lib.findFirst (o: lib.hasInfix ".ts.net" o) null cfg.allowedOrigins
-    or "https://127.0.0.1:${toString cfg.port}";
+      or "https://127.0.0.1:${toString cfg.port}";
 in
 {
   options.my.services.cockpit = {

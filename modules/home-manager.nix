@@ -1,9 +1,8 @@
-{
-  env,
-  config,
-  pkgs,
-  inputs,
-  ...
+{ env
+, config
+, pkgs
+, inputs
+, ...
 }:
 {
   config = env.selectPlatform {

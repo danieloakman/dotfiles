@@ -1,11 +1,10 @@
 # Google Antigravity CLI — terminal interface for Antigravity agents.
 # https://antigravity.google/docs/cli-getting-started
-{
-  env,
-  config,
-  lib,
-  pkgs,
-  ...
+{ env
+, config
+, lib
+, pkgs
+, ...
 }:
 let
   cfg = config.my.programs.antigravity-cli;

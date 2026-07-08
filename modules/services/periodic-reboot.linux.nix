@@ -25,13 +25,15 @@ let
   cronDowToSystemd =
     dow:
     lib.concatStringsSep "," (
-      map (
-        day:
-        let
-          idx = parseInt day;
-        in
-        systemdDays.${if idx == 7 then 0 else idx}
-      ) (lib.splitString "," dow)
+      map
+        (
+          day:
+          let
+            idx = parseInt day;
+          in
+          systemdDays.${if idx == 7 then 0 else idx}
+        )
+        (lib.splitString "," dow)
     );
 
   parseInt =
