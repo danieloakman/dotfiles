@@ -52,6 +52,10 @@ in
               trusted = true;
             }
             {
+              name = "slp/krun/libkrunfw";
+              trusted = true;
+            }
+            {
               name = "slp/krun/krunkit";
               trusted = true;
             }
