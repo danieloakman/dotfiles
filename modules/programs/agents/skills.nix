@@ -27,7 +27,7 @@ in
         }
       ) + ''
         ## Git
-        - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them.
+        - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them. Do not add co-authoring of an agent to the commit message.
       '';
       skills = {
         grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
