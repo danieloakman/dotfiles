@@ -30,12 +30,21 @@ in
         homebrew = {
           # krunkit must come from the slp/krun tap — the nixpkgs build omits the required
           # firmware file (KRUN_EFI.silent.fd) that only ships in the pre-built release artifacts.
-          taps = [ "slp/krun" ];
+          # Homebrew 6.0+ requires non-official taps to be explicitly trusted.
+          taps = [
+            {
+              name = "slp/krun";
+              trusted = true;
+            }
+          ];
           brews = [
             "podman"
             "podman-tui"
             "podman-compose"
-            "slp/krun/krunkit"
+            {
+              name = "slp/krun/krunkit";
+              trusted = true;
+            }
           ];
           # Keep Desktop installed with the CLI stack; it manages and starts the local Podman machine VM.
           casks = [ "podman-desktop" ];

@@ -1,15 +1,16 @@
-{ self
-, pkgs
-, system
-, env
-, ...
+{
+  self,
+  pkgs,
+  system,
+  env,
+  ...
 }:
 {
   my = {
     services = {
       # docker.enable = true;
       podman = {
-        enable = false;
+        enable = true;
         dockerAlias = true;
       };
     };
