@@ -9,7 +9,7 @@
     services = {
       # docker.enable = true;
       podman = {
-        enable = true;
+        enable = false;
         dockerAlias = true;
       };
     };
