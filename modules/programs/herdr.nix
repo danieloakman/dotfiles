@@ -55,6 +55,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    my.programs.agents.skills.herdr = builtins.fetchurl {
+      url = "https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md";
+      sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
+    };
+
     home-manager.users.${env.user} = {
       programs.herdr = ({
         enable = true;
