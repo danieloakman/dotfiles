@@ -82,6 +82,7 @@ in
           fi
         '';
         claude-code = {
+          # Context only needed for claude-code agent:
           context = ''
             @RTK.md
           '';
