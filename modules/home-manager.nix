@@ -1,10 +1,23 @@
-{ env, config, pkgs, inputs, ... }: {
+{
+  env,
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
+{
   config = env.selectPlatform {
     linux = {
       home-manager = {
         # useGlobalPkgs = true;
         # useUserPackages = true;
-        extraSpecialArgs = let inherit (config) sops; in { inherit inputs env sops; };
+        extraSpecialArgs =
+          let
+            inherit (config) sops;
+          in
+          {
+            inherit inputs env sops;
+          };
         users.${env.user} = { lib, config, ... }: {
           # import ./home.${env.user}.nix;
           # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
@@ -40,10 +53,10 @@
 
               # Check first if destination exists, if not, then create it
               (pkgs.writeShellScriptBin "symlink" ''
-                  if [ ! -L "$2" ]; then
-                    ln -s "$1" "$2"
-                  fi
-                # '')
+                if [ ! -L "$2" ]; then
+                  ln -s "$1" "$2"
+                fi
+              '')
 
               # Required for passff-host to work with mozilla and its extension for `pass`
               # pkgs.passff-host
@@ -115,7 +128,10 @@
               DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
             };
 
-            sessionPath = [ "/usr/local/bin" "$HOME/bin" ];
+            sessionPath = [
+              "/usr/local/bin"
+              "$HOME/bin"
+            ];
           };
 
           gtk.enable = true;
@@ -145,7 +161,17 @@
       };
     };
     darwin = {
-      # TODO: setup boethiah's home-manager configuration here.
+      home-manager = {
+        users.${env.user} = {
+          # Home Manager replaces macOS login paths, so path_helper never adds
+          # /opt/homebrew/bin. Mirror the Linux sessionPath setup for Apple Silicon.
+          home.sessionPath = [
+            "/opt/homebrew/bin"
+            "/opt/homebrew/sbin"
+            "$HOME/bin"
+          ];
+        };
+      };
     };
   };
 }

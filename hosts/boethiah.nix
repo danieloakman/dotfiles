@@ -239,6 +239,7 @@
 
   homebrew = {
     enable = true;
+    enableZshIntegration = true;
     onActivation = {
       # Remove all brews no longer listed here as well as their program files:
       cleanup = "zap";
