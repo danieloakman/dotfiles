@@ -38,7 +38,7 @@ in
               update.version_check = false;
               ui = {
                 toast = {
-                  delivery = "herdr";
+                  delivery = if env.deviceType == "server" then "herdr" else "system";
                   herdr.position = "bottom-right";
                 };
               };
