@@ -25,6 +25,11 @@ in
     home-manager.users.${env.user} = {
       programs.herdr = {
         enable = true;
+        # https://herdr.dev/docs/configuration/#_top
+        settings = {
+          terminal.default_shell = "zsh";
+          update.version_check = false;
+        };
         # inherit (cfg) settings;
       };
     };
