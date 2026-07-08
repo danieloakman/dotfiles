@@ -41,6 +41,16 @@ in
             "podman"
             "podman-tui"
             "podman-compose"
+            # krunkit dependencies must be listed explicitly so brew bundle cleanup
+            # can load them under Homebrew 6.0 tap trust and avoid zapping them.
+            {
+              name = "slp/krun/gvproxy";
+              trusted = true;
+            }
+            {
+              name = "slp/krun/libkrun";
+              trusted = true;
+            }
             {
               name = "slp/krun/krunkit";
               trusted = true;
