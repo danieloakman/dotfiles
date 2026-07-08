@@ -29,6 +29,12 @@ in
         settings = {
           terminal.default_shell = "zsh";
           update.version_check = false;
+          ui = {
+            toast = {
+              delivery = "herdr";
+              herdr.position = "bottom-right";
+            };
+          };
         };
         # inherit (cfg) settings;
       };
