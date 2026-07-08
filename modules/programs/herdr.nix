@@ -1,6 +1,11 @@
 # Herdr — terminal multiplexer for AI agents.
 # https://herdr.dev
-{ env, config, lib, ... }:
+{
+  env,
+  config,
+  lib,
+  ...
+}:
 let
   cfg = config.my.programs.herdr;
   # tomlFormat = pkgs.formats.toml { };
@@ -21,23 +26,30 @@ in
     # };
   };
 
-  config = lib.mkIf cfg.enable {
-    home-manager.users.${env.user} = {
-      programs.herdr = {
-        enable = true;
-        # https://herdr.dev/docs/configuration/#_top
-        settings = {
-          terminal.default_shell = "zsh";
-          update.version_check = false;
-          ui = {
-            toast = {
-              delivery = "herdr";
-              herdr.position = "bottom-right";
+  config = lib.mkIf (
+    cfg.enable env.selectPlatform {
+      linux = {
+        home-manager.users.${env.user} = {
+          programs.herdr = {
+            enable = true;
+            # https://herdr.dev/docs/configuration/#_top
+            settings = {
+              terminal.default_shell = "zsh";
+              update.version_check = false;
+              ui = {
+                toast = {
+                  delivery = "herdr";
+                  herdr.position = "bottom-right";
+                };
+              };
             };
+            # inherit (cfg) settings;
           };
         };
-        # inherit (cfg) settings;
       };
-    };
-  };
+      darwin = {
+        homebrew.brews = [ "herdr" ];
+      };
+    }
+  );
 }
