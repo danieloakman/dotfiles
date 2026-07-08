@@ -76,7 +76,11 @@ in
 {
   options.my.programs.devPkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
 
-  config = lib.mkIf cfg.enable (env.selectPlatform {
+  config = lib.mkIf cfg.enable (
+    {
+      my.programs.antigravity-cli.enable = true;
+    }
+    // env.selectPlatform {
     any = {
       environment.systemPackages = with pkgs; [
         nixpkgs-fmt
@@ -99,7 +103,6 @@ in
         delve
 
         llmfit # CLI tool to find what LLMs can run on our hardware
-        gemini-cli
         libnotify # Add `notify-send` command
       ];
     };
@@ -141,5 +144,6 @@ in
     #   environment.systemPackages = with pkgs; [
     #   ];
     # };
-  });
+    }
+  );
 }

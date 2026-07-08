@@ -252,7 +252,6 @@
       "bat"
       "pass"
       "pass-otp"
-      "gemini-cli"
       "fastfetch"
       "pinentry-mac"
       "fzf"
