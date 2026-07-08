@@ -26,8 +26,8 @@ in
     # };
   };
 
-  config = lib.mkIf (
-    cfg.enable env.selectPlatform {
+  config = lib.mkIf cfg.enable (
+    env.selectPlatform {
       linux = {
         home-manager.users.${env.user} = {
           programs.herdr = {
