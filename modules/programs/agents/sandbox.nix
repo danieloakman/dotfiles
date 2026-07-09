@@ -58,6 +58,15 @@ let
     "api3.cursor.sh" = "*";
   };
 
+  # HM installs ~/.claude/skills/* as symlinks into the nix store. agent-sandbox
+  # only walks top-level symlinks inside each rwDir/roDir, so nested skill links
+  # would dangle unless each skill dir is declared as roDir (resolving SKILL.md
+  # and any sibling files to their store targets).
+  agentSkillRoDirs =
+    lib.map
+      (name: "$HOME/.claude/skills/${name}")
+      (lib.attrNames (agentsCfg.skills // agentsCfg.skillDirs));
+
   # agent-sandbox masks $HOME; bind HM-managed git identity read-only at runtime.
   sharedRoFiles =
     [
@@ -121,6 +130,7 @@ let
       binName = "claude";
       outName = "claude-sandboxed";
       rwDirs = [ "$HOME/.claude" ];
+      roDirs = agentSkillRoDirs;
       env = {
         CLAUDE_CODE_OAUTH_TOKEN = "$CLAUDE_CODE_OAUTH_TOKEN";
         CLAUDE_CONFIG_DIR = "$HOME/.claude";
@@ -138,6 +148,7 @@ let
         "$HOME/.cursor"
         "$HOME/.config/cursor"
       ];
+      roDirs = agentSkillRoDirs;
       env = {
         CURSOR_API_KEY = "$CURSOR_API_KEY";
       };
