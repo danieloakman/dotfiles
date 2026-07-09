@@ -64,6 +64,7 @@ in
       claude-code.enable = true;
       rtk.enable = true;
       herdr.enable = true;
+      hunk.enable = true;
       cursor.enable = true;
       opencode = {
         enable = true;

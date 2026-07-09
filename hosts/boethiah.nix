@@ -32,6 +32,7 @@
       warp.enable = true;
       gws.enable = true;
       herdr.enable = true;
+      hunk.enable = true;
     };
   };
 
