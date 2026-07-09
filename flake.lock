@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "agent-sandbox": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782148687,
+        "narHash": "sha256-fjfdxyEkvhBCOTOpIwOZStIoegcXk8sfpRDur/VxyqE=",
+        "owner": "archie-judd",
+        "repo": "agent-sandbox.nix",
+        "rev": "043e97397c97daa59cfd58f9cad1b5ba682e3526",
+        "type": "github"
+      },
+      "original": {
+        "owner": "archie-judd",
+        "repo": "agent-sandbox.nix",
+        "type": "github"
+      }
+    },
     "ags": {
       "inputs": {
         "astal": "astal",
@@ -737,6 +757,7 @@
     },
     "root": {
       "inputs": {
+        "agent-sandbox": "agent-sandbox",
         "ags": "ags",
         "android-nixpkgs": "android-nixpkgs",
         "astal": "astal_2",

@@ -11,7 +11,10 @@
 
   my = {
     programs = {
-      agents.enable = true;
+      agents = {
+        enable = true;
+        sandbox.enable = true;
+      };
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;

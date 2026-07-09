@@ -14,11 +14,15 @@
       };
     };
     programs = {
-      agents.enable = true;
+      agents = {
+        enable = true;
+        sandbox.enable = true;
+      };
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;
       localsend.enable = true;
+      obsidian.enable = true;
       cursor.enable = true;
       desktopPkgs.enable = true;
       lazyvim = {
@@ -283,7 +287,6 @@
       "iterm2"
       "zoom"
       "spotify" # idk why but this causes an message to pop up to delete the spotify app. But uninstalling it and reinstalling it seems to fix it.
-      "obsidian"
       "private-internet-access"
       "gimp"
       "claude-code" # For Boethiah, npmjs registry is blocked. So we have to get claude-code from homebrew and not using the home-manager option

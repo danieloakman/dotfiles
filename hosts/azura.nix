@@ -55,7 +55,10 @@ in
       uiShell = "ags";
     };
     programs = {
-      agents.enable = true;
+      agents = {
+        enable = true;
+        sandbox.enable = true;
+      };
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;
@@ -65,6 +68,7 @@ in
       onscreenKeyboard.enable = true;
       gws.enable = true;
       localsend.enable = true;
+      obsidian.enable = true;
       desktopPkgs.enable = true;
       kitty.enable = true;
       rofi.enable = true;

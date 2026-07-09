@@ -21,6 +21,8 @@ let
   };
 in
 {
+  imports = [ ./sandbox.nix ];
+
   options.my.programs.agents = {
     enable = lib.mkEnableOption "Enable shared AI agent configuration (context, skills, MCP).";
     rootContext = lib.mkOption {

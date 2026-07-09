@@ -55,7 +55,10 @@ in
       # gnome.enable = true;
     };
     programs = {
-      agents.enable = true;
+      agents = {
+        enable = true;
+        sandbox.enable = true;
+      };
       devPkgs.enable = true;
       jsPackageSecurity.enable = true;
       claude-code.enable = true;
@@ -73,6 +76,7 @@ in
       games.enable = true;
       gws.enable = true;
       localsend.enable = true;
+      obsidian.enable = true;
       desktopPkgs.enable = true;
       kitty.enable = true;
       rofi.enable = true;
