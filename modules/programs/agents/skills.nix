@@ -5,6 +5,7 @@ let
   # you bump rev. To upgrade: set rev to the new commit, then run
   #   nix flake prefetch github:owner/repo/<rev>
   # and copy the printed hash into sha256.
+  # TODO: update rev/sha256 and prefetch to fetch newer mattpocock/skills.
   mattpocockSkills =
     (pkgs.fetchFromGitHub {
       # https://github.com/mattpocock/skills/tree/aaf2453fbdfe7a15c07f11d861224f34ab4b53cb/skills
