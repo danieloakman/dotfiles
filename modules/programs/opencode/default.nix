@@ -39,28 +39,7 @@ let
     )
     llamaCppCfg.models;
 
-  hasCursorApiKeyLinux =
-    env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
-
-  cursorAgentWrapper = pkgs.writeShellScriptBin "cursor-agent" (
-    env.selectPlatform {
-      linux =
-        if hasCursorApiKeyLinux then
-          ''
-            export CURSOR_API_KEY="$(< ${config.sops.secrets.cursor_api_key.path})"
-            exec ${lib.getExe pkgs.cursor-cli} "$@"
-          ''
-        else
-          ''
-            echo "cursor-agent: cursor_api_key sops secret is not configured on this host" >&2
-            exit 1
-          '';
-      darwin = ''
-        export CURSOR_API_KEY="$(pass api_keys/personal/cursor_ai)"
-        exec ${lib.getExe pkgs.cursor-cli} "$@"
-      '';
-    }
-  );
+  cursorAgentPackage = config.my.programs.cursor.agent.package;
 
   # Both plugin files must live in the same store path; separate home.file entries
   # break __dirname (each file gets its own /nix/store/...-hm_* path).
@@ -85,8 +64,7 @@ let
       pkgs.nodejs_24
     ]
     ++ lib.optionals cfg.providers.cursor.enable [
-      pkgs.cursor-cli
-      cursorAgentWrapper
+      cursorAgentPackage
     ]
     ++ lib.optionals cfg.providers.claude.enable [
       pkgs.claude-code
@@ -95,7 +73,7 @@ let
 
   webServiceEnv =
     lib.optionals cfg.providers.cursor.enable [
-      "CURSOR_AGENT_BIN=${lib.getExe cursorAgentWrapper}"
+      "CURSOR_AGENT_BIN=${lib.getExe cursorAgentPackage}"
       "NODE_BIN=${lib.getExe pkgs.nodejs_24}"
       "CURSOR_PROXY_SCRIPT=${cursorProxyScript}"
       "CURSOR_PROXY_QUIET=true"
@@ -207,6 +185,10 @@ in
           message = "my.programs.opencode.providers.llama-cpp.enable requires at least one model in my.services.llama-cpp.models.";
         }
         {
+          assertion = !cfg.providers.cursor.enable || config.my.programs.cursor.agent.enable;
+          message = "my.programs.opencode.providers.cursor.enable requires my.programs.cursor.agent.enable.";
+        }
+        {
           assertion =
             !cfg.providers.llama-cpp.enable
             || builtins.all (model: model ? contextSize && model.contextSize > 0) (
@@ -220,10 +202,8 @@ in
       home-manager.users.${env.user} = {
         home.file.".config/opencode/plugins/cursor-proxy-local".source = cursorProxyPlugin;
 
-        home.packages = lib.mkIf cfg.providers.cursor.enable [ cursorAgentWrapper ];
-
         home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
-          CURSOR_AGENT_BIN = "${lib.getExe cursorAgentWrapper}";
+          CURSOR_AGENT_BIN = "${lib.getExe cursorAgentPackage}";
           # CURSOR_PROXY_QUIET = "true";
           NODE_BIN = "${lib.getExe pkgs.nodejs_24}";
           CURSOR_PROXY_SCRIPT = cursorProxyScript;
@@ -246,7 +226,7 @@ in
 
         launchd.agents.opencode-web = lib.mkIf (cfg.web.enable && env.platform == "darwin") {
           config.EnvironmentVariables = lib.mkIf cfg.providers.cursor.enable {
-            CURSOR_AGENT_BIN = lib.getExe cursorAgentWrapper;
+            CURSOR_AGENT_BIN = lib.getExe cursorAgentPackage;
             CURSOR_PROXY_QUIET = "true";
           };
         };

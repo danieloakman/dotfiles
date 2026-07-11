@@ -6,21 +6,93 @@
 }:
 let
   cfg = config.my.programs.cursor;
-in
-{
-  options.my.programs.cursor.enable = lib.mkEnableOption "Enable the Cursor code editor";
 
-  config = lib.mkIf cfg.enable (
+  hasCursorApiKeyLinux =
+    env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
+
+  cursorApiKeyPath =
+    if hasCursorApiKeyLinux then config.sops.secrets.cursor_api_key.path else null;
+
+  agentPackage = pkgs.writeShellScriptBin "cursor-agent" (
     env.selectPlatform {
-      linux = {
-        environment.systemPackages = [
-          pkgs.code-cursor
-        ];
-      };
-      darwin.homebrew.casks = [
-        "cursor"
-        # "cursor-cli" # boethiah can't install and use this for some reason.
-      ];
+      linux =
+        if hasCursorApiKeyLinux then
+          ''
+            export CURSOR_API_KEY="$(< ${cursorApiKeyPath})"
+            exec ${lib.getExe pkgs.cursor-cli} "$@"
+          ''
+        else
+          ''
+            echo "cursor-agent: cursor_api_key sops secret is not configured on this host" >&2
+            exit 1
+          '';
+      darwin = ''
+        export CURSOR_API_KEY="$(pass api_keys/personal/cursor_ai)"
+        exec ${lib.getExe pkgs.cursor-cli} "$@"
+      '';
     }
   );
+in
+{
+  options.my.programs.cursor = {
+    enable = lib.mkEnableOption "Enable the Cursor code editor";
+
+    agent = {
+      enable = lib.mkEnableOption ''
+        Install the wrapped `cursor-agent` CLI that injects `CURSOR_API_KEY`
+        before delegating to `pkgs.cursor-cli`.
+      '';
+
+      package = lib.mkOption {
+        type = lib.types.package;
+        readOnly = true;
+        visible = false;
+        description = "Wrapped cursor-agent package for use by other modules.";
+      };
+    };
+  };
+
+  config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = !cfg.agent.enable || env.platform == "darwin" || hasCursorApiKeyLinux;
+          message = "my.programs.cursor.agent.enable on Linux requires the cursor_api_key sops secret.";
+        }
+      ];
+
+      my.programs.cursor.agent.package = agentPackage;
+
+      my.programs.cursor.agent.enable = lib.mkDefault (
+        cfg.enable
+        || (config.my.services.cursorAgentHttp.enable or false)
+        || (
+          (config.my.programs.opencode.enable or false)
+          && (config.my.programs.opencode.providers.cursor.enable or false)
+        )
+        || (
+          (config.my.programs.agents.sandbox.enable or false)
+          && (config.my.programs.agents.sandbox.agents.cursor.enable or false)
+        )
+      );
+    }
+    (lib.mkIf cfg.agent.enable {
+      home-manager.users.${env.user} = {
+        home.packages = [ agentPackage ];
+      };
+    })
+    (lib.mkIf cfg.enable (
+      env.selectPlatform {
+        linux = {
+          environment.systemPackages = [
+            pkgs.code-cursor
+          ];
+        };
+        darwin.homebrew.casks = [
+          "cursor"
+          # "cursor-cli" # boethiah can't install and use this for some reason.
+        ];
+      }
+    ))
+  ];
 }

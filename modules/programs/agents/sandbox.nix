@@ -13,11 +13,13 @@ let
 
   sbx = inputs.agent-sandbox.lib.${pkgs.stdenv.hostPlatform.system};
 
-  hasCursorApiKeyLinux =
-    env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
+  cursorAgentPkg = config.my.programs.cursor.agent.package;
 
   cursorApiKeyPath =
-    if hasCursorApiKeyLinux then config.sops.secrets.cursor_api_key.path else null;
+    if env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { }) then
+      config.sops.secrets.cursor_api_key.path
+    else
+      null;
 
   githubDomains = {
     "github.com" = [
@@ -104,26 +106,6 @@ let
       allowedDomains = githubDomains // allowedDomains // cfg.extraAllowedDomains;
     };
 
-  cursorAgentPkg = pkgs.writeShellScriptBin "cursor-agent" (
-    env.selectPlatform {
-      linux =
-        if hasCursorApiKeyLinux then
-          ''
-            export CURSOR_API_KEY="$(< ${cursorApiKeyPath})"
-            exec ${lib.getExe pkgs.cursor-cli} "$@"
-          ''
-        else
-          ''
-            echo "cursor-agent: cursor_api_key sops secret is not configured on this host" >&2
-            exit 1
-          '';
-      darwin = ''
-        export CURSOR_API_KEY="$(pass api_keys/personal/cursor_ai)"
-        exec ${lib.getExe pkgs.cursor-cli} "$@"
-      '';
-    }
-  );
-
   claudeSandboxed =
     mkAgentSandbox {
       pkg = pkgs.claude-code;
@@ -202,8 +184,8 @@ in
           message = "my.programs.agents.sandbox.enable requires my.programs.agents.enable.";
         }
         {
-          assertion = !cfg.enable || !cfg.agents.cursor.enable || env.platform == "darwin" || hasCursorApiKeyLinux;
-          message = "my.programs.agents.sandbox.agents.cursor.enable on Linux requires the cursor_api_key sops secret.";
+          assertion = !cfg.agents.cursor.enable || config.my.programs.cursor.agent.enable;
+          message = "my.programs.agents.sandbox.agents.cursor.enable requires my.programs.cursor.agent.enable.";
         }
       ];
     }

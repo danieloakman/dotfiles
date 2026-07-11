@@ -1,7 +1,7 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, env, ... }:
 let
   src = ./.;
-  cursorAgentBin = lib.getExe pkgs.cursor-cli;
+  cursorAgentBin = lib.getExe config.my.programs.cursor.agent.package;
 in
 {
   options.my.services.cursorAgentHttp = {
@@ -17,6 +17,13 @@ in
   };
 
   config = lib.mkIf config.my.services.cursorAgentHttp.enable {
+    assertions = [
+      {
+        assertion = config.my.programs.cursor.agent.enable;
+        message = "my.services.cursorAgentHttp.enable requires my.programs.cursor.agent.enable.";
+      }
+    ];
+
     users = {
       groups.cursor-agent-http = { };
       users.cursor-agent-http = {
@@ -43,7 +50,7 @@ in
 
       path = with pkgs; [
         bun
-        cursor-cli
+        config.my.programs.cursor.agent.package
       ];
 
       environment = {
