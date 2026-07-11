@@ -79,6 +79,7 @@ in
   config = lib.mkIf cfg.enable (
     {
       my.programs.antigravity-cli.enable = true;
+      my.programs.micro.enable = true;
     }
     // env.selectPlatform {
       any = {
