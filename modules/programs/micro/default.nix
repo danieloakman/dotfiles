@@ -1,4 +1,5 @@
 # https://home-manager-options.extranix.com/?query=micro&release=master
+# VS Code keybindings: https://github.com/phil294/VSCode-keybindings-for-micro-editor-and-tty
 { env, config, lib, ... }:
 let
   cfg = config.my.programs.micro;
@@ -22,6 +23,11 @@ in
           saveundo = true;
           syntax = true;
         };
+      };
+
+      xdg.configFile = {
+        "micro/bindings.json".source = ./bindings.json;
+        "micro/init.lua".source = ./init.lua;
       };
     };
   };
