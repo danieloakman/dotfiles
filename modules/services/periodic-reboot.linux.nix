@@ -83,12 +83,22 @@ let
 
   calendarEntries = map (mins: "${dayPrefix}*-*-* ${formatClock mins}") retryTimes;
 
+  windowStartClock = "${pad2 startTime.hour}:${pad2 startTime.minute}:00";
+
   periodicRebootScript = pkgs.writeShellScript "periodic-reboot" ''
     set -eu
 
     log() {
       ${pkgs.util-linux}/bin/logger -t periodic-reboot "$*"
     }
+
+    boot_time=$(${pkgs.util-linux}/bin/uptime -s)
+    boot_epoch=$(${pkgs.coreutils}/bin/date -d "$boot_time" +%s)
+    window_start_epoch=$(${pkgs.coreutils}/bin/date -d "today ${windowStartClock}" +%s)
+    if [ "$boot_epoch" -ge "$window_start_epoch" ]; then
+      log "skipped: already rebooted during today's window (booted at $boot_time)"
+      exit 0
+    fi
 
     ${lib.optionalString cfg.requireNoInhibitors ''
       if ${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null \
@@ -229,7 +239,8 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = calendarEntries;
-        Persistent = true;
+        # Avoid catch-up storms after boot or nixos-rebuild switch; retries are for deferrals only.
+        Persistent = false;
         Unit = "periodic-reboot.service";
       };
     };
