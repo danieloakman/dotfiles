@@ -22,6 +22,12 @@ in
           savecursor = true;
           saveundo = true;
           syntax = true;
+
+          # Unofficial channel first so community forks (e.g. filemanager2) take precedence.
+          pluginchannels = [
+            "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/main/channel.json"
+            "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+          ];
         };
       };
 
