@@ -86,5 +86,16 @@
 	"CtrlDelete": "DeleteWordRight",
 
 	// editor.action.copyLinesDownAction
-	"CtrlShiftAltDown": "DuplicateLine"
+	"CtrlShiftAltDown": "DuplicateLine",
+
+	/////// Plugins ///////
+
+	// workbench.action.toggleSidebar
+	"Ctrl-b": "command:tree",
+
+	// workbench.action.quickOpen
+	"Ctrl-p": "command:fzf",
+
+	// workbench.action.showCommands
+	"F1": "CommandMode"
 }
