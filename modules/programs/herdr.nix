@@ -23,6 +23,11 @@ let
     aarch64-darwin = "sha256-FvRlPwSR6h59K0a1sCVC8Y4bguiNqvnikAVy5btjTfg=";
   };
 
+  # Claude Code integration: keep in sync with install_claude() in
+  # ${pkgs.herdr.src}/src/integration/mod.rs. After herdr upgrades, run:
+  #   herdr integration status --outdated-only
+  herdrClaudeHookScript = "${pkgs.herdr.src}/src/integration/assets/claude/herdr-agent-state.sh";
+
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
     inherit version;
@@ -60,23 +65,45 @@ in
       sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
     };
 
-    home-manager.users.${env.user} = {
-      programs.herdr = ({
-        enable = true;
-        # https://herdr.dev/docs/configuration/#_top
-        settings = {
-          terminal.default_shell = "zsh";
-          update.version_check = false;
-          ui = {
-            toast = {
-              delivery = if env.deviceType == "server" then "herdr" else "system";
-              herdr.position = "bottom-right";
+    home-manager.users.${env.user} = lib.mkMerge [
+      {
+        programs.herdr = ({
+          enable = true;
+          # https://herdr.dev/docs/configuration/#_top
+          settings = {
+            onboarding = false;
+            terminal.default_shell = "zsh";
+            update.version_check = false;
+            ui = {
+              toast = {
+                delivery = if env.deviceType == "server" then "herdr" else "system";
+                herdr.position = "bottom-right";
+              };
             };
           };
+        } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+          package = herdrDarwin;
+        });
+      }
+      (lib.mkIf config.my.programs.claude-code.enable {
+        home.file.".claude/hooks/herdr-agent-state.sh" = {
+          source = herdrClaudeHookScript;
+          executable = true;
         };
-      } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
-        package = herdrDarwin;
-      });
-    };
+
+        programs.claude-code.settings.hooks.SessionStart = [
+          {
+            matcher = "*";
+            hooks = [
+              {
+                type = "command";
+                command = "bash ${env.home}/.claude/hooks/herdr-agent-state.sh session";
+                timeout = 10;
+              }
+            ];
+          }
+        ];
+      })
+    ];
   };
 }
