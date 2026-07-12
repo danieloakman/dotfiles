@@ -87,14 +87,15 @@ let
     set -eu
 
     log() {
-      ${pkgs.systemd}/bin/logger -t periodic-reboot "$*"
+      ${pkgs.util-linux}/bin/logger -t periodic-reboot "$*"
     }
 
     ${lib.optionalString cfg.requireNoInhibitors ''
-      if ${pkgs.gawk}/bin/awk '
-        $6 ~ /(^|:)shutdown(:|$)/ { found = 1 }
-        END { exit !found }
-      ' <($(${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null || true)); then
+      if ${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null \
+        | ${pkgs.gawk}/bin/awk '
+            $6 ~ /(^|:)shutdown(:|$)/ { found = 1 }
+            END { exit !found }
+          '; then
         log "deferred: shutdown inhibitor active"
         exit 0
       fi
@@ -227,7 +228,7 @@ in
       description = "Periodic reboot retry window";
       wantedBy = [ "timers.target" ];
       timerConfig = {
-        OnCalendar = lib.concatStringsSep "\n" calendarEntries;
+        OnCalendar = calendarEntries;
         Persistent = true;
         Unit = "periodic-reboot.service";
       };
