@@ -76,12 +76,12 @@ in
 {
   options.my.programs.devPkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
 
-  config = lib.mkIf cfg.enable (
+  config = lib.mkIf cfg.enable (lib.mkMerge [
     {
       my.programs.antigravity-cli.enable = true;
       my.programs.micro.enable = true;
     }
-    // env.selectPlatform {
+    (env.selectPlatform {
       any = {
         environment.systemPackages = with pkgs; [
           nixpkgs-fmt
@@ -145,6 +145,6 @@ in
       #   environment.systemPackages = with pkgs; [
       #   ];
       # };
-    }
-  );
+    })
+  ]);
 }
