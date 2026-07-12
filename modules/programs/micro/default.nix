@@ -23,9 +23,10 @@ in
           saveundo = true;
           syntax = true;
 
-          # Unofficial channel first so community forks (e.g. filemanager2) take precedence.
+          # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
+          # that make micro print "Failed to decode repository data" on install.
           pluginchannels = [
-            "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/main/channel.json"
+            "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
             "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
           ];
         };
