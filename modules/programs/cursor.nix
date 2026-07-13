@@ -6,6 +6,10 @@
 }:
 let
   cfg = config.my.programs.cursor;
+  attributionJson = builtins.toJSON {
+    attributeCommitsToAgent = cfg.agent.cliConfig.attribution.attributeCommitsToAgent;
+    attributePRsToAgent = cfg.agent.cliConfig.attribution.attributePRsToAgent;
+  };
 
   hasCursorApiKeyLinux =
     env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { });
@@ -43,6 +47,29 @@ in
         before delegating to `pkgs.cursor-cli`.
       '';
 
+      cliConfig = {
+        attribution = {
+          attributeCommitsToAgent = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = ''
+              When false, the Cursor CLI agent will not add "Made with Cursor"
+              trailers to commits. Maps to `attribution.attributeCommitsToAgent`
+              in `~/.cursor/cli-config.json`.
+            '';
+          };
+          attributePRsToAgent = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = ''
+              When false, the Cursor CLI agent will not add attribution footers
+              to pull requests. Maps to `attribution.attributePRsToAgent` in
+              `~/.cursor/cli-config.json`.
+            '';
+          };
+        };
+      };
+
       package = lib.mkOption {
         type = lib.types.package;
         readOnly = true;
@@ -77,9 +104,25 @@ in
       );
     }
     (lib.mkIf cfg.agent.enable {
-      home-manager.users.${env.user} = {
-        home.packages = [ agentPackage ];
-      };
+      home-manager.users.${env.user} =
+        { lib, ... }:
+        {
+          home.packages = [ agentPackage ];
+
+          home.activation.setCursorCliAttribution = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            $DRY_RUN_CMD mkdir -p ${env.home}/.cursor
+            cfgPath=${env.home}/.cursor/cli-config.json
+            attribution='${attributionJson}'
+            if [ -f "$cfgPath" ]; then
+              tmp=$($DRY_RUN_CMD mktemp)
+              ${lib.getExe pkgs.jq} --argjson attribution "$attribution" '.attribution = $attribution' "$cfgPath" > "$tmp"
+              $DRY_RUN_CMD mv "$tmp" "$cfgPath"
+            else
+              $DRY_RUN_CMD ${lib.getExe pkgs.jq} -n --argjson attribution "$attribution" \
+                '{ attribution: $attribution, permissions: { allow: [], deny: [] }, version: 1 }' > "$cfgPath"
+            fi
+          '';
+        };
     })
     (lib.mkIf cfg.enable (
       env.selectPlatform {
