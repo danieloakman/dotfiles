@@ -3,6 +3,33 @@
 { env, config, lib, ... }:
 let
   cfg = config.my.programs.micro;
+
+  # VS Code / Cursor use Cmd on macOS and Ctrl on Linux.
+  mod = env.selectPlatform {
+    darwin = "Cmd";
+    linux = "Ctrl";
+  };
+
+  bindingsText =
+    let
+      base = lib.replaceStrings [ "Ctrl" ] [ mod ] (builtins.readFile ./bindings.json);
+    in
+    env.selectPlatform {
+      any = base;
+      # Terminal escape sequences for Ctrl+Shift are Linux workarounds; use Cmd+Shift on macOS.
+      darwin = lib.replaceStrings
+        [
+          ''"\u001b[112;6u": "CommandMode"''
+          ''"\u001b[115;6u": "SaveAs"''
+          ''"\u001b[107;6u": "DeleteLine"''
+        ]
+        [
+          ''"CmdShift-p": "CommandMode"''
+          ''"CmdShift-s": "SaveAs"''
+          ''"CmdShift-k": "DeleteLine"''
+        ]
+        base;
+    };
 in
 {
   options.my.programs.micro.enable = lib.mkEnableOption "Enable micro, a terminal-based text editor.";
@@ -33,7 +60,7 @@ in
       };
 
       xdg.configFile = {
-        "micro/bindings.json".source = ./bindings.json;
+        "micro/bindings.json".text = bindingsText;
         "micro/init.lua".source = ./init.lua;
       };
     };
