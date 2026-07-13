@@ -32,30 +32,51 @@ let
     };
 in
 {
-  options.my.programs.micro.enable = lib.mkEnableOption "Enable micro, a terminal-based text editor.";
+  options.my.programs.micro = {
+    enable = lib.mkEnableOption "Enable micro, a terminal-based text editor.";
+    isDefaultEditor = lib.mkEnableOption "Make micro the default editor for the system.";
+  };
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
-      programs.micro = {
-        enable = true;
-        settings = {
-          autosu = true;
-          backup = true;
-          clipboard = "external";
-          cursorline = true;
-          matchbrace = true;
-          permbackup = true;
-          rmtrailingws = true;
-          savecursor = true;
-          saveundo = true;
-          syntax = true;
+      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+        EDITOR = "micro";
+      };
 
-          # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
-          # that make micro print "Failed to decode repository data" on install.
-          pluginchannels = [
-            "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
-            "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
-          ];
+      programs = {
+        micro = {
+          enable = true;
+          settings = {
+            autosu = true;
+            backup = true;
+            clipboard = "external";
+            cursorline = true;
+            matchbrace = true;
+            permbackup = true;
+            rmtrailingws = true;
+            savecursor = true;
+            saveundo = true;
+            syntax = true;
+
+            # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
+            # that make micro print "Failed to decode repository data" on install.
+            pluginchannels = [
+              "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
+              "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+            ];
+          };
+        };
+
+        zsh = lib.mkIf cfg.isDefaultEditor {
+          shellAliases = {
+            "vim" = "micro";
+            "nvim" = "micro";
+            "editor" = "micro";
+          };
+          initContent = ''
+            # Set the default editor to micro
+            export EDITOR="micro"
+          '';
         };
       };
 
