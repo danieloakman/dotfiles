@@ -51,6 +51,7 @@ in
             backup = true;
             clipboard = "external";
             cursorline = true;
+            diffgutter = true;
             matchbrace = true;
             permbackup = true;
             rmtrailingws = true;
