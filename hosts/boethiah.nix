@@ -19,16 +19,15 @@
         sandbox.enable = true;
       };
       devPkgs.enable = true;
+      micro = {
+        isDefaultEditor = true;
+      };
       jsPackageSecurity.enable = true;
       claude-code.enable = true;
       localsend.enable = true;
       obsidian.enable = true;
       cursor.enable = true;
       desktopPkgs.enable = true;
-      lazyvim = {
-        enable = true;
-        enableVSCodeKeybinds = true;
-      };
       warp.enable = true;
       gws.enable = true;
       herdr.enable = true;

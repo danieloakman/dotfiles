@@ -82,14 +82,8 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      # lazyvim = {
-      #   enable = true;
-      #   enableVSCodeKeybinds = true;
-      # };
-      helix = {
-        enable = true;
+      micro = {
         isDefaultEditor = true;
-        enableVSCodeKeybinds = true;
       };
       comma.enable = true;
       ms-apps.enable = true;

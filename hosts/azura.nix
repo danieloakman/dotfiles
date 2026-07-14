@@ -60,6 +60,9 @@ in
         sandbox.enable = true;
       };
       devPkgs.enable = true;
+      micro = {
+        isDefaultEditor = true;
+      };
       jsPackageSecurity.enable = true;
       claude-code.enable = true;
       rtk.enable = true;
@@ -74,10 +77,6 @@ in
       kitty.enable = true;
       rofi.enable = true;
       ydotool.enable = true;
-      lazyvim = {
-        enable = true;
-        enableVSCodeKeybinds = true;
-      };
     };
     scripts.bun.enable = true;
     services = {
