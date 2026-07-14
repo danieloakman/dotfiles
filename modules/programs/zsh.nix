@@ -14,11 +14,6 @@
             enableCompletion = true;
             syntaxHighlighting.enable = true;
             initContent = ''
-              # Put at the bottom of ".zshrc":
-              if [ -f "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell" ]; then
-                source "$HOME/repos/personal/dotfiles/files/home/.shell_scripts/.main_shell"
-              fi
-
               # This enables included pass extensions in the password store itself (/.extension dir). For some reason this has to go here since putting it in the `sessionVariables` env var doesn't work.
               export PASSWORD_STORE_ENABLE_EXTENSIONS="true"
               export PASSWORD_STORE_DIR="$HOME/repos/personal/pwd-store"

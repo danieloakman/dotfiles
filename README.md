@@ -2,9 +2,7 @@
 
 My NixOS & Nix-darwin configuration files and dotfiles.
 
-General dotfiles are kept in the *files/home* directory. *files/\** is for other files outside of the home directory.
-
-See the [shell script readme](files/home/.shell_scripts/README.md) file for more information on utilising the shell scripts.
+Shell aliases, functions, and session env live in home-manager modules under `modules/programs/` (especially `shell.nix` and `zsh.nix`). Assets and a few plain files (e.g. SSH config) live under `files/`.
 
 ## Directory structure
 
@@ -13,7 +11,7 @@ Single unified flake for NixOS and nix-darwin (no separate `linux/` or `darwin/`
 - `flake.nix` — flake entry point; `nixosConfigurations` and `darwinConfigurations` live here.
 - `hosts/` — per-machine host modules (`akatosh`, `azura`, `mara`, `boethiah`, …).
 - `modules/` — shared Nix modules; platform-specific files use `.linux.nix` or `.darwin.nix` suffixes.
-- `files/` — general files symlinked or otherwise used as assets (`files/home/` for home-directory dotfiles).
+- `files/` — assets and plain files managed via home-manager (e.g. `files/home/.ssh/config`, wallpapers under `files/assets/`).
 - `secrets/` — sops-encrypted secrets.
 
 ## Building

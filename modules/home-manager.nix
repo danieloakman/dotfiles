@@ -101,10 +101,6 @@
                 symlink $HOME/Sync/music $HOME/Music/Sync
                 mkdir -p $HOME/bin
                 symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
-
-                # Copy the ssh config file to the correct location
-                mkdir -p $HOME/.ssh
-                cp $HOME/repos/personal/dotfiles/files/home/.ssh/config $HOME/.ssh/config
               '';
             };
 

@@ -4,7 +4,6 @@
     programs.lazygit = {
       enable = true;
       enableZshIntegration = true;
-      # Keep in sync with files/home/.config/lazygit/config.yml
       settings = {
         git.overrideGpg = true;
         customCommands = [
