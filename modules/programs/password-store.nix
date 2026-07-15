@@ -1,17 +1,18 @@
-{ env, pkgs, config, ... }:
+{ env, pkgs, lib, config, ... }:
 let
   passwordStorePath = "${env.home}/repos/personal/pwd-store";
+  passWithExts = passPkg: passPkg.withExtensions (ext: with ext; [
+    pass-otp
+    pass-update
+    pass-checkup
+    pass-audit
+  ]);
 in
 {
   config = env.selectPlatform {
     linux = {
       environment.systemPackages = with pkgs; [
-        ((if env.isOnWayland then pass-wayland else pass).withExtensions (ext: with ext; [
-          pass-otp
-          pass-update
-          pass-checkup
-          pass-audit
-        ]))
+        (passWithExts (if env.isOnWayland then pass-wayland else pass))
         (if env.isOnWayland then pass-wayland else pass)
       ];
 
@@ -36,7 +37,20 @@ in
         };
       };
     };
-    # TODO: move darwin config to here:
-    darwin = { };
+    darwin = {
+      environment.systemPackages = with pkgs; [
+        (passWithExts pass)
+        pass
+        pinentry_mac
+      ];
+
+      home-manager.users.${env.user} = {
+        home.file.".gnupg/gpg-agent.conf".text = ''
+          default-cache-ttl 604800
+          max-cache-ttl 604800
+          pinentry-program ${lib.getExe pkgs.pinentry_mac}
+        '';
+      };
+    };
   };
 }

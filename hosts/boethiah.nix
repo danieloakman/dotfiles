@@ -60,11 +60,6 @@
         };
 
         file = {
-          ".gnupg/gpg-agent.conf".text = ''
-            default-cache-ttl 604800
-            max-cache-ttl 604800
-            pinentry-program /opt/homebrew/bin/pinentry-mac
-          '';
           ".ssh/config".text = ''
             Host github github.com
             IdentityFile ~/.ssh/djo-personal
@@ -236,10 +231,7 @@
       "git"
       "eza"
       "bat"
-      "pass"
-      "pass-otp"
       "fastfetch"
-      "pinentry-mac"
       "fzf"
       "starship"
       "dust"
@@ -286,10 +278,6 @@
       enableAutosuggestions = true;
       enableFastSyntaxHighlighting = true;
       enableCompletion = true;
-      variables = {
-        PASSWORD_STORE_DIR = "$HOME/repos/personal/pwd-store";
-        PASSWORD_STORE_ENABLE_EXTENSIONS = "true";
-      };
     };
   };
 }
