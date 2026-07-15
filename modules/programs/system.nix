@@ -1,6 +1,6 @@
 # Base configuration for every user, i.e. the whole system.
 
-{ inputs, pkgs, env, system, ... }:
+{ inputs, pkgs, lib, env, system, ... }:
 let
   # Import pinned nixpkgs directly so we don't go through its flake `legacyPackages`
   # (that path can touch deprecated `pkgs.system` on current nixpkgs during eval).
@@ -21,6 +21,42 @@ in
       fonts.packages = with pkgs; [
         nerd-fonts.fira-mono
         nerd-fonts.fira-code
+      ];
+
+      # Prefer nixpkgs on every platform; use Homebrew only when a package is
+      # missing or needs a Darwin-specific service/integration nixpkgs can't provide.
+      environment.systemPackages = with pkgs; [
+        git
+        wget
+        fastfetch
+        eza
+        bat
+        fzf
+        sops
+        age
+        gh
+        unzip
+        zip
+        jq
+        rsync
+        home-manager
+        starship
+        curl
+
+        # Network utilities
+        wakeonlan
+        (pkgs.writeShellScriptBin "wake-akatosh" ''
+          ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
+        '')
+        (pkgs.writeShellScriptBin "wake-mara" ''
+          ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
+        '')
+
+        # Nix specific
+        nil
+        nh
+        nixpkgs-fmt
+        statix
       ];
     };
 
@@ -121,47 +157,14 @@ in
       environment = {
         localBinInPath = true;
 
-        # TODO: move most of this to any platform:
         systemPackages = with pkgs; [
-          #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-          git
-          wget
-          fastfetch
           # pinentry-curses
           # pinentry-qt
-          eza
-          bat
-          fzf
-          sops
-          age
-          gh
           # gh-dash
-          unzip
-          zip
-          jq
-          rsync
-          home-manager
-
-          # Network utilities
-          wakeonlan
-          (pkgs.writeShellScriptBin "wake-akatosh" ''
-            ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
-          '')
-          (pkgs.writeShellScriptBin "wake-mara" ''
-            ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
-          '')
-
-          # Nix specific:
-          nil # Nix LSP
-          nh # Nix helper
-          nixpkgs-fmt # A formatter for .nix files.
-          statix # A linter for .nix files.
 
           # These were used for trying to get `passmenu` to work, but it just doesn't with gnome & wayland:
           (if env.isOnWayland then dmenu-wayland else dmenu)
 
-          starship
-          curl
           xclip
           # logkeys # Was testing whether I could log laptop buttons or not
           openvpn24Pkgs.openvpn_24 # Needed specifically this version for tiny.work
@@ -234,7 +237,7 @@ in
     };
 
     darwin = {
-      # TODO: fill with darwin specific config.
+      # Shared packages are inherited from `any` (nixpkgs-first).
     };
   };
 }

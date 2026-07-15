@@ -1,5 +1,4 @@
 { self
-, pkgs
 , system
 , env
 , ...
@@ -98,22 +97,6 @@
 
   # Use Determinate Nix:
   nix.enable = false;
-
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  environment = {
-    systemPackages = with pkgs; [
-      # TODO: merge this to the system.nix module:
-      # Network utilities
-      wakeonlan
-      (pkgs.writeShellScriptBin "wake-akatosh" ''
-        ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
-      '')
-      (pkgs.writeShellScriptBin "wake-mara" ''
-        ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
-      '')
-    ];
-  };
 
   users.users.${env.user} = {
     name = env.user;
