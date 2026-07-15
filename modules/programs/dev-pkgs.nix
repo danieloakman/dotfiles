@@ -105,6 +105,8 @@ in
 
           llmfit # CLI tool to find what LLMs can run on our hardware
           libnotify # Add `notify-send` command
+          ghostscript
+          tesseract
         ];
       };
       linux = {

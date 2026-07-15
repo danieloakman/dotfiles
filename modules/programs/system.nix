@@ -181,7 +181,6 @@ in
             # Add any missing dynamic libraries for unpackaged programs
             # here, NOT in environment.systemPackages
             # TODO: move stuff from auxilis FHS shell to here, probably.
-            # tesseract
             # python310
             # python310Packages.pip
             # python310Packages.virtualenv
