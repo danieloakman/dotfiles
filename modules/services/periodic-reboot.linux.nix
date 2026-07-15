@@ -92,8 +92,9 @@ let
       ${pkgs.util-linux}/bin/logger -t periodic-reboot "$*"
     }
 
-    boot_time=$(${pkgs.util-linux}/bin/uptime -s)
-    boot_epoch=$(${pkgs.coreutils}/bin/date -d "$boot_time" +%s)
+    # Boot epoch from /proc/stat (util-linux has no uptime; coreutils uptime lacks -s).
+    boot_epoch=$(${pkgs.gawk}/bin/awk '/^btime / { print $2; exit }' /proc/stat)
+    boot_time=$(${pkgs.coreutils}/bin/date -d "@$boot_epoch" '+%Y-%m-%d %H:%M:%S')
     window_start_epoch=$(${pkgs.coreutils}/bin/date -d "today ${windowStartClock}" +%s)
     if [ "$boot_epoch" -ge "$window_start_epoch" ]; then
       log "skipped: already rebooted during today's window (booted at $boot_time)"
