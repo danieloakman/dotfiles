@@ -94,9 +94,17 @@ in
           pet # CLI tool for keeping a list of commands and executing them later
           entr
           ripgrep # We could use the home-manager ripgrep package instead if we needed to give it some specific arguments everytime
+          just # Task runner, like `make`
           just-lsp # LSP for Just files
           fd # A better `find` command
           killport # Kill processes listening on a port
+          dust # A better `du` command. Just prints out size of directories in the CWD
+          zbar # Can scan QR & bar codes using this
+          awscli2
+          mprocs
+          uv # Python package manager; can install packages and run them adhoc
+          pandoc # Document converter
+          rtk # More efficient token usage for LLMs
 
           # Golang & related tools:
           go
@@ -115,12 +123,9 @@ in
           gnat13 # Provides gcc, g++, etc
           # libgcc # Unsure why this doesn't gives gcc, g++, etc as programs to use, but it don't
           gnumake
-          just # Task runner, like `make`
           nurl # Generates nix fetcher urls
-          dust # A better `du` command. Just prints out size of directories in the CWD
           ncdu # Similar to `dust`, but provides a UI to delete directories
           tldr
-          zbar # Can scan QR & bar codes using this
           wine # For running Windows applications on Linux
           nix-prefetch-github
 
@@ -133,9 +138,6 @@ in
           # Fly.io control:
           flyctl
 
-          awscli2
-          mprocs
-          entr # Run some command when file(s) change
           showport # List processes listening on a port, with full executable + args
 
           # Editors that can be ssh'd into and used:
@@ -143,10 +145,12 @@ in
         ];
       };
 
-      # darwin = {
-      #   environment.systemPackages = with pkgs; [
-      #   ];
-      # };
+      darwin = {
+        environment.systemPackages = with pkgs; [
+          mas # Mac App Store CLI
+          cocoapods
+        ];
+      };
     })
   ]);
 }

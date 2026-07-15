@@ -226,31 +226,17 @@
       cleanup = "zap";
     };
 
+    # Prefer nixpkgs; only list Homebrew packages that need brew (missing from
+    # nixpkgs, or brew services / macOS GUI integrations).
     brews = [
-      "gh"
-      "git"
-      "eza"
-      "bat"
-      "fastfetch"
-      "fzf"
-      "starship"
-      "dust"
-      "zbar"
-      "awscli"
-      "mprocs"
-      "mas"
-      "cliclick"
-      "cocoapods"
-      "uv" # Python package manager, can install packages and run them adhoc
-      "llmfit" # CLI tool for fitting LLMs to your data
-      "just" # Task runner, like `make`
-      "rtk" # More efficient token usage for LLMs
-      "pandoc" # Document converter
+      "cliclick" # Not in nixpkgs
       {
+        # Keep brew service management until my.services.syncthing covers Darwin.
         name = "syncthing";
         restart_service = "changed";
       }
       {
+        # Brew service integration; nixpkgs has the package but not this service wiring.
         name = "mlx-lm";
         restart_service = "changed";
       }

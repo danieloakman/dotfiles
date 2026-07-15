@@ -1,6 +1,6 @@
-{ env, pkgs, ... }:
+{ env, pkgs, lib, ... }:
 let
-  gh = if pkgs.stdenv.isDarwin then "/opt/homebrew/bin/gh" else "/run/current-system/sw/bin/gh";
+  gh = lib.getExe pkgs.gh;
 in
 {
   home-manager.users.${env.user} = {
