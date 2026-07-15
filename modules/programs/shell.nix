@@ -34,7 +34,6 @@
           # Override oh-my-zsh git cherry-pick alias with GNU cp:
           gcp = "${pkgs.coreutils}/bin/cp";
           clock = "clockify-cli";
-          gs = "ghostscript";
         }
         // (
           if env.platform == "darwin" then {
