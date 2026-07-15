@@ -57,6 +57,7 @@ in
             rmtrailingws = true;
             savecursor = true;
             saveundo = true;
+            softwrap = true;
             syntax = true;
 
             # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
