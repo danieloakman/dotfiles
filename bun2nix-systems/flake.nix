@@ -1,4 +1,4 @@
 {
-  description = "Linux-only system list for bun2nix flake-parts (avoids evaluating x86_64-darwin nixpkgs during Linux NixOS builds).";
+  description = "Supported systems for flake inputs (excludes deprecated x86_64-darwin to avoid Nixpkgs 26.05 eval warnings).";
   outputs = _: { };
 }

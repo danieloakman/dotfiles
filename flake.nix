@@ -29,7 +29,16 @@
     };
     # devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
-    stylix.url = "github:danth/stylix";
+    # Shared systems list without x86_64-darwin (Nixpkgs 26.05 deprecation warning).
+    bun2nix-systems.url = "path:./bun2nix-systems";
+    flake-utils = {
+      url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
+      inputs.systems.follows = "bun2nix-systems";
+    };
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.systems.follows = "bun2nix-systems";
+    };
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
     astal = {
       url = "github:aylur/astal";
@@ -42,10 +51,12 @@
     # zen-browser.url = "github:MarceColl/zen-browser-flake";
     pia = {
       url = "github:Fuwn/pia.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
     copyparty.url = "github:9001/copyparty";
-    bun2nix-systems.url = "path:./bun2nix-systems";
     bun2nix = {
       url = "github:nix-community/bun2nix";
       inputs = {
@@ -55,16 +66,25 @@
     };
     gws = {
       url = "github:googleworkspace/cli";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
     bun-scripts = {
       url = "path:./modules/scripts/bun";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.bun2nix.follows = "bun2nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        bun2nix.follows = "bun2nix";
+        flake-utils.follows = "flake-utils";
+      };
     };
     android-nixpkgs = {
       url = "github:tadfisher/android-nixpkgs";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
     llama-cpp.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 8069 (d5dfc33)
     # TODO: migrate hyprland config to v0.54+ or latest
@@ -72,7 +92,10 @@
     stirling-pdf.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # v1.5.0, v2 changed a lot and broke a lot. Try it again in the future.
     lazyvim = {
       url = "github:pfassina/lazyvim-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
     };
     agent-sandbox = {
       url = "github:archie-judd/agent-sandbox.nix";
@@ -80,7 +103,10 @@
     };
     hunk = {
       url = "github:modem-dev/hunk";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        bun2nix.follows = "bun2nix";
+      };
     };
   };
 

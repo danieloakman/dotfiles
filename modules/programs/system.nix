@@ -14,7 +14,8 @@ in
 
       nixpkgs.config = {
         allowUnfree = true;
-        # Any flake/input that instantiates nixpkgs for x86_64-darwin otherwise prints the26.05 deprecation notice.
+        # Belt-and-suspenders: flake inputs should follow bun2nix-systems (no x86_64-darwin).
+        # Keep this for any remaining nixpkgs import that still hits that platform.
         allowDeprecatedx86_64Darwin = true;
       };
 
