@@ -43,6 +43,7 @@ in
         home-manager
         starship
         curl
+        gnupg
 
         # Network utilities
         wakeonlan
