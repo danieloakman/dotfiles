@@ -30,7 +30,9 @@
       warp.enable = true;
       gws.enable = true;
       herdr.enable = true;
-      hunk.enable = true;
+      # Disabled: hunk's bun2nix build fetches npm packages at build time,
+      # and IT blocks the npm registry on this machine.
+      hunk.enable = false;
     };
   };
 
