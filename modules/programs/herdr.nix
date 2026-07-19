@@ -8,9 +8,7 @@
 }:
 let
   cfg = config.my.programs.herdr;
-  # Pinned to the latest upstream release rather than pkgs.herdr.version,
-  # which lags behind whatever nixpkgs revision this flake tracks.
-  version = "0.7.4";
+  version = pkgs.herdr.version;
 
   # build.rs shells out to zig to compile vendored libghostty-vt. On Darwin,
   # zig's libc/SDK discovery relies on xcrun + system libtool, which aren't
@@ -22,7 +20,7 @@ let
 
   binaryHashes = {
     # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
-    aarch64-darwin = "sha256-JJkuFiXb3LGDVKWeKZ5LJjwxJACzE5bNwHzUbtV/JKc=";
+    aarch64-darwin = "sha256-sxNFOS0ATsHxssgh4a1gEBn6g4X+HkxpMTIetYqSB3M=";
   };
 
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
