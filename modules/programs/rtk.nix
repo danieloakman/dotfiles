@@ -81,19 +81,6 @@ in
             fi
           fi
         '';
-        claude-code = {
-          # Context only needed for claude-code agent:
-          context = ''
-            @RTK.md
-          '';
-          settings.hooks.PreToolUse = [{
-            matcher = "Bash";
-            hooks = [{
-              type = "command";
-              command = "rtk hook claude";
-            }];
-          }];
-        };
       };
     };
   };

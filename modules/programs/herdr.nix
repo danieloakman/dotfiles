@@ -14,19 +14,14 @@ let
   # zig's libc/SDK discovery relies on xcrun + system libtool, which aren't
   # available in the Nix sandbox, so use upstream release binaries on macOS.
   binaryAssetMap = {
-    x86_64-darwin = "herdr-macos-x86_64";
+    # x86_64-darwin = "herdr-macos-x86_64";
     aarch64-darwin = "herdr-macos-aarch64";
   };
 
   binaryHashes = {
-    x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
+    # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
     aarch64-darwin = "sha256-FvRlPwSR6h59K0a1sCVC8Y4bguiNqvnikAVy5btjTfg=";
   };
-
-  # Claude Code integration: keep in sync with install_claude() in
-  # ${pkgs.herdr.src}/src/integration/mod.rs. After herdr upgrades, run:
-  #   herdr integration status --outdated-only
-  herdrClaudeHookScript = "${pkgs.herdr.src}/src/integration/assets/claude/herdr-agent-state.sh";
 
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
@@ -65,9 +60,9 @@ in
       sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
     };
 
-    home-manager.users.${env.user} = lib.mkMerge [
-      {
-        programs.herdr = ({
+    home-manager.users.${env.user} = {
+      programs.herdr = lib.mkMerge [
+        {
           enable = true;
           # https://herdr.dev/docs/configuration/#_top
           settings = {
@@ -81,29 +76,11 @@ in
               };
             };
           };
-        } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+        }
+        (lib.optionalAttrs (env.platform == "darwin") {
           package = herdrDarwin;
-        });
-      }
-      (lib.mkIf config.my.programs.claude-code.enable {
-        home.file.".claude/hooks/herdr-agent-state.sh" = {
-          source = herdrClaudeHookScript;
-          executable = true;
-        };
-
-        programs.claude-code.settings.hooks.SessionStart = [
-          {
-            matcher = "*";
-            hooks = [
-              {
-                type = "command";
-                command = "bash ${env.home}/.claude/hooks/herdr-agent-state.sh session";
-                timeout = 10;
-              }
-            ];
-          }
-        ];
-      })
-    ];
+        })
+      ];
+    };
   };
 }

@@ -19,16 +19,22 @@ let
       };
     };
   };
+
+  # `@~/.claude/rules/<name>.md` index for AGENTS.md / opencode context.
+  rulesIndexText =
+    ruleNames:
+    lib.concatMapStrings (name: "@~/.claude/rules/${name}.md\n") (lib.sort lib.lessThan ruleNames);
 in
 {
-  imports = [ ./sandbox.nix ];
-
   options.my.programs.agents = {
-    enable = lib.mkEnableOption "Enable shared AI agent configuration (context, skills, MCP).";
-    rootContext = lib.mkOption {
-      type = lib.types.lines;
-      default = "";
-      description = "Context to add to every AI prompt, i.e. the CLAUDE.md/AGENTS.md files";
+    enable = lib.mkEnableOption "Enable shared AI agent configuration (rules, skills, MCP).";
+    rules = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.either lib.types.lines lib.types.path);
+      default = { };
+      description = ''
+        Shared agent rules installed as `~/.claude/rules/<name>.md` (via Claude Code).
+        AGENTS.md, OpenCode context, and `~/.cursor/rules` point at the same files.
+      '';
     };
     skills = lib.mkOption {
       type = lib.types.attrsOf (lib.types.oneOf [ lib.types.path lib.types.str ]);
@@ -52,57 +58,69 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home-manager.users.${env.user} = {
-      home.file = {
-        ".agents/AGENTS.md".text = cfg.rootContext;
-        ".config/agents/AGENTS.md".text = cfg.rootContext;
-        # Cursor uses a list of rules defined in the .cursor/rules directory. So for now we're just adding a global rule. Cursor may not even support reading rules from files like this... Maybe remove in the future.
-        ".cursor/rules/global.md".text = cfg.rootContext;
-        ".cursor/mcp.json" = {
-          force = true;
-          text = builtins.toJSON {
-            mcpServers = cfg.mcp;
+    home-manager.users.${env.user} =
+      { config, lib, ... }:
+      let
+        ruleNames = lib.attrNames config.programs.claude-code.rules;
+        index = rulesIndexText ruleNames;
+      in
+      {
+        home.file = {
+          ".agents/AGENTS.md".text = index;
+          ".config/agents/AGENTS.md".text = index;
+          # Same rule files Claude uses; Cursor reads ~/.cursor/rules/.
+          ".cursor/rules" = {
+            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/rules";
+            force = true;
           };
-        };
-      } // lib.concatMapAttrs
-        # If the dir is a single skill (has SKILL.md), symlink it directly; otherwise
-        # treat it as a collection and symlink each subdirectory individually.
-        (name: dir:
-          if builtins.pathExists "${dir}/SKILL.md" then
-            {
-              ".claude/skills/${name}" = {
-                source = dir;
-                recursive = true;
-              };
-            }
-          else
-            lib.mapAttrs'
-              (skillName: _: {
+          ".cursor/mcp.json" = {
+            force = true;
+            text = builtins.toJSON {
+              mcpServers = cfg.mcp;
+            };
+          };
+        }
+        // lib.concatMapAttrs
+          # If the dir is a single skill (has SKILL.md), symlink it directly; otherwise
+          # treat it as a collection and symlink each subdirectory individually.
+          (
+            name: dir:
+            if builtins.pathExists "${dir}/SKILL.md" then
+              {
+                ".claude/skills/${name}" = {
+                  source = dir;
+                  recursive = true;
+                };
+              }
+            else
+              lib.mapAttrs' (skillName: _: {
                 name = ".claude/skills/${skillName}";
                 value = {
                   source = "${dir}/${skillName}";
                   recursive = true;
                 };
-              })
-              (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
-        )
-        cfg.skillDirs;
-      programs = {
-        claude-code = {
-          context = cfg.rootContext;
-          # At the moment, cursor supports finding skills in the .claude/skills directory, as do many other agents.
-          # If for some reason in the future they don't we could probably just run an activate block that symlinks from claude/skills to whatever other directory we want to use also.
-          inherit (cfg) skills;
-          mcpServers = cfg.mcp;
-        };
-        opencode = {
-          context = cfg.rootContext;
-        };
-        mcp = {
-          enable = true;
-          servers = cfg.mcp;
+              }) (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
+          )
+          cfg.skillDirs;
+
+        programs = {
+          claude-code = {
+            rules = cfg.rules;
+            # At the moment, cursor supports finding skills in the .claude/skills directory, as do many other agents.
+            inherit (cfg) skills;
+            # mcpServers requires a non-null package; Darwin uses Homebrew for the binary.
+          }
+          // lib.optionalAttrs (env.platform != "darwin") {
+            mcpServers = cfg.mcp;
+          };
+          opencode = {
+            context = index;
+          };
+          mcp = {
+            enable = true;
+            servers = cfg.mcp;
+          };
         };
       };
-    };
   };
 }
