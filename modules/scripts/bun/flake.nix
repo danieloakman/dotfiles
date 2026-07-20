@@ -41,7 +41,14 @@
             cp package.json drizzle.config.ts $out/
             cp src/db/schema.ts $out/src/db/
             cp src/utils/env.ts $out/src/utils/
-            for f in $out/dist/*.js; do
+            # Match both flat (dist/foo.js) and nested (dist/src/foo.js) bun build layouts.
+            mapfile -t js_files < <(find "$out/dist" -type f -name '*.js' | sort)
+            if [ ''${#js_files[@]} -eq 0 ]; then
+              echo "error: no JS entrypoints found under $out/dist" >&2
+              find "$out/dist" -type f >&2 || true
+              exit 1
+            fi
+            for f in "''${js_files[@]}"; do
               name=$(basename "$f" .js)
               makeWrapper ${pkgs.lib.getExe pkgs.bun} $out/bin/$name \
                 --add-flags "run" --add-flags "$f" \

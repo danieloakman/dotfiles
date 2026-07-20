@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "postinstall": "bun2nix -o _bun.nix",
-    "build": "NODE_ENV=production bun build --target bun --outdir dist --minify src/*.ts --external=playwright-core --external=@playwright/test",
+    "build": "NODE_ENV=production bun build --target bun --outdir dist --entry-naming=[name].[ext] --minify src/*.ts --external=playwright-core --external=@playwright/test",
     "upgrade-interactive": "bunx npm-check-updates -i",
     "format": "prettier --write ./src",
     "lint": "prettier --check ./src",
