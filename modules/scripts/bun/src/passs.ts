@@ -6,12 +6,8 @@ import { iter } from 'iteragain';
 import { join, relative } from 'path';
 import meow from 'meow';
 import clipboard from 'clipboardy';
+import { exit } from './utils/cli';
 import { cachedir } from './utils/env';
-
-function exit(message: string, code = 1): never {
-	console.error(message);
-	process.exit(code);
-}
 
 const previousPasswordFile = file(join(cachedir(), 'passs-previous'));
 const priorityFile = file(join(cachedir(), 'passs-priority'), { type: 'application/json' });

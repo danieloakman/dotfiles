@@ -5,17 +5,13 @@ import { existsSync } from 'fs';
 import { basename, dirname, join, resolve } from 'path';
 import meow from 'meow';
 import { z } from 'zod';
+import { exit } from './utils/cli';
 import { configdir } from './utils/env';
 
 let verbose = false;
 
 function vlog(message: string): void {
 	if (verbose) console.error(message);
-}
-
-function exit(message: string, code = 1): never {
-	console.error(message);
-	process.exit(code);
 }
 
 const prefsSchema = z.object({
@@ -31,8 +27,13 @@ async function loadPrefs(): Promise<Prefs> {
 	vlog(`Loading prefs from ${path}`);
 	const f = file(path, { type: 'application/json' });
 	if (!(await f.exists())) return { repos: {} };
-	const parsed = prefsSchema.safeParse(await f.json().catch(() => null));
-	return parsed.success ? parsed.data : { repos: {} };
+	const raw = await f.json().catch(() => null);
+	const parsed = prefsSchema.safeParse(raw);
+	if (!parsed.success) {
+		console.error(`Ignoring invalid prefs at ${path}: ${parsed.error.message}`);
+		return { repos: {} };
+	}
+	return parsed.data;
 }
 
 async function savePrefs(prefs: Prefs): Promise<void> {
@@ -66,6 +67,16 @@ async function git(args: string[], cwd?: string): Promise<string> {
 	return stdout.trim();
 }
 
+async function gitOk(args: string[], cwd?: string): Promise<boolean> {
+	vlog(`$ git ${args.join(' ')}${cwd ? `  (cwd: ${cwd})` : ''}`);
+	const proc = Bun.spawn(['git', ...args], {
+		cwd,
+		stdout: 'ignore',
+		stderr: 'ignore'
+	});
+	return (await proc.exited) === 0;
+}
+
 async function getInvokingRoot(): Promise<string> {
 	return resolve(await git(['rev-parse', '--show-toplevel']));
 }
@@ -94,13 +105,7 @@ async function listTopLevelIgnored(root: string): Promise<string[]> {
 }
 
 async function branchExists(branch: string, cwd: string): Promise<boolean> {
-	vlog(`$ git show-ref --verify --quiet refs/heads/${branch}  (cwd: ${cwd})`);
-	const proc = Bun.spawn(['git', 'show-ref', '--verify', '--quiet', `refs/heads/${branch}`], {
-		cwd,
-		stdout: 'ignore',
-		stderr: 'ignore'
-	});
-	return (await proc.exited) === 0;
+	return gitOk(['show-ref', '--verify', '--quiet', `refs/heads/${branch}`], cwd);
 }
 
 async function addWorktree(
@@ -193,7 +198,7 @@ async function main() {
 	vlog(`Branch slug: ${slug}`);
 
 	const targetPath = resolve(
-		cli.flags.path ?? join(dirname(invokingRoot), `${basename(invokingRoot)}_${slug}`)
+		cli.flags.path ?? join(dirname(primaryRoot), `${basename(primaryRoot)}_${slug}`)
 	);
 	vlog(`Target path: ${targetPath}`);
 
@@ -218,6 +223,9 @@ async function main() {
 	if (candidates.length === 0) {
 		console.error('No top-level ignored paths found to copy.');
 	} else {
+		if (!process.stdin.isTTY) {
+			exit('Interactive selection required, but stdin is not a TTY. Run in a terminal.');
+		}
 		const result = await multiselect({
 			message: 'Copy ignored paths into the new worktree',
 			options: candidates.map((value) => ({ value, label: value })),
@@ -227,7 +235,7 @@ async function main() {
 		});
 		if (isCancel(result)) {
 			cancel('Cancelled.', { output: process.stderr });
-			process.exit(1);
+			exit(undefined, 1);
 		}
 		selected = result;
 	}
@@ -251,15 +259,17 @@ async function main() {
 		return;
 	}
 
-	prefs.repos[primaryRoot] = { copy: selected };
-	await savePrefs(prefs);
-
 	await addWorktree(targetPath, branch, invokingRoot, !exists);
 	await copySelected(invokingRoot, targetPath, selected);
+
+	prefs.repos[primaryRoot] = { copy: selected };
+	await savePrefs(prefs);
 
 	process.stdout.write(`${targetPath}\n`);
 }
 
-main().catch((err) => {
-	exit(err instanceof Error ? err.message : String(err));
-});
+if (import.meta.main) {
+	main().catch((err) => {
+		exit(err instanceof Error ? err.message : String(err));
+	});
+}

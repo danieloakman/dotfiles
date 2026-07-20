@@ -7,16 +7,13 @@ import { homedir } from 'os';
 import { attempt } from '@danoaky/js-utils';
 import { mkdir } from 'fs/promises';
 
-const DEFAULT_OUTPUT_DIR = Path.join(homedir(), 'Sync/3ds-backup');
+import { exit } from './utils/cli';
 
-function panic(message: string, code = 1): never {
-	console.error(message);
-	process.exit(code);
-}
+const DEFAULT_OUTPUT_DIR = Path.join(homedir(), 'Sync/3ds-backup');
 
 async function listFilesRecursive(client: Client, srcDir: string): Promise<string[]> {
 	const { data: list, error } = await attempt(client.list(srcDir));
-	if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
+	if (error) exit(`Failed to list directory "${srcDir}": ${error.message}`);
 
 	const files: string[] = [];
 	for (const stat of list) {
@@ -38,7 +35,7 @@ async function downloadFilesFrom(
 	{ dryRun = false }: { dryRun?: boolean } = {}
 ) {
 	const { data: list, error } = await attempt(client.list(srcDir));
-	if (error) panic(`Failed to list directory "${srcDir}": ${error.message}`);
+	if (error) exit(`Failed to list directory "${srcDir}": ${error.message}`);
 
 	for (const stat of list) {
 		if (!stat.isFile || !micromatch.isMatch(stat.name, globFile)) continue;
@@ -50,7 +47,7 @@ async function downloadFilesFrom(
 		}
 		await mkdir(Path.dirname(destPath), { recursive: true });
 		const { error } = await attempt(client.downloadTo(destPath, srcPath));
-		if (error) panic(`Failed to download "${destPath}": ${error.message}`);
+		if (error) exit(`Failed to download "${destPath}": ${error.message}`);
 		console.log(`Downloaded file: "${destPath}"`);
 	}
 }
@@ -71,7 +68,7 @@ async function downloadDirFrom(
 
 	const destPath = Path.join(destDir, srcDir); // Copy dir to same directory structure as the source directory
 	const { error } = await attempt(client.downloadToDir(destPath, srcDir));
-	if (error) panic(`Failed to download directory "${srcDir}": ${error.message}`);
+	if (error) exit(`Failed to download directory "${srcDir}": ${error.message}`);
 	console.log(`Downloaded directory: "${destPath}"`);
 }
 
@@ -138,7 +135,7 @@ if (import.meta.main) {
 			password
 		})
 		.then(() => console.log(`Connected to ${host}:${port}`))
-		.catch((err: Error) => panic(`Failed to access ${host}:${port}: ${err.message}`));
+		.catch((err: Error) => exit(`Failed to access ${host}:${port}: ${err.message}`));
 	defer.add(() => client.close());
 
 	if (dryRun) console.log('Dry run: no files will be written');
