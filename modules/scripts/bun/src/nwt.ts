@@ -1,0 +1,265 @@
+#! bun
+import { $, file, write } from 'bun';
+import { cancel, isCancel, multiselect } from '@clack/prompts';
+import { existsSync } from 'fs';
+import { basename, dirname, join, resolve } from 'path';
+import meow from 'meow';
+import { z } from 'zod';
+import { configdir } from './utils/env';
+
+let verbose = false;
+
+function vlog(message: string): void {
+	if (verbose) console.error(message);
+}
+
+function exit(message: string, code = 1): never {
+	console.error(message);
+	process.exit(code);
+}
+
+const prefsSchema = z.object({
+	repos: z.record(z.string(), z.object({ copy: z.array(z.string()) })).default({})
+});
+
+type Prefs = z.infer<typeof prefsSchema>;
+
+const prefsFile = () => join(configdir(), 'nwt.json');
+
+async function loadPrefs(): Promise<Prefs> {
+	const path = prefsFile();
+	vlog(`Loading prefs from ${path}`);
+	const f = file(path, { type: 'application/json' });
+	if (!(await f.exists())) return { repos: {} };
+	const parsed = prefsSchema.safeParse(await f.json().catch(() => null));
+	return parsed.success ? parsed.data : { repos: {} };
+}
+
+async function savePrefs(prefs: Prefs): Promise<void> {
+	const path = prefsFile();
+	vlog(`Saving prefs to ${path}`);
+	await write(path, JSON.stringify(prefs, null, 2) + '\n');
+}
+
+function slugifyBranch(branch: string): string {
+	return branch
+		.replace(/[^a-zA-Z0-9._-]+/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^-|-$/g, '');
+}
+
+async function git(args: string[], cwd?: string): Promise<string> {
+	vlog(`$ git ${args.join(' ')}${cwd ? `  (cwd: ${cwd})` : ''}`);
+	const proc = Bun.spawn(['git', ...args], {
+		cwd,
+		stdout: 'pipe',
+		stderr: 'pipe'
+	});
+	const [stdout, stderr, exitCode] = await Promise.all([
+		new Response(proc.stdout).text(),
+		new Response(proc.stderr).text(),
+		proc.exited
+	]);
+	if (exitCode !== 0) {
+		exit(stderr.trim() || stdout.trim() || `git ${args.join(' ')} failed`);
+	}
+	return stdout.trim();
+}
+
+async function getInvokingRoot(): Promise<string> {
+	return resolve(await git(['rev-parse', '--show-toplevel']));
+}
+
+async function getPrimaryRoot(cwd: string): Promise<string> {
+	const porcelain = await git(['worktree', 'list', '--porcelain'], cwd);
+	const match = porcelain.match(/^worktree (.+)$/m);
+	if (!match?.[1]) exit('Could not determine primary worktree path');
+	return resolve(match[1]);
+}
+
+async function listTopLevelIgnored(root: string): Promise<string[]> {
+	// Avoid -u/--untracked-files=all so ignored directories stay as one entry
+	// (e.g. `!! tmp/`) instead of every nested file. Only accept paths with a
+	// single component so nested ignores under tracked dirs (e.g.
+	// `!! modules/scripts/bun/node_modules/`) do not surface as `modules`.
+	const out = await git(['status', '--ignored', '--porcelain=v1'], root);
+	const names = new Set<string>();
+	for (const line of out.split('\n')) {
+		if (!line.startsWith('!! ')) continue;
+		const rel = line.slice(3).replace(/\/$/, '');
+		if (!rel || rel.includes('/') || rel === '.git') continue;
+		if (existsSync(join(root, rel))) names.add(rel);
+	}
+	return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+async function branchExists(branch: string, cwd: string): Promise<boolean> {
+	vlog(`$ git show-ref --verify --quiet refs/heads/${branch}  (cwd: ${cwd})`);
+	const proc = Bun.spawn(['git', 'show-ref', '--verify', '--quiet', `refs/heads/${branch}`], {
+		cwd,
+		stdout: 'ignore',
+		stderr: 'ignore'
+	});
+	return (await proc.exited) === 0;
+}
+
+async function addWorktree(
+	targetPath: string,
+	branch: string,
+	cwd: string,
+	create: boolean
+): Promise<void> {
+	const args = create
+		? ['worktree', 'add', '-b', branch, targetPath]
+		: ['worktree', 'add', targetPath, branch];
+	await git(args, cwd);
+}
+
+async function copySelected(
+	sourceRoot: string,
+	targetRoot: string,
+	names: string[]
+): Promise<void> {
+	for (const name of names) {
+		const from = join(sourceRoot, name);
+		const to = join(targetRoot, name);
+		if (!existsSync(from)) {
+			console.error(`Skipping missing path: ${name}`);
+			continue;
+		}
+		vlog(`$ cp -a ${from} ${to}`);
+		const result = await $`cp -a ${from} ${to}`.nothrow().quiet();
+		if (result.exitCode !== 0) {
+			exit(result.stderr.toString().trim() || `Failed to copy ${name}`);
+		}
+	}
+}
+
+async function main() {
+	const cli = meow(
+		`
+    -- Git worktree helper with ignored-file copy --
+
+    Usage:
+    $ nwt <branch> [Options]
+
+    Options:
+    --help, -h       Show help
+    --path, -p       Override derived worktree path
+    --dry-run, -n    Show what would happen without making changes
+    --verbose, -v    Print detailed progress to stderr
+  `,
+		{
+			importMeta: import.meta,
+			flags: {
+				help: {
+					type: 'boolean',
+					shortFlag: 'h'
+				},
+				path: {
+					type: 'string',
+					shortFlag: 'p'
+				},
+				dryRun: {
+					type: 'boolean',
+					shortFlag: 'n',
+					default: false
+				},
+				verbose: {
+					type: 'boolean',
+					shortFlag: 'v',
+					default: false
+				}
+			}
+		}
+	);
+
+	if (cli.flags.help) {
+		console.error(cli.help);
+		return;
+	}
+
+	verbose = cli.flags.verbose;
+	const dryRun = cli.flags.dryRun;
+	const branch = cli.input[0];
+	if (!branch) exit('Usage: nwt <branch> [--path <dir>] [--dry-run] [--verbose]');
+
+	const invokingRoot = await getInvokingRoot();
+	vlog(`Invoking root: ${invokingRoot}`);
+	const primaryRoot = await getPrimaryRoot(invokingRoot);
+	vlog(`Primary root: ${primaryRoot}`);
+	const slug = slugifyBranch(branch);
+	if (!slug) exit(`Could not derive a path slug from branch name: ${branch}`);
+	vlog(`Branch slug: ${slug}`);
+
+	const targetPath = resolve(
+		cli.flags.path ?? join(dirname(invokingRoot), `${basename(invokingRoot)}_${slug}`)
+	);
+	vlog(`Target path: ${targetPath}`);
+
+	if (existsSync(targetPath)) exit(`Worktree path already exists: ${targetPath}`);
+
+	const candidates = await listTopLevelIgnored(invokingRoot);
+	vlog(
+		candidates.length > 0
+			? `Ignored candidates: ${candidates.join(', ')}`
+			: 'Ignored candidates: (none)'
+	);
+	const prefs = await loadPrefs();
+	const saved = prefs.repos[primaryRoot]?.copy ?? [];
+	const initialValues = saved.filter((name) => candidates.includes(name));
+	vlog(
+		initialValues.length > 0
+			? `Preselected from prefs: ${initialValues.join(', ')}`
+			: 'Preselected from prefs: (none)'
+	);
+
+	let selected: string[] = [];
+	if (candidates.length === 0) {
+		console.error('No top-level ignored paths found to copy.');
+	} else {
+		const result = await multiselect({
+			message: 'Copy ignored paths into the new worktree',
+			options: candidates.map((value) => ({ value, label: value })),
+			initialValues,
+			required: false,
+			output: process.stderr
+		});
+		if (isCancel(result)) {
+			cancel('Cancelled.', { output: process.stderr });
+			process.exit(1);
+		}
+		selected = result;
+	}
+	vlog(selected.length > 0 ? `Selected: ${selected.join(', ')}` : 'Selected: (none)');
+
+	const exists = await branchExists(branch, invokingRoot);
+	vlog(exists ? `Branch exists: ${branch}` : `Branch does not exist: ${branch}`);
+
+	if (dryRun) {
+		console.error('Dry run — no changes will be made.');
+		console.error(
+			exists
+				? `Would attach worktree at ${targetPath} to existing branch ${branch}`
+				: `Would create branch ${branch} from HEAD and add worktree at ${targetPath}`
+		);
+		console.error(
+			selected.length > 0 ? `Would copy: ${selected.join(', ')}` : 'Would copy: (nothing)'
+		);
+		console.error(`Would update prefs for ${primaryRoot}`);
+		process.stdout.write(`${targetPath}\n`);
+		return;
+	}
+
+	prefs.repos[primaryRoot] = { copy: selected };
+	await savePrefs(prefs);
+
+	await addWorktree(targetPath, branch, invokingRoot, !exists);
+	await copySelected(invokingRoot, targetPath, selected);
+
+	process.stdout.write(`${targetPath}\n`);
+}
+
+main().catch((err) => {
+	exit(err instanceof Error ? err.message : String(err));
+});

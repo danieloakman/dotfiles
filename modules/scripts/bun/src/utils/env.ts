@@ -11,6 +11,13 @@ export const cachedir = once(() => {
 	return dir;
 });
 
+export const configdir = once(() => {
+	const base = process.env.XDG_CONFIG_HOME || join(homedir(), '.config');
+	const dir = join(base, 'bun-scripts');
+	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+	return dir;
+});
+
 export const tmpdir = once(() => {
 	const dir = join(osTmpdir(), 'bun-scripts');
 	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });

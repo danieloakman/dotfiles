@@ -27,6 +27,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@clack/prompts": "^1.0.0",
     "@danoaky/js-utils": "^0.29.2",
     "@playwright/test": "1.57",
     "basic-ftp": "^5.2.0",
@@ -49,6 +50,7 @@
   },
   "bin": {
     "3ds-backup": "dist/3ds-backup.js",
+    "nwt": "dist/nwt.js",
     "move-mouse": "dist/move-mouse.js",
     "passs": "dist/passs.js"
   }
