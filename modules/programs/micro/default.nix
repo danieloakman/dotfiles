@@ -1,6 +1,6 @@
 # https://home-manager-options.extranix.com/?query=micro&release=master
 # VS Code keybindings: https://github.com/phil294/VSCode-keybindings-for-micro-editor-and-tty
-{ env, config, lib, ... }:
+{ env, config, lib, pkgs, ... }:
 let
   cfg = config.my.programs.micro;
 
@@ -30,6 +30,17 @@ let
         ]
         base;
     };
+
+  # https://github.com/dmaluka/micro-detectindent
+  # Pin to a release tag so sha256 stays stable until you bump rev.
+  # To upgrade: set rev, then `nix flake prefetch github:dmaluka/micro-detectindent/<rev>`
+  # and copy the printed hash into sha256.
+  detectindentPlugin = pkgs.fetchFromGitHub {
+    owner = "dmaluka";
+    repo = "micro-detectindent";
+    rev = "v1.1.1";
+    sha256 = "sha256-XSNsfrw1xdfwnJfFI3n2DC7a6MK0X0GyB27m5+8HMl8=";
+  };
 in
 {
   options.my.programs.micro = {
@@ -51,6 +62,7 @@ in
             backup = true;
             clipboard = "external";
             cursorline = true;
+            detectindent = true;
             diffgutter = true;
             matchbrace = true;
             permbackup = true;
@@ -59,6 +71,9 @@ in
             saveundo = true;
             softwrap = true;
             syntax = true;
+            # Fallback when detectindent can't infer (empty/new files).
+            tabsize = 2;
+            tabstospaces = true;
 
             # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
             # that make micro print "Failed to decode repository data" on install.
@@ -85,6 +100,7 @@ in
       xdg.configFile = {
         "micro/bindings.json".text = bindingsText;
         "micro/init.lua".source = ./init.lua;
+        "micro/plug/detectindent".source = detectindentPlugin;
       };
     };
   };
