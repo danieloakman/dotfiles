@@ -42,6 +42,7 @@
       micro = {
         isDefaultEditor = true;
       };
+      localsend.enable = true;
     };
     scripts.bun.enable = true;
     services = {
