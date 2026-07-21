@@ -19,10 +19,11 @@ Single unified flake for NixOS and nix-darwin (no separate `linux/` or `darwin/`
 We need to rebuild the OS as a flake with:
 ```bash
 sudo nixos-rebuild switch --flake ./#HOST_NAME
-# Or
-nh os switch # Linux, when nh is available and $FLAKE is set
-nh darwin switch # macOS
+# Or, from this repo (preferred):
 just switch
+# nh needs an explicit flake path when not using just:
+nh os switch .      # Linux
+nh darwin switch .  # macOS
 ```
 
 ## Development or making changes

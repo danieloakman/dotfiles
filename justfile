@@ -24,29 +24,29 @@ update:
 
 [linux]
 build:
-    nh os build
+    nh os build {{ repo }}
 
 [macos]
 build:
     # sudo darwin-rebuild build --flake .
-    nh darwin build .
+    nh darwin build {{ repo }}
 
 [linux]
 boot:
-    nh os boot
+    nh os boot {{ repo }}
 
 [linux]
 switch:
-    nh os switch
+    nh os switch {{ repo }}
 
 [macos]
 switch:
     # sudo darwin-rebuild switch --flake .
-    nh darwin switch .
+    nh darwin switch {{ repo }}
 
 [linux]
 test:
-    nh os test
+    nh os test {{ repo }}
 
 [linux]
 gen-ls:

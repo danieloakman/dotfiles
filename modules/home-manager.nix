@@ -117,9 +117,8 @@
             sessionVariables = {
               # EDITOR = "emacs";
               # EDITOR = "nvim";
-              # This is how `nh` is able to find the flake for this host's configuration.
-              NH_FLAKE = "${env.home}/repos/personal/dotfiles";
               GRANTED_ALIAS_CONFIGURED = "true";
+              # Canonical checkout for scripts e.g. noctalia/ags
               DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
             };
 
