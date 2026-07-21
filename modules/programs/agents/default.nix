@@ -4,21 +4,57 @@ let
   mcpServerOpts = _: {
     options = {
       command = lib.mkOption {
-        type = lib.types.str;
-        description = "Command to run the MCP server";
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          Executable for a local (stdio) MCP server.
+          Mutually exclusive with `url`.
+        '';
       };
       args = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ ];
-        description = "Arguments to pass to the MCP server";
+        description = "Arguments to pass to `command` (stdio servers only).";
       };
       env = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
         default = { };
-        description = "Environment variables to pass to the MCP server";
+        description = "Environment variables for stdio MCP servers.";
+      };
+      url = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = ''
+          HTTP(S) endpoint for a remote MCP server.
+          Mutually exclusive with `command`.
+        '';
+      };
+      headers = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = { };
+        description = "HTTP headers for remote (`url`) MCP servers.";
       };
     };
   };
+
+  # Emit Cursor/Claude-friendly MCP server attrs (no nulls; typed transport).
+  formatMcpServer =
+    server:
+    if server.url != null then
+      {
+        type = "http";
+        inherit (server) url;
+      }
+      // lib.optionalAttrs (server.headers != { }) { inherit (server) headers; }
+    else
+      {
+        type = "stdio";
+        inherit (server) command;
+      }
+      // lib.optionalAttrs (server.args != [ ]) { inherit (server) args; }
+      // lib.optionalAttrs (server.env != { }) { inherit (server) env; };
+
+  formattedMcp = lib.mapAttrs (_: formatMcpServer) cfg.mcp;
 
   # `@~/.claude/rules/<name>.md` index for AGENTS.md / opencode context.
   rulesIndexText =
@@ -51,13 +87,30 @@ in
       default = { };
       description = ''
         MCP server definitions shared across tools (Cursor CLI ~/.cursor/mcp.json,
-        Claude Code, Home Manager programs.mcp, etc.). Same shape as
-        programs.cursor-cli.mcpServers.
+        Claude Code, Home Manager programs.mcp, etc.). Each server must set exactly
+        one of `command` (stdio) or `url` (HTTP).
       '';
     };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = lib.concatLists (
+      lib.mapAttrsToList (name: server: [
+        {
+          assertion = (server.command != null) != (server.url != null);
+          message = "my.programs.agents.mcp.${name}: exactly one of `command` or `url` must be set.";
+        }
+        {
+          assertion = server.url == null || (server.args == [ ] && server.env == { });
+          message = "my.programs.agents.mcp.${name}: `args` and `env` are only valid for stdio servers (`command`).";
+        }
+        {
+          assertion = server.headers == { } || server.url != null;
+          message = "my.programs.agents.mcp.${name}: `headers` is only valid for remote servers (`url`).";
+        }
+      ]) cfg.mcp
+    );
+
     home-manager.users.${env.user} =
       { config, lib, ... }:
       let
@@ -76,7 +129,7 @@ in
           ".cursor/mcp.json" = {
             force = true;
             text = builtins.toJSON {
-              mcpServers = cfg.mcp;
+              mcpServers = formattedMcp;
             };
           };
         }
@@ -111,13 +164,14 @@ in
             # mcpServers requires a non-null package; Darwin uses Homebrew for the binary.
           }
           // lib.optionalAttrs (env.platform != "darwin") {
-            mcpServers = cfg.mcp;
+            mcpServers = formattedMcp;
           };
           opencode = {
             context = index;
           };
           mcp = {
             enable = true;
+            # Pass raw options (command XOR url); HM programs.mcp validates and types them.
             servers = cfg.mcp;
           };
         };

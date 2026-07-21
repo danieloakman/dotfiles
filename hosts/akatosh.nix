@@ -95,6 +95,7 @@ in
         wallpaper = wallpaperPath;
       };
       docker.enable = true;
+      headroom.enable = true;
       llama-cpp = {
         enable = true;
         cpuCoreCount = 6;

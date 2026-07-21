@@ -55,6 +55,7 @@
         ];
       };
       docker.enable = true;
+      headroom.enable = true;
       homepage = let port = 9092; in {
         inherit port;
         enable = true;
