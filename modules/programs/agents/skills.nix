@@ -22,19 +22,21 @@ in
   config = lib.mkIf enable {
     my.programs.agents = {
       rules = {
-        token-efficient = builtins.readFile (
-          builtins.fetchurl {
-            url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
-            sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
-          }
-        );
+        token-efficient =
+          (builtins.readFile (
+            builtins.fetchurl {
+              url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
+              sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
+            }
+          ))
+          + ''
+
+            When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
+          '';
         git = ''
           ## Git
           - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them.
           - Forbid AI co-authoring in commit messages: never add `Co-authored-by` trailers for agents or tools (Cursor, Claude, etc.), never add "Made with Cursor" or similar attribution trailers, and never use `git commit --trailer` for attribution.
-        '';
-        response-to-user = ''
-          When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
         '';
       };
       skills = {
