@@ -1,48 +1,60 @@
 # Headroom — local LLM context compression proxy + CLI.
 # https://headroomlabs.ai
 #
+# The proxy runs directly from the uvx-based `headroom` CLI (same package pinned
+# in _package.nix), as a home-manager user service for ${env.user}. No container:
+# the CLI and MCP server already resolve via uvx, so the proxy shares one version
+# pin instead of drifting against a separate image tag.
+#
+# Running as the login user means the proxy, `headroom learn`, and the `headroom`
+# CLI all share one workspace (~/.headroom) and see the same ~/.claude transcripts
+# and PATH (incl. rtk) — so the learned verbosity profile needs no cross-user sync.
+#
 # Owns Claude Code API routing via ANTHROPIC_BASE_URL while enabled; cannot be
 # combined with a separate local-llama ANTHROPIC_BASE_URL for the same client.
 #
 # Listens on 0.0.0.0 so tailnet peers can open http://<host>:<port>/dashboard
 # (per-host, no shared VIP). The firewall only opens the port on the trusted
-# tailscale0 interface; LAN/public and other containers stay blocked. The proxy
-# is unauthenticated — anything on the tailnet can use it and read stored context.
+# tailscale0 interface; LAN/public stay blocked. The proxy is unauthenticated, so
+# anything on the tailnet can use it and read stored context.
 { config, pkgs, lib, env, ... }:
 let
   cfg = config.my.services.headroom;
   portStr = toString cfg.port;
   # Local clients (Claude via ANTHROPIC_BASE_URL) always use loopback.
   baseUrl = "http://${cfg.host}:${portStr}";
-  containerName = "headroom";
 
   headroomCli = pkgs.callPackage ./headroom/_package.nix { };
 
-  # Host networking (not a published bridge port) so a bridge-IP listener isn't
-  # reachable by other containers. Bind 0.0.0.0; firewall limits to tailscale0.
-  startScript = pkgs.writeShellScript "headroom-docker-run" ''
-    set -euo pipefail
-    ${lib.getExe pkgs.docker} rm -f ${containerName} >/dev/null 2>&1 || true
-    exec ${lib.getExe pkgs.docker} run --rm --name ${containerName} \
-      --network host \
-      -v /var/lib/headroom:/root/.headroom \
-      -e HEADROOM_TELEMETRY=off \
-      -e HEADROOM_HOST=0.0.0.0 \
-      -e HEADROOM_PORT=${lib.escapeShellArg portStr} \
-      ${lib.escapeShellArg cfg.image}
+  # Rule handed to cursor + opencode (MCP-only agents) telling them to use the
+  # Headroom MCP tools. Kept out of ~/.claude/rules so Claude Code never sees it.
+  mcpUsageRule = ''
+    # Headroom context compression
+
+    A `headroom` MCP server is available. Use its tools aggressively to keep the
+    working context small.
+
+    - Before adding large content to context (long file reads, command/log output,
+      search results, API/JSON payloads), pass it through `headroom_compress` and
+      keep only the returned compact reference.
+    - When detail that was compressed away is needed again, call `headroom_retrieve`
+      with the reference instead of re-reading the source.
+    - Use `headroom_stats` to check context/compression state when unsure.
+
+    Rule: whenever a step would add a large chunk of text that can be summarized or
+    fetched on demand, prefer the headroom MCP tools over inlining it. Only skip
+    headroom when the content is already small or must be quoted verbatim.
   '';
 
-  stopScript = pkgs.writeShellScript "headroom-docker-stop" ''
-    set -euo pipefail
-    ${lib.getExe pkgs.docker} rm -f ${containerName} >/dev/null 2>&1 || true
-  '';
 in
 {
   options.my.services.headroom = {
     enable = lib.mkEnableOption ''
-      Headroom context-compression proxy (Docker) and CLI (`headroom`). Claude Code
-      is routed through the proxy when wireAgents is true; cursor-agent gets MCP only.
-      Also reachable on the tailnet at http://<host>:<port>/dashboard.
+      Headroom context-compression proxy and CLI (`headroom`), run from the uvx
+      package as ${env.user}'s user service. Enabling it always wires the agents:
+      Claude Code is routed through the proxy (plus MCP), while cursor and opencode
+      get the Headroom MCP server and a rule telling them to use it. Also reachable
+      on the tailnet at http://<host>:<port>/dashboard.
     '';
 
     port = lib.mkOption {
@@ -57,25 +69,6 @@ in
       description = "Loopback address local clients use to reach the proxy.";
     };
 
-    image = lib.mkOption {
-      type = lib.types.str;
-      default = "ghcr.io/chopratejas/headroom:0.6.7-code";
-      description = ''
-        Pinned Headroom container image. Note: the Docker image versioning is
-        independent of the PyPI CLI version pinned in _package.nix.
-      '';
-    };
-
-    wireAgents = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = ''
-        When true, register Headroom MCP for shared agents and set Claude Code
-        managed-settings env (ANTHROPIC_BASE_URL, ENABLE_TOOL_SEARCH). Also allows
-        loopback in agent sandboxes so sandboxed Claude can reach the proxy.
-      '';
-    };
-
     package = lib.mkOption {
       type = lib.types.package;
       default = headroomCli;
@@ -87,43 +80,44 @@ in
     {
       assertions = [
         {
-          assertion = config.my.services.docker.enable;
-          message = "my.services.headroom.enable requires my.services.docker.enable.";
-        }
-        {
-          assertion = !cfg.wireAgents || config.my.programs.agents.enable;
-          message = "my.services.headroom.wireAgents requires my.programs.agents.enable.";
+          assertion = config.my.programs.agents.enable;
+          message = "my.services.headroom.enable requires my.programs.agents.enable.";
         }
       ];
 
-      my.services.docker.enable = lib.mkDefault true;
-
-      systemd.tmpfiles.rules = [ "d /var/lib/headroom 0755 root root -" ];
-
-      systemd.services.headroom = {
-        description = "Headroom LLM context compression proxy";
-        after = [
-          "network-online.target"
-          "docker.service"
-        ];
-        wants = [ "network-online.target" ];
-        requires = [ "docker.service" ];
-        wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.docker ];
-        serviceConfig = {
-          Type = "simple";
-          Restart = "on-failure";
-          RestartSec = "5s";
-          ExecStart = "${startScript}";
-          ExecStop = "${stopScript}";
-          TimeoutStartSec = "120";
-        };
-      };
+      # The proxy is a user service (below); linger keeps it running from boot
+      # without an interactive login session for ${env.user}.
+      users.users.${env.user}.linger = true;
 
       # Open explicitly on tailscale0 so exposure survives a change to trustedInterfaces.
       networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ cfg.port ];
 
-      home-manager.users.${env.user}.home.packages = [ cfg.package ];
+      home-manager.users.${env.user} = {
+        home.packages = [ cfg.package ];
+
+        # Runs as ${env.user}, so HOME=~ resolves the workspace to ~/.headroom —
+        # shared with `headroom learn` and the CLI (no cross-user profile sync).
+        systemd.user.services.headroom = {
+          Unit.Description = "Headroom LLM context compression proxy";
+          Service = {
+            ExecStart = "${lib.getExe cfg.package} proxy";
+            Environment = [
+              "HEADROOM_TELEMETRY=off"
+              "HEADROOM_HOST=0.0.0.0"
+              "HEADROOM_PORT=${portStr}"
+              # Opt into output-token shaping; reads the level from ~/.headroom/
+              # verbosity.json (written by `headroom learn --verbosity`), else its
+              # built-in default.
+              "HEADROOM_OUTPUT_SHAPER=1"
+            ];
+            Restart = "on-failure";
+            RestartSec = 5;
+            # uvx resolves and caches the CLI on first start; allow for the download.
+            TimeoutStartSec = 300;
+          };
+          Install.WantedBy = [ "default.target" ];
+        };
+      };
 
       my.services.homepage.services."Headroom" = {
         description = "LLM context compression proxy";
@@ -136,7 +130,7 @@ in
       };
     }
 
-    (lib.mkIf cfg.wireAgents {
+    {
       # Headroom's MCP transport is stdio (`headroom mcp serve`), not an HTTP
       # endpoint on the proxy port. See the canonical server.json / README contract.
       my.programs.agents.mcp.headroom = {
@@ -153,6 +147,23 @@ in
         ANTHROPIC_BASE_URL = baseUrl;
         ENABLE_TOOL_SEARCH = "true";
       };
-    })
+
+      # cursor and opencode are MCP-only, so a rule nudges them to use the tools;
+      # Claude Code auto-compresses via the proxy and is excluded (see mcpUsageRule).
+      home-manager.users.${env.user} = lib.mkMerge [
+        {
+          home.file.".cursor/rules/headroom.md".text = mcpUsageRule;
+        }
+        (lib.mkIf config.my.programs.opencode.enable {
+          # OpenCode has no auto-scanned rules dir, so eager-load the file from
+          # AGENTS.md (context is `lines`; mkAfter appends to the rules index).
+          home.file.".config/opencode/rules/headroom.md".text = mcpUsageRule;
+          programs.opencode.context = lib.mkAfter ''
+
+            Read @~/.config/opencode/rules/headroom.md immediately and treat it as mandatory.
+          '';
+        })
+      ];
+    }
   ]);
 }

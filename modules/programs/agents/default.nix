@@ -121,11 +121,6 @@ in
         home.file = {
           ".agents/AGENTS.md".text = index;
           ".config/agents/AGENTS.md".text = index;
-          # Same rule files Claude uses; Cursor reads ~/.cursor/rules/.
-          ".cursor/rules" = {
-            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/rules";
-            force = true;
-          };
           ".cursor/mcp.json" = {
             force = true;
             text = builtins.toJSON {
@@ -133,6 +128,15 @@ in
             };
           };
         }
+        # Per-file symlinks (not a whole-dir symlink) so tool-specific rules can
+        # sit in ~/.cursor/rules/ alongside the shared Claude rules.
+        // lib.mapAttrs' (name: _: {
+          name = ".cursor/rules/${name}.md";
+          value = {
+            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/rules/${name}.md";
+            force = true;
+          };
+        }) config.programs.claude-code.rules
         // lib.concatMapAttrs
           # If the dir is a single skill (has SKILL.md), symlink it directly; otherwise
           # treat it as a collection and symlink each subdirectory individually.

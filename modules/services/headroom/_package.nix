@@ -5,6 +5,7 @@
   writeShellApplication,
   uv,
   python313,
+  rtk,
   ...
 }:
 let
@@ -17,6 +18,8 @@ writeShellApplication {
   runtimeInputs = [
     uv
     python313
+    # On PATH so the proxy's savings footer detects rtk (shutil.which("rtk")).
+    rtk
   ];
   text = ''
     export UV_PYTHON=${python313}/bin/python3
