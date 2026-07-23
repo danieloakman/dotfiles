@@ -105,6 +105,10 @@ in
               "HEADROOM_TELEMETRY=off"
               "HEADROOM_HOST=0.0.0.0"
               "HEADROOM_PORT=${portStr}"
+              # Match the old Docker image (0.5.25) default: compress history for
+              # token savings. Newer CLI defaults to cache mode (prefix-freeze),
+              # which yields $0 compression — pin token so behavior stays the same.
+              "HEADROOM_MODE=token"
               # Opt into output-token shaping; reads the level from ~/.headroom/
               # verbosity.json (written by `headroom learn --verbosity`), else its
               # built-in default.
