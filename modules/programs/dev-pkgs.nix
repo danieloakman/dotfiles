@@ -105,6 +105,7 @@ in
           uv # Python package manager; can install packages and run them adhoc
           pandoc # Document converter
           rtk # More efficient token usage for LLMs
+          defuddle # Extract clean HTML/markdown/metadata from web pages
 
           # Golang & related tools:
           go
