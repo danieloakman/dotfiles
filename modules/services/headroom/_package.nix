@@ -6,12 +6,17 @@
   uv,
   python313,
   rtk,
+  stdenv,
   ...
 }:
 let
   # PyPI CLI version; independent of the Docker image tag in headroom.linux.nix.
   version = "0.32.1";
   extras = "proxy,code,mcp";
+  # uvx wheels (onnxruntime) are not Nix-patched; Kompress needs libstdc++ at
+  # import time. Without this, `is_kompress_available()` is false, large
+  # compressions hit the 30s deadline, and the proxy quarantines forever.
+  libPath = lib.makeLibraryPath [ stdenv.cc.cc.lib ];
 in
 writeShellApplication {
   name = "headroom";
@@ -23,6 +28,7 @@ writeShellApplication {
   ];
   text = ''
     export UV_PYTHON=${python313}/bin/python3
+    export LD_LIBRARY_PATH=${libPath}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     exec uvx --from "headroom-ai[${extras}]==${version}" headroom "$@"
   '';
   meta = with lib; {
