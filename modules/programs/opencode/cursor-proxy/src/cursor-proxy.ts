@@ -3,6 +3,7 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { proxyError, proxyLog } from "./logging.js";
+import { ContentHold, isThinkingModel, type StreamOut } from "./stream-order.js";
 import type { ChatMessage, ContentPart, StreamEvent } from "./types.js";
 
 const PORT = parseInt(process.env.PORT || "32124", 10);
@@ -383,6 +384,11 @@ const server = http.createServer(async (req, res) => {
   let collectedReasoning = "";
   let collectedContent = "";
 
+  const contentHold = new ContentHold({
+    enabled:
+      stream && useStreamPartial && includeThinking && isThinkingModel(model),
+  });
+
   const emitContentDelta = (text: string) => {
     if (!stream || res.writableEnded || !text) return;
     res.write(formatSseChunk(id, created, modelId, { content: text }));
@@ -395,14 +401,27 @@ const server = http.createServer(async (req, res) => {
     streamedReasoning = true;
   };
 
+  const emitHeld = (outs: StreamOut[]) => {
+    for (const o of outs) {
+      if (o.kind === "reasoning") emitReasoningDelta(o.text);
+      else emitContentDelta(o.text);
+    }
+  };
+
   const parseOutputLine = (line: string) => {
     const ev = parseLine(line);
     if (!ev) return;
 
-    if (ev.type === "thinking" && includeThinking && ev.subtype === "delta" && ev.text) {
-      collectedReasoning += ev.text;
-      if (useStreamPartial) emitReasoningDelta(ev.text);
-      return;
+    if (ev.type === "thinking" && includeThinking) {
+      if (ev.subtype === "delta" && ev.text) {
+        collectedReasoning += ev.text;
+        if (useStreamPartial) emitHeld(contentHold.onThinkingDelta(ev.text));
+        return;
+      }
+      if (ev.subtype === "completed") {
+        if (useStreamPartial) emitHeld(contentHold.onThinkingCompleted());
+        return;
+      }
     }
 
     if (ev.type === "result") {
@@ -419,7 +438,7 @@ const server = http.createServer(async (req, res) => {
       const fragment = assistantFragment(ev);
       if (!fragment) return;
       collectedContent += fragment;
-      if (stream && useStreamPartial) emitContentDelta(fragment);
+      if (stream && useStreamPartial) emitHeld(contentHold.onContent(fragment));
       return;
     }
   };
@@ -520,6 +539,7 @@ const server = http.createServer(async (req, res) => {
     clearTimeout(timeout);
     if (buffer) parseOutputLine(buffer);
     if (!res.writableEnded) {
+      emitHeld(contentHold.finish());
       const finalText = terminalResult || collectedContent;
       if (!streamedContent && finalText) {
         emitContentDelta(finalText);

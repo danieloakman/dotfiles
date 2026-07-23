@@ -1,6 +1,7 @@
 { stdenv
 , esbuild
 , typescript
+, nodejs
 , fetchurl
 , ...
 }:
@@ -22,6 +23,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     esbuild
     typescript
+    nodejs
   ];
 
   dontConfigure = true;
@@ -34,6 +36,11 @@ stdenv.mkDerivation {
     tar -xzf ${undiciTypes} -C node_modules/undici-types --strip-components=1
 
     tsc -p tsconfig.json --noEmit
+
+    esbuild src/stream-order.test.ts \
+      --bundle --platform=node --format=cjs --target=node20 \
+      --outfile=stream-order.test.cjs
+    node stream-order.test.cjs
 
     esbuild src/cursor-proxy.ts \
       --bundle --platform=node --format=cjs --target=node20 \

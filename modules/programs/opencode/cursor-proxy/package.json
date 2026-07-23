@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "tsc -p tsconfig.json --noEmit",
-    "build": "node build.mjs"
+    "check": "tsc -p tsconfig.json --noEmit && node build-test.mjs",
+    "build": "node build.mjs",
+    "test": "node build-test.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
