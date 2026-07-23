@@ -3,7 +3,7 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { proxyError, proxyLog } from "./logging.js";
-import { ContentHold, isThinkingModel, type StreamOut } from "./stream-order.js";
+import { ContentHold, shouldHoldContent, type StreamOut } from "./stream-order.js";
 import type { ChatMessage, ContentPart, StreamEvent } from "./types.js";
 
 const PORT = parseInt(process.env.PORT || "32124", 10);
@@ -386,7 +386,7 @@ const server = http.createServer(async (req, res) => {
 
   const contentHold = new ContentHold({
     enabled:
-      stream && useStreamPartial && includeThinking && isThinkingModel(model),
+      stream && useStreamPartial && includeThinking && shouldHoldContent(model),
   });
 
   const emitContentDelta = (text: string) => {

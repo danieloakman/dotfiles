@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {
-  isThinkingModel,
+  shouldHoldContent,
   projectAgentEvents,
   type AgentEvent,
   type StreamOut,
@@ -33,9 +33,10 @@ function assertReasoningBeforeContent(outs: StreamOut[], label: string) {
   );
 }
 
-assert.equal(isThinkingModel("claude-4.6-opus-max-thinking"), true);
-assert.equal(isThinkingModel("claude-4.6-opus-max"), false);
-assert.equal(isThinkingModel("auto"), false);
+assert.equal(shouldHoldContent("claude-4.6-opus-max-thinking"), true);
+assert.equal(shouldHoldContent("auto"), true);
+assert.equal(shouldHoldContent("claude-4.6-opus-max"), false);
+assert.equal(shouldHoldContent("composer-2.5"), false);
 
 {
   const events: AgentEvent[] = [
@@ -48,15 +49,16 @@ assert.equal(isThinkingModel("auto"), false);
   assertReasoningBeforeContent(held, "A→T→A hold");
   assert.deepEqual(
     held.map((o) => o.text),
-    ["Count entries.", "Checking now.", "322 entries."]
+    ["Count entries.", "Checking now.322 entries."]
   );
 
   const passthrough = projectAgentEvents(events, { holdEnabled: false });
-  assert.deepEqual(kinds(passthrough), [
-    "content",
-    "reasoning",
-    "content",
-  ]);
+  // Without initial hold, first A escapes before thinking enables hold;
+  // remaining content still waits until finish after thinking appears.
+  assert.deepEqual(
+    passthrough.map((o) => `${o.kind}:${o.text}`),
+    ["content:Checking now.", "reasoning:Count entries.", "content:322 entries."]
+  );
 }
 
 {
@@ -74,9 +76,31 @@ assert.equal(isThinkingModel("auto"), false);
 }
 
 {
+  // Matches the live Auto session: T → A(final) → T → T
   const events: AgentEvent[] = [
-    { type: "assistant", text: "4" },
+    { type: "thinking", subtype: "delta", text: "Checking the date planning." },
+    { type: "thinking", subtype: "completed" },
+    { type: "assistant", text: "Wed 29 Jul evening — best fit." },
+    { type: "thinking", subtype: "delta", text: "I need to read the calendar." },
+    { type: "thinking", subtype: "completed" },
+    { type: "thinking", subtype: "delta", text: "Planning evening activities." },
+    { type: "thinking", subtype: "completed" },
   ];
+  const held = projectAgentEvents(events, { holdEnabled: true });
+  assertReasoningBeforeContent(held, "T→A→T→T late thinking");
+  assert.deepEqual(
+    held.map((o) => `${o.kind}:${o.text}`),
+    [
+      "reasoning:Checking the date planning.",
+      "reasoning:I need to read the calendar.",
+      "reasoning:Planning evening activities.",
+      "content:Wed 29 Jul evening — best fit.",
+    ]
+  );
+}
+
+{
+  const events: AgentEvent[] = [{ type: "assistant", text: "4" }];
   const held = projectAgentEvents(events, { holdEnabled: true });
   assert.deepEqual(held, [{ kind: "content", text: "4" }]);
 
@@ -96,7 +120,7 @@ assert.equal(isThinkingModel("auto"), false);
   const held = projectAgentEvents(events, { holdEnabled: true });
   assert.deepEqual(
     held.map((o) => `${o.kind}:${o.text}`),
-    ["reasoning:First.", "content:Mid.", "reasoning:Second.", "content:End."]
+    ["reasoning:First.", "reasoning:Second.", "content:Mid.End."]
   );
 }
 

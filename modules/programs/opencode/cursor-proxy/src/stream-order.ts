@@ -1,6 +1,15 @@
-/** Whether a cursor-agent model id should hold content until thinking completes. */
+/**
+ * Whether a model should hold assistant content until the stream ends so that
+ * late thinking (common with Auto / tool loops) cannot land after the answer.
+ */
+export function shouldHoldContent(modelId: string): boolean {
+  const m = modelId.toLowerCase();
+  return m.includes("thinking") || m === "auto";
+}
+
+/** @deprecated use shouldHoldContent */
 export function isThinkingModel(modelId: string): boolean {
-  return modelId.toLowerCase().includes("thinking");
+  return shouldHoldContent(modelId);
 }
 
 export type StreamOut =
@@ -8,12 +17,15 @@ export type StreamOut =
   | { kind: "content"; text: string };
 
 /**
- * Holds assistant content until thinking for the current phase completes so
- * OpenCode sees reasoning before answer text (cursor-agent can emit A→T→A).
+ * Streams reasoning live and buffers assistant content until finish().
+ *
+ * cursor-agent often emits: T → A → T → A (post-tool thinking after answer
+ * text already started). Flushing content on thinking:completed lets later
+ * reasoning appear after the final answer in OpenCode. Holding until the
+ * stream ends keeps all reasoning before the answer.
  */
 export class ContentHold {
   private holdContent: boolean;
-  private thinkingActive = false;
   private contentBuffer = "";
 
   constructor(opts: { enabled: boolean }) {
@@ -22,19 +34,20 @@ export class ContentHold {
 
   onThinkingDelta(text: string): StreamOut[] {
     if (!text) return [];
-    this.thinkingActive = true;
+    // Thinking appeared — keep holding content even if hold started disabled
+    // mid-stream (defensive) or after an earlier mistaken release.
+    this.holdContent = true;
     return [{ kind: "reasoning", text }];
   }
 
   onThinkingCompleted(): StreamOut[] {
-    this.thinkingActive = false;
-    this.holdContent = false;
-    return this.flush();
+    // Do not flush: more thinking may arrive after tools / later phases.
+    return [];
   }
 
   onContent(text: string): StreamOut[] {
     if (!text) return [];
-    if (this.holdContent || this.thinkingActive) {
+    if (this.holdContent) {
       this.contentBuffer += text;
       return [];
     }
