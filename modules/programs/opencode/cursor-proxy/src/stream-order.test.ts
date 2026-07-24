@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
 import {
   shouldHoldContent,
+  joinFragments,
+  spacedFragment,
   projectAgentEvents,
   type AgentEvent,
   type StreamOut,
 } from "./stream-order.js";
+
+assert.equal(joinFragments("specials.", "Checking"), "specials. Checking");
+assert.equal(joinFragments("specials. ", "Checking"), "specials. Checking");
+assert.equal(joinFragments("specials.", " checking"), "specials. checking");
+assert.equal(joinFragments("3.", "14"), "3.14");
+assert.equal(joinFragments("Mid.", "End."), "Mid. End.");
+assert.equal(spacedFragment("specials.", "Checking"), " Checking");
+assert.equal(spacedFragment("", "Checking"), "Checking");
+assert.equal(spacedFragment("Hello", " world"), " world");
 
 function kinds(outs: StreamOut[]): string[] {
   return outs.map((o) => o.kind);
@@ -120,7 +131,25 @@ assert.equal(shouldHoldContent("composer-2.5"), false);
   const held = projectAgentEvents(events, { holdEnabled: true });
   assert.deepEqual(
     held.map((o) => `${o.kind}:${o.text}`),
-    ["reasoning:First.", "reasoning:Second.", "content:Mid.End."]
+    ["reasoning:First.", "reasoning:Second.", "content:Mid. End."]
+  );
+}
+
+{
+  // Live status lines glued across tool turns (user-reported Auto bug)
+  const events: AgentEvent[] = [
+    { type: "assistant", text: "research Wollongong weekday dinner specials." },
+    { type: "thinking", subtype: "delta", text: "look up venues" },
+    { type: "thinking", subtype: "completed" },
+    { type: "assistant", text: "Checking headroom tools and the Date Places note." },
+    { type: "thinking", subtype: "delta", text: "no mcp" },
+    { type: "thinking", subtype: "completed" },
+    { type: "assistant", text: "Headroom MCP isn't available — I'll pull the guide." },
+  ];
+  const held = projectAgentEvents(events, { holdEnabled: true });
+  assert.equal(
+    held.filter((o) => o.kind === "content").map((o) => o.text).join(""),
+    "research Wollongong weekday dinner specials. Checking headroom tools and the Date Places note. Headroom MCP isn't available — I'll pull the guide."
   );
 }
 

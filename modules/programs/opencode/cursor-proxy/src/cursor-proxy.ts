@@ -3,7 +3,12 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { proxyError, proxyLog } from "./logging.js";
-import { ContentHold, shouldHoldContent, type StreamOut } from "./stream-order.js";
+import {
+  ContentHold,
+  joinFragments,
+  shouldHoldContent,
+  type StreamOut,
+} from "./stream-order.js";
 import type { ChatMessage, ContentPart, StreamEvent } from "./types.js";
 
 const PORT = parseInt(process.env.PORT || "32124", 10);
@@ -437,7 +442,7 @@ const server = http.createServer(async (req, res) => {
       if (useStreamPartial && !isAssistantStreamDelta(ev)) return;
       const fragment = assistantFragment(ev);
       if (!fragment) return;
-      collectedContent += fragment;
+      collectedContent = joinFragments(collectedContent, fragment);
       if (stream && useStreamPartial) emitHeld(contentHold.onContent(fragment));
       return;
     }

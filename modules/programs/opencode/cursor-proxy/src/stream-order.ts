@@ -17,6 +17,30 @@ export type StreamOut =
   | { kind: "content"; text: string };
 
 /**
+ * Join assistant fragments without gluing sentence boundaries.
+ * cursor-agent often emits complete status lines as separate events; naive
+ * concat yields "foo.Bar". Only insert a space when the left side ends a
+ * sentence and the right starts with an uppercase letter (avoids breaking
+ * token streams like "3." + "14").
+ */
+export function joinFragments(left: string, right: string): string {
+  if (!left) return right;
+  if (!right) return left;
+  if (/\s$/.test(left) || /^\s/.test(right)) return left + right;
+  if (/[.!?…]["'”’)\]]*$/.test(left) && /^[A-Z]/.test(right)) {
+    return left + " " + right;
+  }
+  return left + right;
+}
+
+/** Leading spacer (if any) + right, for streaming deltas after prior content. */
+export function spacedFragment(prior: string, next: string): string {
+  if (!next) return "";
+  if (!prior) return next;
+  return joinFragments(prior, next).slice(prior.length);
+}
+
+/**
  * Streams reasoning live and buffers assistant content until finish().
  *
  * cursor-agent often emits: T → A → T → A (post-tool thinking after answer
@@ -27,6 +51,8 @@ export type StreamOut =
 export class ContentHold {
   private holdContent: boolean;
   private contentBuffer = "";
+  /** Last content text emitted live (when not holding), for spacing. */
+  private emittedContent = "";
 
   constructor(opts: { enabled: boolean }) {
     this.holdContent = opts.enabled;
@@ -48,10 +74,12 @@ export class ContentHold {
   onContent(text: string): StreamOut[] {
     if (!text) return [];
     if (this.holdContent) {
-      this.contentBuffer += text;
+      this.contentBuffer = joinFragments(this.contentBuffer, text);
       return [];
     }
-    return [{ kind: "content", text }];
+    const out = spacedFragment(this.emittedContent, text);
+    this.emittedContent += out;
+    return [{ kind: "content", text: out }];
   }
 
   finish(): StreamOut[] {
