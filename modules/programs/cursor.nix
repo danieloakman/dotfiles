@@ -109,6 +109,20 @@ in
         {
           home.packages = [ agentPackage ];
 
+          # Cursor's updater drops `agent` / `cursor-agent` into ~/.local/bin (ahead of
+          # nix-profile) without CURSOR_API_KEY. Own those names so every switch puts
+          # our wrapper back, and prepend the store bin so it still wins if Cursor
+          # overwrites the symlinks between switches.
+          home.sessionPath = lib.mkBefore [ "${agentPackage}/bin" ];
+          home.file.".local/bin/cursor-agent" = {
+            source = "${agentPackage}/bin/cursor-agent";
+            force = true;
+          };
+          home.file.".local/bin/agent" = {
+            source = "${agentPackage}/bin/cursor-agent";
+            force = true;
+          };
+
           home.activation.setCursorCliAttribution = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
             $DRY_RUN_CMD mkdir -p ${env.home}/.cursor
             cfgPath=${env.home}/.cursor/cli-config.json
