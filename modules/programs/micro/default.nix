@@ -52,6 +52,7 @@ in
     home-manager.users.${env.user} = {
       home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
         EDITOR = "micro";
+        GIT_EDITOR = "micro";
       };
 
       programs = {
@@ -93,6 +94,7 @@ in
           initContent = ''
             # Set the default editor to micro
             export EDITOR="micro"
+            export GIT_EDITOR="micro"
           '';
         };
       };

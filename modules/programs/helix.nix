@@ -88,6 +88,11 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
+      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+        EDITOR = "hx";
+        GIT_EDITOR = "hx";
+      };
+
       programs = {
         helix = {
           enable = true;
@@ -113,8 +118,8 @@ in
           ];
         };
 
-        zsh = {
-          shellAliases = lib.mkIf cfg.isDefaultEditor {
+        zsh = lib.mkIf cfg.isDefaultEditor {
+          shellAliases = {
             "nvim" = "hx";
             "vim" = "hx";
             "editor" = "hx";
@@ -122,6 +127,7 @@ in
           initContent = ''
             # Set the default editor to helix
             export EDITOR="hx"
+            export GIT_EDITOR="hx"
           '';
         };
       };

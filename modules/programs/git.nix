@@ -22,8 +22,6 @@ in
           program = gpg
         [pull]
           ff = true
-        [core]
-          editor = nano
         [http]
           postBuffer = 524288000
         [gpg "ssh"]

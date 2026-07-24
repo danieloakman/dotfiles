@@ -90,6 +90,11 @@ in
     home-manager.users.${env.user} = {
       imports = [ inputs.lazyvim.homeManagerModules.default ];
 
+      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+        EDITOR = "nvim";
+        GIT_EDITOR = "nvim";
+      };
+
       programs = {
         lazyvim = {
           enable = true;
@@ -113,6 +118,7 @@ in
           initContent = ''
             # Set the default editor to lazyvim
             export EDITOR="nvim"
+            export GIT_EDITOR="nvim"
           '';
         };
       };
