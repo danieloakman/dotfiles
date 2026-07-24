@@ -85,6 +85,7 @@
         schedule = "0 1 * * *";
       };
       stirlingPdf.enable = true;
+      ttyd.enable = true;
       streaming.jellyfin.enable = true;
       syncthing.enable = true;
       tailscale = {
