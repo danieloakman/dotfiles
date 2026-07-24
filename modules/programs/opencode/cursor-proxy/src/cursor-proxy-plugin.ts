@@ -75,7 +75,7 @@ function pluginApi(port: number) {
         npm: "@ai-sdk/openai-compatible",
         options: { baseURL: `http://127.0.0.1:${port}/v1` },
         models: {
-          auto: cursorModel("Auto", "auto"),
+          auto: cursorModel("Cursor - Auto", "auto"),
           "composer-2.5": cursorModel("Composer 2.5", "composer-2.5"),
           "claude-4.6-opus-high": cursorModel("Opus 4.6 High", "claude-4.6-opus-high"),
           "claude-4.6-opus-max": cursorModel("Opus 4.6 Max", "claude-4.6-opus-max"),
