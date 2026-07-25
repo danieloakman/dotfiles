@@ -4,7 +4,9 @@ let
   # Some of these aren't security concerns if they were exposed, but it's better to just hide them anyway.
   secrets = [
     "password_store_git_url" # Git URL for password store
-    "pia_credentials" # Private Internet Access credentials 
+    "pia_username" # Private Internet Access username
+    "pia_password" # Private Internet Access password
+
     "dano_pwd"
     "cursor_api_key"
     "main_gh_token"

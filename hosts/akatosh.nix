@@ -124,6 +124,7 @@ in
       };
       wakeonlan.enable = true;
       syncthing.enable = true;
+      pia.enable = true;
     };
   };
   systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
