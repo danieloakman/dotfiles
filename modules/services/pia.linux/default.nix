@@ -65,19 +65,8 @@ in
           };
         }
       );
-      default = {
-        PIA-AU_Sydney = {
-          id = "PIA-AU_Sydney";
-          uuid = "07cd5a3e-8d88-49d3-9ac7-696f1a955f7e";
-          remote = "au-sydney.privacy.network 1197 udp";
-        };
-        PIA-Australia_Streaming_Optimized = {
-          id = "PIA-Australia_Streaming_Optimized";
-          uuid = "2a1f6a07-0633-45df-9e9a-fe517895ba00";
-          remote = "au-australia-so.privacy.network 1197 udp";
-        };
-      };
-      description = "Curated PIA OpenVPN NetworkManager profiles to declare.";
+      default = import ./_profiles.nix;
+      description = "PIA OpenVPN NetworkManager profiles to declare (id, uuid, remote).";
     };
   };
 
