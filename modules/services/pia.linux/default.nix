@@ -27,6 +27,9 @@ let
         password-flags = "0";
         port = "1197";
         proto-tcp = "no";
+        # Without this, tun0 stays MTU 1500 and large TCP segments blackhole
+        # (pings work, HTTPS/SSH hang). Confirmed on mara 2026-07-26.
+        mssfix = "yes";
         ca = caPath;
       };
       vpn-secrets = {
