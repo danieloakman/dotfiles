@@ -84,6 +84,10 @@
         # Every day at 1am, retry every 30 minutes until 5am if deferred.
         schedule = "0 1 * * *";
       };
+      qbittorrent = {
+        enable = true;
+        downloadDir = "/run/media/HDD_1/Downloads";
+      };
       stirlingPdf.enable = true;
       streaming.jellyfin.enable = true;
       syncthing.enable = true;
