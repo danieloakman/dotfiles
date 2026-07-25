@@ -88,6 +88,10 @@
       qbittorrent = {
         enable = true;
         downloadDir = "/run/media/HDD_1/Downloads";
+        vpn = {
+          enable = true;
+          externalInterface = "eno1";
+        };
       };
       stirlingPdf.enable = true;
       streaming.jellyfin.enable = true;
