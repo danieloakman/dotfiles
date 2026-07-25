@@ -276,8 +276,8 @@ in
                   # Tailscale serve connects from the host veth, not loopback,
                   # so LocalHostAuth no longer covers the WebUI.
                   LocalHostAuth = false;
-                  BypassAuthSubnetWhitelistEnabled = true;
-                  BypassAuthSubnetWhitelist = "${cfg.vpn.hostAddress}/32";
+                  AuthSubnetWhitelistEnabled = true;
+                  AuthSubnetWhitelist = "${cfg.vpn.hostAddress}/32";
                 };
               };
               extraArgs = [ "--confirm-legal-notice" ];
