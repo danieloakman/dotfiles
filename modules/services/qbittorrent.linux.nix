@@ -7,6 +7,28 @@ let
   piaCa = ./pia.linux/pia-ca.rsa.4096.crt;
   authPath = "/run/secrets/pia-openvpn-auth";
   profileDir = "/var/lib/qBittorrent";
+  enginesDir = "${profileDir}/qBittorrent/data/nova3/engines";
+
+  # Official nova3 Pirate Bay plugin (searches apibay.org).
+  piratebayPlugin = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/qbittorrent/search-plugins/62f296ed47010ab0ea9dbd43257a1a20025d1d1a/nova3/engines/piratebay.py";
+    hash = "sha256-hnlIXWchrs27Z/+VxUXG6fZlG7vJg5IS8Zz6LQzjAJc=";
+  };
+
+  # Run as root (`+`) so we can fix ownership if tmpfiles created parents as root.
+  installSearchPlugins = pkgs.writeShellScript "qbittorrent-install-search-plugins" ''
+    set -euo pipefail
+    ${pkgs.coreutils}/bin/mkdir -p "${enginesDir}"
+    ${pkgs.coreutils}/bin/chown -R qbittorrent:qbittorrent "${profileDir}/qBittorrent/data/nova3"
+    ${pkgs.coreutils}/bin/install -o qbittorrent -g qbittorrent -m644 ${piratebayPlugin} \
+      "${enginesDir}/piratebay.py"
+  '';
+
+  # Python search plugins need writable+executable memory pages.
+  qbittorrentSearchServiceConfig = {
+    MemoryDenyWriteExecute = lib.mkForce false;
+    ExecStartPre = [ "+${installSearchPlugins}" ];
+  };
 
   # Stable IDs so host bind-mounts (downloads + profile) match the container user.
   qbittorrentUid = 981;
@@ -95,6 +117,10 @@ in
         "d ${downloadDir} 0750 qbittorrent qbittorrent -"
         "d ${incompleteDir} 0750 qbittorrent qbittorrent -"
         "d ${profileDir} 0750 qbittorrent qbittorrent -"
+        # Create each level explicitly — tmpfiles parent dirs can end up root-owned.
+        "d ${profileDir}/qBittorrent/data 0755 qbittorrent qbittorrent -"
+        "d ${profileDir}/qBittorrent/data/nova3 0755 qbittorrent qbittorrent -"
+        "d ${enginesDir} 0755 qbittorrent qbittorrent -"
       ];
 
       my.services.homepage.services."qBittorrent" = {
@@ -125,6 +151,8 @@ in
         };
         extraArgs = [ "--confirm-legal-notice" ];
       };
+
+      systemd.services.qbittorrent.serviceConfig = qbittorrentSearchServiceConfig;
 
       networking.firewall = {
         allowedTCPPorts = [ torrentingPort ];
@@ -284,10 +312,12 @@ in
             };
 
             # Kill switch: qBittorrent only runs while the PIA tunnel unit is up.
+            # Also install the Pirate Bay search plugin (Python needs MDWE off).
             systemd.services.qbittorrent = {
               after = [ "openvpn-pia.service" ];
               requires = [ "openvpn-pia.service" ];
               bindsTo = [ "openvpn-pia.service" ];
+              serviceConfig = qbittorrentSearchServiceConfig;
             };
           };
       };
