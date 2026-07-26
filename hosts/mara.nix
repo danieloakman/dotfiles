@@ -91,6 +91,8 @@
         vpn = {
           enable = true;
           externalInterface = "eno1";
+          # DE Streaming Optimized — AU Sydney blackholed apibay/TPB search.
+          remote = "de-germany-so.privacy.network";
         };
       };
       stirlingPdf.enable = true;

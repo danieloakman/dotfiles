@@ -8,12 +8,23 @@ let
   authPath = "/run/secrets/pia-openvpn-auth";
   profileDir = "/var/lib/qBittorrent";
   enginesDir = "${profileDir}/qBittorrent/data/nova3/engines";
+  python3 = "${pkgs.python3}/bin/python3";
 
   # Official nova3 Pirate Bay plugin (searches apibay.org).
-  piratebayPlugin = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/qbittorrent/search-plugins/62f296ed47010ab0ea9dbd43257a1a20025d1d1a/nova3/engines/piratebay.py";
-    hash = "sha256-hnlIXWchrs27Z/+VxUXG6fZlG7vJg5IS8Zz6LQzjAJc=";
-  };
+  # apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits),
+  # so lowercase the query before requesting.
+  piratebayPlugin =
+    pkgs.runCommand "piratebay.py"
+      {
+        src = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/qbittorrent/search-plugins/62f296ed47010ab0ea9dbd43257a1a20025d1d1a/nova3/engines/piratebay.py";
+          hash = "sha256-hnlIXWchrs27Z/+VxUXG6fZlG7vJg5IS8Zz6LQzjAJc=";
+        };
+      }
+      ''
+        ${pkgs.gnused}/bin/sed 's/what = unquote(what)/what = unquote(what).lower()/' "$src" > "$out"
+        ${pkgs.gnugrep}/bin/grep -q 'unquote(what).lower()' "$out"
+      '';
 
   # Run as root (`+`) so we can fix ownership if tmpfiles created parents as root.
   installSearchPlugins = pkgs.writeShellScript "qbittorrent-install-search-plugins" ''
@@ -24,10 +35,20 @@ let
       "${enginesDir}/piratebay.py"
   '';
 
-  # Python search plugins need writable+executable memory pages.
+  # Python search plugins need writable+executable memory pages + an explicit interpreter
+  # (systemd hardening can leave auto-detect failing even when qbittorrent-nox wraps PATH).
   qbittorrentSearchServiceConfig = {
     MemoryDenyWriteExecute = lib.mkForce false;
     ExecStartPre = [ "+${installSearchPlugins}" ];
+    Environment = [
+      "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+      "NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    ];
+  };
+
+  qbittorrentSearchPrefs = {
+    # Point nova3 at nixpkgs python instead of relying on PATH detection.
+    pythonExecutablePath = python3;
   };
 
   # Stable IDs so host bind-mounts (downloads + profile) match the container user.
@@ -59,7 +80,8 @@ in
       '';
       remote = lib.mkOption {
         type = lib.types.str;
-        default = "au-sydney.privacy.network";
+        # DE Streaming Optimized — AU Sydney was blackholing apibay/TPB search.
+        default = "de-germany-so.privacy.network";
         description = "PIA OpenVPN remote hostname.";
       };
       remotePort = lib.mkOption {
@@ -144,9 +166,12 @@ in
             TempPathEnabled = true;
             Port = torrentingPort;
           };
-          Preferences.WebUI = {
-            Address = "127.0.0.1";
-            LocalHostAuth = false;
+          Preferences = {
+            WebUI = {
+              Address = "127.0.0.1";
+              LocalHostAuth = false;
+            };
+            Search = qbittorrentSearchPrefs;
           };
         };
         extraArgs = [ "--confirm-legal-notice" ];
@@ -262,7 +287,8 @@ in
 
             services.openvpn.servers.pia = {
               autoStart = true;
-              updateResolvConf = true;
+              # Keep container nameservers (1.1.1.1 through the tunnel). PIA DNS can sink indexers.
+              updateResolvConf = false;
               authUserPass = authPath;
               config = ''
                 client
@@ -282,6 +308,9 @@ in
                 # Same MTU fix as the NetworkManager PIA profiles.
                 mssfix
                 ca /etc/openvpn/pia-ca.rsa.4096.crt
+                # Ignore PIA-pushed DNS so indexers remain resolvable via 1.1.1.1.
+                pull-filter ignore "dhcp-option DNS"
+                pull-filter ignore "dhcp-option DNS6"
               '';
             };
 
@@ -298,14 +327,17 @@ in
                   TempPathEnabled = true;
                   Port = torrentingPort;
                 };
-                Preferences.WebUI = {
-                  # Reachable via host veth only (container firewall).
-                  Address = "0.0.0.0";
-                  # Tailscale serve connects from the host veth, not loopback,
-                  # so LocalHostAuth no longer covers the WebUI.
-                  LocalHostAuth = false;
-                  AuthSubnetWhitelistEnabled = true;
-                  AuthSubnetWhitelist = "${cfg.vpn.hostAddress}/32";
+                Preferences = {
+                  WebUI = {
+                    # Reachable via host veth only (container firewall).
+                    Address = "0.0.0.0";
+                    # Tailscale serve connects from the host veth, not loopback,
+                    # so LocalHostAuth no longer covers the WebUI.
+                    LocalHostAuth = false;
+                    AuthSubnetWhitelistEnabled = true;
+                    AuthSubnetWhitelist = "${cfg.vpn.hostAddress}/32";
+                  };
+                  Search = qbittorrentSearchPrefs;
                 };
               };
               extraArgs = [ "--confirm-legal-notice" ];
