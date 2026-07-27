@@ -8,7 +8,9 @@
   # Package search (often shows the nixpkgs revision): https://search.nixos.org/
   inputs = {
     # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Weekly nixpkgs snapshots via FlakeHub (Determinate Systems).
+    # https://docs.determinate.systems/guides/advanced-installation/#nixos
+    nixpkgs.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1";
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
