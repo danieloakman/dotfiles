@@ -1,0 +1,56 @@
+id = "local/web-search"
+name = "Web Search"
+version = "0.1.0"
+plugin_api = 3
+author = "local"
+license = "MIT"
+deprecated = false
+icon = "world"
+description = "Search the web from the Noctalia launcher with live suggestions"
+tags = ["launcher", "network", "productivity", "utility"]
+dependencies = ["xdg-utils"]
+
+[[setting]]
+key = "search_engine"
+type = "select"
+label_key = "settings.search_engine.label"
+description_key = "settings.search_engine.description"
+default = "Google"
+options = [
+  { value = "Google", label_key = "settings.search_engine.options.google" },
+  { value = "DuckDuckGo", label_key = "settings.search_engine.options.duckduckgo" },
+  { value = "Bing", label_key = "settings.search_engine.options.bing" },
+  { value = "Brave", label_key = "settings.search_engine.options.brave" },
+  { value = "Yandex", label_key = "settings.search_engine.options.yandex" },
+]
+
+[[setting]]
+key = "direct_url"
+type = "bool"
+label_key = "settings.direct_url.label"
+description_key = "settings.direct_url.description"
+default = true
+
+[[setting]]
+key = "show_suggestions"
+type = "bool"
+label_key = "settings.show_suggestions.label"
+description_key = "settings.show_suggestions.description"
+default = true
+
+[[setting]]
+key = "max_results"
+type = "int"
+label_key = "settings.max_results.label"
+description_key = "settings.max_results.description"
+default = 5
+min = 1
+max = 10
+
+[[launcher_provider]]
+id = "search"
+entry = "launcher.luau"
+prefix = "web"
+glyph = "world"
+include_in_global_search = true
+debounce_ms = 250

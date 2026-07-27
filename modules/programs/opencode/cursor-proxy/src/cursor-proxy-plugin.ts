@@ -66,14 +66,20 @@ function cursorModel(name: string, modelId: string) {
   };
 }
 
-function pluginApi(port: number) {
+function pluginApi(port: number, workspace: string) {
   return {
     config: (cfg: OpenCodeConfig) => {
       cfg.provider = cfg.provider || {};
       cfg.provider["cursor-acp"] = {
         name: "Cursor ACP",
         npm: "@ai-sdk/openai-compatible",
-        options: { baseURL: `http://127.0.0.1:${port}/v1` },
+        options: {
+          baseURL: `http://127.0.0.1:${port}/v1`,
+          // Tell the shared proxy which directory this opencode instance is in,
+          // so cursor-agent runs in (and saves files to) the right workspace
+          // instead of whichever directory the proxy first started in.
+          headers: { "x-cursor-workspace": encodeURIComponent(workspace) },
+        },
         models: {
           auto: cursorModel("Cursor - Auto", "auto"),
           "composer-2.5": cursorModel("Composer 2.5", "composer-2.5"),
@@ -102,15 +108,17 @@ function pluginApi(port: number) {
   };
 }
 
-export default async function cursorProxyPlugin() {
+export default async function cursorProxyPlugin(input?: { directory?: string }) {
   const port = parseInt(process.env.CURSOR_PROXY_PORT || "32124", 10);
   const cursorBin = process.env.CURSOR_AGENT_BIN || "cursor-agent";
-  const workspace = process.env.CURSOR_WORKSPACE || process.cwd();
+  // Prefer the directory opencode initialized this plugin with; fall back to env/cwd.
+  const workspace =
+    input?.directory || process.env.CURSOR_WORKSPACE || process.cwd();
   const nodeBin = process.env.NODE_BIN || "node";
 
   if (await proxyReachable(port)) {
     proxyLog(`using existing proxy on port ${port}`);
-    return pluginApi(port);
+    return pluginApi(port, workspace);
   }
 
   proxyLog(`spawning ${nodeBin} ${PROXY_SCRIPT}`);
@@ -174,5 +182,5 @@ export default async function cursorProxyPlugin() {
     if (tail) proxyError(tail);
   }
 
-  return pluginApi(port);
+  return pluginApi(port, workspace);
 }

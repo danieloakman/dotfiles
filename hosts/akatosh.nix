@@ -45,12 +45,10 @@ in
         ];
         hyprpaper.wallpaper = wallpaperPath;
       };
-      uiShell = "noctalia";
-      noctalia = {
+      uiShell = "noctalia-v5";
+      noctaliaV5 = {
         bar.monitors = [ "DP-2" ];
-        location.name = "Sydney";
-        notifications.monitors = [ "DP-2" ];
-        # hooks.session = ''noctalia-shell ipc call state all > "${env.home}/repos/personal/dotfiles/modules/hyprland.linux/noctalia/noctalia.json"'';
+        location.address = "Sydney";
       };
       # gnome.enable = true;
     };

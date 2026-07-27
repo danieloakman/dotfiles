@@ -1,0 +1,36 @@
+{
+  "settings": {
+    "search_engine": {
+      "label": "Search engine",
+      "description": "Engine used for search and autocomplete suggestions.",
+      "options": {
+        "google": "Google",
+        "duckduckgo": "DuckDuckGo",
+        "bing": "Bing",
+        "brave": "Brave",
+        "yandex": "Yandex"
+      }
+    },
+    "direct_url": {
+      "label": "Direct URL opening",
+      "description": "Detect URLs, IPs, and localhost and open them directly instead of searching."
+    },
+    "show_suggestions": {
+      "label": "Show search suggestions",
+      "description": "Fetch live autocomplete suggestions while typing."
+    },
+    "max_results": {
+      "label": "Maximum suggestions",
+      "description": "How many autocomplete suggestions to show (1–10)."
+    }
+  },
+  "launcher": {
+    "type_something": "Type something…",
+    "search_internet": "Search the internet with {engine}",
+    "search": "Search \"{query}\"",
+    "open_in": "Open in {engine}",
+    "open_url": "Open {url}",
+    "open_url_description": "Open URL directly in the browser",
+    "suggestion": "Suggestion from {engine}"
+  }
+}

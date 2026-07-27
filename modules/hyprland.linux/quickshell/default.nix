@@ -11,6 +11,9 @@ in
       }
     ];
 
+    # No dedicated greeter; passwordless greetd auto-login into Hyprland.
+    my.desktop.hyprland.autoLogin = true;
+
     home-manager.users.${env.user} = {
       wayland.windowManager.hyprland = {
         settings = {

@@ -1,4 +1,5 @@
-# The way this is setup with greetd is not fully secure. It's possible somebody could bypass the lock screen.
+# Hyprlock as greeter: greetd auto-logs into Hyprland, then exec-once runs
+# hyprlock as the password gate. Not fully secure — the lock screen can be bypassed.
 { env, lib, config, ... }:
 {
   options.my.services.hyprlock.enable = lib.mkEnableOption "Enable the Hyprlock lockscreen";
@@ -10,6 +11,9 @@
         message = "Hyprlock requires Hyprland to be enabled";
       }
     ];
+
+    # Auto-login so hyprlock (exec-once below) is the login UI.
+    my.desktop.hyprland.autoLogin = true;
 
     security.pam.services = {
       hyprlock = {

@@ -25,6 +25,14 @@
     };
     import-tree.url = "github:vic/import-tree";
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules"; # https://birdeehub.github.io/nix-wrapper-modules
+    # Noctalia v5 (native rewrite). No nixpkgs.follows so the Cachix binary cache stays usable.
+    # https://docs.noctalia.dev/v5/getting-started/nixos/
+    noctalia.url = "github:noctalia-dev/noctalia";
+    # https://docs.noctalia.dev/v5/greeter/
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -138,12 +146,14 @@
               "https://nix-community.cachix.org"
               "https://srid.cachix.org"
               "https://hyprland.cachix.org" # Enable cachix for hyprland, otherwise hyprland will be built from source
+              "https://noctalia.cachix.org" # Prebuilt noctalia (v5), avoids compiling from source
             ];
             trusted-substituters = [ "https://hyprland.cachix.org" ];
             trusted-public-keys = [
               "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
               "srid.cachix.org-1:MTQ6ksbfz3LBMmjyPh0PLmos+1x+CdtJxA/J2W+PQxI="
               "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+              "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
             ];
           };
         };

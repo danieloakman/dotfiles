@@ -13,7 +13,11 @@ import type { ChatMessage, ContentPart, StreamEvent } from "./types.js";
 
 const PORT = parseInt(process.env.PORT || "32124", 10);
 const CURSOR_BIN = process.env.CURSOR_AGENT_BIN || "cursor-agent";
-const WORKSPACE = process.env.CURSOR_WORKSPACE || process.cwd();
+// Fallback only. The proxy is a long-lived singleton shared across opencode
+// instances, so the real workspace is resolved per request from the
+// `x-cursor-workspace` header (see resolveWorkspace). Baking a single workspace
+// here caused every request to use whichever directory the proxy first started in.
+const DEFAULT_WORKSPACE = process.env.CURSOR_WORKSPACE || process.cwd();
 
 process.on("uncaughtException", (err) => {
   proxyError("uncaughtException:", err.stack || err.message || err);
@@ -29,8 +33,29 @@ process.on("unhandledRejection", (reason) => {
 });
 
 proxyLog(
-  `start pid=${process.pid} port=${PORT} cursor=${CURSOR_BIN} workspace=${WORKSPACE}`
+  `start pid=${process.pid} port=${PORT} cursor=${CURSOR_BIN} default_workspace=${DEFAULT_WORKSPACE}`
 );
+
+function resolveWorkspace(req: http.IncomingMessage): string {
+  const header = req.headers["x-cursor-workspace"];
+  const raw = Array.isArray(header) ? header[0] : header;
+  if (raw) {
+    try {
+      const decoded = decodeURIComponent(raw);
+      if (
+        path.isAbsolute(decoded) &&
+        fs.existsSync(decoded) &&
+        fs.statSync(decoded).isDirectory()
+      ) {
+        return decoded;
+      }
+      proxyError(`ignoring invalid x-cursor-workspace header: ${decoded}`);
+    } catch {
+      proxyError(`ignoring malformed x-cursor-workspace header: ${raw}`);
+    }
+  }
+  return DEFAULT_WORKSPACE;
+}
 
 function isImageMime(mime: string | undefined): boolean {
   return typeof mime === "string" && mime.startsWith("image/");
@@ -87,8 +112,8 @@ function writeImagePart(part: ContentPart, tmpDir: string, idx: number): string 
   return null;
 }
 
-function collectImagePaths(messages: ChatMessage[]): string[] {
-  const tmpDir = path.join(WORKSPACE, ".cursor-proxy-images", String(process.pid));
+function collectImagePaths(messages: ChatMessage[], workspace: string): string[] {
+  const tmpDir = path.join(workspace, ".cursor-proxy-images", String(process.pid));
   const paths: string[] = [];
   let idx = 0;
   for (const m of messages) {
@@ -119,7 +144,10 @@ function appendImagePaths(lines: string[], imagePaths: string[]): void {
   }
 }
 
-function buildPrompt(messages: ChatMessage[], imagePaths = collectImagePaths(messages)): string {
+function buildPrompt(
+  messages: ChatMessage[],
+  imagePaths = collectImagePaths(messages, DEFAULT_WORKSPACE)
+): string {
   const lines: string[] = [];
   for (const m of messages) {
     const role = m.role || "user";
@@ -143,7 +171,7 @@ function buildPrompt(messages: ChatMessage[], imagePaths = collectImagePaths(mes
 
 function buildPromptWithToolResults(
   messages: ChatMessage[],
-  imagePaths = collectImagePaths(messages)
+  imagePaths = collectImagePaths(messages, DEFAULT_WORKSPACE)
 ): string {
   const lines: string[] = [];
   for (const m of messages) {
@@ -256,7 +284,7 @@ const server = http.createServer(async (req, res) => {
 
   if (url.pathname === "/health") {
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ ok: true, workspace: WORKSPACE }));
+    res.end(JSON.stringify({ ok: true, workspace: DEFAULT_WORKSPACE }));
     return;
   }
 
@@ -318,16 +346,17 @@ const server = http.createServer(async (req, res) => {
   const messages = Array.isArray(parsed.messages) ? parsed.messages : [];
   const stream = parsed.stream === true;
   const model = stripModelPrefix(parsed.model);
+  const workspace = resolveWorkspace(req);
   const includeThinking = process.env.CURSOR_PROXY_INCLUDE_THINKING !== "false";
   const useStreamPartial = process.env.CURSOR_PROXY_PARTIAL !== "false";
-  const imagePaths = collectImagePaths(messages);
+  const imagePaths = collectImagePaths(messages, workspace);
   const hasToolResults = messages.some((m) => m.role === "tool");
   const prompt = hasToolResults
     ? buildPromptWithToolResults(messages, imagePaths)
     : buildPrompt(messages, imagePaths);
 
   proxyLog(
-    `[cursor-proxy] ${req.method} /v1/chat/completions model=${model} msgs=${messages.length} stream=${stream} images=${imagePaths.length} prompt=${prompt.length}ch`
+    `[cursor-proxy] ${req.method} /v1/chat/completions model=${model} msgs=${messages.length} stream=${stream} images=${imagePaths.length} prompt=${prompt.length}ch workspace=${workspace}`
   );
 
   const id = `cursor-${Date.now()}`;
@@ -340,7 +369,7 @@ const server = http.createServer(async (req, res) => {
     "stream-json",
     "--force",
     "--workspace",
-    WORKSPACE,
+    workspace,
     "--model",
     model,
   ];
@@ -348,6 +377,7 @@ const server = http.createServer(async (req, res) => {
 
   const child = spawn(CURSOR_BIN, args, {
     stdio: ["pipe", "pipe", "pipe"],
+    cwd: workspace,
     env: { ...process.env },
   });
 

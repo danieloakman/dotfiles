@@ -40,7 +40,7 @@ in
   options.my.desktop = {
     # Reason why we this isn't hyprland.uiShell is because technically some of these are wayland compositor agnostic. So in the future we may want to try one of them with Niri for example.
     uiShell = lib.mkOption {
-      type = lib.types.enum [ "ags" "noctalia" "quickshell" "waybar" null ];
+      type = lib.types.enum [ "ags" "noctalia" "noctalia-v5" "quickshell" "waybar" null ];
       default = null;
       description = "The UI shell to use for the desktop environment.";
     };
@@ -79,6 +79,17 @@ in
         default = null;
         description = "Wallpaper image for hyprpaper on all configured monitors.";
       };
+    };
+
+    autoLogin = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Passwordless greetd auto-login into Hyprland. Greeter modules opt into
+        the pattern they need: hyprlock sets this true (lock screen is the
+        gate after auto-login); noctalia-v5 greeter leaves it false and owns
+        the greetd session instead.
+      '';
     };
   };
 
@@ -453,16 +464,23 @@ in
     #
     # If you use another display manager (e.g. GDM with GNOME), disable greetd in the host:
     #   services.greetd.enable = lib.mkForce false;
+    #
+    # Default: passwordless auto-login is off. Greeter modules enable the
+    # pattern they need via `my.desktop.hyprland.autoLogin` (hyprlock) or by
+    # configuring `services.greetd.settings` themselves (noctalia-greeter).
     security.pam.services.greetd.enableGnomeKeyring = true;
-    services.greetd = {
-      enable = true;
-      settings = rec {
-        initial_session = {
+    services.greetd.enable = true;
+    services.greetd.settings = lib.mkIf cfg.autoLogin (
+      let
+        autoLogin = {
           command = "${lib.getExe hyprlandPkg} > /dev/null 2>&1";
           inherit (env) user;
         };
-        default_session = initial_session;
-      };
-    };
+      in
+      {
+        initial_session = autoLogin;
+        default_session = autoLogin;
+      }
+    );
   };
 }

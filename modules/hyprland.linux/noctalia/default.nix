@@ -321,6 +321,9 @@ in
       message = "Noctalia requires Hyprland to be enabled";
     }];
 
+    # No dedicated greeter; passwordless greetd auto-login into Hyprland.
+    my.desktop.hyprland.autoLogin = true;
+
     environment.systemPackages = with pkgs; lib.mkMerge [
       [
         # Shim and wrapped pkg both install bin/noctalia-shell; hiPrio/lowPrio resolve the

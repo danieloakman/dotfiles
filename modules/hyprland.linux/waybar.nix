@@ -12,6 +12,9 @@ in
       }
     ];
 
+    # No dedicated greeter; passwordless greetd auto-login into Hyprland.
+    my.desktop.hyprland.autoLogin = true;
+
     # If we ever decided to use waybar again, we would need to enable other modules like blueman, lockscreen, etc.
 
     home-manager.users.${env.user} = {
