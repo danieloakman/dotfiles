@@ -1,7 +1,16 @@
 {
+  "launcher": {
+    "loading": "Loading…",
+    "otp_title": "OTP: {title}",
+    "password_for": "Password for {entry}",
+    "pick_entry": "Select a password entry first"
+  },
   "notification": {
     "copied": "Password copied.",
     "copy_failed": "Failed to copy password.",
+    "field_copied": "Field copied.",
+    "otp_copied": "OTP code copied.",
+    "show_failed": "Failed to read password entry.",
     "store_not_found": "Password store not found.",
     "unlocking": "Unlocking GPG key…"
   },

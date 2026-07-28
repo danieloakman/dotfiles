@@ -152,6 +152,7 @@ in
 
       home.packages = [
         pkgs.wl-clipboard
+        pkgs.wtype # Required for local/pass auto-paste after copy
         dumpSettings
       ];
 
@@ -163,8 +164,8 @@ in
 
           bind = [
             "$mod, space, exec, $noctaliaMsg panel-toggle launcher" # Application launcher
-            "$mod, Q, exec, $noctaliaMsg panel-toggle launcher /pass" # Password-store (local/pass)
-            "$mod, S, exec, $noctaliaMsg panel-toggle launcher /web" # Web search (local/web-search)
+            "$mod, Q, exec, $noctaliaMsg panel-toggle launcher '/pass '" # Password-store (local/pass)
+            "$mod, S, exec, $noctaliaMsg panel-toggle launcher '/web '" # Web search (local/web-search)
             "$mod, G, exec, $noctaliaMsg panel-toggle launcher /emo" # Emoji picker (launcher emoji provider)
           ];
           bindl = [

@@ -1,14 +1,14 @@
 id = "local/pass"
 name = "Pass"
-version = "0.0.1"
+version = "0.1.0"
 plugin_api = 3
 author = "local"
 license = "MIT"
 deprecated = false
 icon = "key"
-description = "Search and copy password-store entries from the Noctalia launcher"
+description = "Browse password-store entries, copy fields, passwords, and OTP codes"
 tags = ["launcher", "privacy", "productivity", "utility"]
-dependencies = ["pass", "pass-otp", "gpg", "wl-copy"]
+dependencies = ["pass", "pass-otp", "gpg", "wl-copy", "wtype"]
 
 [[setting]]
 key = "refresh_interval"
