@@ -13,6 +13,7 @@ in
 
     # No dedicated greeter; passwordless greetd auto-login into Hyprland.
     my.desktop.hyprland.autoLogin = true;
+    my.services.stylix.enable = true;
 
     home-manager.users.${env.user} = {
       wayland.windowManager.hyprland = {

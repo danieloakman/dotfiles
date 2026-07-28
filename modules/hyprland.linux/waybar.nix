@@ -14,6 +14,7 @@ in
 
     # No dedicated greeter; passwordless greetd auto-login into Hyprland.
     my.desktop.hyprland.autoLogin = true;
+    my.services.stylix.enable = true;
 
     # If we ever decided to use waybar again, we would need to enable other modules like blueman, lockscreen, etc.
 

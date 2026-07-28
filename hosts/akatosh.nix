@@ -88,10 +88,6 @@ in
     };
     scripts.bun.enable = true;
     services = {
-      stylix = {
-        enable = true;
-        wallpaper = wallpaperPath;
-      };
       docker.enable = true;
       headroom.enable = true;
       llama-cpp = {

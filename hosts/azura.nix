@@ -81,10 +81,6 @@ in
     scripts.bun.enable = true;
     services = {
       syncthing.enable = true;
-      stylix = {
-        enable = true;
-        wallpaper = wallpaperPath;
-      };
       # docker.enable = true;
     };
   };

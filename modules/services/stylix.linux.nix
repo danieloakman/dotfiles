@@ -32,11 +32,19 @@ in
   };
 
   options.my.services.stylix = {
-    enable = lib.mkEnableOption "Enable the Stylix module for setting the wallpaper and theme of the desktop.";
+    enable = lib.mkEnableOption ''
+      Enable Stylix for wallpaper-derived GTK/Qt/app theming.
+      Enabled by the GNOME module and every Hyprland UI shell except noctalia-v5
+      (which uses Noctalia's own app templates instead).
+    '';
     wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = "The wallpaper to use for the desktop.";
+      description = ''
+        Wallpaper image Stylix derives colors from. Hyprland sets this from
+        `my.desktop.hyprland.hyprpaper.wallpaper` by default; set explicitly for
+        GNOME-only hosts.
+      '';
     };
   };
 

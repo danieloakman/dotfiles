@@ -323,6 +323,7 @@ in
 
     # No dedicated greeter; passwordless greetd auto-login into Hyprland.
     my.desktop.hyprland.autoLogin = true;
+    my.services.stylix.enable = true;
 
     environment.systemPackages = with pkgs; lib.mkMerge [
       [

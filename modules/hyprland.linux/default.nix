@@ -105,6 +105,8 @@ in
       }
     ];
     my = {
+      # Wallpaper for Stylix when a non-v5 shell/GNOME enables it.
+      services.stylix.wallpaper = lib.mkDefault cfg.hyprpaper.wallpaper;
       programs = {
         kitty.enable = true;
         ydotool.enable = true;

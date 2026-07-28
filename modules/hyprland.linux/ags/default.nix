@@ -21,6 +21,7 @@ in
         blueman.enable = true;
         hyprlock.enable = true;
         hypridle.enable = true;
+        stylix.enable = true;
       };
       programs.swayUtils = {
         enable = true;
