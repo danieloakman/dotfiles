@@ -1,6 +1,6 @@
 --!nonstrict
 -- Port of the v4 web-search launcher provider.
--- Prefix: /web <query>. Also answers unprefixed (global) search as a low-priority fallback.
+-- Prefix: /web <query>. Not included in unprefixed (global) launcher search.
 
 local lastQuery = ""
 local suggestions = {}

@@ -22,7 +22,7 @@ Local port of the v4 web-search launcher provider: search the web from Noctalia 
 /web localhost:3000
 ```
 
-Super+S opens the launcher on `/web`. The provider also answers unprefixed launcher queries as a low-priority fallback (v4 behaviour).
+Super+S opens the launcher on `/web`. Unprefixed launcher search does not include this provider.
 
 Activate a result to open it in the default browser.
 
