@@ -42,8 +42,8 @@ local function wordMatch(query, text)
 end
 
 local function pasteClipboard()
-  -- Launcher closes on activate; wait for focus to return before pasting.
-  noctalia.runAsync("sleep 0.15 && wtype -M ctrl v -m ctrl")
+  -- TODO: auto-paste after copy isn't reliable yet (launcher focus timing).
+  -- noctalia.runAsync("sleep 0.15 && wtype -M ctrl v -m ctrl")
 end
 
 local function parseFields(stdout)
