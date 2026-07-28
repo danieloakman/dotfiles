@@ -37,6 +37,13 @@ let
         tooltip_format = "{:%H:%M %a, %b %d}";
       };
       shell.launcher.providers.session.global = true;
+      # System GTK theming from Noctalia's palette (replaces Stylix on this shell).
+      # Writes gtk-*/noctalia.css and runs apply.sh → adw-gtk3(-dark) + color-scheme.
+      # https://docs.noctalia.dev/v5/templates/official/gtk-qt/
+      theme.templates = {
+        enable_builtin_templates = true;
+        builtin_ids = [ "gtk3" "gtk4" ];
+      };
       plugins = {
         enabled = [ "local/pass" "local/web-search" ];
         # Declaring source replaces the built-in defaults, so re-list official +
@@ -133,11 +140,17 @@ in
   };
 
   config = lib.mkIf cfgEnabled {
-    assertions = [{
-      # Extend this if a non-Hyprland Wayland compositor is ever supported.
-      assertion = config.my.desktop.hyprland.enable;
-      message = "Noctalia requires Hyprland to be enabled";
-    }];
+    assertions = [
+      {
+        # Extend this if a non-Hyprland Wayland compositor is ever supported.
+        assertion = config.my.desktop.hyprland.enable;
+        message = "Noctalia requires Hyprland to be enabled";
+      }
+      {
+        assertion = !config.my.services.stylix.enable;
+        message = "noctalia-v5 themes GTK via its own templates; disable my.services.stylix (other shells/GNOME enable it).";
+      }
+    ];
 
     home-manager.users.${env.user} = { ... }: {
       imports = [ inputs.noctalia.homeModules.default ];
@@ -151,6 +164,7 @@ in
       };
 
       home.packages = [
+        pkgs.adw-gtk3 # Required by Noctalia GTK templates (adw-gtk3 / adw-gtk3-dark)
         pkgs.wl-clipboard
         pkgs.wtype # Required for local/pass auto-paste after copy
         dumpSettings
