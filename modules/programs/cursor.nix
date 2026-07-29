@@ -92,7 +92,6 @@ in
 
       my.programs.cursor.agent.enable = lib.mkDefault (
         cfg.enable
-        || (config.my.services.cursorAgentHttp.enable or false)
         || (
           (config.my.programs.opencode.enable or false)
           && (config.my.programs.opencode.providers.cursor.enable or false)
