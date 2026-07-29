@@ -5,14 +5,12 @@ let
   cfgEnabled = config.my.desktop.uiShell == "noctalia-v5";
   ncfg = config.my.desktop.noctaliaV5;
 
-  # Hyprland monitor lines look like "DP-2, 3440x1440@144Hz, 1920x0, 1.0"; the
-  # connector name is the first comma-separated token.
+  # First token of a Hyprland monitor line ("DP-2, 3440x1440@144Hz, …").
   connectorOf = line: builtins.head (lib.splitString "," line);
   allConnectors = map connectorOf config.my.desktop.hyprland.monitors;
 
-  # v5 spawns a bar on every connected monitor, then applies per-monitor
-  # overrides. To emulate v4's `bar.monitors` allow-list we disable the bar on
-  # every known connector that is not in the list. See https://docs.noctalia.dev/v5/bar/
+  # Emulate v4 `bar.monitors` allow-list: disable bar on connectors not listed.
+  # https://docs.noctalia.dev/v5/bar/
   disabledBarConnectors =
     if ncfg.bar.monitors == null then
       [ ]
@@ -21,9 +19,7 @@ let
 
   barMonitorOverrides = lib.genAttrs disabledBarConnectors (_: { enabled = false; });
 
-  # Minimal, host-specific declarative config. Everything else is left to v5
-  # defaults and the writable GUI state file (~/.local/state/noctalia/settings.toml),
-  # which loads last and overrides this config. See the module README / plan.
+  # Host-specific declarative config; GUI state (~/.local/state/noctalia/settings.toml) overrides.
   baseSettings = lib.recursiveUpdate
     {
       bar = {
@@ -39,8 +35,7 @@ let
       shell.launcher.providers.session.global = true;
       plugins = {
         enabled = [ "local/pass" "local/web-search" ];
-        # Declaring source replaces the built-in defaults, so re-list official +
-        # community, then our checkout for live Luau edits.
+        # Declaring source replaces built-ins; re-list official + community + our checkout.
         source = [
           {
             name = "official";
@@ -71,9 +66,7 @@ let
 
   finalSettings = lib.recursiveUpdate baseSettings ncfg.settingsExtra;
 
-  # Print the writable GUI state file so runtime tweaks can be snapshotted. v5
-  # never rewrites files under ~/.config/noctalia, so the declarative config
-  # above stays clean.
+  # Snapshot GUI state (v5 does not rewrite ~/.config/noctalia).
   dumpSettings = pkgs.writeShellScriptBin "noctalia-dump-settings" ''
     state="''${XDG_STATE_HOME:-$HOME/.local/state}/noctalia/settings.toml"
     if [ -f "$state" ]; then
@@ -144,8 +137,7 @@ in
 
       programs.noctalia = {
         enable = true;
-        # Launched via Hyprland exec-once below (mirrors the v4 module). Flip this
-        # to true to use the systemd user service instead (drop the exec-once then).
+        # Launched via Hyprland exec-once below; set true to use the systemd user service instead.
         systemd.enable = false;
         settings = finalSettings;
       };

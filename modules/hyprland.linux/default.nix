@@ -38,7 +38,7 @@ let
 in
 {
   options.my.desktop = {
-    # Reason why we this isn't hyprland.uiShell is because technically some of these are wayland compositor agnostic. So in the future we may want to try one of them with Niri for example.
+    # Under desktop (not hyprland) so shells can be reused with other compositors (e.g. Niri).
     uiShell = lib.mkOption {
       type = lib.types.enum [ "ags" "noctalia" "noctalia-v5" "quickshell" "waybar" null ];
       default = null;
@@ -458,16 +458,9 @@ in
       };
     };
 
-    # greetd must be enabled for Hyprland to start at boot. It used to live only in
-    # hyprlock.nix (pulled in by the AGS module), so switching uiShell to noctalia
-    # turned greetd off and left a TTY at boot.
-    #
-    # If you use another display manager (e.g. GDM with GNOME), disable greetd in the host:
+    # greetd at boot (was only in hyprlock.nix; noctalia uiShell left a TTY). Disable if using GDM etc:
     #   services.greetd.enable = lib.mkForce false;
-    #
-    # Default: passwordless auto-login is off. Greeter modules enable the
-    # pattern they need via `my.desktop.hyprland.autoLogin` (hyprlock) or by
-    # configuring `services.greetd.settings` themselves (noctalia-greeter).
+    # Auto-login via `autoLogin` (hyprlock) or greeter modules' own greetd settings.
     security.pam.services.greetd.enableGnomeKeyring = true;
     services.greetd.enable = true;
     services.greetd.settings = lib.mkIf cfg.autoLogin (

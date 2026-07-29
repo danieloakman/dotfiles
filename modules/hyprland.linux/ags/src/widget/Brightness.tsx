@@ -34,7 +34,6 @@ const canControlBrightness = maxBrightness((max) => {
   return min !== max;
 });
 
-/** Set the brightness to a value between 0 and 100. */
 export const setBrightness = debounce(async (value: number) => {
   await execAsync(`swayosd-client --brightness ${value}`).catch((err) =>
     console.error('brightness set error', err),

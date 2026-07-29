@@ -17,7 +17,6 @@ export const client = createBinding(network, 'client');
 export type NetworkClient = UnwrapAccessor<typeof client>;
 export type PrimaryConnection = ReturnType<UnwrapAccessor<NetworkClient['get_primary_connection']>>;
 
-/** The primary internet connection. Can be wired or wireless or none. */
 export const primaryConnection = iife(() => {
   const get = (): PrimaryConnection | null => network.get_client().get_primary_connection();
   return createConnection(
@@ -128,7 +127,6 @@ export default function Internet() {
   );
 }
 
-/** Displays an icon to denote the internet connection type. */
 export function InternetConnection() {
   const computed = createComputed([primaryConnectionType, wifi], (type, wifi) => ({
     type,

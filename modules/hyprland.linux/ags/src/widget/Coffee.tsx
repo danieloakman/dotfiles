@@ -31,7 +31,6 @@ const toggleHypridle = () =>
 
 const [hypridleEnabled, setHypridleEnabled] = createState<boolean>(false);
 
-/** hypridle inhibitor widget */
 export default function Coffee() {
   useSubscribe(createInterval(10000), async () => {
     const enabled = await isHypridleEnabled();

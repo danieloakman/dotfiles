@@ -1,4 +1,3 @@
-# Noctalia Greeter for greetd — always on with noctalia-v5.
 # https://docs.noctalia.dev/v5/greeter/
 # https://github.com/noctalia-dev/noctalia-greeter
 { config, lib, pkgs, env, inputs, ... }:
@@ -9,14 +8,12 @@ let
   ncfg = config.my.desktop.noctaliaV5;
   hyprlandCfg = config.my.desktop.hyprland;
 
-  # Hyprland monitor line → greeter layout entry:
-  # "DP-2, 3440x1440, 1920x0, 1.0" → "DP-2:1920,0"
+  # "DP-2, 3440x1440, 1920x0, 1.0" → "DP-2:1920,0" (Hyprland XxY → greeter X,Y)
   layoutEntry =
     line:
     let
       parts = lib.splitString "," line;
       name = lib.trim (builtins.elemAt parts 0);
-      # Hyprland uses "XxY"; greeter wants "X,Y".
       pos = builtins.replaceStrings [ "x" ] [ "," ] (lib.trim (builtins.elemAt parts 2));
     in
     "${name}:${pos}";
@@ -44,8 +41,7 @@ let
 
   baseSettings = {
     user.default = env.user;
-    # Desktop Name= from hyprland.desktop (also listed by `noctalia-greeter sessions`).
-    session.default = "Hyprland";
+    session.default = "Hyprland"; # Name= from hyprland.desktop
     keyboard.layout = "us";
     cursor = cursorSettings;
   }
@@ -75,7 +71,7 @@ in
       }
     ];
 
-    # Opt out of hyprlock-style auto-login; this module owns the greetd session.
+    # This module owns greetd; disable hyprlock-style auto-login.
     my.desktop.hyprland.autoLogin = false;
 
     programs.noctalia-greeter = {
@@ -83,11 +79,7 @@ in
       settings = finalSettings;
     };
 
-    # Greeter looks here (and XDG_DATA_DIRS); greetd starts with an empty env so
-    # the displayManager desktops path alone is not enough.
+    # greetd starts with an empty env; link sessions so the greeter can find them.
     environment.pathsToLink = [ "/share/wayland-sessions" ];
-
-    # nixpkgs greetd defaults default_session.user to "greeter"; noctalia-greeter
-    # sets default_session.command. Nothing else needed here.
   };
 }

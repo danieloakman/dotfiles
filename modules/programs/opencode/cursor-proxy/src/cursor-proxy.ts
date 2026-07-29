@@ -13,10 +13,7 @@ import type { ChatMessage, ContentPart, StreamEvent } from "./types.js";
 
 const PORT = parseInt(process.env.PORT || "32124", 10);
 const CURSOR_BIN = process.env.CURSOR_AGENT_BIN || "cursor-agent";
-// Fallback only. The proxy is a long-lived singleton shared across opencode
-// instances, so the real workspace is resolved per request from the
-// `x-cursor-workspace` header (see resolveWorkspace). Baking a single workspace
-// here caused every request to use whichever directory the proxy first started in.
+// Fallback only; real workspace comes from x-cursor-workspace per request.
 const DEFAULT_WORKSPACE = process.env.CURSOR_WORKSPACE || process.cwd();
 
 process.on("uncaughtException", (err) => {

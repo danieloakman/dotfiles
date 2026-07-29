@@ -23,7 +23,6 @@ const TRANSFORM_MAP: Record<`${RotateDirection}-${RotateTransform}`, RotateTrans
   'ccw-3': 2,
 };
 
-/** Rotates both the display and touch screen input devices. */
 export async function rotateOrientation(direction: RotateDirection) {
   const nextTransform = TRANSFORM_MAP[`${direction}-${currentTransform}`];
 
