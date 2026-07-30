@@ -48,62 +48,67 @@ in
     isDefaultEditor = lib.mkEnableOption "Make micro the default editor for the system.";
   };
 
-  config = lib.mkIf cfg.enable {
-    home-manager.users.${env.user} = {
-      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
-        EDITOR = "micro";
-        GIT_EDITOR = "micro";
-      };
+  config = lib.mkMerge [
+    {
+      my.programs.micro.enable = lib.mkDefault cfg.isDefaultEditor;
+    }
+    (lib.mkIf cfg.enable {
+      home-manager.users.${env.user} = {
+        home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+          EDITOR = "micro";
+          GIT_EDITOR = "micro";
+        };
 
-      programs = {
-        micro = {
-          enable = true;
-          settings = {
-            autosu = true;
-            backup = true;
-            clipboard = "external";
-            cursorline = true;
-            detectindent = true;
-            diffgutter = true;
-            matchbrace = true;
-            permbackup = true;
-            rmtrailingws = true;
-            savecursor = true;
-            saveundo = true;
-            softwrap = true;
-            syntax = true;
-            # Fallback when detectindent can't infer (empty/new files).
-            tabsize = 2;
-            tabstospaces = true;
+        programs = {
+          micro = {
+            enable = true;
+            settings = {
+              autosu = true;
+              backup = true;
+              clipboard = "external";
+              cursorline = true;
+              detectindent = true;
+              diffgutter = true;
+              matchbrace = true;
+              permbackup = true;
+              rmtrailingws = true;
+              savecursor = true;
+              saveundo = true;
+              softwrap = true;
+              syntax = true;
+              # Fallback when detectindent can't infer (empty/new files).
+              tabsize = 2;
+              tabstospaces = true;
 
-            # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
-            # that make micro print "Failed to decode repository data" on install.
-            pluginchannels = [
-              "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
-              "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
-            ];
+              # Prefer the unofficial stable channel: main lists dead URLs (calc, mdtree, mxc)
+              # that make micro print "Failed to decode repository data" on install.
+              pluginchannels = [
+                "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
+                "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+              ];
+            };
+          };
+
+          zsh = lib.mkIf cfg.isDefaultEditor {
+            shellAliases = {
+              "vim" = "micro";
+              "nvim" = "micro";
+              "editor" = "micro";
+            };
+            initContent = ''
+              # Set the default editor to micro
+              export EDITOR="micro"
+              export GIT_EDITOR="micro"
+            '';
           };
         };
 
-        zsh = lib.mkIf cfg.isDefaultEditor {
-          shellAliases = {
-            "vim" = "micro";
-            "nvim" = "micro";
-            "editor" = "micro";
-          };
-          initContent = ''
-            # Set the default editor to micro
-            export EDITOR="micro"
-            export GIT_EDITOR="micro"
-          '';
+        xdg.configFile = {
+          "micro/bindings.json".text = bindingsText;
+          "micro/init.lua".source = ./init.lua;
+          "micro/plug/detectindent".source = detectindentPlugin;
         };
       };
-
-      xdg.configFile = {
-        "micro/bindings.json".text = bindingsText;
-        "micro/init.lua".source = ./init.lua;
-        "micro/plug/detectindent".source = detectindentPlugin;
-      };
-    };
-  };
+    })
+  ];
 }
