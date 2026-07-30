@@ -9,24 +9,32 @@ in
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
-        my.programs.agents.enable = lib.mkDefault true;
-        my.programs.devPkgs.enable = lib.mkDefault true;
-        my.programs.jsPackageSecurity.enable = lib.mkDefault true;
-        my.programs.claude-code.enable = lib.mkDefault true;
-        my.programs.cursor.enable = lib.mkDefault true;
-        my.programs.gws.enable = lib.mkDefault true;
-        my.programs.localsend.enable = lib.mkDefault true;
-        my.programs.obsidian.enable = lib.mkDefault true;
-        my.programs.herdr.enable = lib.mkDefault true;
-        my.programs.micro.enable = lib.mkDefault true;
-        my.programs.micro.isDefaultEditor = lib.mkDefault true;
+        my.programs = {
+          agents.enable = true;
+          devPkgs.enable = true;
+          jsPackageSecurity.enable = true;
+          claude-code.enable = true;
+          cursor.enable = true;
+          gws.enable = true;
+          localsend.enable = true;
+          obsidian.enable = true;
+          herdr.enable = true;
+          micro = {
+            enable = true;
+            isDefaultEditor = true;
+          };
+        };
       }
       (env.selectPlatform {
         linux = {
-          my.programs.rtk.enable = lib.mkDefault true;
-          my.programs.hunk.enable = lib.mkDefault true;
-          my.scripts.bun.enable = lib.mkDefault true;
-          my.programs.kitty.enable = lib.mkDefault true;
+          my = {
+            programs = {
+              rtk.enable = true;
+              hunk.enable = true;
+              kitty.enable = true;
+            };
+            scripts.bun.enable = true;
+          };
         };
       })
     ]
