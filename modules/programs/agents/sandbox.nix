@@ -190,6 +190,7 @@ in
       ];
     }
     {
+      my.programs.agents.sandbox.enable = lib.mkDefault agentsCfg.enable;
       my.programs.agents.sandbox.agents.claude.enable = lib.mkDefault config.my.programs.claude-code.enable;
       my.programs.agents.sandbox.agents.cursor.enable = lib.mkDefault (
         config.my.programs.opencode.enable or false

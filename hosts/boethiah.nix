@@ -5,6 +5,7 @@
 }:
 {
   my = {
+    profiles.devWorkstation.enable = true;
     services = {
       # docker.enable = true;
       podman = {
@@ -13,23 +14,8 @@
       };
     };
     programs = {
-      agents = {
-        enable = true;
-        sandbox.enable = true;
-      };
-      devPkgs.enable = true;
-      micro = {
-        isDefaultEditor = true;
-      };
-      jsPackageSecurity.enable = true;
-      claude-code.enable = true;
-      localsend.enable = true;
-      obsidian.enable = true;
-      cursor.enable = true;
       desktopPkgs.enable = true;
       warp.enable = true;
-      gws.enable = true;
-      herdr.enable = true;
       # Disabled: hunk's bun2nix build fetches npm packages at build time,
       # and IT blocks the npm registry on this machine.
       hunk.enable = false;
