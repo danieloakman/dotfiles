@@ -1,6 +1,6 @@
 id = "local/pass"
 name = "Pass"
-version = "0.1.0"
+version = "0.1.1"
 plugin_api = 3
 author = "local"
 license = "MIT"
@@ -15,7 +15,7 @@ key = "refresh_interval"
 type = "int"
 label_key = "settings.refresh_interval.label"
 description_key = "settings.refresh_interval.description"
-default = 30
+default = 60
 min = 5
 max = 3600
 

@@ -34,11 +34,11 @@ If GPG needs an unlock passphrase during copy, the plugin opens a terminal and r
 
 | Setting | Type | Default | Description |
 | --- | --- | --- | --- |
-| `refresh_interval` | `int` | `30` | Seconds between password-store rescans. Minimum `5`, maximum `3600`. |
+| `refresh_interval` | `int` | `60` | Seconds between password-store rescans. Minimum `5`, maximum `3600`. |
 
 ## Notes
 
-- Filesystem reads: the service recursively scans the password store and indexes non-hidden `*.gpg` paths. It does not read decrypted contents for the index.
+- Filesystem reads: the cache service indexes non-hidden `*.gpg` paths via async `find` (resolving symlinks first; not a synchronous Luau walk), so it stays under noctalia’s script CPU budget. It does not read decrypted contents for the index.
 - Spawned processes: `pass show` for drill-in; `pass -c` / `pass otp -c` for secrets; `wtype` for paste; terminal fallback on GPG unlock failures for copy.
 - Clipboard/privacy: secrets go through `pass`/`pass-otp` clipboard handling; field values use `noctalia.copyToClipboard`. The plugin state stores paths/titles and the current drill-in field cache only while that entry is open.
 - Network: none.
