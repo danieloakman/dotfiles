@@ -105,7 +105,6 @@ in
       }
     ];
     my = {
-      # Wallpaper for Stylix when a non-v5 shell/GNOME enables it.
       services.stylix.wallpaper = lib.mkDefault cfg.hyprpaper.wallpaper;
       programs = {
         kitty.enable = true;
@@ -170,11 +169,14 @@ in
     # Enable GNOME Keyring so applications can store and retrieve secrets.
     services.gnome.gnome-keyring.enable = true;
 
+    # gtk.portal is UseIn=gnome; force it for Hyprland so apps see color-scheme.
     xdg.portal = {
       enable = true;
-      # extraPortals = [
-      #   hyprPkgs.xdg-desktop
-      # ];
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+      config.hyprland = {
+        default = [ "hyprland" "gtk" ];
+        "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+      };
     };
 
     home-manager.users.${env.user} = {

@@ -33,9 +33,7 @@ let
         tooltip_format = "{:%H:%M %a, %b %d}";
       };
       shell.launcher.providers.session.global = true;
-      # System GTK theming from Noctalia's palette (replaces Stylix on this shell).
-      # Writes gtk-*/noctalia.css and runs apply.sh → adw-gtk3(-dark) + color-scheme.
-      # https://docs.noctalia.dev/v5/templates/official/gtk-qt/
+      # Noctalia themes GTK (Stylix GTK target is off).
       theme.templates = {
         enable_builtin_templates = true;
         builtin_ids = [ "gtk3" "gtk4" ];
@@ -133,20 +131,20 @@ in
   };
 
   config = lib.mkIf cfgEnabled {
-    assertions = [
-      {
-        # Extend this if a non-Hyprland Wayland compositor is ever supported.
-        assertion = config.my.desktop.hyprland.enable;
-        message = "Noctalia requires Hyprland to be enabled";
-      }
-      {
-        assertion = !config.my.services.stylix.enable;
-        message = "noctalia-v5 themes GTK via its own templates; disable my.services.stylix (other shells/GNOME enable it).";
-      }
-    ];
+    assertions = [{
+      # Extend this if a non-Hyprland Wayland compositor is ever supported.
+      assertion = config.my.desktop.hyprland.enable;
+      message = "Noctalia requires Hyprland to be enabled";
+    }];
+
+    my.services.stylix.enable = true;
+    # Noctalia templates own gtk.css.
+    stylix.targets.gtk.enable = false;
 
     home-manager.users.${env.user} = { ... }: {
       imports = [ inputs.noctalia.homeModules.default ];
+
+      stylix.targets.gtk.enable = false;
 
       programs.noctalia = {
         enable = true;

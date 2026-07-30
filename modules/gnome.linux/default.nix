@@ -7,7 +7,6 @@
   };
   config = lib.mkIf config.my.desktop.gnome.enable {
     my.programs.rofi.enable = true;
-    # Generic GTK/Qt/app theming (noctalia-v5 uses its own templates instead).
     my.services.stylix.enable = true;
 
     # Not using anymore. I just prefer to use gmail in the browser:
