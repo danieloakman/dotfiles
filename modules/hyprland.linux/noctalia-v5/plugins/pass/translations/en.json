@@ -16,7 +16,7 @@
   },
   "settings": {
     "refresh_interval": {
-      "description": "How often to rescan the password store, in seconds.",
+      "description": "How often to rescan the password store with find, in seconds.",
       "label": "Refresh interval (seconds)"
     }
   }
