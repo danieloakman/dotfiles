@@ -37,9 +37,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    my.programs.agents.skillDirs.hunk-review = lib.mkIf (
-      cfg.enableClaudeIntegration && config.my.programs.agents.enable
-    ) "${hunkPackage}/skills/hunk-review";
+    my.programs.agents.skillDirs.hunk-review = lib.mkIf
+      (
+        cfg.enableClaudeIntegration && config.my.programs.agents.enable
+      ) "${hunkPackage}/skills/hunk-review";
 
     home-manager.users.${env.user} = {
       imports = [ inputs.hunk.homeManagerModules.default ];

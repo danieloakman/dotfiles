@@ -30,7 +30,7 @@ in
             }
           ))
           + ''
-          - When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
+            - When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
           '';
         git = ''
           ## Git

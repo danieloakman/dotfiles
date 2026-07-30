@@ -277,13 +277,14 @@
             bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
             stirlingPdfPackage = stirling-pdf.packages.${linuxSystem}.stirling-pdf;
           };
+          # Hosts after shared modules so plain host assignments override profile enables.
           modules = [
             inputs.home-manager.nixosModules.home-manager
             createNixCache
             { }
-            ./hosts/akatosh.nix
             importLinuxModules
             { }
+            ./hosts/akatosh.nix
           ];
         };
 
@@ -314,9 +315,9 @@
             inputs.home-manager.nixosModules.home-manager
             createNixCache
             { }
-            ./hosts/azura.nix
             importLinuxModules
             { }
+            ./hosts/azura.nix
           ];
         };
 
@@ -347,9 +348,9 @@
             home-manager.nixosModules.home-manager
             createNixCache
             { }
-            ./hosts/mara.nix
             importLinuxModules
             { }
+            ./hosts/mara.nix
           ];
         };
       };
@@ -372,9 +373,9 @@
             };
             modules = [
               home-manager.darwinModules.home-manager
-              ./hosts/boethiah.nix
               importDarwinModules
               { }
+              ./hosts/boethiah.nix
             ];
           };
         in

@@ -1,13 +1,12 @@
 # Headroom CLI via pinned uvx (PyPI). Avoids packaging the full Python/Rust tree
 # in Nix; first run caches the tool under the user's uv cache.
-{
-  lib,
-  writeShellApplication,
-  uv,
-  python313,
-  rtk,
-  stdenv,
-  ...
+{ lib
+, writeShellApplication
+, uv
+, python313
+, rtk
+, stdenv
+, ...
 }:
 let
   # PyPI CLI version; independent of the Docker image tag in headroom.linux.nix.

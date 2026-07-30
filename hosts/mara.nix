@@ -10,18 +10,8 @@
   ];
 
   my = {
+    profiles.devWorkstation.enable = true;
     programs = {
-      agents = {
-        enable = true;
-        sandbox.enable = true;
-      };
-      devPkgs.enable = true;
-      jsPackageSecurity.enable = true;
-      claude-code.enable = true;
-      rtk.enable = true;
-      herdr.enable = true;
-      hunk.enable = true;
-      cursor.enable = true;
       opencode = {
         enable = true;
         web.enable = true;
@@ -31,20 +21,12 @@
         };
       };
       # mobile-dev.enable = false;
-      gws.enable = true;
-      obsidian.enable = true;
       # tmux.enable = true;
       # zellij = {
       #   enable = true;
       #   autoStart.enable = true;
       # };
-      kitty.enable = true; # Needed for when we ssh into this host
-      micro = {
-        isDefaultEditor = true;
-      };
-      localsend.enable = true;
     };
-    scripts.bun.enable = true;
     services = {
       dnsAdBlock.enable = true;
       cockpit = let port = 19090; in {
