@@ -94,6 +94,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    my.programs.agents.rules.comments = ''
+      ## Comments
+      - Comments must be concise.
+      - Only comment code you add or change — do not add or rewrite comments on untouched code.
+      - Comment only when the code is not already self-explanatory (non-obvious why/intent, not what the next line does).
+    '';
+
     assertions = lib.concatLists (
       lib.mapAttrsToList (name: server: [
         {
