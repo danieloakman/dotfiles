@@ -18,7 +18,7 @@ in
       enable = true;
       inherit port;
       interface = "127.0.0.1";
-      user = env.user;
+      inherit (env) user;
       writeable = true;
       entrypoint = [ (lib.getExe pkgs.zsh) ];
     };

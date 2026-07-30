@@ -79,17 +79,17 @@ let
     ++ lib.optional (cursorApiKeyPath != null) cursorApiKeyPath;
 
   mkAgentSandbox =
-    {
-      pkg,
-      binName,
-      outName,
-      allowedPackages ? [ ],
-      rwDirs ? [ ],
-      rwFiles ? [ ],
-      roDirs ? [ ],
-      roFiles ? [ ],
-      env ? { },
-      allowedDomains ? { },
+    { pkg
+    , binName
+    , outName
+    , allowedPackages ? [ ]
+    , rwDirs ? [ ]
+    , rwFiles ? [ ]
+    , roDirs ? [ ]
+    , roFiles ? [ ]
+    , env ? { }
+    , allowedDomains ? { }
+    ,
     }:
     sbx.mkSandbox {
       inherit

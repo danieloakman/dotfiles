@@ -95,20 +95,22 @@ in
 
   config = lib.mkIf cfg.enable {
     assertions = lib.concatLists (
-      lib.mapAttrsToList (name: server: [
-        {
-          assertion = (server.command != null) != (server.url != null);
-          message = "my.programs.agents.mcp.${name}: exactly one of `command` or `url` must be set.";
-        }
-        {
-          assertion = server.url == null || (server.args == [ ] && server.env == { });
-          message = "my.programs.agents.mcp.${name}: `args` and `env` are only valid for stdio servers (`command`).";
-        }
-        {
-          assertion = server.headers == { } || server.url != null;
-          message = "my.programs.agents.mcp.${name}: `headers` is only valid for remote servers (`url`).";
-        }
-      ]) cfg.mcp
+      lib.mapAttrsToList
+        (name: server: [
+          {
+            assertion = (server.command != null) != (server.url != null);
+            message = "my.programs.agents.mcp.${name}: exactly one of `command` or `url` must be set.";
+          }
+          {
+            assertion = server.url == null || (server.args == [ ] && server.env == { });
+            message = "my.programs.agents.mcp.${name}: `args` and `env` are only valid for stdio servers (`command`).";
+          }
+          {
+            assertion = server.headers == { } || server.url != null;
+            message = "my.programs.agents.mcp.${name}: `headers` is only valid for remote servers (`url`).";
+          }
+        ])
+        cfg.mcp
     );
 
     home-manager.users.${env.user} =
@@ -130,39 +132,43 @@ in
         }
         # Per-file symlinks (not a whole-dir symlink) so tool-specific rules can
         # sit in ~/.cursor/rules/ alongside the shared Claude rules.
-        // lib.mapAttrs' (name: _: {
-          name = ".cursor/rules/${name}.md";
-          value = {
-            source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/rules/${name}.md";
-            force = true;
-          };
-        }) config.programs.claude-code.rules
+        // lib.mapAttrs'
+          (name: _: {
+            name = ".cursor/rules/${name}.md";
+            value = {
+              source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/rules/${name}.md";
+              force = true;
+            };
+          })
+          config.programs.claude-code.rules
         // lib.concatMapAttrs
           # If the dir is a single skill (has SKILL.md), symlink it directly; otherwise
           # treat it as a collection and symlink each subdirectory individually.
           (
             name: dir:
-            if builtins.pathExists "${dir}/SKILL.md" then
-              {
-                ".claude/skills/${name}" = {
-                  source = dir;
-                  recursive = true;
-                };
-              }
-            else
-              lib.mapAttrs' (skillName: _: {
-                name = ".claude/skills/${skillName}";
-                value = {
-                  source = "${dir}/${skillName}";
-                  recursive = true;
-                };
-              }) (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
+              if builtins.pathExists "${dir}/SKILL.md" then
+                {
+                  ".claude/skills/${name}" = {
+                    source = dir;
+                    recursive = true;
+                  };
+                }
+              else
+                lib.mapAttrs'
+                  (skillName: _: {
+                    name = ".claude/skills/${skillName}";
+                    value = {
+                      source = "${dir}/${skillName}";
+                      recursive = true;
+                    };
+                  })
+                  (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
           )
           cfg.skillDirs;
 
         programs = {
           claude-code = {
-            rules = cfg.rules;
+            inherit (cfg) rules;
             # At the moment, cursor supports finding skills in the .claude/skills directory, as do many other agents.
             inherit (cfg) skills;
             # mcpServers requires a non-null package; Darwin uses Homebrew for the binary.

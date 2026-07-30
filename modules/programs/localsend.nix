@@ -10,10 +10,10 @@ in
       environment.systemPackages = with pkgs; [
         jocalsend # Rust based TUI for localsend
       ];
-	  programs.localsend = {
-	    enable = true;
-	    openFirewall = true;
-	  };
+      programs.localsend = {
+        enable = true;
+        openFirewall = true;
+      };
     };
     darwin.homebrew.casks = [ "localsend" ];
   });
