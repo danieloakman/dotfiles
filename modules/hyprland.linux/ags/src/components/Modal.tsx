@@ -20,11 +20,9 @@ export type ModalProps = Omit<
   gdkmonitor?: Gdk.Monitor;
   transitionType?: Gtk.RevealerTransitionType;
   transitionDuration?: number;
-  /** Called when the window is shown. */
   onShow?: (contentbox: Gtk.Box) => void;
 };
 
-/** Display a modal/dialog. */
 export default function Modal({
   children,
   name,
@@ -57,7 +55,6 @@ export default function Modal({
   }
 
   function init(self: Gtk.Window) {
-    // override existing show and hide methods
     Object.assign(self, { show, hide });
   }
 

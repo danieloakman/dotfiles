@@ -39,7 +39,6 @@ export const devices = once(() =>
     }),
 );
 
-/** Whether the system has a device like a touch screen. */
 export const hasTouchDevice = () =>
   devices().then((devices) => ((devices?.touch?.length || devices?.tablets?.length) ?? 0) > 0);
 

@@ -3,7 +3,6 @@ import { IS_ON_WAYLAND } from './env';
 import { exec, spawn } from 'child_process';
 
 export class XYDoTool extends Singleton {
-	/** Whether to initialize the ydotool daemon. False by default. */
 	static initYdoToolDaemon = false;
 
 	protected readonly YDOTOOL_SOCKET = '/tmp/.ydotool_socket';
@@ -60,7 +59,6 @@ export class XYDoTool extends Singleton {
 		XYDoTool._instance = null;
 	}
 
-	/** Move mouse relative to current postiion. */
 	async moveMouse(x: number, y: number) {
 		await this.init();
 		const p = exec(this.cmd(x, y), {

@@ -2,7 +2,7 @@ import { Accessor, createComputed, createExternal, createState, onCleanup, Sette
 import { noop } from '@/js-utils';
 import { interval } from 'ags/time';
 
-/** Converts a value or accessor to an accessor. So downstream we can just always assume it's an accessor. */
+/** Normalize a value or Accessor to an Accessor. */
 export function toAccessor<T>(value: T | Accessor<T>): Accessor<T> {
   return value instanceof Accessor ? value : new Accessor(() => value);
 }
@@ -33,7 +33,6 @@ export function createExternalState<T extends object | number | string | boolean
   return [resultValue, resultSetter] as const;
 }
 
-/** Convenience function for creating a boolean state. */
 export const createBooleanState = (initialValue: boolean) => {
   const [value, set] = createState(initialValue);
   return [
@@ -71,7 +70,6 @@ export const distinctUntilChanged =
       });
     });
 
-/** Subscribe to a value and call a callback when it changes. */
 export function useSubscribe<T>(value: Accessor<T>, callback: (value: T) => void) {
   const unsub = value.subscribe(() => callback(value.get()));
   onCleanup(() => unsub());

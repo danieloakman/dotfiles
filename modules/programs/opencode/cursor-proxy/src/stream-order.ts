@@ -1,7 +1,4 @@
-/**
- * Whether a model should hold assistant content until the stream ends so that
- * late thinking (common with Auto / tool loops) cannot land after the answer.
- */
+/** Hold content until finish so late thinking (Auto / tool loops) cannot land after the answer. */
 export function shouldHoldContent(modelId: string): boolean {
   const m = modelId.toLowerCase();
   return m.includes("thinking") || m === "auto";
@@ -17,11 +14,9 @@ export type StreamOut =
   | { kind: "content"; text: string };
 
 /**
- * Join assistant fragments without gluing sentence boundaries.
- * cursor-agent often emits complete status lines as separate events; naive
- * concat yields "foo.Bar". Only insert a space when the left side ends a
- * sentence and the right starts with an uppercase letter (avoids breaking
- * token streams like "3." + "14").
+ * Join fragments without gluing sentence boundaries ("foo.Bar").
+ * Space only when left ends a sentence and right starts uppercase — avoids
+ * breaking token streams like "3." + "14".
  */
 export function joinFragments(left: string, right: string): string {
   if (!left) return right;
@@ -33,7 +28,7 @@ export function joinFragments(left: string, right: string): string {
   return left + right;
 }
 
-/** Leading spacer (if any) + right, for streaming deltas after prior content. */
+/** Delta after prior content, including any joinFragments spacer. */
 export function spacedFragment(prior: string, next: string): string {
   if (!next) return "";
   if (!prior) return next;
@@ -41,17 +36,12 @@ export function spacedFragment(prior: string, next: string): string {
 }
 
 /**
- * Streams reasoning live and buffers assistant content until finish().
- *
- * cursor-agent often emits: T → A → T → A (post-tool thinking after answer
- * text already started). Flushing content on thinking:completed lets later
- * reasoning appear after the final answer in OpenCode. Holding until the
- * stream ends keeps all reasoning before the answer.
+ * Streams reasoning live; buffers content until finish().
+ * cursor-agent often emits T→A→T→A; holding until stream end keeps reasoning before the answer.
  */
 export class ContentHold {
   private holdContent: boolean;
   private contentBuffer = "";
-  /** Last content text emitted live (when not holding), for spacing. */
   private emittedContent = "";
 
   constructor(opts: { enabled: boolean }) {
@@ -60,14 +50,12 @@ export class ContentHold {
 
   onThinkingDelta(text: string): StreamOut[] {
     if (!text) return [];
-    // Thinking appeared — keep holding content even if hold started disabled
-    // mid-stream (defensive) or after an earlier mistaken release.
+    // Keep holding even if hold started disabled mid-stream.
     this.holdContent = true;
     return [{ kind: "reasoning", text }];
   }
 
   onThinkingCompleted(): StreamOut[] {
-    // Do not flush: more thinking may arrive after tools / later phases.
     return [];
   }
 
@@ -94,13 +82,13 @@ export class ContentHold {
   }
 }
 
-/** Synthetic agent events for ordering tests (mirrors what the proxy maps). */
+/** Test stand-ins for proxy-mapped agent events. */
 export type AgentEvent =
   | { type: "thinking"; subtype: "delta"; text: string }
   | { type: "thinking"; subtype: "completed" }
   | { type: "assistant"; text: string };
 
-/** Project agent events through ContentHold the same way the stream handler does. */
+/** Run events through ContentHold as the stream handler does. */
 export function projectAgentEvents(
   events: AgentEvent[],
   opts: { holdEnabled: boolean }

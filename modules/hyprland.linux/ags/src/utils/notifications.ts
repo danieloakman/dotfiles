@@ -22,13 +22,10 @@ export { astalNotifications };
 // export const dontDisturb = createBinding(notifd, 'dont_disturb');
 
 export interface SwayncStatus {
-  /** Number of notifications. */
   count: number;
-  /** Whether Do Not Disturb is enabled. */
   dnd: boolean;
-  /** Whether the notification panel is visible. */
   visible: boolean;
-  /** Whether notifications are inhibited, i.e. prevented from being displayed. */
+  /** Prevented from being displayed. */
   inhibited: boolean;
 }
 
@@ -55,9 +52,7 @@ export function clearNotifications() {
 }
 
 export interface NotifyOptions<ActionKey extends string> {
-  /** The summary/title of the notification. */
   summary: string;
-  /** The body/message of the notification. */
   body?: string;
   icon?: NativeIcon | ({} & string);
   actions?: Record<ActionKey, string>;

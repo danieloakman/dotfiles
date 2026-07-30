@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running 'nixos-help').
-
 { env, config, lib, modulesPath, ... }:
 let
   nvidiaPkg = config.boot.kernelPackages.nvidiaPackages.mkDriver {
@@ -22,13 +18,13 @@ in
           "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
           "HDMI-A-1, 1920x1080, 5360x0, 1.0"
         ];
-        # This host basically links its 3 monitors to 3 workspaces:
+        # One workspace per monitor
         workspaces = [
           "1, monitor:DVI-D-1"
           "2, monitor:DP-2"
           "3, monitor:HDMI-A-1"
         ];
-        # Window rules — hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
+        # hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
         windowRules = [
           "workspace 1, match:class ^(vivaldi-bin)$"
           "workspace 1, match:class ^(vivaldi)$"
@@ -95,13 +91,6 @@ in
         cpuCoreCount = 6;
         gpuLayerCount = 99;
         models = {
-          # Example of how to add a model from Hugging Face using fetchurl. So this would download at build time, taking a while to download
-          # someModel = {
-          #   path = pkgs.fetchurl {
-          #     url = "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-          #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-          #   };
-          # };
           "Qwen2.5-coder-1.5b-instruct-Q8_0" = {
             path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
             contextSize = 32768; # Qwen2.5-Coder-1.5B-Instruct native config
@@ -121,7 +110,7 @@ in
       pia.enable = true;
     };
   };
-  systemd.tmpfiles.rules = [ "d /models 0755 root root -" ]; # Create the models directory in /models
+  systemd.tmpfiles.rules = [ "d /models 0755 root root -" ];
 
   boot = {
     initrd = {
@@ -130,15 +119,10 @@ in
     };
     kernelModules = [ "kvm-intel" ];
     kernelParams = [
-      # "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-      # Removed NVreg_PreserveVideoMemoryAllocations as it conflicts with suspend
-      # If you need to preserve video memory, you'll need to configure NVIDIA
-      # power management differently (see NVIDIA driver README)
+      # NVreg_PreserveVideoMemoryAllocations conflicts with suspend; use powerManagement instead
       "module_blacklist=i915"
     ];
     extraModulePackages = [ nvidiaPkg ];
-    # Limit the number of generations to 3
-    # loader.grub.configurationLimit = 3;
   };
 
   fileSystems = {
@@ -171,24 +155,16 @@ in
 
   swapDevices = [ ];
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp0s31f6.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.config.nvidia.acceptLicense = true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   imports = [
-    # Include the results of the hardware scan.
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  # Bootloader
   boot.loader = {
     efi.canTouchEfiVariables = true;
     grub = {
@@ -199,11 +175,11 @@ in
     };
   };
 
-  networking.hostName = "akatosh"; # Define your hostname.
+  networking.hostName = "akatosh";
 
   home-manager.users.${env.user} = {
     services.remmina = {
-      enable = true; # RDP client for connecting to remote desktops
+      enable = true;
       systemdService.enable = false;
     };
   };
@@ -211,27 +187,25 @@ in
   hardware = {
     enableRedistributableFirmware = true;
 
-    # This might not be needed, as it's to do with cpu graphics, which this system doesn't have. Leave it for now.
+    # Possibly unnecessary without iGPU; leave enabled for now.
     graphics.enable = true;
     graphics.enable32Bit = true;
 
-    # See https://nixos.wiki/wiki/Nvidia for more information.
+    # https://nixos.wiki/wiki/Nvidia
     nvidia = {
       modesetting.enable = true;
-      # GTX 1080 Ti + pinned 580.126.09 driver: disable GSP because this build does not provide GSP firmware.
+      # Pinned 580.126.09 has no GSP firmware for this GTX 1080 Ti build.
       gsp.enable = false;
-      # Enable power management for suspend to work properly
-      # Fine-grained requires PRIME offload (needs Turing+ GPU), so use regular PM
+      # Fine-grained PM needs Turing+ PRIME offload; use regular PM for suspend.
       powerManagement.enable = true;
       package = nvidiaPkg;
-      open = false; # Must be false as GTX 1080Ti doesn't support the open module
+      open = false; # GTX 1080 Ti does not support the open module
       nvidiaSettings = true;
     };
   };
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  # Configure remote builders
   nix.buildMachines = [
     {
       hostName = "mara";
@@ -243,11 +217,5 @@ in
     }
   ];
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "23.11";
 }

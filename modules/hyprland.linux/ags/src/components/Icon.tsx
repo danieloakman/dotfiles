@@ -104,10 +104,7 @@ export function Icon({
     (name, color) => [name, color] as const,
   );
   const iconPath = createExternal<string | undefined>(undefined, (set) => {
-    // Load the icon with the first values:
     loadIcon(...computed.get()).then(set);
-
-    // Subscribe to changes and reload the icon:
     return computed.subscribe(() => {
       loadIcon(...computed.get()).then(set);
     });
