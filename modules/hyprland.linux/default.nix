@@ -38,7 +38,7 @@ in
   options.my.desktop = {
     # Under desktop (not hyprland) so shells can be reused with other compositors (e.g. Niri).
     uiShell = lib.mkOption {
-      type = lib.types.enum [ "ags" "noctalia" "noctalia-v5" "quickshell" "waybar" null ];
+      type = lib.types.enum [ "ags" "noctalia" "noctalia-v5" "waybar" null ];
       default = null;
       description = "The UI shell to use for the desktop environment.";
     };
