@@ -49,6 +49,7 @@
       url = "github:danth/stylix";
       inputs.systems.follows = "bun2nix-systems";
     };
+    # Still needed by modules/gnome.linux/guake.nix; drop with unused-shells cleanup (#34).
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
     astal = {
       url = "github:aylur/astal";
@@ -196,6 +197,8 @@
             else if builtins.isFloat selected then
               selected + (cfg.any or 0.0)
             else if builtins.isBool selected then
+              # `||` means any=true forces true even when the platform arm is false.
+              # Prefer omitting `any` for bools, or use attrs + mkMerge if you need overrides.
               selected || (cfg.any or false)
             else
               cfg.any or { };
@@ -204,19 +207,13 @@
       linuxSystem = "x86_64-linux";
       darwinSystem = "aarch64-darwin";
 
-      linuxPkgs = import nixpkgs {
-        system = linuxSystem;
-        config = {
-          allowUnfree = true;
-        };
+      nixpkgsFor = system: import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
       };
 
-      darwinPkgs = import nixpkgs {
-        system = darwinSystem;
-        config = {
-          allowUnfree = true;
-        };
-      };
+      linuxPkgs = nixpkgsFor linuxSystem;
+      darwinPkgs = nixpkgsFor darwinSystem;
 
       importLinuxModules =
         _:
@@ -230,18 +227,50 @@
         _:
         darwinPkgs.lib.pipe import-tree [
           (i: i.filterNot (darwinPkgs.lib.hasInfix "flake")) # Skip other flake files
-          (i: i.filterNot (darwinPkgs.lib.hasInfix "linux")) # Skip .linux files
+          (i: i.filterNot (darwinPkgs.lib.hasInfix ".linux.")) # Skip .linux. files
           (i: i ./modules)
         ];
+
       forAllSystems = fn: nixpkgs.lib.genAttrs [ linuxSystem darwinSystem ] (
-        system:
-        fn (
-          import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          }
-        )
+        system: fn (nixpkgsFor system)
       );
+
+      # Hosts after shared modules so plain host assignments override profile enables.
+      mkNixosHost =
+        { name
+        , deviceType
+        , isOnWayland ? false
+        , hasGPU ? false
+        ,
+        }:
+        nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            system = linuxSystem;
+            inherit
+              inputs
+              pia
+              copyparty
+              bun2nix
+              gws
+              android-nixpkgs
+              import-tree
+              ;
+            env = createEnv {
+              platform = "linux";
+              user = "dano";
+              home = "/home/dano";
+              inherit deviceType isOnWayland hasGPU;
+            };
+            bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
+            stirlingPdfPackage = stirling-pdf.legacyPackages.${linuxSystem}.stirling-pdf;
+          };
+          modules = [
+            inputs.home-manager.nixosModules.home-manager
+            createNixCache
+            importLinuxModules
+            ./hosts/${name}.nix
+          ];
+        };
     in
     {
       packages = forAllSystems (pkgs: {
@@ -254,104 +283,22 @@
       };
 
       nixosConfigurations = {
-        akatosh = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            system = linuxSystem;
-            inherit
-              inputs
-              pia
-              copyparty
-              bun2nix
-              gws
-              android-nixpkgs
-              import-tree
-              ;
-            env = createEnv {
-              platform = "linux";
-              user = "dano";
-              home = "/home/dano";
-              deviceType = "desktop";
-              isOnWayland = true;
-              hasGPU = true;
-            };
-            bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
-            stirlingPdfPackage = stirling-pdf.packages.${linuxSystem}.stirling-pdf;
-          };
-          # Hosts after shared modules so plain host assignments override profile enables.
-          modules = [
-            inputs.home-manager.nixosModules.home-manager
-            createNixCache
-            { }
-            importLinuxModules
-            { }
-            ./hosts/akatosh.nix
-          ];
+        akatosh = mkNixosHost {
+          name = "akatosh";
+          deviceType = "desktop";
+          isOnWayland = true;
+          hasGPU = true;
         };
 
-        azura = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            system = linuxSystem;
-            inherit
-              inputs
-              pia
-              copyparty
-              bun2nix
-              gws
-              android-nixpkgs
-              import-tree
-              ;
-            env = createEnv {
-              platform = "linux";
-              user = "dano";
-              home = "/home/dano";
-              deviceType = "laptop";
-              isOnWayland = true;
-              hasGPU = false;
-            };
-            bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
-            stirlingPdfPackage = stirling-pdf.packages.${linuxSystem}.stirling-pdf;
-          };
-          modules = [
-            inputs.home-manager.nixosModules.home-manager
-            createNixCache
-            { }
-            importLinuxModules
-            { }
-            ./hosts/azura.nix
-          ];
+        azura = mkNixosHost {
+          name = "azura";
+          deviceType = "laptop";
+          isOnWayland = true;
         };
 
-        mara = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            system = linuxSystem;
-            inherit
-              inputs
-              pia
-              copyparty
-              bun2nix
-              gws
-              android-nixpkgs
-              import-tree
-              ;
-            env = createEnv {
-              platform = "linux";
-              user = "dano";
-              home = "/home/dano";
-              deviceType = "server";
-              isOnWayland = false;
-              hasGPU = false;
-            };
-            bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
-            stirlingPdfPackage = stirling-pdf.legacyPackages.${linuxSystem}.stirling-pdf;
-          };
-          modules = [
-            home-manager.nixosModules.home-manager
-            createNixCache
-            { }
-            importLinuxModules
-            { }
-            ./hosts/mara.nix
-          ];
+        mara = mkNixosHost {
+          name = "mara";
+          deviceType = "server";
         };
       };
 
@@ -374,7 +321,6 @@
             modules = [
               home-manager.darwinModules.home-manager
               importDarwinModules
-              { }
               ./hosts/boethiah.nix
             ];
           };

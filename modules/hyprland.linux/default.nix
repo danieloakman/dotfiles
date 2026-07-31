@@ -32,8 +32,6 @@ let
       hyprctl dispatch dpms on
     fi
   '';
-  # hyprPkgs = inputs.hyprland.packages."${pkgs.system}";
-  # hyprPlugins = inputs.hyprland-plugins.packages."${pkgs.system}";
   vivaldiExe = lib.getExe pkgs.vivaldi;
 in
 {
