@@ -18,9 +18,13 @@ let
     aarch64-darwin = "herdr-macos-aarch64";
   };
 
+  # Must match pkgs.herdr.version. Prefetch after a nixpkgs bump:
+  #   nix store prefetch-file "https://github.com/ogulcancelik/herdr/releases/download/vVERSION/herdr-macos-aarch64"
   binaryHashes = {
-    # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
-    aarch64-darwin = "sha256-sxNFOS0ATsHxssgh4a1gEBn6g4X+HkxpMTIetYqSB3M=";
+    "0.7.4" = {
+      # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
+      aarch64-darwin = "sha256-JJkuFiXb3LGDVKWeKZ5LJjwxJACzE5bNwHzUbtV/JKc=";
+    };
   };
 
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
@@ -32,7 +36,9 @@ let
         binaryAssetMap.${pkgs.stdenv.hostPlatform.system}
           or (throw "my.programs.herdr: unsupported Darwin system ${pkgs.stdenv.hostPlatform.system}")
       }";
-      hash = binaryHashes.${pkgs.stdenv.hostPlatform.system};
+      hash =
+        (binaryHashes.${version} or (throw "my.programs.herdr: add Darwin binaryHashes.\"${version}\" (see comment above)")).${pkgs.stdenv.hostPlatform.system}
+          or (throw "my.programs.herdr: missing Darwin hash for ${pkgs.stdenv.hostPlatform.system} at ${version}");
     };
 
     dontUnpack = true;
