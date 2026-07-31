@@ -19,6 +19,23 @@ gc:
 check *args:
     nix flake check "$@" .
 
+# Evaluate only one host config (default: current hostname). Optional: `just check-host akatosh`.
+[linux, positional-arguments]
+check-host *host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    host="${1:-$(hostname)}"
+    nix eval --raw ".#nixosConfigurations.${host}.config.system.build.toplevel.drvPath"
+    echo
+
+[macos, positional-arguments]
+check-host *host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    host="${1:-$(hostname)}"
+    nix eval --raw ".#darwinConfigurations.${host}.system.drvPath"
+    echo
+
 update:
     sudo nix flake update --flake .
 
