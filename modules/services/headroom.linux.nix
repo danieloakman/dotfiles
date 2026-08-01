@@ -26,35 +26,15 @@ let
 
   headroomCli = pkgs.callPackage ./headroom/_package.nix { };
 
-  # Rule handed to cursor + opencode (MCP-only agents) telling them to use the
-  # Headroom MCP tools. Kept out of ~/.claude/rules so Claude Code never sees it.
-  mcpUsageRule = ''
-    # Headroom context compression
-
-    A `headroom` MCP server is available. Use its tools aggressively to keep the
-    working context small.
-
-    - Before adding large content to context (long file reads, command/log output,
-      search results, API/JSON payloads), pass it through `headroom_compress` and
-      keep only the returned compact reference.
-    - When detail that was compressed away is needed again, call `headroom_retrieve`
-      with the reference instead of re-reading the source.
-    - Use `headroom_stats` to check context/compression state when unsure.
-
-    Rule: whenever a step would add a large chunk of text that can be summarized or
-    fetched on demand, prefer the headroom MCP tools over inlining it. Only skip
-    headroom when the content is already small or must be quoted verbatim.
-  '';
-
 in
 {
   options.my.services.headroom = {
     enable = lib.mkEnableOption ''
       Headroom context-compression proxy and CLI (`headroom`), run from the uvx
       package as ${env.user}'s user service. Enabling it always wires the agents:
-      Claude Code is routed through the proxy (plus MCP), while cursor and opencode
-      get the Headroom MCP server and a rule telling them to use it. Also reachable
-      on the tailnet at http://<host>:<port>/dashboard.
+      Claude Code is routed through the proxy (plus MCP), and shared agents MCP
+      registers the Headroom server for cursor/opencode. Also reachable on the
+      tailnet at http://<host>:<port>/dashboard.
     '';
 
     port = lib.mkOption {
@@ -151,23 +131,6 @@ in
         ANTHROPIC_BASE_URL = baseUrl;
         ENABLE_TOOL_SEARCH = "true";
       };
-
-      # cursor and opencode are MCP-only, so a rule nudges them to use the tools;
-      # Claude Code auto-compresses via the proxy and is excluded (see mcpUsageRule).
-      home-manager.users.${env.user} = lib.mkMerge [
-        {
-          home.file.".cursor/rules/headroom.md".text = mcpUsageRule;
-        }
-        (lib.mkIf config.my.programs.opencode.enable {
-          # OpenCode has no auto-scanned rules dir, so eager-load the file from
-          # AGENTS.md (context is `lines`; mkAfter appends to the rules index).
-          home.file.".config/opencode/rules/headroom.md".text = mcpUsageRule;
-          programs.opencode.context = lib.mkAfter ''
-
-            Read @~/.config/opencode/rules/headroom.md immediately and treat it as mandatory.
-          '';
-        })
-      ];
     }
   ]);
 }
