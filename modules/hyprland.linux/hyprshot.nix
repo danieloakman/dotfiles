@@ -23,6 +23,7 @@ in
 
       wayland.windowManager.hyprland.settings.bind = [
         ", Print, exec, ${hyprshotExe} -o ~/Pictures/Screenshots -m region"
+        "$mod, Print, exec, ${hyprshotExe} -o ~/Pictures/Screenshots -m output -m active"
       ];
     };
   };
