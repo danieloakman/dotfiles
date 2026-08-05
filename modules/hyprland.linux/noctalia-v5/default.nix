@@ -33,6 +33,23 @@ let
         tooltip_format = "{:%H:%M %a, %b %d}";
       };
       shell.launcher.providers.session.global = true;
+      # https://docs.noctalia.dev/v5/services/idle/
+      idle = {
+        pre_action_fade_seconds = 2.0;
+        behavior_order = [ "screen-off" "lock-and-suspend" ];
+        behavior = {
+          "screen-off" = {
+            action = "screen_off";
+            enabled = true;
+            timeout = 600;
+          };
+          "lock-and-suspend" = {
+            action = "lock_and_suspend";
+            enabled = true;
+            timeout = 900;
+          };
+        };
+      };
       plugins = {
         enabled = [ "local/pass" "local/web-search" ];
         # Declaring source replaces built-ins; re-list official + community + our checkout.
