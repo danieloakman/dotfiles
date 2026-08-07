@@ -1,7 +1,7 @@
 { pkgs, env, lib, config, ... }: {
-  options.my.programs.onscreenKeyboard.enable = lib.mkEnableOption "Enable the wvkbd-mobintl Wayland on-screen keyboard";
+  options.my.programs.onscreen-keyboard.enable = lib.mkEnableOption "Enable the wvkbd-mobintl Wayland on-screen keyboard";
 
-  config = lib.mkIf config.my.programs.onscreenKeyboard.enable {
+  config = lib.mkIf config.my.programs.onscreen-keyboard.enable {
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;

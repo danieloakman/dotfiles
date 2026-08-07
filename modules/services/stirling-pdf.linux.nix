@@ -1,11 +1,11 @@
 { pkgs, lib, config, env, stirlingPdfPackage, ... }:
 let
-  cfg = config.my.services.stirlingPdf;
+  cfg = config.my.services.stirling-pdf;
   inherit (cfg) port;
   portStr = toString port;
 in
 {
-  options.my.services.stirlingPdf = {
+  options.my.services.stirling-pdf = {
     enable = lib.mkEnableOption "Enable the Stirling PDF service";
     port = lib.mkOption {
       type = lib.types.int;

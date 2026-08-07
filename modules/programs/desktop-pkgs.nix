@@ -1,10 +1,10 @@
 # This module is for adding general desktop, system level packages. Stuff that has a GUI:
 { pkgs, lib, config, env, ... }:
 let
-  cfg = config.my.programs.desktopPkgs;
+  cfg = config.my.programs.desktop-pkgs;
 in
 {
-  options.my.programs.desktopPkgs.enable = lib.mkEnableOption "Enable and include various desktop only packages that have a GUI.";
+  options.my.programs.desktop-pkgs.enable = lib.mkEnableOption "Enable and include various desktop only packages that have a GUI.";
 
   config = lib.mkIf cfg.enable (env.selectPlatform {
     linux = {

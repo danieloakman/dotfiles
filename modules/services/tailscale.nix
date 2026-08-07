@@ -4,8 +4,8 @@ let
 in
 {
   options.my.services.tailscale = {
-    enableAsExitNode = lib.mkEnableOption "Enable this device as an exit node through Tailscale.";
-    useRoutingFeatures = lib.mkOption {
+    enable-as-exit-node = lib.mkEnableOption "Enable this device as an exit node through Tailscale.";
+    use-routing-features = lib.mkOption {
       type = lib.types.enum [ "none" "server" "client" "both" ];
       default = "none";
       description = "The routing features to use for Tailscale. See: https://search.nixos.org/options?channel=unstable&include_modular_service_options=1&include_nixos_options=1&query=tailscale+userouting&show=option:services.tailscale.useRoutingFeatures";
@@ -23,7 +23,7 @@ in
             "--shields-up=false"
             "--ssh" # Always allow SSH access through Tailscale.
           ]
-          (lib.mkIf cfg.enableAsExitNode [
+          (lib.mkIf cfg.enable-as-exit-node [
             "--advertise-exit-node"
             "--exit-node-allow-lan-access"
           ])
@@ -32,7 +32,7 @@ in
         extraUpFlags = [
           "--advertise-tags=\"tag:${if env.deviceType == "server" then "server" else "client"}\""
         ];
-        inherit (cfg) useRoutingFeatures;
+        useRoutingFeatures = cfg.use-routing-features;
         openFirewall = true;
         # Enables the Tailscale Serve configs:
         # For some reason, this doesn't work at the moment. So I'm just going to add enable and disable scripts for each service.

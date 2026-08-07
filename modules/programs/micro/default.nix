@@ -45,12 +45,12 @@ in
 {
   options.my.programs.micro = {
     enable = lib.mkEnableOption "Enable micro, a terminal-based text editor.";
-    isDefaultEditor = lib.mkEnableOption "Make micro the default editor for the system.";
+    is-default-editor = lib.mkEnableOption "Make micro the default editor for the system.";
   };
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
-      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+      home.sessionVariables = lib.mkIf cfg.is-default-editor {
         EDITOR = "micro";
         GIT_EDITOR = "micro";
       };
@@ -85,7 +85,7 @@ in
           };
         };
 
-        zsh = lib.mkIf cfg.isDefaultEditor {
+        zsh = lib.mkIf cfg.is-default-editor {
           shellAliases = {
             "vim" = "micro";
             "nvim" = "micro";

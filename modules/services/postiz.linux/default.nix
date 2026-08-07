@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.services.postiz;
-  publicBase = cfg.publicBaseUrl or "http://127.0.0.1:${toString cfg.port}";
+  publicBase = cfg.public-base-url or "http://127.0.0.1:${toString cfg.port}";
 
   composeDir = pkgs.runCommand "postiz-compose" { } ''
     mkdir -p $out
@@ -11,12 +11,12 @@ let
 
   startScript = pkgs.writeShellScript "postiz-compose-up" ''
     set -euo pipefail
-    export POSTIZ_JWT_SECRET="$(tr -d '\n' < ${lib.escapeShellArg cfg.jwtSecretFile})"
+    export POSTIZ_JWT_SECRET="$(tr -d '\n' < ${lib.escapeShellArg cfg.jwt-secret-file})"
     export POSTIZ_MAIN_URL=${lib.escapeShellArg publicBase}
     export POSTIZ_FRONTEND_URL=${lib.escapeShellArg publicBase}
     export POSTIZ_NEXT_PUBLIC_BACKEND_URL=${lib.escapeShellArg "${publicBase}/api"}
     export POSTIZ_HTTP_PORT=${toString cfg.port}
-    export POSTIZ_TEMPORAL_UI_PORT=${toString cfg.temporalUiPort}
+    export POSTIZ_TEMPORAL_UI_PORT=${toString cfg.temporal-ui-port}
     cd ${composeDir}
     exec ${lib.getExe pkgs.docker} compose up -d --remove-orphans
   '';
@@ -37,7 +37,7 @@ in
       description = "Host port mapped to Postiz (container port 5000).";
     };
 
-    publicBaseUrl = lib.mkOption {
+    public-base-url = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
       description = ''
@@ -46,7 +46,7 @@ in
       '';
     };
 
-    jwtSecretFile = lib.mkOption {
+    jwt-secret-file = lib.mkOption {
       type = lib.types.str;
       description = ''
         File containing the JWT secret (single line). Use a sops-nix secret path such as
@@ -54,25 +54,25 @@ in
       '';
     };
 
-    temporalUiPort = lib.mkOption {
+    temporal-ui-port = lib.mkOption {
       type = lib.types.port;
       default = 8080;
       description = "Host port for Temporal Web UI.";
     };
 
-    openFirewall = lib.mkOption {
+    open-firewall = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Open the main Postiz TCP port on the firewall. Leave false when exposing via Tailscale serve only.";
     };
 
-    openTemporalUiInFirewall = lib.mkOption {
+    open-temporal-ui-in-firewall = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Open temporalUiPort on the firewall.";
+      description = "Open temporal-ui-port on the firewall.";
     };
 
-    openSpotlightInFirewall = lib.mkOption {
+    open-spotlight-in-firewall = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Open Sentry Spotlight (TCP 8969) on the firewall.";
@@ -83,8 +83,8 @@ in
     {
       assertions = [
         {
-          assertion = cfg.jwtSecretFile != "";
-          message = "my.services.postiz.jwtSecretFile must be non-empty when Postiz is enabled.";
+          assertion = cfg.jwt-secret-file != "";
+          message = "my.services.postiz.jwt-secret-file must be non-empty when Postiz is enabled.";
         }
       ];
 
@@ -113,13 +113,13 @@ in
         };
       };
     }
-    (lib.mkIf cfg.openFirewall {
+    (lib.mkIf cfg.open-firewall {
       networking.firewall.allowedTCPPorts = [ cfg.port ];
     })
-    (lib.mkIf (cfg.openFirewall && cfg.openTemporalUiInFirewall) {
-      networking.firewall.allowedTCPPorts = [ cfg.temporalUiPort ];
+    (lib.mkIf (cfg.open-firewall && cfg.open-temporal-ui-in-firewall) {
+      networking.firewall.allowedTCPPorts = [ cfg.temporal-ui-port ];
     })
-    (lib.mkIf (cfg.openFirewall && cfg.openSpotlightInFirewall) {
+    (lib.mkIf (cfg.open-firewall && cfg.open-spotlight-in-firewall) {
       networking.firewall.allowedTCPPorts = [ 8969 ];
     })
   ]);

@@ -16,7 +16,7 @@ in
       type = lib.types.str;
       description = "The domain to use for the Paperless service";
     };
-    mediaDir = lib.mkOption {
+    media-dir = lib.mkOption {
       type = lib.types.str;
       description = "The directory to use for the Paperless media files";
     };
@@ -29,8 +29,8 @@ in
         message = "paperless.domain must be set";
       }
       {
-        assertion = cfg.mediaDir != null;
-        message = "paperless.mediaDir must be set";
+        assertion = cfg.media-dir != null;
+        message = "paperless.media-dir must be set";
       }
     ];
 

@@ -67,7 +67,7 @@ let
   agentSkillRoDirs =
     lib.map
       (name: "$HOME/.claude/skills/${name}")
-      (lib.attrNames (agentsCfg.skills // agentsCfg.skillDirs));
+      (lib.attrNames (agentsCfg.skills // agentsCfg.skill-dirs));
 
   # agent-sandbox masks $HOME; bind HM-managed git identity read-only at runtime.
   sharedRoFiles =
@@ -101,9 +101,9 @@ let
         roDirs
         env
         ;
-      allowedPackages = sbx.commonTools ++ cfg.extraAllowedPackages ++ allowedPackages;
+      allowedPackages = sbx.commonTools ++ cfg.extra-allowed-packages ++ allowedPackages;
       roFiles = sharedRoFiles ++ roFiles;
-      allowedDomains = githubDomains // allowedDomains // cfg.extraAllowedDomains;
+      allowedDomains = githubDomains // allowedDomains // cfg.extra-allowed-domains;
     };
 
   claudeSandboxed =
@@ -157,7 +157,7 @@ in
       };
     };
 
-    extraAllowedPackages = lib.mkOption {
+    extra-allowed-packages = lib.mkOption {
       type = lib.types.listOf lib.types.package;
       default = [
         pkgs.nodejs_24
@@ -166,7 +166,7 @@ in
       description = "Extra packages exposed on the sandbox PATH for all wrapped agents.";
     };
 
-    extraAllowedDomains = lib.mkOption {
+    extra-allowed-domains = lib.mkOption {
       type = lib.types.attrs;
       default = { };
       description = ''

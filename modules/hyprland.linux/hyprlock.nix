@@ -13,7 +13,7 @@
     ];
 
     # Auto-login so hyprlock (exec-once below) is the login UI.
-    my.desktop.hyprland.autoLogin = true;
+    my.desktop.hyprland.auto-login = true;
 
     security.pam.services = {
       hyprlock = {

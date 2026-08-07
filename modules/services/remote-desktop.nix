@@ -1,10 +1,10 @@
 # Lightweight remote desktop service for servers.
 { config, lib, pkgs, env, ... }:
 let
-  cfg = config.my.services.remoteDesktop;
+  cfg = config.my.services.remote-desktop;
 in
 {
-  options.my.services.remoteDesktop = {
+  options.my.services.remote-desktop = {
     enable = lib.mkEnableOption "Enable remote desktop services";
   };
 

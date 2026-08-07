@@ -37,7 +37,7 @@ in
 {
   options.my.desktop = {
     # Under desktop (not hyprland) so shells can be reused with other compositors (e.g. Niri).
-    uiShell = lib.mkOption {
+    ui-shell = lib.mkOption {
       type = lib.types.enum [ "ags" "noctalia" "noctalia-v5" "waybar" null ];
       default = null;
       description = "The UI shell to use for the desktop environment.";
@@ -65,7 +65,7 @@ in
       '';
     };
 
-    windowRules = lib.mkOption {
+    window-rules = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
       description = "Optional Hyprland window rules (`settings.windowrule`).";
@@ -79,7 +79,7 @@ in
       };
     };
 
-    autoLogin = lib.mkOption {
+    auto-login = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = ''
@@ -187,7 +187,7 @@ in
         settings = {
           monitor = cfg.monitors;
           workspace = cfg.workspaces;
-          windowrule = cfg.windowRules;
+          windowrule = cfg.window-rules;
 
           "$mod" = "SUPER";
           "$files" = "nautilus";
@@ -456,12 +456,12 @@ in
       };
     };
 
-    # greetd at boot (was only in hyprlock.nix; noctalia uiShell left a TTY). Disable if using GDM etc:
+    # greetd at boot (was only in hyprlock.nix; noctalia ui-shell left a TTY). Disable if using GDM etc:
     #   services.greetd.enable = lib.mkForce false;
-    # Auto-login via `autoLogin` (hyprlock) or greeter modules' own greetd settings.
+    # Auto-login via `auto-login` (hyprlock) or greeter modules' own greetd settings.
     security.pam.services.greetd.enableGnomeKeyring = true;
     services.greetd.enable = true;
-    services.greetd.settings = lib.mkIf cfg.autoLogin (
+    services.greetd.settings = lib.mkIf cfg.auto-login (
       let
         autoLogin = {
           command = "${lib.getExe hyprlandPkg} > /dev/null 2>&1";

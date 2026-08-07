@@ -23,8 +23,8 @@ let
         {
           inherit name;
           limit = {
-            context = model.contextSize;
-            output = llamaMaxOutputTokens model.contextSize;
+            context = model.context-size;
+            output = llamaMaxOutputTokens model.context-size;
           };
         }
         // lib.optionalAttrs (lib.hasInfix "VL" name) {
@@ -91,8 +91,8 @@ let
       plugin = opencodePlugins;
     })
     (lib.mkIf cfg.providers.cursor.enable {
-      model = "cursor-acp/${cfg.providers.cursor.defaultModel}";
-      small_model = "cursor-acp/${cfg.providers.cursor.defaultModel}";
+      model = "cursor-acp/${cfg.providers.cursor.default-model}";
+      small_model = "cursor-acp/${cfg.providers.cursor.default-model}";
     })
     {
       provider = lib.mkMerge [
@@ -130,7 +130,7 @@ in
           Use Cursor models in OpenCode via a patched local cursor-proxy plugin
           and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
         '';
-        defaultModel = lib.mkOption {
+        default-model = lib.mkOption {
           type = lib.types.str;
           default = "auto";
           description = ''
@@ -191,10 +191,10 @@ in
         {
           assertion =
             !cfg.providers.llama-cpp.enable
-            || builtins.all (model: model ? contextSize && model.contextSize > 0) (
+            || builtins.all (model: model ? context-size && model.context-size > 0) (
               builtins.attrValues llamaCppCfg.models
             );
-          message = "my.programs.opencode.providers.llama-cpp.enable requires contextSize on every my.services.llama-cpp.models entry.";
+          message = "my.programs.opencode.providers.llama-cpp.enable requires context-size on every my.services.llama-cpp.models entry.";
         }
       ];
     }

@@ -14,7 +14,7 @@ let
 
   # Prefer a Tailscale MagicDNS origin for homepage links (must be https://).
   publicHref =
-    lib.findFirst (o: lib.hasInfix ".ts.net" o) null cfg.allowedOrigins
+    lib.findFirst (o: lib.hasInfix ".ts.net" o) null cfg.allowed-origins
       or "https://127.0.0.1:${toString cfg.port}";
 in
 {
@@ -24,7 +24,7 @@ in
       type = lib.types.int;
       default = 19090;
     };
-    allowedOrigins = lib.mkOption {
+    allowed-origins = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
       description = ''
@@ -32,7 +32,7 @@ in
         Matching `wss://` origins are added automatically for WebSocket sessions.
       '';
     };
-    tailscaleService = lib.mkOption {
+    tailscale-service = lib.mkOption {
       type = lib.types.str;
       default = "mara-cockpit";
       description = ''
@@ -44,8 +44,8 @@ in
 
   config = lib.mkIf cfg.enable {
     assertions = [{
-      assertion = cfg.allowedOrigins != [ ];
-      message = "allowedOrigins must be a non-empty list";
+      assertion = cfg.allowed-origins != [ ];
+      message = "allowed-origins must be a non-empty list";
     }];
 
     services = {
@@ -54,17 +54,17 @@ in
         inherit (cfg) port;
         # Expose via `tailscale-svc-cockpit-up` (127.0.0.1 backend).
         openFirewall = false;
-        allowed-origins = originsWithWebSockets cfg.allowedOrigins;
+        allowed-origins = originsWithWebSockets cfg.allowed-origins;
         settings.WebService.ProtocolHeader = "X-Forwarded-Proto";
       };
     };
 
     environment.systemPackages = with pkgs; [
       (writeShellScriptBin "tailscale-svc-cockpit-up" ''
-        tailscale serve --service=svc:${cfg.tailscaleService} --https=443 http://127.0.0.1:${toString cfg.port}
+        tailscale serve --service=svc:${cfg.tailscale-service} --https=443 http://127.0.0.1:${toString cfg.port}
       '')
       (writeShellScriptBin "tailscale-svc-cockpit-down" ''
-        tailscale serve clear svc:${cfg.tailscaleService}
+        tailscale serve clear svc:${cfg.tailscale-service}
       '')
     ];
 

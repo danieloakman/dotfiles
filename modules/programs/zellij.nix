@@ -6,7 +6,7 @@ in
   options.my.programs.zellij = {
     enable = lib.mkEnableOption "Enable and configure Zellij.";
 
-    autoStart = {
+    auto-start = {
       enable = lib.mkEnableOption ''
         Automatically start Zellij in every interactive zsh session.
 
@@ -14,7 +14,7 @@ in
         `$ZELLIJ` is already set.
       '';
 
-      attachExistingSession = lib.mkOption {
+      attach-existing-session = lib.mkOption {
         type = lib.types.bool;
         default = true;
         description = ''
@@ -23,7 +23,7 @@ in
         '';
       };
 
-      exitShellOnExit = lib.mkOption {
+      exit-shell-on-exit = lib.mkOption {
         type = lib.types.bool;
         default = true;
         description = ''
@@ -38,8 +38,8 @@ in
       programs.zellij = {
         enable = true;
         enableZshIntegration = true;
-        attachExistingSession = cfg.autoStart.attachExistingSession;
-        exitShellOnExit = cfg.autoStart.exitShellOnExit;
+        attachExistingSession = cfg.auto-start.attach-existing-session;
+        exitShellOnExit = cfg.auto-start.exit-shell-on-exit;
         extraConfig = ''
           keybinds {
             normal {

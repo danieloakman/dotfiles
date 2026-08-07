@@ -79,18 +79,18 @@ in
 {
   options.my.programs.lazyvim = {
     enable = lib.mkEnableOption "Enable Neovim with the LazyVim distribution.";
-    enableVSCodeKeybinds = lib.mkEnableOption ''
+    enable-vscode-keybinds = lib.mkEnableOption ''
       Map common VS Code / Cursor shortcuts on top of LazyVim defaults.
       Uses Cmd on Darwin and Ctrl on Linux (see modules/programs/lazyvim.nix).
     '';
-    isDefaultEditor = lib.mkEnableOption "Make LazyVim the default editor for the system.";
+    is-default-editor = lib.mkEnableOption "Make LazyVim the default editor for the system.";
   };
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
       imports = [ inputs.lazyvim.homeManagerModules.default ];
 
-      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+      home.sessionVariables = lib.mkIf cfg.is-default-editor {
         EDITOR = "nvim";
         GIT_EDITOR = "nvim";
       };
@@ -106,10 +106,10 @@ in
               vim.opt.relativenumber = true
               vim.opt.wrap = true
             '';
-            keymaps = lib.mkIf cfg.enableVSCodeKeybinds vscodeKeymaps;
+            keymaps = lib.mkIf cfg.enable-vscode-keybinds vscodeKeymaps;
           };
         };
-        zsh = lib.mkIf cfg.isDefaultEditor {
+        zsh = lib.mkIf cfg.is-default-editor {
           shellAliases = {
             "vim" = "nvim";
             "editor" = "nvim";

@@ -1,7 +1,7 @@
 # Optional scheduled reboots with inhibitor/unit checks and a retry window.
 { config, lib, pkgs, ... }:
 let
-  cfg = config.my.services.periodicReboot;
+  cfg = config.my.services.periodic-reboot;
 
   cronParts = lib.splitString " " cfg.schedule;
   cronMinute = builtins.elemAt cronParts 0;
@@ -51,7 +51,7 @@ let
     };
 
   startTime = parseClock "${cronHour}:${cronMinute}";
-  endTime = parseClock cfg.retryUntil;
+  endTime = parseClock cfg.retry-until;
 
   toMinutes =
     { hour, minute }:
@@ -60,9 +60,9 @@ let
   startMins = toMinutes startTime;
   endMins = toMinutes endTime;
 
-  retryCount = builtins.div (endMins - startMins) cfg.retryInterval + 1;
+  retryCount = builtins.div (endMins - startMins) cfg.retry-interval + 1;
 
-  retryTimes = lib.genList (i: startMins + i * cfg.retryInterval) retryCount;
+  retryTimes = lib.genList (i: startMins + i * cfg.retry-interval) retryCount;
 
   pad2 =
     n:
@@ -101,7 +101,7 @@ let
       exit 0
     fi
 
-    ${lib.optionalString cfg.requireNoInhibitors ''
+    ${lib.optionalString cfg.require-no-inhibitors ''
       if ${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null \
         | ${pkgs.gawk}/bin/awk '
             $6 ~ /(^|:)shutdown(:|$)/ { found = 1 }
@@ -120,13 +120,13 @@ let
           exit 0
         fi
       ''
-    ) cfg.deferWhileActive}
+    ) cfg.defer-while-active}
 
-    ${lib.optionalString (cfg.maxLoad != null) ''
+    ${lib.optionalString (cfg.max-load != null) ''
       load=$(${pkgs.gawk}/bin/awk '{print $1}' /proc/loadavg)
-      maxLoad=${toString cfg.maxLoad}
-      if ${pkgs.gawk}/bin/awk -v load="$load" -v max="$maxLoad" 'BEGIN { exit !(load > max) }'; then
-        log "deferred: load $load exceeds $maxLoad"
+      max-load=${toString cfg.max-load}
+      if ${pkgs.gawk}/bin/awk -v load="$load" -v max="$max-load" 'BEGIN { exit !(load > max) }'; then
+        log "deferred: load $load exceeds $max-load"
         exit 0
       fi
     ''}
@@ -136,7 +136,7 @@ let
   '';
 in
 {
-  options.my.services.periodicReboot = {
+  options.my.services.periodic-reboot = {
     enable = lib.mkEnableOption ''
       Periodic reboot via a systemd timer with optional deferral checks.
       Disabled by default.
@@ -156,7 +156,7 @@ in
       '';
     };
 
-    retryInterval = lib.mkOption {
+    retry-interval = lib.mkOption {
       type = lib.types.int;
       default = 30;
       description = ''
@@ -164,7 +164,7 @@ in
       '';
     };
 
-    retryUntil = lib.mkOption {
+    retry-until = lib.mkOption {
       type = lib.types.str;
       default = "05:00";
       description = ''
@@ -172,7 +172,7 @@ in
       '';
     };
 
-    deferWhileActive = lib.mkOption {
+    defer-while-active = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
       example = [
@@ -184,7 +184,7 @@ in
       '';
     };
 
-    requireNoInhibitors = lib.mkOption {
+    require-no-inhibitors = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = ''
@@ -193,7 +193,7 @@ in
       '';
     };
 
-    maxLoad = lib.mkOption {
+    max-load = lib.mkOption {
       type = lib.types.nullOr lib.types.float;
       default = null;
       example = 4.0;
@@ -207,23 +207,23 @@ in
     assertions = [
       {
         assertion = cfg.schedule != null && cfg.schedule != "";
-        message = "my.services.periodicReboot.schedule must be a non-empty string when my.services.periodicReboot.enable is true.";
+        message = "my.services.periodic-reboot.schedule must be a non-empty string when my.services.periodic-reboot.enable is true.";
       }
       {
         assertion = lib.length cronParts == 5;
-        message = "my.services.periodicReboot.schedule must be a five-field cron expression.";
+        message = "my.services.periodic-reboot.schedule must be a five-field cron expression.";
       }
       {
         assertion = simpleSchedule;
-        message = "my.services.periodicReboot.schedule day-of-month and month must be '*' (only daily/weekly patterns are supported).";
+        message = "my.services.periodic-reboot.schedule day-of-month and month must be '*' (only daily/weekly patterns are supported).";
       }
       {
-        assertion = cfg.retryInterval > 0;
-        message = "my.services.periodicReboot.retryInterval must be positive.";
+        assertion = cfg.retry-interval > 0;
+        message = "my.services.periodic-reboot.retry-interval must be positive.";
       }
       {
         assertion = endMins >= startMins;
-        message = "my.services.periodicReboot.retryUntil must be at or after the schedule time on the same day.";
+        message = "my.services.periodic-reboot.retry-until must be at or after the schedule time on the same day.";
       }
     ];
 

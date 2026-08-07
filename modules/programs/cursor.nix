@@ -7,8 +7,8 @@
 let
   cfg = config.my.programs.cursor;
   attributionJson = builtins.toJSON {
-    attributeCommitsToAgent = cfg.agent.cliConfig.attribution.attributeCommitsToAgent;
-    attributePRsToAgent = cfg.agent.cliConfig.attribution.attributePRsToAgent;
+    attributeCommitsToAgent = cfg.agent.cli-config.attribution.attribute-commits-to-agent;
+    attributePRsToAgent = cfg.agent.cli-config.attribution.attribute-prs-to-agent;
   };
 
   hasCursorApiKeyLinux =
@@ -47,23 +47,23 @@ in
         before delegating to `pkgs.cursor-cli`.
       '';
 
-      cliConfig = {
+      cli-config = {
         attribution = {
-          attributeCommitsToAgent = lib.mkOption {
+          attribute-commits-to-agent = lib.mkOption {
             type = lib.types.bool;
             default = false;
             description = ''
               When false, the Cursor CLI agent will not add "Made with Cursor"
-              trailers to commits. Maps to `attribution.attributeCommitsToAgent`
+              trailers to commits. Maps to `attribution.attribute-commits-to-agent`
               in `~/.cursor/cli-config.json`.
             '';
           };
-          attributePRsToAgent = lib.mkOption {
+          attribute-prs-to-agent = lib.mkOption {
             type = lib.types.bool;
             default = false;
             description = ''
               When false, the Cursor CLI agent will not add attribution footers
-              to pull requests. Maps to `attribution.attributePRsToAgent` in
+              to pull requests. Maps to `attribution.attribute-prs-to-agent` in
               `~/.cursor/cli-config.json`.
             '';
           };

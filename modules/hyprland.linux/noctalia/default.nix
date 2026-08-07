@@ -2,7 +2,7 @@
 let
   inherit (lib) types optionalAttrs;
 
-  cfgEnabled = config.my.desktop.uiShell == "noctalia";
+  cfgEnabled = config.my.desktop.ui-shell == "noctalia";
   ncfg = config.my.desktop.noctalia;
 
   baseSettings = (builtins.fromJSON (builtins.readFile ./noctalia.json)).settings;
@@ -11,26 +11,26 @@ let
   hostOverlaysList =
     lib.filter (x: x != { }) [
       (optionalAttrs (ncfg.bar.monitors != null) { bar.monitors = ncfg.bar.monitors; })
-      (optionalAttrs (ncfg.general.avatarImage != null) {
-        general.avatarImage = ncfg.general.avatarImage;
+      (optionalAttrs (ncfg.general.avatar-image != null) {
+        general.avatarImage = ncfg.general.avatar-image;
       })
-      (optionalAttrs (ncfg.general.lockScreenMonitors != null) {
-        general.lockScreenMonitors = ncfg.general.lockScreenMonitors;
+      (optionalAttrs (ncfg.general.lock-screen-monitors != null) {
+        general.lockScreenMonitors = ncfg.general.lock-screen-monitors;
       })
       (optionalAttrs (ncfg.location.name != null) { location.name = ncfg.location.name; })
       (optionalAttrs (ncfg.wallpaper.directory != null) {
         wallpaper.directory = ncfg.wallpaper.directory;
       })
-      (optionalAttrs (ncfg.appLauncher.terminalCommand != null) {
-        appLauncher.terminalCommand = ncfg.appLauncher.terminalCommand;
+      (optionalAttrs (ncfg.app-launcher.terminal-command != null) {
+        appLauncher.terminalCommand = ncfg.app-launcher.terminal-command;
       })
-      (optionalAttrs (ncfg.controlCenter.diskPath != null) {
-        controlCenter.diskPath = ncfg.controlCenter.diskPath;
+      (optionalAttrs (ncfg.control-center.disk-path != null) {
+        controlCenter.diskPath = ncfg.control-center.disk-path;
       })
       (optionalAttrs (ncfg.hooks.session != null) { hooks.session = ncfg.hooks.session; })
-      { desktopWidgets.enabled = ncfg.desktopWidgets.enabled; }
-      (optionalAttrs (ncfg.desktopWidgets.monitorWidgets != null) {
-        desktopWidgets.monitorWidgets = ncfg.desktopWidgets.monitorWidgets;
+      { desktopWidgets.enabled = ncfg.desktop-widgets.enabled; }
+      (optionalAttrs (ncfg.desktop-widgets.monitor-widgets != null) {
+        desktopWidgets.monitorWidgets = ncfg.desktop-widgets.monitor-widgets;
       })
       { dock.enabled = ncfg.dock.enabled; }
       (optionalAttrs (ncfg.dock.monitors != null) { dock.monitors = ncfg.dock.monitors; })
@@ -38,8 +38,8 @@ let
         notifications.monitors = ncfg.notifications.monitors;
       })
       (optionalAttrs (ncfg.osd.monitors != null) { osd.monitors = ncfg.osd.monitors; })
-      (optionalAttrs (ncfg.colorSchemes.monitorForColors != null) {
-        colorSchemes.monitorForColors = ncfg.colorSchemes.monitorForColors;
+      (optionalAttrs (ncfg.color-schemes.monitor-for-colors != null) {
+        colorSchemes.monitorForColors = ncfg.color-schemes.monitor-for-colors;
       })
     ];
 
@@ -47,7 +47,7 @@ let
 
   applyTaskbarOnlySameOutput =
     settings:
-    if ncfg.bar.taskbarOnlySameOutput == null then
+    if ncfg.bar.taskbar-only-same-output == null then
       settings
     else
       let
@@ -61,7 +61,7 @@ let
         lib.recursiveUpdate settings {
           bar.widgets.left = lib.imap0
             (
-              i: w: if i == hit.i then w // { onlySameOutput = ncfg.bar.taskbarOnlySameOutput; } else w
+              i: w: if i == hit.i then w // { onlySameOutput = ncfg.bar.taskbar-only-same-output; } else w
             )
             left;
         };
@@ -70,7 +70,7 @@ let
 
   applyControlCenterBrightness =
     settings:
-    if ncfg.controlCenter.enableBrightnessCard == null then
+    if ncfg.control-center.enable-brightness-card == null then
       settings
     else
       lib.recursiveUpdate settings {
@@ -79,7 +79,7 @@ let
             (
               c:
               if (c.id or "") == "brightness-card" then
-                c // { enabled = ncfg.controlCenter.enableBrightnessCard; }
+                c // { enabled = ncfg.control-center.enable-brightness-card; }
               else
                 c
             )
@@ -87,9 +87,9 @@ let
       };
 
   pluginIdsToStrip = lib.concatLists [
-    (lib.optional (!ncfg.bar.plugins.workspaceOverview) [ "plugin:workspace-overview" ])
+    (lib.optional (!ncfg.bar.plugins.workspace-overview) [ "plugin:workspace-overview" ])
     (lib.optional (!ncfg.bar.plugins.tailscale) [ "plugin:tailscale" ])
-    (lib.optional (!ncfg.bar.plugins.networkManagerVpn) [ "plugin:network-manager-vpn" ])
+    (lib.optional (!ncfg.bar.plugins.network-manager-vpn) [ "plugin:network-manager-vpn" ])
   ];
 
   stripBarPluginWidgets =
@@ -109,7 +109,7 @@ let
         };
       };
 
-  mergedWithExtras = lib.recursiveUpdate mergedSettings ncfg.settingsExtra;
+  mergedWithExtras = lib.recursiveUpdate mergedSettings ncfg.settings-extra;
 
   finalSettings =
     stripBarPluginWidgets (applyControlCenterBrightness mergedWithExtras);
@@ -140,7 +140,7 @@ in
           (`settings.bar.monitors`), e.g. `["DP-1"]`. Per-machine.
         '';
       };
-      taskbarOnlySameOutput = lib.mkOption {
+      taskbar-only-same-output = lib.mkOption {
         type = types.nullOr types.bool;
         default = null;
         description = ''
@@ -149,7 +149,7 @@ in
         '';
       };
       plugins = {
-        workspaceOverview = lib.mkOption {
+        workspace-overview = lib.mkOption {
           type = types.bool;
           default = true;
           description = "Include the `plugin:workspace-overview` widget on the bar.";
@@ -159,7 +159,7 @@ in
           default = true;
           description = "Include the `plugin:tailscale` widget on the bar.";
         };
-        networkManagerVpn = lib.mkOption {
+        network-manager-vpn = lib.mkOption {
           type = types.bool;
           default = true;
           description = "Include the `plugin:network-manager-vpn` widget on the bar.";
@@ -168,12 +168,12 @@ in
     };
 
     general = {
-      avatarImage = lib.mkOption {
+      avatar-image = lib.mkOption {
         type = types.nullOr types.str;
         default = "${env.home}/.face";
         description = "Path to lock screen / profile avatar (`settings.general.avatarImage`). Defaults to ~/.face";
       };
-      lockScreenMonitors = lib.mkOption {
+      lock-screen-monitors = lib.mkOption {
         type = types.nullOr (types.listOf types.str);
         default = null;
         description = ''
@@ -203,8 +203,8 @@ in
       };
     };
 
-    appLauncher = {
-      terminalCommand = lib.mkOption {
+    app-launcher = {
+      terminal-command = lib.mkOption {
         type = types.nullOr types.str;
         default = if config.my.programs.kitty.enable then "kitty -e" else null;
         description = ''
@@ -215,13 +215,13 @@ in
       };
     };
 
-    controlCenter = {
-      diskPath = lib.mkOption {
+    control-center = {
+      disk-path = lib.mkOption {
         type = types.nullOr types.str;
         default = null;
         description = "Filesystem path for disk usage in the control center (`settings.controlCenter.diskPath`).";
       };
-      enableBrightnessCard = lib.mkOption {
+      enable-brightness-card = lib.mkOption {
         type = types.nullOr types.bool;
         default = env.deviceType == "laptop";
         description = ''
@@ -242,9 +242,9 @@ in
       };
     };
 
-    desktopWidgets = {
+    desktop-widgets = {
       enabled = lib.mkEnableOption "Enable desktop widgets";
-      monitorWidgets = lib.mkOption {
+      monitor-widgets = lib.mkOption {
         type =
           types.nullOr (
             types.listOf (
@@ -254,7 +254,7 @@ in
                   widgets = lib.mkOption {
                     type = types.listOf types.anything;
                     default = [ ];
-                    description = "Widget definitions for this output (`settings.desktopWidgets.monitorWidgets`).";
+                    description = "Widget definitions for this output (`settings.desktop-widgets.monitor-widgets`).";
                   };
                 };
               }
@@ -262,7 +262,7 @@ in
           );
         default = null;
         description = ''
-          Declares outputs for desktop widgets (`settings.desktopWidgets.monitorWidgets`).
+          Declares outputs for desktop widgets (`settings.desktop-widgets.monitor-widgets`).
           Names are connector IDs (e.g. `DP-2`) and vary by machine.
         '';
       };
@@ -293,18 +293,18 @@ in
       };
     };
 
-    colorSchemes = {
-      monitorForColors = lib.mkOption {
+    color-schemes = {
+      monitor-for-colors = lib.mkOption {
         type = types.nullOr types.str;
         default = null;
         description = ''
-          Output used when deriving colors from wallpaper (`settings.colorSchemes.monitorForColors`).
+          Output used when deriving colors from wallpaper (`settings.color-schemes.monitor-for-colors`).
           Connector name; empty string means default in app.
         '';
       };
     };
 
-    settingsExtra = lib.mkOption {
+    settings-extra = lib.mkOption {
       type = types.attrsOf types.anything;
       default = { };
       description = ''
@@ -322,7 +322,7 @@ in
     }];
 
     # No dedicated greeter; passwordless greetd auto-login into Hyprland.
-    my.desktop.hyprland.autoLogin = true;
+    my.desktop.hyprland.auto-login = true;
 
     environment.systemPackages = with pkgs; lib.mkMerge [
       [

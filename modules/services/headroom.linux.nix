@@ -122,12 +122,12 @@ in
         args = [ "mcp" "serve" ];
       };
 
-      my.programs.agents.sandbox.extraAllowedDomains = {
+      my.programs.agents.sandbox.extra-allowed-domains = {
         "127.0.0.1" = "*";
         localhost = "*";
       };
 
-      my.programs.claude-code.managedSettings.env = {
+      my.programs.claude-code.managed-settings.env = {
         ANTHROPIC_BASE_URL = baseUrl;
         ENABLE_TOOL_SEARCH = "true";
       };

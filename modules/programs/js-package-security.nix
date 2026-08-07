@@ -2,26 +2,26 @@
 # https://github.com/lirantal/npm-security-best-practices
 { env, config, lib, ... }:
 let
-  cfg = config.my.programs.jsPackageSecurity;
+  cfg = config.my.programs.js-package-security;
 
-  minReleaseAgeMinutes = cfg.minReleaseAgeDays * 24 * 60;
-  minReleaseAgeSeconds = cfg.minReleaseAgeDays * 24 * 60 * 60;
+  minReleaseAgeMinutes = cfg.min-release-age-days * 24 * 60;
+  minReleaseAgeSeconds = cfg.min-release-age-days * 24 * 60 * 60;
 
   privateRegistryLines = lib.concatMapStringsSep "\n"
     (
       { scope, registry }: "${scope}:registry=${registry}"
     )
-    cfg.privateRegistries;
+    cfg.private-registries;
 
   npmSecurityFragment =
     let
       lines = [
-        "# npm security defaults (dotfiles: my.programs.jsPackageSecurity)"
+        "# npm security defaults (dotfiles: my.programs.js-package-security)"
         "# https://github.com/lirantal/npm-security-best-practices"
         ""
-        (lib.optionalString cfg.ignoreScripts "ignore-scripts=true")
-        "allow-git=${cfg.allowGit}"
-        "min-release-age=${toString cfg.minReleaseAgeDays}"
+        (lib.optionalString cfg.ignore-scripts "ignore-scripts=true")
+        "allow-git=${cfg.allow-git}"
+        "min-release-age=${toString cfg.min-release-age-days}"
       ]
       ++ lib.optional (privateRegistryLines != "") privateRegistryLines;
     in
@@ -29,20 +29,20 @@ let
 
   pnpmConfigYaml = lib.generators.toYAML { } {
     minimumReleaseAge = minReleaseAgeMinutes;
-    inherit (cfg) minimumReleaseAgeExclude;
+    minimumReleaseAgeExclude = cfg.minimum-release-age-exclude;
     trustPolicy = "no-downgrade";
     blockExoticSubdeps = true;
     strictDepBuilds = true;
-    allowBuilds = lib.genAttrs cfg.allowBuilds (_: true);
+    allowBuilds = lib.genAttrs cfg.allow-builds (_: true);
   };
 
   bunfigToml = ''
-    # bun security defaults (dotfiles: my.programs.jsPackageSecurity)
+    # bun security defaults (dotfiles: my.programs.js-package-security)
     # https://github.com/lirantal/npm-security-best-practices
 
     [install]
     minimumReleaseAge = ${toString minReleaseAgeSeconds}
-    minimumReleaseAgeExcludes = ${builtins.toJSON cfg.minimumReleaseAgeExclude}
+    minimumReleaseAgeExcludes = ${builtins.toJSON cfg.minimum-release-age-exclude}
   '';
 
   npmrcAuthTemplate = ''
@@ -61,19 +61,19 @@ let
   };
 in
 {
-  options.my.programs.jsPackageSecurity = {
+  options.my.programs.js-package-security = {
     enable = lib.mkEnableOption ''
       Harden npm, pnpm, and bun against supply-chain attacks (lifecycle scripts,
       git deps, release cooldown, pnpm trust policy).
     '';
 
-    minReleaseAgeDays = lib.mkOption {
+    min-release-age-days = lib.mkOption {
       type = lib.types.int;
       default = 7;
       description = "Minimum age in days before a newly published package version can be installed.";
     };
 
-    ignoreScripts = lib.mkOption {
+    ignore-scripts = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = ''
@@ -82,7 +82,7 @@ in
       '';
     };
 
-    allowGit = lib.mkOption {
+    allow-git = lib.mkOption {
       type = lib.types.enum [
         "none"
         "root"
@@ -95,7 +95,7 @@ in
       '';
     };
 
-    allowBuilds = lib.mkOption {
+    allow-builds = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [
         "esbuild"
@@ -105,7 +105,7 @@ in
       description = "pnpm packages permitted to run install/build lifecycle scripts.";
     };
 
-    minimumReleaseAgeExclude = lib.mkOption {
+    minimum-release-age-exclude = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
       example = [
@@ -115,7 +115,7 @@ in
       description = "Packages that bypass the minimum release age cooldown.";
     };
 
-    privateRegistries = lib.mkOption {
+    private-registries = lib.mkOption {
       type = lib.types.listOf (
         lib.types.submodule {
           options = {

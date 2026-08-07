@@ -44,7 +44,7 @@ in
         handoff = mattpocockSkills + "/productivity/handoff/SKILL.md";
         write-a-skill = mattpocockSkills + "/productivity/write-a-skill/SKILL.md";
       };
-      skillDirs = {
+      skill-dirs = {
         "ui-design-brain" = pkgs.fetchFromGitHub {
           # https://github.com/carmahhawwari/ui-design-brain/tree/38f04c5a1dee55d99c686a16643cef4e2ce0f7a2
           owner = "carmahhawwari";

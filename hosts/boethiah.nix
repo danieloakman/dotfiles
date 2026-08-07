@@ -5,16 +5,16 @@
 }:
 {
   my = {
-    profiles.devWorkstation.enable = true;
+    profiles.dev-workstation.enable = true;
     services = {
       # docker.enable = true;
       podman = {
         enable = true;
-        dockerAlias = true;
+        docker-alias = true;
       };
     };
     programs = {
-      desktopPkgs.enable = true;
+      desktop-pkgs.enable = true;
       warp.enable = true;
       # Disabled: hunk's bun2nix build fetches npm packages at build time,
       # and IT blocks the npm registry on this machine.

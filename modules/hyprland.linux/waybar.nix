@@ -1,6 +1,6 @@
 { env, pkgs, lib, config, ... }:
 let
-  cfgEnabled = config.my.desktop.uiShell == "waybar";
+  cfgEnabled = config.my.desktop.ui-shell == "waybar";
 in
 {
 
@@ -13,7 +13,7 @@ in
     ];
 
     # No dedicated greeter; passwordless greetd auto-login into Hyprland.
-    my.desktop.hyprland.autoLogin = true;
+    my.desktop.hyprland.auto-login = true;
 
     # If we ever decided to use waybar again, we would need to enable other modules like blueman, lockscreen, etc.
 

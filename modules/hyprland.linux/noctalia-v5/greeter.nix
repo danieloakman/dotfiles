@@ -4,8 +4,8 @@
 let
   inherit (lib) types;
 
-  cfgEnabled = config.my.desktop.uiShell == "noctalia-v5";
-  ncfg = config.my.desktop.noctaliaV5;
+  cfgEnabled = config.my.desktop.ui-shell == "noctalia-v5";
+  ncfg = config.my.desktop.noctalia-v5;
   hyprlandCfg = config.my.desktop.hyprland;
 
   # "DP-2, 3440x1440, 1920x0, 1.0" → "DP-2:1920,0" (Hyprland XxY → greeter X,Y)
@@ -49,12 +49,12 @@ let
     output.layout = outputLayout;
   };
 
-  finalSettings = lib.recursiveUpdate baseSettings ncfg.greeter.settingsExtra;
+  finalSettings = lib.recursiveUpdate baseSettings ncfg.greeter.settings-extra;
 in
 {
   imports = [ inputs.noctalia-greeter.nixosModules.default ];
 
-  options.my.desktop.noctaliaV5.greeter.settingsExtra = lib.mkOption {
+  options.my.desktop.noctalia-v5.greeter.settings-extra = lib.mkOption {
     type = types.attrsOf types.anything;
     default = { };
     description = ''
@@ -72,7 +72,7 @@ in
     ];
 
     # This module owns greetd; disable hyprlock-style auto-login.
-    my.desktop.hyprland.autoLogin = false;
+    my.desktop.hyprland.auto-login = false;
 
     programs.noctalia-greeter = {
       enable = true;

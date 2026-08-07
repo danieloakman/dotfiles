@@ -9,7 +9,7 @@ in
 {
   options.my.services.podman = {
     enable = lib.mkEnableOption "Enable and install Podman and related packages/services.";
-    dockerAlias = lib.mkEnableOption "Enable the alias 'docker' to point to Podman.";
+    docker-alias = lib.mkEnableOption "Enable the alias 'docker' to point to Podman.";
   };
   config = lib.mkIf cfg.enable (
     env.selectPlatform {
@@ -21,7 +21,7 @@ in
           }
         ];
         home-manager.users.${env.user} = {
-          programs.zsh.shellAliases = lib.mkIf cfg.dockerAlias {
+          programs.zsh.shellAliases = lib.mkIf cfg.docker-alias {
             docker = "podman";
           };
         };

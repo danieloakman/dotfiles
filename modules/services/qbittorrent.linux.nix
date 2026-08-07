@@ -1,9 +1,9 @@
 { pkgs, lib, config, ... }:
 let
   cfg = config.my.services.qbittorrent;
-  inherit (cfg) port torrentingPort downloadDir;
+  inherit (cfg) port torrenting-port download-dir;
   portStr = toString port;
-  incompleteDir = "${downloadDir}/incomplete";
+  incompleteDir = "${download-dir}/incomplete";
   piaCa = ./pia.linux/pia-ca.rsa.4096.crt;
   authPath = "/run/secrets/pia-openvpn-auth";
   profileDir = "/var/lib/qBittorrent";
@@ -64,12 +64,12 @@ in
       default = 8080;
       description = "WebUI port (loopback/host-veth only; expose via Tailscale serve).";
     };
-    torrentingPort = lib.mkOption {
+    torrenting-port = lib.mkOption {
       type = lib.types.port;
       default = 6881;
       description = "BitTorrent peer port (only relevant without VPN; with VPN, peers use the tunnel).";
     };
-    downloadDir = lib.mkOption {
+    download-dir = lib.mkOption {
       type = lib.types.str;
       description = "Directory where torrents are downloaded.";
     };
@@ -84,7 +84,7 @@ in
         default = "de-germany-so.privacy.network";
         description = "PIA OpenVPN remote hostname.";
       };
-      remotePort = lib.mkOption {
+      remote-port = lib.mkOption {
         type = lib.types.port;
         default = 1197;
         description = "PIA OpenVPN remote port.";
@@ -94,17 +94,17 @@ in
         default = "udp";
         description = "OpenVPN transport protocol.";
       };
-      hostAddress = lib.mkOption {
+      host-address = lib.mkOption {
         type = lib.types.str;
         default = "10.233.2.1";
         description = "IPv4 address of the host side of the container veth.";
       };
-      localAddress = lib.mkOption {
+      local-address = lib.mkOption {
         type = lib.types.str;
         default = "10.233.2.2";
         description = "IPv4 address of the container side of the veth (WebUI target).";
       };
-      externalInterface = lib.mkOption {
+      external-interface = lib.mkOption {
         type = lib.types.str;
         description = ''
           Host uplink interface used for NAT so the container can reach PIA
@@ -118,12 +118,12 @@ in
     {
       assertions = [
         {
-          assertion = cfg.downloadDir != "";
-          message = "my.services.qbittorrent.downloadDir must be set";
+          assertion = cfg.download-dir != "";
+          message = "my.services.qbittorrent.download-dir must be set";
         }
         {
-          assertion = !cfg.vpn.enable || cfg.vpn.externalInterface != "";
-          message = "my.services.qbittorrent.vpn.externalInterface must be set when vpn.enable is true";
+          assertion = !cfg.vpn.enable || cfg.vpn.external-interface != "";
+          message = "my.services.qbittorrent.vpn.external-interface must be set when vpn.enable is true";
         }
       ];
 
@@ -136,7 +136,7 @@ in
       };
 
       systemd.tmpfiles.rules = [
-        "d ${downloadDir} 0750 qbittorrent qbittorrent -"
+        "d ${download-dir} 0750 qbittorrent qbittorrent -"
         "d ${incompleteDir} 0750 qbittorrent qbittorrent -"
         "d ${profileDir} 0750 qbittorrent qbittorrent -"
         # Create each level explicitly — tmpfiles parent dirs can end up root-owned.
@@ -156,15 +156,15 @@ in
       services.qbittorrent = {
         enable = true;
         webuiPort = port;
-        inherit torrentingPort;
+        torrentingPort = torrenting-port;
         openFirewall = false;
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent.Session = {
-            DefaultSavePath = downloadDir;
+            DefaultSavePath = download-dir;
             TempPath = incompleteDir;
             TempPathEnabled = true;
-            Port = torrentingPort;
+            Port = torrenting-port;
           };
           Preferences = {
             WebUI = {
@@ -180,8 +180,8 @@ in
       systemd.services.qbittorrent.serviceConfig = qbittorrentSearchServiceConfig;
 
       networking.firewall = {
-        allowedTCPPorts = [ torrentingPort ];
-        allowedUDPPorts = [ torrentingPort ];
+        allowedTCPPorts = [ torrenting-port ];
+        allowedUDPPorts = [ torrenting-port ];
       };
 
       environment.systemPackages = with pkgs; [
@@ -206,7 +206,7 @@ in
       networking.nat = {
         enable = true;
         internalInterfaces = [ "ve-qbittorrent" ];
-        externalInterface = cfg.vpn.externalInterface;
+        externalInterface = cfg.vpn.external-interface;
       };
 
       # NetworkManager must not reclaim the container veth.
@@ -216,7 +216,7 @@ in
 
       environment.systemPackages = with pkgs; [
         (writeShellScriptBin "tailscale-svc-qbittorrent-up" ''
-          tailscale serve --service=svc:qbittorrent --https=443 http://${cfg.vpn.localAddress}:${portStr}
+          tailscale serve --service=svc:qbittorrent --https=443 http://${cfg.vpn.local-address}:${portStr}
         '')
         (writeShellScriptBin "tailscale-svc-qbittorrent-down" ''
           tailscale serve clear svc:qbittorrent
@@ -235,12 +235,12 @@ in
         autoStart = true;
         privateNetwork = true;
         enableTun = true;
-        hostAddress = cfg.vpn.hostAddress;
-        localAddress = cfg.vpn.localAddress;
+        hostAddress = cfg.vpn.host-address;
+        localAddress = cfg.vpn.local-address;
 
         bindMounts = {
-          ${downloadDir} = {
-            hostPath = downloadDir;
+          ${download-dir} = {
+            hostPath = download-dir;
             isReadOnly = false;
           };
           ${profileDir} = {
@@ -270,7 +270,7 @@ in
             networking = {
               useHostResolvConf = lib.mkForce false;
               useDHCP = false;
-              defaultGateway = cfg.vpn.hostAddress;
+              defaultGateway = cfg.vpn.host-address;
               # Bootstrap DNS so OpenVPN can resolve the PIA remote before the tunnel is up.
               nameservers = [
                 "1.1.1.1"
@@ -294,7 +294,7 @@ in
                 client
                 dev tun
                 proto ${cfg.vpn.proto}
-                remote ${cfg.vpn.remote} ${toString cfg.vpn.remotePort}
+                remote ${cfg.vpn.remote} ${toString cfg.vpn.remote-port}
                 resolv-retry infinite
                 nobind
                 persist-key
@@ -317,15 +317,15 @@ in
             services.qbittorrent = {
               enable = true;
               webuiPort = port;
-              inherit torrentingPort;
+              torrentingPort = torrenting-port;
               openFirewall = false;
               serverConfig = {
                 LegalNotice.Accepted = true;
                 BitTorrent.Session = {
-                  DefaultSavePath = downloadDir;
+                  DefaultSavePath = download-dir;
                   TempPath = incompleteDir;
                   TempPathEnabled = true;
-                  Port = torrentingPort;
+                  Port = torrenting-port;
                 };
                 Preferences = {
                   WebUI = {
@@ -335,7 +335,7 @@ in
                     # so LocalHostAuth no longer covers the WebUI.
                     LocalHostAuth = false;
                     AuthSubnetWhitelistEnabled = true;
-                    AuthSubnetWhitelist = "${cfg.vpn.hostAddress}/32";
+                    AuthSubnetWhitelist = "${cfg.vpn.host-address}/32";
                   };
                   Search = qbittorrentSearchPrefs;
                 };

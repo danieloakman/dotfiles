@@ -44,7 +44,7 @@ in
   ];
 
   my = {
-    profiles.devWorkstation.enable = true;
+    profiles.dev-workstation.enable = true;
     desktop = {
       hyprland = {
         enable = true;
@@ -53,11 +53,11 @@ in
         ];
         hyprpaper.wallpaper = wallpaperPath;
       };
-      uiShell = "ags";
+      ui-shell = "ags";
     };
     programs = {
-      onscreenKeyboard.enable = true;
-      desktopPkgs.enable = true;
+      onscreen-keyboard.enable = true;
+      desktop-pkgs.enable = true;
     };
     services = {
       syncthing.enable = true;

@@ -2,8 +2,8 @@
 let
   inherit (lib) types;
 
-  cfgEnabled = config.my.desktop.uiShell == "noctalia-v5";
-  ncfg = config.my.desktop.noctaliaV5;
+  cfgEnabled = config.my.desktop.ui-shell == "noctalia-v5";
+  ncfg = config.my.desktop.noctalia-v5;
 
   # First token of a Hyprland monitor line ("DP-2, 3440x1440@144Hz, …").
   connectorOf = line: builtins.head (lib.splitString "," line);
@@ -76,12 +76,12 @@ let
       };
     }
     (
-      lib.optionalAttrs (ncfg.avatarImage != null) { shell.avatar_path = ncfg.avatarImage; }
+      lib.optionalAttrs (ncfg.avatar-image != null) { shell.avatar_path = ncfg.avatar-image; }
       // lib.optionalAttrs (ncfg.wallpaper.directory != null) { wallpaper.directory = ncfg.wallpaper.directory; }
       // lib.optionalAttrs (ncfg.location.address != null) { location.address = ncfg.location.address; }
     );
 
-  finalSettings = lib.recursiveUpdate baseSettings ncfg.settingsExtra;
+  finalSettings = lib.recursiveUpdate baseSettings ncfg.settings-extra;
 
   # Snapshot GUI state (v5 does not rewrite ~/.config/noctalia).
   dumpSettings = pkgs.writeShellScriptBin "noctalia-dump-settings" ''
@@ -95,8 +95,8 @@ let
   '';
 in
 {
-  options.my.desktop.noctaliaV5 = {
-    avatarImage = lib.mkOption {
+  options.my.desktop.noctalia-v5 = {
+    avatar-image = lib.mkOption {
       type = types.nullOr types.str;
       default = "${env.home}/.face";
       description = "Path to the profile/lock-screen avatar (`[shell] avatar_path`). Defaults to ~/.face; null keeps the v5 default.";
@@ -132,7 +132,7 @@ in
       description = "City / label geocoded for weather and night-light (`[location] address`), e.g. `\"Sydney\"`.";
     };
 
-    settingsExtra = lib.mkOption {
+    settings-extra = lib.mkOption {
       type = types.attrsOf types.anything;
       default = { };
       description = ''

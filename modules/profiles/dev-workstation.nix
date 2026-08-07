@@ -1,18 +1,18 @@
 # Shared dev-workstation program enables for personal machines.
 { config, lib, env, ... }:
 let
-  cfg = config.my.profiles.devWorkstation;
+  cfg = config.my.profiles.dev-workstation;
 in
 {
-  options.my.profiles.devWorkstation.enable = lib.mkEnableOption "Enable the dev workstation program profile.";
+  options.my.profiles.dev-workstation.enable = lib.mkEnableOption "Enable the dev workstation program profile.";
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
         my.programs = {
           agents.enable = true;
-          devPkgs.enable = true;
-          jsPackageSecurity.enable = true;
+          dev-pkgs.enable = true;
+          js-package-security.enable = true;
           claude-code.enable = true;
           cursor.enable = true;
           gws.enable = true;
@@ -21,7 +21,7 @@ in
           herdr.enable = true;
           micro = {
             enable = true;
-            isDefaultEditor = true;
+            is-default-editor = true;
           };
         };
       }

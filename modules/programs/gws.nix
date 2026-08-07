@@ -84,7 +84,7 @@ in
       gwsAuthStore
       google-cloud-sdk # Adds gcloud, which enables using `gws auth setup`
     ];
-    my.programs.agents.skillDirs.gws = gwsUmbrella;
+    my.programs.agents.skill-dirs.gws = gwsUmbrella;
     home-manager.users.${env.user}.home.file.".claude/gws-skills" = {
       source = gwsSkillsSrc;
       recursive = true;

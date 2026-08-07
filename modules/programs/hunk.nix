@@ -11,14 +11,14 @@ in
       Hunk (modem-dev/hunk): install the terminal diff viewer and optional git/agent integrations
     '';
 
-    enableGitIntegration = lib.mkEnableOption ''
+    enable-git-integration = lib.mkEnableOption ''
       Set hunk as the default git pager via GIT_PAGER.
       Dotfiles manage git config outside Home Manager's programs.git module.
     '' // {
       default = true;
     };
 
-    enableClaudeIntegration = lib.mkEnableOption ''
+    enable-claude-integration = lib.mkEnableOption ''
       Install the hunk-review skill for AI agents (via my.programs.agents).
     '' // {
       default = true;
@@ -37,15 +37,15 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    my.programs.agents.skillDirs.hunk-review = lib.mkIf
+    my.programs.agents.skill-dirs.hunk-review = lib.mkIf
       (
-        cfg.enableClaudeIntegration && config.my.programs.agents.enable
+        cfg.enable-claude-integration && config.my.programs.agents.enable
       ) "${hunkPackage}/skills/hunk-review";
 
     home-manager.users.${env.user} = {
       imports = [ inputs.hunk.homeManagerModules.default ];
 
-      home.sessionVariables = lib.mkIf cfg.enableGitIntegration {
+      home.sessionVariables = lib.mkIf cfg.enable-git-integration {
         GIT_PAGER = "hunk pager";
       };
 
@@ -55,7 +55,7 @@ in
         inherit (cfg) settings;
         # Upstream sets programs.git.settings.core.pager; we use GIT_PAGER instead (see above).
         enableGitIntegration = false;
-        # Upstream symlinks ~/.claude/skills/hunk-review; we install via my.programs.agents.skillDirs.
+        # Upstream symlinks ~/.claude/skills/hunk-review; we install via my.programs.agents.skill-dirs.
         enableClaudeIntegration = false;
       };
     };

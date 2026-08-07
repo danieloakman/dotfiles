@@ -19,9 +19,9 @@ let
 
   llamaServerArgs = model: [
     "-c"
-    (toString model.contextSize)
+    (toString model.context-size)
     "--parallel"
-    (toString model.concurrencyLimit)
+    (toString model.concurrency-limit)
   ];
 in
 {
@@ -33,11 +33,11 @@ in
         default = 11343;
         description = "The port to use for Llama-CPP service. The +1 from this is used for Llama-Swap.";
       };
-      cpuCoreCount = lib.mkOption {
+      cpu-core-count = lib.mkOption {
         default = 1;
         description = "The number of physical CPU cores to use for the llama-cpp service";
       };
-      gpuLayerCount = lib.mkOption {
+      gpu-layer-count = lib.mkOption {
         default = 0; # Default 0 layers, meaning CPU-only
         description = "The number of GPU layers to use for the llama-cpp service";
       };
@@ -45,7 +45,7 @@ in
         type = lib.types.attrsOf (lib.types.submodule {
           options = {
             path = lib.mkOption { type = lib.types.path; description = "Path to the GGUF model"; };
-            contextSize = lib.mkOption {
+            context-size = lib.mkOption {
               type = lib.types.int;
               description = ''
                 Context window in tokens for llama-server (`-c`) and OpenCode limits.
@@ -53,7 +53,7 @@ in
                 lower it if VRAM is tight.
               '';
             };
-            concurrencyLimit = lib.mkOption {
+            concurrency-limit = lib.mkOption {
               type = lib.types.int;
               default = 1;
               description = "Max parallel requests for llama-server (`--parallel`) and llama-swap.";
@@ -63,7 +63,7 @@ in
           };
         });
         default = { };
-        description = "Models for llama-swap (url+hash fetched; optional aliases, proxy, concurrencyLimit)";
+        description = "Models for llama-swap (url+hash fetched; optional aliases, proxy, concurrency-limit)";
       };
     };
   };
@@ -84,8 +84,8 @@ in
         settings = {
           inherit host;
           port = llamaCppPort;
-          ngl = cfg.gpuLayerCount;
-          t = cfg.cpuCoreCount;
+          ngl = cfg.gpu-layer-count;
+          t = cfg.cpu-core-count;
         };
       };
       llama-swap = {
@@ -101,9 +101,9 @@ in
             healthCheckTimeout = 60;
             models = builtins.mapAttrs
               (_: model: {
-                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString cfg.gpuLayerCount} -t ${lib.toString cfg.cpuCoreCount} ${lib.escapeShellArgs (llamaServerArgs model)}";
+                cmd = "${llama-server} --port ${toString llamaCppPort} --host ${host} -m ${model.path} -ngl ${lib.toString cfg.gpu-layer-count} -t ${lib.toString cfg.cpu-core-count} ${lib.escapeShellArgs (llamaServerArgs model)}";
                 proxy = "http://${host}:${toString llamaCppPort}";
-                inherit (model) concurrencyLimit;
+                concurrencyLimit = model.concurrency-limit;
               } // lib.optionalAttrs (model.aliases != [ ]) { inherit (model) aliases; }
               // lib.optionalAttrs (model.proxy != null) { inherit (model) proxy; }
               )

@@ -10,7 +10,7 @@ let
 in
 {
   my = {
-    profiles.devWorkstation.enable = true;
+    profiles.dev-workstation.enable = true;
     desktop = {
       hyprland = {
         enable = true;
@@ -26,7 +26,7 @@ in
           "3, monitor:HDMI-A-1"
         ];
         # hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
-        windowRules = [
+        window-rules = [
           "workspace 1, match:class ^(vivaldi-bin)$"
           "workspace 1, match:class ^(vivaldi)$"
           "workspace 1, match:class ^(chromium)$"
@@ -42,8 +42,8 @@ in
         ];
         hyprpaper.wallpaper = wallpaperPath;
       };
-      uiShell = "noctalia-v5";
-      noctaliaV5 = {
+      ui-shell = "noctalia-v5";
+      noctalia-v5 = {
         bar.monitors = [ "DP-2" ];
         location.address = "Sydney";
       };
@@ -59,7 +59,7 @@ in
         };
       };
       games.enable = true;
-      desktopPkgs.enable = true;
+      desktop-pkgs.enable = true;
       comma.enable = true;
       ms-apps.enable = true;
     };
@@ -72,20 +72,20 @@ in
       headroom.enable = true;
       llama-cpp = {
         enable = true;
-        cpuCoreCount = 6;
-        gpuLayerCount = 99;
+        cpu-core-count = 6;
+        gpu-layer-count = 99;
         models = {
           "Qwen2.5-coder-1.5b-instruct-Q8_0" = {
             path = "/models/qwen2.5-coder-1.5b-instruct-q8_0.gguf";
-            contextSize = 32768; # Qwen2.5-Coder-1.5B-Instruct native config
+            context-size = 32768; # Qwen2.5-Coder-1.5B-Instruct native config
           };
           "DeepSeek-R1-Distill-Qwen-7B-Q6_K" = {
             path = "/models/DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf";
-            contextSize = 131072; # deepseek-ai/DeepSeek-R1-Distill-Qwen-7B max_position_embeddings
+            context-size = 131072; # deepseek-ai/DeepSeek-R1-Distill-Qwen-7B max_position_embeddings
           };
           "Qwen2.5-VL-7B-Instruct-Q6_K" = {
             path = "/models/Qwen2.5-VL-7B-Instruct-Q6_K.gguf";
-            contextSize = 32768; # Qwen2.5-VL-7B-Instruct native config
+            context-size = 32768; # Qwen2.5-VL-7B-Instruct native config
           };
         };
       };

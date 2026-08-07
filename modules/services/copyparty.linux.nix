@@ -15,15 +15,15 @@ in
       type = lib.types.int;
       default = 3923;
     };
-    rootPath = lib.mkOption {
+    root-path = lib.mkOption {
       type = lib.types.str;
     };
   };
 
   config = lib.mkIf cfg.enable {
     assertions = [{
-      assertion = cfg.rootPath != null;
-      message = "copyparty.rootPath must be set";
+      assertion = cfg.root-path != null;
+      message = "copyparty.root-path must be set";
     }];
 
     users.users.${user}.extraGroups = [
@@ -61,7 +61,7 @@ in
         #   };
         # };
         "/" = {
-          path = cfg.rootPath;
+          path = cfg.root-path;
           access = {
             rw = [ env.user ];
           };

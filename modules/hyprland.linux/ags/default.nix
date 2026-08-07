@@ -1,6 +1,6 @@
 { env, inputs, pkgs, lib, config, ... }:
 let
-  cfgEnabled = config.my.desktop.uiShell == "ags";
+  cfgEnabled = config.my.desktop.ui-shell == "ags";
   astalPkgs = inputs.astal.packages.${pkgs.stdenv.hostPlatform.system};
   agsStart = pkgs.writeShellScriptBin "ags-start" ''
     cd ~/repos/personal/dotfiles/modules/hyprland.linux/ags && PASSWORD_STORE_DIR="${env.home}/repos/personal/pwd-store" bun start > /tmp/ags.log 2>&1
@@ -22,12 +22,12 @@ in
         hyprlock.enable = true;
         hypridle.enable = true;
       };
-      programs.swayUtils = {
+      programs.sway-utils = {
         enable = true;
         notifications.enable = true;
         volume.enable = true;
         brightness.enable = true;
-        capsLock.enable = true;
+        caps-lock.enable = true;
         playerctl.enable = true;
       };
     };

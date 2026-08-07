@@ -10,7 +10,7 @@
   ];
 
   my = {
-    profiles.devWorkstation.enable = true;
+    profiles.dev-workstation.enable = true;
     programs = {
       opencode = {
         enable = true;
@@ -24,15 +24,15 @@
       # tmux.enable = true;
       # zellij = {
       #   enable = true;
-      #   autoStart.enable = true;
+      #   auto-start.enable = true;
       # };
     };
     services = {
-      dnsAdBlock.enable = true;
+      dns-ad-block.enable = true;
       cockpit = let port = 19090; in {
         enable = true;
         inherit port;
-        allowedOrigins = [
+        allowed-origins = [
           "https://mara-cockpit.dinosaur-crocodile.ts.net"
         ];
       };
@@ -41,26 +41,26 @@
       homepage = let port = 9092; in {
         inherit port;
         enable = true;
-        allowedHosts = "${config.networking.hostName}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
+        allowed-hosts = "${config.networking.hostName}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
       };
       immich = {
         enable = true;
-        mediaLocation = "/run/media/HDD_1/immich";
+        media-location = "/run/media/HDD_1/immich";
       };
       # n8n.enable = true;
       paperless = {
         enable = true;
         domain = "paperless.dinosaur-crocodile.ts.net";
-        mediaDir = "/run/media/HDD_1/paperless";
+        media-dir = "/run/media/HDD_1/paperless";
       };
       postiz = let port = 10322; in {
         enable = false;
         inherit port;
-        # publicBaseUrl = "https://postiz.dinosaur-crocodile.ts.net";
-        publicBaseUrl = "http://mara:${toString port}";
-        jwtSecretFile = config.sops.secrets.postiz_jwt_secret.path;
+        # public-base-url = "https://postiz.dinosaur-crocodile.ts.net";
+        public-base-url = "http://mara:${toString port}";
+        jwt-secret-file = config.sops.secrets.postiz_jwt_secret.path;
       };
-      periodicReboot = {
+      periodic-reboot = {
         # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
         enable = true;
         # Every day at 1am, retry every 30 minutes until 5am if deferred.
@@ -69,20 +69,20 @@
       pia.enable = true;
       qbittorrent = {
         enable = true;
-        downloadDir = "/run/media/HDD_1/Downloads";
+        download-dir = "/run/media/HDD_1/Downloads";
         vpn = {
           enable = true;
-          externalInterface = "eno1";
+          external-interface = "eno1";
           # DE Streaming Optimized — AU Sydney blackholed apibay/TPB search.
           remote = "de-germany-so.privacy.network";
         };
       };
-      stirlingPdf.enable = true;
+      stirling-pdf.enable = true;
       streaming.jellyfin.enable = true;
       syncthing.enable = true;
       tailscale = {
-        enableAsExitNode = true;
-        useRoutingFeatures = "server";
+        enable-as-exit-node = true;
+        use-routing-features = "server";
       };
       tandoor.enable = false;
       # wakeonlan.enable = true; # TODO: try this out
@@ -169,7 +169,7 @@
   specialisation = {
     remote-desktop.configuration = {
       system.nixos.tags = [ "remote-desktop" ];
-      my.services.remoteDesktop.enable = true;
+      my.services.remote-desktop.enable = true;
     };
   };
 }

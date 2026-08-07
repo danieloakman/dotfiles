@@ -78,7 +78,7 @@ in
       #   enable = true;
       #   openFirewall = true;
       #   # settings = {
-      #   #   downloadDir = "/run/media/HDD_3/Downloads";
+      #   #   download-dir = "/run/media/HDD_3/Downloads";
       #   #   incompleteDir = "/run/media/HDD_3/Downloads/incomplete";
       #   # };
       #   # credentialsFile = config.sops.secrets.transmission_credentials.path;

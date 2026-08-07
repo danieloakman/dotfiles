@@ -11,7 +11,7 @@ in
       type = lib.types.int;
       default = 2283;
     };
-    mediaLocation = lib.mkOption {
+    media-location = lib.mkOption {
       type = lib.types.str;
       description = "The location of the media files for Immich";
     };
@@ -19,8 +19,8 @@ in
 
   config = lib.mkIf config.my.services.immich.enable {
     assertions = [{
-      assertion = cfg.mediaLocation != null;
-      message = "immich.mediaLocation must be set";
+      assertion = cfg.media-location != null;
+      message = "immich.media-location must be set";
     }];
 
     services = {
@@ -32,7 +32,7 @@ in
         enable = true;
         openFirewall = false;
         accelerationDevices = null;
-        inherit (cfg) mediaLocation;
+        mediaLocation = cfg.media-location;
       };
     };
 

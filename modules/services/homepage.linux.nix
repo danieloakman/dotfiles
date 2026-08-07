@@ -13,7 +13,7 @@ in
       type = lib.types.int;
       default = 9092;
     };
-    allowedHosts = lib.mkOption {
+    allowed-hosts = lib.mkOption {
       type = lib.types.str;
       description = "Comma separated list of hosts that are allowed to access Homepage";
     };
@@ -41,7 +41,7 @@ in
     services = {
       homepage-dashboard = {
         enable = true;
-        inherit (cfg) allowedHosts;
+        allowedHosts = cfg.allowed-hosts;
         # Loopback-only; expose via `tailscale-svc-homepage-up`.
         openFirewall = false;
         listenPort = cfg.port;

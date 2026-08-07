@@ -1,16 +1,16 @@
 { env, lib, config, ... }:
 let
-  cfg = config.my.programs.swayUtils;
+  cfg = config.my.programs.sway-utils;
 in
 {
-  options.my.programs.swayUtils = {
+  options.my.programs.sway-utils = {
     enable = lib.mkEnableOption "Enable the Sway utils";
     notifications.enable = lib.mkEnableOption "Enable the Sway notifications";
     volume.enable = lib.mkEnableOption "Enable the Sway volume OSD for keyboard volume keys";
     brightness.enable = lib.mkEnableOption "Enable the Sway brightness OSD for keyboard brightness keys";
-    capsLock.enable = lib.mkEnableOption "Enable the Sway caps lock OSD for keyboard caps lock keys";
+    caps-lock.enable = lib.mkEnableOption "Enable the Sway caps lock OSD for keyboard caps lock keys";
     playerctl.enable = lib.mkEnableOption "Enable the Sway playerctl OSD for keyboard playerctl keys";
-    numLock.enable = lib.mkEnableOption "Enable the Sway num lock OSD for keyboard num lock keys";
+    num-lock.enable = lib.mkEnableOption "Enable the Sway num lock OSD for keyboard num lock keys";
   };
 
   config = lib.mkIf cfg.enable {
@@ -53,7 +53,7 @@ in
             ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume 2"
             ", XF86AudioLowerVolume, exec, swayosd-client --output-volume -2"
           ])
-          (lib.mkIf cfg.capsLock.enable [
+          (lib.mkIf cfg.caps-lock.enable [
             "alt, F7, exec, swayosd-client --output-volume 2" # Need these because XF86 volume keys don't work sometimes
             "alt, F6, exec, swayosd-client --output-volume -2"
           ])
@@ -66,10 +66,10 @@ in
           ])
         ];
         bindr = lib.mkMerge [
-          (lib.mkIf cfg.capsLock.enable [
+          (lib.mkIf cfg.caps-lock.enable [
             "CAPS, Caps_Lock, exec, swayosd-client --caps-lock"
           ])
-          (lib.mkIf cfg.numLock.enable [
+          (lib.mkIf cfg.num-lock.enable [
             # "NUM, Num_Lock, exec, swayosd-client --num-lock" # TODO: fix this
           ])
         ];

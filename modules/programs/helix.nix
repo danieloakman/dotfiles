@@ -79,16 +79,16 @@ in
 {
   options.my.programs.helix = {
     enable = lib.mkEnableOption "Enable the Helix editor with custom configuration.";
-    enableVSCodeKeybinds = lib.mkEnableOption ''
+    enable-vscode-keybinds = lib.mkEnableOption ''
       Map common VS Code / Cursor shortcuts in Helix.
       Uses Cmd on Darwin and Ctrl on Linux (see modules/programs/helix.nix).
     '';
-    isDefaultEditor = lib.mkEnableOption "Make Helix the default editor for the system.";
+    is-default-editor = lib.mkEnableOption "Make Helix the default editor for the system.";
   };
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
-      home.sessionVariables = lib.mkIf cfg.isDefaultEditor {
+      home.sessionVariables = lib.mkIf cfg.is-default-editor {
         EDITOR = "hx";
         GIT_EDITOR = "hx";
       };
@@ -97,7 +97,7 @@ in
         helix = {
           enable = true;
 
-          defaultEditor = cfg.isDefaultEditor;
+          defaultEditor = cfg.is-default-editor;
 
           settings = lib.mkMerge [
             {
@@ -112,13 +112,13 @@ in
                 };
               };
             }
-            (lib.mkIf cfg.enableVSCodeKeybinds {
+            (lib.mkIf cfg.enable-vscode-keybinds {
               keys = vscodeKeys;
             })
           ];
         };
 
-        zsh = lib.mkIf cfg.isDefaultEditor {
+        zsh = lib.mkIf cfg.is-default-editor {
           shellAliases = {
             "nvim" = "hx";
             "vim" = "hx";

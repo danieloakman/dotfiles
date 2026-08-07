@@ -77,7 +77,7 @@ in
       default = { };
       description = "Skills to add for all AI agents (Cursor, Claude, etc). Skills are defined as strings or paths to files.";
     };
-    skillDirs = lib.mkOption {
+    skill-dirs = lib.mkOption {
       type = lib.types.attrsOf lib.types.path;
       default = { };
       description = "Skill directories to add for all AI agents. If a directory contains a SKILL.md it is treated as a single skill; otherwise each subdirectory is symlinked individually.";
@@ -171,7 +171,7 @@ in
                   })
                   (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
           )
-          cfg.skillDirs;
+          cfg.skill-dirs;
 
         programs = {
           claude-code = {

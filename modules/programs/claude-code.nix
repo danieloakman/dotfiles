@@ -5,7 +5,7 @@ let
 
   # System policy only — Claude never writes here. Keep runtime prefs (effortLevel, theme, …) out.
   managedSettingsFile = jsonFormat.generate "claude-code-managed-settings.json" (
-    cfg.managedSettings
+    cfg.managed-settings
     // {
       "$schema" = "https://json.schemastore.org/claude-code-settings.json";
     }
@@ -15,7 +15,7 @@ in
   options.my.programs.claude-code = {
     enable = lib.mkEnableOption "Enable and configure Claude Code.";
 
-    managedSettings = lib.mkOption {
+    managed-settings = lib.mkOption {
       inherit (jsonFormat) type;
       default = { };
       description = ''
@@ -29,7 +29,7 @@ in
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
-      my.programs.claude-code.managedSettings = {
+      my.programs.claude-code.managed-settings = {
         # Avoid telemetry 404s when using claude-local (ANTHROPIC_BASE_URL → local llama-server).
         env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
         includeCoAuthoredBy = false;

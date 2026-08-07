@@ -2,7 +2,7 @@
 
 { pkgs, lib, config, env, ... }:
 let
-  cfg = config.my.programs.devPkgs;
+  cfg = config.my.programs.dev-pkgs;
 
   # ss only shows a short process name; this resolves PIDs to full executable + args.
   showport = pkgs.writeShellScriptBin "showport" ''
@@ -74,7 +74,7 @@ let
   '';
 in
 {
-  options.my.programs.devPkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
+  options.my.programs.dev-pkgs.enable = lib.mkEnableOption "Enable and include developer packages in the system environment";
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
