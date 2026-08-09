@@ -22,15 +22,46 @@ let
   # Host-specific declarative config; GUI state (~/.local/state/noctalia/settings.toml) overrides.
   baseSettings = lib.recursiveUpdate
     {
+      # https://docs.noctalia.dev/v5/bar/
       bar = {
         order = [ "main" ];
-        main = { position = ncfg.bar.position; }
-          // lib.optionalAttrs (barMonitorOverrides != { }) { monitor = barMonitorOverrides; };
+        main = {
+          position = ncfg.bar.position;
+          start = [ "launcher" "wallpaper" "workspaces" "active_window" ];
+          center = [ "clock" "spacer_2" "media" ];
+          end = [
+            "group:g1"
+            "tray"
+            "notifications"
+            "clipboard"
+            "network"
+            "bluetooth"
+            "volume"
+            "brightness"
+            "battery"
+            "control-center"
+            "session"
+          ];
+          capsule_group = [
+            {
+              id = "g1";
+              enabled = true;
+              fill = "surface_variant";
+              members = [ "network_rx" "cpu" ];
+              opacity = 1.0;
+              padding = 6.0;
+            }
+          ];
+        }
+        // lib.optionalAttrs (barMonitorOverrides != { }) { monitor = barMonitorOverrides; };
       };
-      widget.clock = {
-        format = "{:%-I:%M %p %a, %b %d}";
-        vertical_format = "{:%H %M - %d %m}";
-        tooltip_format = "{:%H:%M %a, %b %d}";
+      widget = {
+        clock = {
+          format = "{:%-I:%M %p %a, %b %d}";
+          vertical_format = "{:%H %M - %d %m}";
+          tooltip_format = "{:%H:%M %a, %b %d}";
+        };
+        spacer_2.type = "spacer";
       };
       shell.launcher.providers.session.global = true;
       # https://docs.noctalia.dev/v5/services/notifications/
