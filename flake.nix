@@ -82,14 +82,6 @@
         flake-utils.follows = "flake-utils";
       };
     };
-    bun-scripts = {
-      url = "path:./modules/scripts/bun";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        bun2nix.follows = "bun2nix";
-        flake-utils.follows = "flake-utils";
-      };
-    };
     android-nixpkgs = {
       url = "github:tadfisher/android-nixpkgs";
       inputs = {
@@ -130,7 +122,6 @@
     , copyparty
     , bun2nix
     , gws
-    , bun-scripts
     , android-nixpkgs
     , import-tree
     , stirling-pdf
@@ -261,7 +252,6 @@
               home = "/home/dano";
               inherit deviceType isOnWayland hasGPU;
             };
-            bunScriptsPackage = bun-scripts.packages.${linuxSystem}.default;
             stirlingPdfPackage = stirling-pdf.legacyPackages.${linuxSystem}.stirling-pdf;
           };
           modules = [
@@ -275,11 +265,20 @@
     {
       packages = forAllSystems (pkgs: {
         opencode-cursor-proxy = pkgs.callPackage ./modules/programs/opencode/cursor-proxy/_package.nix { };
+      } // nixpkgs.lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == linuxSystem) {
+        bun-scripts = pkgs.callPackage ./modules/programs/bun-scripts.linux/_package.nix {
+          inherit bun2nix;
+        };
       });
 
       checks = {
-        ${linuxSystem}.opencode-cursor-proxy = self.packages.${linuxSystem}.opencode-cursor-proxy;
-        ${darwinSystem}.opencode-cursor-proxy = self.packages.${darwinSystem}.opencode-cursor-proxy;
+        ${linuxSystem} = {
+          opencode-cursor-proxy = self.packages.${linuxSystem}.opencode-cursor-proxy;
+          bun-scripts = self.packages.${linuxSystem}.bun-scripts;
+        };
+        ${darwinSystem} = {
+          opencode-cursor-proxy = self.packages.${darwinSystem}.opencode-cursor-proxy;
+        };
       };
 
       nixosConfigurations = {

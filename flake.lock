@@ -174,28 +174,6 @@
         "type": "github"
       }
     },
-    "bun-scripts": {
-      "inputs": {
-        "bun2nix": [
-          "bun2nix"
-        ],
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "path": "./modules/scripts/bun",
-        "type": "path"
-      },
-      "original": {
-        "path": "./modules/scripts/bun",
-        "type": "path"
-      },
-      "parent": []
-    },
     "bun2nix": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -777,7 +755,6 @@
         "ags": "ags",
         "android-nixpkgs": "android-nixpkgs",
         "astal": "astal_2",
-        "bun-scripts": "bun-scripts",
         "bun2nix": "bun2nix",
         "bun2nix-systems": "bun2nix-systems",
         "copyparty": "copyparty",

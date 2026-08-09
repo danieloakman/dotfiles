@@ -33,7 +33,7 @@ in
               hunk.enable = true;
               kitty.enable = true;
             };
-            scripts.bun.enable = true;
+            programs.bun-scripts.enable = true;
           };
         };
       })
