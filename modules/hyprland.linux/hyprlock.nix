@@ -2,9 +2,9 @@
 # hyprlock as the password gate. Not fully secure — the lock screen can be bypassed.
 { env, lib, config, ... }:
 {
-  options.my.services.hyprlock.enable = lib.mkEnableOption "Enable the Hyprlock lockscreen";
+  options.my.desktop.hyprland.hyprlock.enable = lib.mkEnableOption "Enable the Hyprlock lockscreen";
 
-  config = lib.mkIf config.my.services.hyprlock.enable {
+  config = lib.mkIf config.my.desktop.hyprland.hyprlock.enable {
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;

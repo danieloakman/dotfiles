@@ -25,16 +25,16 @@ let
   '';
 in
 {
-  options.my.services.hypridle.enable = lib.mkEnableOption "Enable Hypridle (idle daemon: dim, lock, DPMS, suspend)";
+  options.my.desktop.hyprland.hypridle.enable = lib.mkEnableOption "Enable Hypridle (idle daemon: dim, lock, DPMS, suspend)";
 
-  config = lib.mkIf config.my.services.hypridle.enable {
+  config = lib.mkIf config.my.desktop.hyprland.hypridle.enable {
     assertions = [
       {
         assertion = config.my.desktop.hyprland.enable;
         message = "Hypridle requires Hyprland to be enabled";
       }
       {
-        assertion = config.my.services.hyprlock.enable;
+        assertion = config.my.desktop.hyprland.hyprlock.enable;
         message = "Hypridle requires Hyprlock (lock_cmd uses hyprlock)";
       }
     ];

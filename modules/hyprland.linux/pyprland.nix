@@ -1,6 +1,6 @@
 { env, pkgs, lib, config, ... }:
 let
-  cfg = config.my.services.pyprland;
+  cfg = config.my.desktop.hyprland.pyprland;
   startupScript = pkgs.writeShellScriptBin "pypr-start" ''
     ${pkgs.pyprland}/bin/pypr &
 
@@ -8,7 +8,7 @@ let
   '';
 in
 {
-  options.my.services.pyprland.enable = lib.mkEnableOption "Enable the Pyprland service";
+  options.my.desktop.hyprland.pyprland.enable = lib.mkEnableOption "Enable the Pyprland service";
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [

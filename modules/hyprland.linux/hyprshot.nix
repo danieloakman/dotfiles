@@ -1,10 +1,10 @@
 { env, pkgs, lib, config, ... }:
 let
-  cfg = config.my.programs.hyprshot;
+  cfg = config.my.desktop.hyprland.hyprshot;
   hyprshotExe = lib.getExe pkgs.hyprshot;
 in
 {
-  options.my.programs.hyprshot.enable = lib.mkEnableOption "Enable the Hyprshot screenshot tool for Hyprland";
+  options.my.desktop.hyprland.hyprshot.enable = lib.mkEnableOption "Enable the Hyprshot screenshot tool for Hyprland";
 
   config = lib.mkIf cfg.enable {
     assertions = [

@@ -52,11 +52,11 @@ in
           "eDP-1, 1366x768, 0x0, 1.0"
         ];
         hyprpaper.wallpaper = wallpaperPath;
+        onscreen-keyboard.enable = true;
       };
       ui-shell = "ags";
     };
     programs = {
-      onscreen-keyboard.enable = true;
       desktop-pkgs.enable = true;
     };
     services = {

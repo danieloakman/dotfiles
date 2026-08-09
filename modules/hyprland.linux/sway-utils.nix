@@ -1,9 +1,9 @@
 { env, lib, config, ... }:
 let
-  cfg = config.my.programs.sway-utils;
+  cfg = config.my.desktop.hyprland.sway-utils;
 in
 {
-  options.my.programs.sway-utils = {
+  options.my.desktop.hyprland.sway-utils = {
     enable = lib.mkEnableOption "Enable the Sway utils";
     notifications.enable = lib.mkEnableOption "Enable the Sway notifications";
     volume.enable = lib.mkEnableOption "Enable the Sway volume OSD for keyboard volume keys";

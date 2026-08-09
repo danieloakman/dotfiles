@@ -16,13 +16,11 @@ in
       }
     ];
 
-    my = {
-      services = {
-        blueman.enable = true;
-        hyprlock.enable = true;
-        hypridle.enable = true;
-      };
-      programs.sway-utils = {
+    my.desktop.hyprland = {
+      blueman.enable = true;
+      hyprlock.enable = true;
+      hypridle.enable = true;
+      sway-utils = {
         enable = true;
         notifications.enable = true;
         volume.enable = true;

@@ -107,7 +107,6 @@ in
         kitty.enable = true;
         ydotool.enable = true;
         rofi.enable = true;
-        hyprshot.enable = true;
         webapps = {
           YouTube.url = "https://www.youtube.com";
           Twitch.url = "https://www.twitch.tv";
@@ -131,8 +130,11 @@ in
           Audible.url = "https://www.audible.com.au/library";
         };
       };
-      # Haven't found a need for this again:
-      services.pyprland.enable = false;
+      desktop.hyprland = {
+        hyprshot.enable = true;
+        # Haven't found a need for this again:
+        pyprland.enable = false;
+      };
     };
 
     environment = {
