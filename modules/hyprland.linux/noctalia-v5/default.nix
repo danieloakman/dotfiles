@@ -33,6 +33,8 @@ let
         tooltip_format = "{:%H:%M %a, %b %d}";
       };
       shell.launcher.providers.session.global = true;
+      # https://docs.noctalia.dev/v5/services/notifications/
+      notification.position = "top_center";
       # https://docs.noctalia.dev/v5/services/idle/
       idle = {
         pre_action_fade_seconds = 2.0;
