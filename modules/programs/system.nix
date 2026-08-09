@@ -14,7 +14,7 @@ in
 
       nixpkgs.config = {
         allowUnfree = true;
-        # Belt-and-suspenders: flake inputs should follow bun2nix-systems (no x86_64-darwin).
+        # Belt-and-suspenders: flake inputs should follow systems (no x86_64-darwin).
         # Keep this for any remaining nixpkgs import that still hits that platform.
         allowDeprecatedx86_64Darwin = true;
       };

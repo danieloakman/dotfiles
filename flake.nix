@@ -40,14 +40,15 @@
     # devenv.url = "github:cachix/devenv";
     openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
     # Shared systems list without x86_64-darwin (Nixpkgs 26.05 deprecation warning).
-    bun2nix-systems.url = "path:./bun2nix-systems";
+    # future-26.11 drops Intel macOS; replaces the old local bun2nix-systems flake.
+    systems.url = "github:nix-systems/default/future-26.11";
     flake-utils = {
       url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
-      inputs.systems.follows = "bun2nix-systems";
+      inputs.systems.follows = "systems";
     };
     stylix = {
       url = "github:danth/stylix";
-      inputs.systems.follows = "bun2nix-systems";
+      inputs.systems.follows = "systems";
     };
     # Still needed by modules/gnome.linux/guake.nix; drop with unused-shells cleanup (#34).
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
@@ -72,7 +73,7 @@
       url = "github:nix-community/bun2nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        systems.follows = "bun2nix-systems";
+        systems.follows = "systems";
       };
     };
     gws = {
