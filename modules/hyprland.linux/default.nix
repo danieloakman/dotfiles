@@ -1,10 +1,10 @@
 # Hyprland module for system level configuration.
 # See: https://www.youtube.com/watch?v=zt3hgSBs11g
 
-{ pkgs, env, lib, inputs, config, ... }:
+{ pkgs, env, lib, config, ... }:
 let
   cfg = config.my.desktop.hyprland;
-  hyprlandPkg = inputs.hyprland.legacyPackages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  hyprlandPkg = pkgs.hyprland;
   monitorConnector = monitor: lib.head (lib.splitString "," monitor);
   wallpaperPath = lib.optionalString (cfg.hyprpaper.wallpaper != null) (toString cfg.hyprpaper.wallpaper);
   gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
@@ -12,7 +12,7 @@ let
     if [ "$HYPRGAMEMODE" = 1 ] ; then
       hyprctl --batch "\
         keyword animations:enabled 0;\
-        keyword decoration:drop_shadow 0;\
+        keyword decoration:shadow:enabled 0;\
         keyword decoration:blur:enabled 0;\
         keyword general:gaps_in 0;\
         keyword general:gaps_out 0;\
@@ -255,7 +255,6 @@ in
           );
 
           dwindle = {
-            pseudotile = true;
             preserve_split = true;
             special_scale_factor = 0.95;
           };
@@ -366,8 +365,10 @@ in
             workspace_swipe_cancel_ratio = 0.33;
             workspace_swipe_create_new = true;
             workspace_swipe_forever = true;
-            #workspace_swipe_use_r = true #uncomment if wanted a forever create a new workspace with swipe right
           };
+
+          # Replaces removed gestures:workspace_swipe / workspace_swipe_fingers.
+          gesture = [ "3, horizontal, workspace" ];
 
           # Could help when scaling and not pixelating
           xwayland = {
@@ -396,14 +397,10 @@ in
             middle_click_paste = false;
             disable_autoreload = true;
 
-            # Don't know what these do:
-            vfr = true;
-            #vrr = 0
             mouse_move_enables_dpms = true;
             enable_swallow = true;
             swallow_regex = "^(kitty)$";
             focus_on_activate = false;
-            # no_direct_scanout = true; # for fullscreen games. Does not exist anymore
             initial_workspace_tracking = 0;
           };
 

@@ -91,8 +91,6 @@
       };
     };
     llama-cpp.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 8069 (d5dfc33)
-    # TODO: migrate hyprland config to v0.54+ or latest
-    hyprland.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 0.53.3 (2026-01-24)
     stirling-pdf.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # v1.5.0, v2 changed a lot and broke a lot. Try it again in the future.
     lazyvim = {
       url = "github:pfassina/lazyvim-nix";
@@ -138,14 +136,11 @@
             substituters = [
               "https://nix-community.cachix.org"
               "https://srid.cachix.org"
-              "https://hyprland.cachix.org" # Enable cachix for hyprland, otherwise hyprland will be built from source
               "https://noctalia.cachix.org" # Prebuilt noctalia (v5), avoids compiling from source
             ];
-            trusted-substituters = [ "https://hyprland.cachix.org" ];
             trusted-public-keys = [
               "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
               "srid.cachix.org-1:MTQ6ksbfz3LBMmjyPh0PLmos+1x+CdtJxA/J2W+PQxI="
-              "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
               "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
             ];
           };
