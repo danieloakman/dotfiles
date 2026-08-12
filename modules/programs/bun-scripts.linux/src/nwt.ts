@@ -104,6 +104,19 @@ async function listTopLevelIgnored(root: string): Promise<string[]> {
 	return [...names].sort((a, b) => a.localeCompare(b));
 }
 
+function selectNamedIgnored(candidates: string[], inputs: string[]): string[] {
+	const selected: string[] = [];
+	for (const input of inputs) {
+		const name = input.replace(/^\.\//, '').replace(/\/$/, '');
+		if (candidates.includes(name)) {
+			if (!selected.includes(name)) selected.push(name);
+			continue;
+		}
+		console.error(`Not a top-level ignored path: ${input}`);
+	}
+	return selected;
+}
+
 async function branchExists(branch: string, cwd: string): Promise<boolean> {
 	return gitOk(['show-ref', '--verify', '--quiet', `refs/heads/${branch}`], cwd);
 }
@@ -146,13 +159,21 @@ async function main() {
     -- Git worktree helper with ignored-file copy --
 
     Usage:
-    $ nwt <branch> [Options]
+    $ nwt <branch> [paths...] [Options]
+    $ nwt <branch> --interactive [Options]
+
+    Examples:
+    $ nwt feat/foo tmp .claude
+    $ nwt feat/foo .cl*          # shell expands, then we copy .claude
+    $ nwt feat/foo '.cl*'        # quoted → no match
+    $ nwt feat/foo -i            # interactively select ignored paths
 
     Options:
-    --help, -h       Show help
-    --path, -p       Override derived worktree path
-    --dry-run, -n    Show what would happen without making changes
-    --verbose, -v    Print detailed progress to stderr
+    --help, -h           Show help
+    --path, -p           Override derived worktree path
+    --dry-run, -n        Show what would happen without making changes
+    --verbose, -v        Print detailed progress to stderr
+    --interactive, -i    Interactively select ignored paths to copy
   `,
 		{
 			importMeta: import.meta,
@@ -174,6 +195,11 @@ async function main() {
 					type: 'boolean',
 					shortFlag: 'v',
 					default: false
+				},
+				interactive: {
+					type: 'boolean',
+					shortFlag: 'i',
+					default: false
 				}
 			}
 		}
@@ -186,8 +212,15 @@ async function main() {
 
 	verbose = cli.flags.verbose;
 	const dryRun = cli.flags.dryRun;
+	const interactive = cli.flags.interactive;
 	const branch = cli.input[0];
-	if (!branch) exit('Usage: nwt <branch> [--path <dir>] [--dry-run] [--verbose]');
+	const paths = cli.input.slice(1);
+	if (!branch) {
+		exit('Usage: nwt <branch> [paths...] [--interactive] [--path <dir>] [--dry-run] [--verbose]');
+	}
+	if (interactive && paths.length > 0) {
+		exit('Do not pass paths with --interactive');
+	}
 
 	const invokingRoot = await getInvokingRoot();
 	vlog(`Invoking root: ${invokingRoot}`);
@@ -204,40 +237,46 @@ async function main() {
 
 	if (existsSync(targetPath)) exit(`Worktree path already exists: ${targetPath}`);
 
-	const candidates = await listTopLevelIgnored(invokingRoot);
-	vlog(
-		candidates.length > 0
-			? `Ignored candidates: ${candidates.join(', ')}`
-			: 'Ignored candidates: (none)'
-	);
-	const prefs = await loadPrefs();
-	const saved = prefs.repos[primaryRoot]?.copy ?? [];
-	const initialValues = saved.filter((name) => candidates.includes(name));
-	vlog(
-		initialValues.length > 0
-			? `Preselected from prefs: ${initialValues.join(', ')}`
-			: 'Preselected from prefs: (none)'
-	);
-
 	let selected: string[] = [];
-	if (candidates.length === 0) {
-		console.error('No top-level ignored paths found to copy.');
-	} else {
-		if (!process.stdin.isTTY) {
-			exit('Interactive selection required, but stdin is not a TTY. Run in a terminal.');
+	let prefs: Prefs | undefined;
+
+	if (interactive || paths.length > 0) {
+		const candidates = await listTopLevelIgnored(invokingRoot);
+		vlog(
+			candidates.length > 0
+				? `Ignored candidates: ${candidates.join(', ')}`
+				: 'Ignored candidates: (none)'
+		);
+
+		if (candidates.length === 0) {
+			console.error('No top-level ignored paths found to copy.');
+		} else if (interactive) {
+			prefs = await loadPrefs();
+			const saved = prefs.repos[primaryRoot]?.copy ?? [];
+			const initialValues = saved.filter((name) => candidates.includes(name));
+			vlog(
+				initialValues.length > 0
+					? `Preselected from prefs: ${initialValues.join(', ')}`
+					: 'Preselected from prefs: (none)'
+			);
+			if (!process.stdin.isTTY) {
+				exit('Interactive selection required, but stdin is not a TTY. Run in a terminal.');
+			}
+			const result = await multiselect({
+				message: 'Copy ignored paths into the new worktree',
+				options: candidates.map((value) => ({ value, label: value })),
+				initialValues,
+				required: false,
+				output: process.stderr
+			});
+			if (isCancel(result)) {
+				cancel('Cancelled.', { output: process.stderr });
+				exit(undefined, 1);
+			}
+			selected = result;
+		} else {
+			selected = selectNamedIgnored(candidates, paths);
 		}
-		const result = await multiselect({
-			message: 'Copy ignored paths into the new worktree',
-			options: candidates.map((value) => ({ value, label: value })),
-			initialValues,
-			required: false,
-			output: process.stderr
-		});
-		if (isCancel(result)) {
-			cancel('Cancelled.', { output: process.stderr });
-			exit(undefined, 1);
-		}
-		selected = result;
 	}
 	vlog(selected.length > 0 ? `Selected: ${selected.join(', ')}` : 'Selected: (none)');
 
@@ -254,7 +293,7 @@ async function main() {
 		console.error(
 			selected.length > 0 ? `Would copy: ${selected.join(', ')}` : 'Would copy: (nothing)'
 		);
-		console.error(`Would update prefs for ${primaryRoot}`);
+		if (interactive) console.error(`Would update prefs for ${primaryRoot}`);
 		process.stdout.write(`${targetPath}\n`);
 		return;
 	}
@@ -262,8 +301,10 @@ async function main() {
 	await addWorktree(targetPath, branch, invokingRoot, !exists);
 	await copySelected(invokingRoot, targetPath, selected);
 
-	prefs.repos[primaryRoot] = { copy: selected };
-	await savePrefs(prefs);
+	if (interactive && prefs) {
+		prefs.repos[primaryRoot] = { copy: selected };
+		await savePrefs(prefs);
+	}
 
 	process.stdout.write(`${targetPath}\n`);
 }
