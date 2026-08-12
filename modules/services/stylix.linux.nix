@@ -1,4 +1,5 @@
 # Stylix config, see: https://www.youtube.com/watch?v=ljHkWgBaQWU
+# Linux-only for now: Darwin stylix mainly themes HM pkgs and was awkward to dual-load.
 { inputs, pkgs, lib, config, env, ... }:
 let
   cfg = config.my.services.stylix;
@@ -25,11 +26,7 @@ let
   };
 in
 {
-  imports = env.selectPlatform {
-    linux = [ inputs.stylix.nixosModules.stylix ];
-    # Could not get both linux and darwin to work at once. So just linux for now since stylix on darwin only changes pkgs from home-manager.
-    darwin = [ inputs.stylix.darwinModules.stylix ];
-  };
+  imports = [ inputs.stylix.nixosModules.stylix ];
 
   options.my.services.stylix = {
     enable = lib.mkEnableOption "Enable the Stylix module for setting the wallpaper and theme of the desktop.";
@@ -40,48 +37,44 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (env.selectPlatform {
-    any = {
-      assertions = [{
-        assertion = cfg.wallpaper != null;
-        message = "Stylix requires a wallpaper to be set with `my.services.stylix.wallpaper`.";
-      }];
+  config = lib.mkIf cfg.enable {
+    assertions = [{
+      assertion = cfg.wallpaper != null;
+      message = "Stylix requires a wallpaper to be set with `my.services.stylix.wallpaper`.";
+    }];
 
-      stylix = {
-        enable = true;
+    stylix = {
+      enable = true;
 
-        image = cfg.wallpaper;
+      image = cfg.wallpaper;
 
-        # Force dark theme:
-        polarity = "dark";
+      # Force dark theme:
+      polarity = "dark";
 
-        # fonts = {};
-      } // lib.optionalAttrs (cfg.wallpaper == null) {
-        # See gruvboxDarkHard16 in the let-binding: explicit scheme avoids Stylix's
-        # generated-palette default (importJSON + runCommand) and avoids a pkgs
-        # path that is not substituted under `nix flake check --no-build`.
-        base16Scheme = gruvboxDarkHard16;
-      };
-    };
+      # fonts = {};
 
-    linux = {
-      stylix.cursor = {
+      cursor = {
         package = pkgs.bibata-cursors;
         name = "Bibata-Modern-Ice";
         size = 24;
       };
-
-      # Stylix's Qt target installs generated Kvantum themes via recursive xdg linking.
-      # Stale store-backed theme paths block linkGeneration from moving files to .bak.
-      home-manager.users.${env.user} = { lib, ... }: {
-        home.activation.cleanupStylixKvantumThemes = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-          for theme in "$HOME/.config/Kvantum"/Base16*; do
-            if [ -e "$theme" ]; then
-              $DRY_RUN_CMD rm -rf "$theme"
-            fi
-          done
-        '';
-      };
+    } // lib.optionalAttrs (cfg.wallpaper == null) {
+      # See gruvboxDarkHard16 in the let-binding: explicit scheme avoids Stylix's
+      # generated-palette default (importJSON + runCommand) and avoids a pkgs
+      # path that is not substituted under `nix flake check --no-build`.
+      base16Scheme = gruvboxDarkHard16;
     };
-  });
+
+    # Stylix's Qt target installs generated Kvantum themes via recursive xdg linking.
+    # Stale store-backed theme paths block linkGeneration from moving files to .bak.
+    home-manager.users.${env.user} = { lib, ... }: {
+      home.activation.cleanupStylixKvantumThemes = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+        for theme in "$HOME/.config/Kvantum"/Base16*; do
+          if [ -e "$theme" ]; then
+            $DRY_RUN_CMD rm -rf "$theme"
+          fi
+        done
+      '';
+    };
+  };
 }

@@ -232,15 +232,10 @@ in
         };
       };
     })
-    (lib.mkIf (cfg.enable && cfg.web.enable) (
-      env.selectPlatform {
-        linux = {
-          # Test out if this is needed.
-          # users.users.${env.user}.linger = true;
-          environment.systemPackages = tailscaleServeScripts;
-        };
-        darwin = { };
-      }
-    ))
+    (lib.mkIf (cfg.enable && cfg.web.enable && env.platform == "linux") {
+      # Test out if this is needed.
+      # users.users.${env.user}.linger = true;
+      environment.systemPackages = tailscaleServeScripts;
+    })
   ];
 }

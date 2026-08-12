@@ -237,9 +237,5 @@ in
         '';
       };
     };
-
-    darwin = {
-      # Shared packages are inherited from `any` (nixpkgs-first).
-    };
   };
 }
