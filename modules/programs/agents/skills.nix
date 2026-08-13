@@ -36,6 +36,7 @@ in
           ## Git
           - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them.
           - Forbid AI co-authoring in commit messages: never add `Co-authored-by` trailers for agents or tools (Cursor, Claude, etc.), never add "Made with Cursor" or similar attribution trailers, and never use `git commit --trailer` for attribution.
+          - Git stash: always prefix the stash message with the current branch name (e.g. `git stash push -m "<branch>: …"`). When listing, applying, popping, or dropping stashes, only touch entries whose message starts with the current branch name — never other agents' stashes.
         '';
       };
       skills = {
