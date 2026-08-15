@@ -20,6 +20,8 @@ let
     "adguard_pwd"
     "paperless_username"
     "paperless_pwd"
+    "collie_vapid_public"
+    "collie_vapid_private"
   ];
   group = "secrets"; # Group to access the secrets
 in
