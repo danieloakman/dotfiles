@@ -69,12 +69,8 @@
         public-base-url = "http://mara:${toString port}";
         jwt-secret-file = config.sops.secrets.postiz_jwt_secret.path;
       };
-      periodic-reboot = {
-        # Enabled just while I'm away and can't physically reboot the machine if I can't access it remotely anymore.
-        enable = true;
-        # Every day at 1am, retry every 30 minutes until 5am if deferred.
-        schedule = "0 1 * * *";
-      };
+      # Soft-remediate internet/Tailscale failures; reboot up to 3 times then stay up.
+      connectivity-watchdog.enable = true;
       pia.enable = true;
       qbittorrent = {
         enable = true;
