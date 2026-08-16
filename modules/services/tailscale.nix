@@ -1,6 +1,38 @@
-{ config, lib, env, ... }:
+{ config, lib, pkgs, env, ... }:
 let
   cfg = config.my.services.tailscale;
+  serveCfg = config.services.tailscale.serve;
+  ts = lib.getExe config.services.tailscale.package;
+
+  # `tailscale serve set-config` cannot express frontend TLS termination
+  # (tailscale#18381 / nixpkgs#530174): `tcp:443` → `http://…` becomes HTTP,
+  # not HTTPS. Apply declared services with the CLI `--https` flag instead.
+  serveApplyScript =
+    let
+      lines = lib.concatLists (
+        lib.mapAttrsToList (
+          name: svc:
+          lib.mapAttrsToList (
+            endpoint: target:
+            let
+              port = lib.removePrefix "tcp:" endpoint;
+            in
+            assert lib.hasPrefix "tcp:" endpoint;
+            ''
+              ${ts} serve clear ${lib.escapeShellArg "svc:${name}"} >/dev/null 2>&1 || true
+              ${ts} serve --bg --service=${lib.escapeShellArg "svc:${name}"} --https=${port} ${lib.escapeShellArg target}
+              ${lib.optionalString (svc.advertised == false) ''
+                ${ts} serve drain ${lib.escapeShellArg "svc:${name}"} || true
+              ''}
+            ''
+          ) svc.endpoints
+        ) serveCfg.services
+      );
+    in
+    pkgs.writeShellScript "tailscale-serve-https-apply" ''
+      set -euo pipefail
+      ${lib.concatStringsSep "\n" lines}
+    '';
 in
 {
   options.my.services.tailscale = {
@@ -34,9 +66,14 @@ in
         ];
         useRoutingFeatures = cfg.use-routing-features;
         openFirewall = true;
-        # Enables the Tailscale Serve configs:
-        # For some reason, this doesn't work at the moment. So I'm just going to add enable and disable scripts for each service.
-        serve.enable = false;
+        serve.enable =
+          lib.mkDefault (serveCfg.services != { });
+      };
+
+      # Replace stock `set-config --all` with HTTPS-capable CLI applies.
+      systemd.services.tailscale-serve = lib.mkIf serveCfg.enable {
+        serviceConfig.ExecStart = lib.mkForce serveApplyScript;
+        restartTriggers = lib.mkForce [ serveApplyScript ];
       };
 
       # Open the DNS ports in the firewall for tailscale.

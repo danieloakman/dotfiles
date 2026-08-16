@@ -1,4 +1,4 @@
-{ pkgs, lib, config, env, stirlingPdfPackage, ... }:
+{ lib, config, stirlingPdfPackage, ... }:
 let
   cfg = config.my.services.stirling-pdf;
   inherit (cfg) port;
@@ -25,14 +25,9 @@ in
       };
     };
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-stirling-pdf-up" ''
-        tailscale serve --service=svc:stirling-pdf --https=443 127.0.0.1:${portStr}
-      '')
-      (writeShellScriptBin "tailscale-svc-stirling-pdf-down" ''
-        tailscale serve clear svc:stirling-pdf
-      '')
-    ];
+    services.tailscale.serve.services.stirling-pdf = {
+      endpoints."tcp:443" = "http://127.0.0.1:${portStr}";
+    };
 
     my.services.homepage.services."Stirling PDF" = {
       description = "PDF Viewer";

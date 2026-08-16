@@ -1,5 +1,4 @@
 { config
-, pkgs
 , lib
 , ...
 }:
@@ -42,7 +41,7 @@ in
       homepage-dashboard = {
         enable = true;
         allowedHosts = cfg.allowed-hosts;
-        # Loopback-only; expose via `tailscale-svc-homepage-up`.
+        # Loopback-only; expose via services.tailscale.serve.
         openFirewall = false;
         listenPort = cfg.port;
         widgets = [
@@ -165,13 +164,8 @@ in
     };
     systemd.services.homepage-dashboard.serviceConfig.SupplementaryGroups = [ "secrets" ];
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-homepage-up" ''
-        tailscale serve --service=svc:homepage --https=443 127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-homepage-down" ''
-        tailscale serve clear svc:homepage
-      '')
-    ];
+    services.tailscale.serve.services.homepage = {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+    };
   };
 }

@@ -50,14 +50,8 @@ in
       };
     };
 
-    # environment.systemPackages = with pkgs; [
-    #   (writeShellScriptBin "tailscale-svc-ollama-up" ''
-    #     tailscale serve --service=svc:ollama --https=443 127.0.0.1:${toString ollamaPort}
-    #   '')
-    #   (writeShellScriptBin "tailscale-svc-ollama-down" ''
-    #     tailscale serve clear svc:ollama
-    #   '')
-    # ];
+    # To expose via Tailscale: services.tailscale.serve.services.ollama.endpoints."tcp:443"
+    # = "http://127.0.0.1:${toString ollamaPort}";
 
     my.services.homepage.services."Ollama" = {
       description = "LLM Chat, hosted by ${config.networking.hostName}";

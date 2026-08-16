@@ -97,15 +97,6 @@ let
   # Non-secret .env body (nix store). VAPID keys are merged via sops template when web-push is on.
   collieEnvText = lib.concatStringsSep "\n" collieEnvLines + "\n";
 
-  collieTailscaleServeScripts = lib.optionals (collieTailscaleService != null) [
-    (pkgs.writeShellScriptBin "tailscale-svc-${collieTailscaleService}-up" ''
-      tailscale serve --service=svc:${collieTailscaleService} --https=443 ${collie.host}:${toString collie.port}
-    '')
-    (pkgs.writeShellScriptBin "tailscale-svc-${collieTailscaleService}-down" ''
-      tailscale serve clear svc:${collieTailscaleService}
-    '')
-  ];
-
   colliePath = lib.makeBinPath [
     pkgs.bash
     pkgs.bun
@@ -184,10 +175,10 @@ in
         default = "herdr-collie";
         description = ''
           Tailscale Service name (without the `svc:` prefix). When set, Collie
-          skips its built-in `tailscale serve` and this module installs
-          `tailscale-svc-<name>-up` / `-down` (Linux). Must match a service
-          defined in the Tailscale admin console. Set null to use Collie's
-          built-in MagicDNS Serve instead.
+          skips its built-in `tailscale serve` and this module declares the
+          service via `services.tailscale.serve.services` (Linux). Must match a
+          service defined in the Tailscale admin console. Set null to use
+          Collie's built-in MagicDNS Serve instead.
         '';
       };
 
@@ -471,7 +462,11 @@ in
     })
 
     (lib.mkIf (cfg.enable && collie.enable && env.platform == "linux") {
-      environment.systemPackages = collieTailscaleServeScripts;
+      services.tailscale.serve.services = lib.mkIf (collieTailscaleService != null) {
+        ${collieTailscaleService} = {
+          endpoints."tcp:443" = "http://${collie.host}:${toString collie.port}";
+        };
+      };
 
       my.services.homepage.services."Collie" = {
         description = "Herdr mobile PWA (Collie)";

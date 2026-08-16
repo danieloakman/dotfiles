@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   cfg = config.my.services.tandoor;
   user = "tandoor_recipes";
@@ -35,13 +35,8 @@ in
       };
     };
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-tandoor-up" ''
-        tailscale serve --service=svc:tandoor --https=443 127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-tandoor-down" ''
-        tailscale serve clear svc:tandoor
-      '')
-    ];
+    services.tailscale.serve.services.tandoor = {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+    };
   };
 }

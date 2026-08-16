@@ -149,6 +149,14 @@ in
         description = "BitTorrent download manager";
         href = "https://qbittorrent.dinosaur-crocodile.ts.net";
       };
+
+      services.tailscale.serve.services.qbittorrent = {
+        endpoints."tcp:443" =
+          if cfg.vpn.enable then
+            "http://${cfg.vpn.local-address}:${portStr}"
+          else
+            "http://127.0.0.1:${portStr}";
+      };
     }
 
     # Host service (no VPN confinement).
@@ -183,15 +191,6 @@ in
         allowedTCPPorts = [ torrenting-port ];
         allowedUDPPorts = [ torrenting-port ];
       };
-
-      environment.systemPackages = with pkgs; [
-        (writeShellScriptBin "tailscale-svc-qbittorrent-up" ''
-          tailscale serve --service=svc:qbittorrent --https=443 http://127.0.0.1:${portStr}
-        '')
-        (writeShellScriptBin "tailscale-svc-qbittorrent-down" ''
-          tailscale serve clear svc:qbittorrent
-        '')
-      ];
     })
 
     # Private network container + PIA OpenVPN kill switch.
@@ -213,15 +212,6 @@ in
       networking.networkmanager.unmanaged = [ "interface-name:ve-*" ];
 
       networking.firewall.trustedInterfaces = [ "ve-qbittorrent" ];
-
-      environment.systemPackages = with pkgs; [
-        (writeShellScriptBin "tailscale-svc-qbittorrent-up" ''
-          tailscale serve --service=svc:qbittorrent --https=443 http://${cfg.vpn.local-address}:${portStr}
-        '')
-        (writeShellScriptBin "tailscale-svc-qbittorrent-down" ''
-          tailscale serve clear svc:qbittorrent
-        '')
-      ];
 
       systemd.services."container@qbittorrent" = {
         after = [

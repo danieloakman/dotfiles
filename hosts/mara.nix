@@ -24,7 +24,7 @@
         enable = true;
         # Tailscale login that may drive agents (see Collie README → security).
         trusted-user = "doakman94@gmail.com";
-        # Exposed via `tailscale-svc-herdr-collie-up` (not MagiDNS root serve).
+        # Exposed via services.tailscale.serve (not MagiDNS root serve).
         public-hosts = [ "herdr-collie.dinosaur-crocodile.ts.net" ];
         public-url = "https://herdr-collie.dinosaur-crocodile.ts.net";
         web-push.enable = true;

@@ -25,14 +25,9 @@ in
 
     systemd.services.ttyd.path = [ pkgs.zsh ];
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-ttyd-up" ''
-        tailscale serve --service=svc:ttyd --https=443 http://127.0.0.1:${portStr}
-      '')
-      (writeShellScriptBin "tailscale-svc-ttyd-down" ''
-        tailscale serve clear svc:ttyd
-      '')
-    ];
+    services.tailscale.serve.services.ttyd = {
+      endpoints."tcp:443" = "http://127.0.0.1:${portStr}";
+    };
 
     my.services.homepage.services."ttyd" = {
       description = "Web terminal";

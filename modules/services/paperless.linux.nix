@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ lib, config, ... }:
 let
   cfg = config.my.services.paperless;
   inherit (cfg) port;
@@ -43,13 +43,8 @@ in
 
     users.users.${user}.extraGroups = [ "storage" ];
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-paperless-up" ''
-        tailscale serve --service=svc:paperless --https=443 ${hostname}:${toString port}
-      '')
-      (writeShellScriptBin "tailscale-svc-paperless-down" ''
-        tailscale serve clear svc:paperless
-      '')
-    ];
+    services.tailscale.serve.services.paperless = {
+      endpoints."tcp:443" = "http://${hostname}:${toString port}";
+    };
   };
 }

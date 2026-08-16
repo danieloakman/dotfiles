@@ -1,4 +1,4 @@
-{ env, pkgs, config, lib, ... }:
+{ config, lib, ... }:
 let
   cfg = config.my.services.streaming;
   jellyfinPort = 8096;
@@ -17,14 +17,9 @@ in
   };
 
   config = {
-    environment.systemPackages = lib.optionals cfg.jellyfin.enable (with pkgs; [
-      (writeShellScriptBin "tailscale-svc-jellyfin-up" ''
-        tailscale serve --service=svc:jellyfin --https=443 127.0.0.1:${toString jellyfinPort}
-      '')
-      (writeShellScriptBin "tailscale-svc-jellyfin-down" ''
-        tailscale serve clear svc:jellyfin
-      '')
-    ]);
+    services.tailscale.serve.services.jellyfin = lib.mkIf cfg.jellyfin.enable {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString jellyfinPort}";
+    };
     my.programs.webapps = {
       "Jellyfin" = lib.mkIf cfg.jellyfin.enable {
         url = "http://localhost:${toString jellyfinPort}";
@@ -56,7 +51,7 @@ in
     services = {
       jellyfin = lib.mkIf cfg.jellyfin.enable {
         enable = true;
-        # Expose via `tailscale-svc-jellyfin-up` (127.0.0.1 backend).
+        # Expose via services.tailscale.serve (127.0.0.1 backend).
         openFirewall = false;
       };
       # sonarr = {

@@ -111,14 +111,6 @@ let
     }
   ];
 
-  tailscaleServeScripts = [
-    (pkgs.writeShellScriptBin "tailscale-svc-${webTailscaleService}-up" ''
-      tailscale serve --service=svc:${webTailscaleService} --https=443 127.0.0.1:${toString cfg.web.port}
-    '')
-    (pkgs.writeShellScriptBin "tailscale-svc-${webTailscaleService}-down" ''
-      tailscale serve clear svc:${webTailscaleService}
-    '')
-  ];
 in
 {
   options.my.programs.opencode = {
@@ -161,8 +153,9 @@ in
         Run OpenCode as a background user service (systemd on Linux, launchd on macOS).
 
         Binds to 127.0.0.1 on `web.port` (default 15732),
-        installs `tailscale-svc-opencode-up` / `-down`. Expose via Tailscale only
-        (no HTTP basic auth). Same HTTP server and web UI as `opencode web`, without opening a browser.
+        and declares `services.tailscale.serve.services.opencode` on Linux.
+        Expose via Tailscale only (no HTTP basic auth). Same HTTP server and web
+        UI as `opencode web`, without opening a browser.
       '';
 
       port = lib.mkOption {
@@ -235,7 +228,9 @@ in
     (lib.mkIf (cfg.enable && cfg.web.enable && env.platform == "linux") {
       # Test out if this is needed.
       # users.users.${env.user}.linger = true;
-      environment.systemPackages = tailscaleServeScripts;
+      services.tailscale.serve.services.${webTailscaleService} = {
+        endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.web.port}";
+      };
     })
   ];
 }

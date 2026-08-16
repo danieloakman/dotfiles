@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ lib, config, ... }:
 let
   cfg = config.my.services.cockpit;
 
@@ -36,8 +36,9 @@ in
       type = lib.types.str;
       default = "mara-cockpit";
       description = ''
-        Tailscale Service name (without the `svc:` prefix) used by
-        `tailscale-svc-cockpit-up`. Must match the service defined in the admin console.
+        Tailscale Service name (without the `svc:` prefix) declared via
+        `services.tailscale.serve.services`. Must match the service defined in
+        the admin console.
       '';
     };
   };
@@ -52,21 +53,15 @@ in
       cockpit = {
         enable = true;
         inherit (cfg) port;
-        # Expose via `tailscale-svc-cockpit-up` (127.0.0.1 backend).
+        # Expose via services.tailscale.serve (127.0.0.1 backend).
         openFirewall = false;
         allowed-origins = originsWithWebSockets cfg.allowed-origins;
         settings.WebService.ProtocolHeader = "X-Forwarded-Proto";
       };
+      tailscale.serve.services.${cfg.tailscale-service} = {
+        endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+      };
     };
-
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-cockpit-up" ''
-        tailscale serve --service=svc:${cfg.tailscale-service} --https=443 http://127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-cockpit-down" ''
-        tailscale serve clear svc:${cfg.tailscale-service}
-      '')
-    ];
 
     my.services.homepage.services."Cockpit" = {
       description = "System management";

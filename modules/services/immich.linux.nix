@@ -47,13 +47,11 @@ in
 
     environment.systemPackages = with pkgs; [
       immich-cli
-      (writeShellScriptBin "tailscale-svc-immich-up" ''
-        tailscale serve --service=svc:immich --https=443 127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-immich-down" ''
-        tailscale serve clear svc:immich
-      '')
     ];
+
+    services.tailscale.serve.services.immich = {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+    };
 
     networking.firewall = {
       allowedTCPPorts = [ cfg.port ];

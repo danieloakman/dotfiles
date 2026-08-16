@@ -15,7 +15,7 @@ in
   config = lib.mkIf config.my.services.n8n.enable {
     services.n8n = {
       enable = true;
-      # Expose via `tailscale-svc-n8n-up` (127.0.0.1 backend).
+      # Expose via services.tailscale.serve (127.0.0.1 backend).
       openFirewall = false;
       environment = {
         N8N_PORT = cfg.port;
@@ -60,14 +60,9 @@ in
       ${pkgs.nodejs_24}/bin/npm install cheerio --prefix /var/lib/n8n
     '';
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-n8n-up" ''
-        tailscale serve --service=svc:n8n --https=443 127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-n8n-down" ''
-        tailscale serve clear svc:n8n
-      '')
-    ];
+    services.tailscale.serve.services.n8n = {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+    };
 
     my = {
       services.homepage.services."N8N" = {

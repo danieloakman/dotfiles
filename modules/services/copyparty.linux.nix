@@ -1,4 +1,4 @@
-{ pkgs, config, env, lib, inputs, ... }:
+{ config, env, lib, inputs, ... }:
 let
   cfg = config.my.services.copyparty;
   user = "copyparty";
@@ -69,14 +69,9 @@ in
       };
     };
 
-    environment.systemPackages = with pkgs; [
-      (writeShellScriptBin "tailscale-svc-copyparty-up" ''
-        tailscale serve --service=svc:copyparty --https=443 127.0.0.1:${toString cfg.port}
-      '')
-      (writeShellScriptBin "tailscale-svc-copyparty-down" ''
-        tailscale serve clear svc:copyparty
-      '')
-    ];
+    services.tailscale.serve.services.copyparty = {
+      endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
+    };
 
     # Start after sops-nix so secrets are available
     systemd.services.copyparty.after = [ "sops-nix.service" ];
