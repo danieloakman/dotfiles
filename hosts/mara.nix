@@ -14,7 +14,7 @@
     programs = {
       opencode = {
         enable = true;
-        web.enable = true;
+        # web.enable = true; # Disabling as we now use herdr-collie for this same usecase
         providers = {
           cursor.enable = true;
           claude.enable = true;
