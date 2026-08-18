@@ -6,10 +6,25 @@
 }:
 {
   config = env.selectPlatform {
+    any = {
+      home-manager = {
+        backupFileExtension = "bak";
+        users.${env.user} = {
+          programs.home-manager.enable = true;
+          home = {
+            username = env.user;
+            homeDirectory = env.home;
+            sessionVariables = {
+              GRANTED_ALIAS_CONFIGURED = "true";
+              DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
+            };
+            sessionPath = [ "$HOME/bin" ];
+          };
+        };
+      };
+    };
     linux = {
       home-manager = {
-        # useGlobalPkgs = true;
-        # useUserPackages = true;
         extraSpecialArgs =
           let
             inherit (config) sops;
@@ -17,67 +32,21 @@
           {
             inherit inputs env sops;
           };
-        users.${env.user} = { lib, config, ... }: {
-          # import ./home.${env.user}.nix;
-          # Turns out we need this in home-manager as well. It's not enough to just have it in the system configuration:
+        users.${env.user} = { lib, ... }: {
           nixpkgs.config.allowUnfree = true;
-
-          # Home Manager needs a bit of information about you and the paths it should
-          # manage.
+          gtk.enable = true;
           home = {
-            username = env.user;
-            homeDirectory = env.home;
-
-            # This value determines the Home Manager release that your configuration is
-            # compatible with. This helps avoid breakage when a new Home Manager release
-            # introduces backwards incompatible changes.
-            # You should not change this value, even if you update Home Manager. If you do
-            # want to update the value, then make sure to first check the Home Manager
-            # release notes.
-            stateVersion = "22.11"; # Please read the comment before changing.
-
-            # The packages option allows you to install Nix packages into your
-            # environment.
+            # Don't bump casually; check Home Manager release notes first.
+            stateVersion = "22.11";
+            sessionPath = [ "/usr/local/bin" ];
             packages = [
-              # # Adds the 'hello' command to your environment. It prints a friendly
-              # # "Hello, world!" when run.
-              # pkgs.hello
-
-              # # You can also create simple shell scripts directly inside your
-              # # configuration. For example, this adds a command 'my-hello' to your
-              # # environment:
-              # (pkgs.writeShellScriptBin "my-hello" ''
-              #   echo "Hello, ${config.home.username}!"
-              # '')
-
-              # Check first if destination exists, if not, then create it
               (pkgs.writeShellScriptBin "symlink" ''
                 if [ ! -L "$2" ]; then
                   ln -s "$1" "$2"
                 fi
               '')
-
-              # Required for passff-host to work with mozilla and its extension for `pass`
-              # pkgs.passff-host
             ];
-
-            # Home Manager is pretty good at managing dotfiles. The primary way to manage
-            # plain files is through 'home.file'.
             file = {
-              # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-              # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-              # # symlink to the Nix store copy.
-              # ".screenrc".source = dotfiles/screenrc;
-
-              # # You can also set the file content immediately.
-              # ".gradle/gradle.properties".text = ''
-              #   org.gradle.console=verbose
-              #   org.gradle.daemon.idletimeout=3600000
-              # '';
-
-              # Set up passff-host for firefox password management with "Pass"
-              # ".mozilla/native-messaging-hosts/passff.json".source = "${pkgs.passff-host}/share/passff-host/passff.json";
-
               ".config/nixpkgs/config.nix".text = ''
                 { ... }:
                 {
@@ -85,11 +54,9 @@
                 }
               '';
             };
-
             activation = {
               # TODO: this should be `"...".source = "...";`
               createSymlinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                # Create symlinks safely:
                 function symlink() {
                   if [ ! -L "$2" ]; then
                     ln -s "$1" "$2"
@@ -103,66 +70,22 @@
                 symlink /run/current-system/sw/bin/google-chrome-stable $HOME/bin/google-chrome
               '';
             };
-
-            # You can also manage environment variables but you will have to manually
-            # source
-            #
-            #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-            #
-            # or
-            #
-            #  /etc/profiles/per-user/dano/etc/profile.d/hm-session-vars.sh
-            #
-            # if you don't want to manage your shell through Home Manager.
-            sessionVariables = {
-              # EDITOR = "emacs";
-              # EDITOR = "nvim";
-              GRANTED_ALIAS_CONFIGURED = "true";
-              # Canonical checkout for scripts e.g. noctalia/ags
-              DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
-            };
-
-            sessionPath = [
-              "/usr/local/bin"
-              "$HOME/bin"
-            ];
-          };
-
-          gtk.enable = true;
-
-          # TODO: store Private internet access config in sops and load here somewhere
-
-          # Let Home Manager install and manage itself.
-          programs = {
-            home-manager.enable = true;
-
-            # Some github cli extensions weren't available, so don't enalbe in home-manager for now
-            # gh = {
-            #   enable = true;
-            #   settings = {
-            #     git_protocol = "ssh";
-            #   };
-            #   extensions = with pkgs; [
-            #     gh-dash
-            #   ];
-            # };
-            # gh-dash.enable = true;
           };
         };
-        # This is the extension for backup files when home-manager finds a file that already exists in a
-        # spot that it wants to put something in. This prevents the backup files from being overwritten
-        backupFileExtension = "bak";
       };
     };
     darwin = {
       home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
         users.${env.user} = {
+          # Don't bump casually; check Home Manager release notes first.
+          home.stateVersion = "25.05";
           # Home Manager replaces macOS login paths, so path_helper never adds
-          # /opt/homebrew/bin. Mirror the Linux sessionPath setup for Apple Silicon.
+          # /opt/homebrew/bin. Mirror Linux sessionPath for Apple Silicon brew.
           home.sessionPath = [
             "/opt/homebrew/bin"
             "/opt/homebrew/sbin"
-            "$HOME/bin"
           ];
         };
       };

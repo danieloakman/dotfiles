@@ -24,51 +24,31 @@
 
   networking.hostName = "boethiah";
 
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    backupFileExtension = "bak";
-    # extraSpecialArgs = { inherit inputs system env self; };
-    users.${env.user} = {
-      # Let Home Manager install and manage itself.
-      programs.home-manager.enable = true;
+  home-manager.users.${env.user} = {
+    programs.zsh.shellAliases = {
+      "brew-up" = "brew update && brew upgrade --greedy";
+    };
 
-      programs.zsh.shellAliases = {
-        "brew-up" = "brew update && brew upgrade --greedy";
-      };
+    home.file = {
+      ".ssh/config".text = ''
+        Host github github.com
+        IdentityFile ~/.ssh/djo-personal
+        IdentitiesOnly yes
+        AddKeysToAgent yes
 
-      home = {
-        username = env.user;
-        homeDirectory = env.home;
-        stateVersion = "25.05";
+        Host github github.com stash
+        ControlPath ~/.ssh/control-%h-%p-%r
+        ControlMaster auto
+        ControlPersist yes
+        ServerAliveInterval 30
 
-        sessionVariables = {
-          GRANTED_ALIAS_CONFIGURED = "true";
-          DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
-        };
-
-        file = {
-          ".ssh/config".text = ''
-            Host github github.com
-            IdentityFile ~/.ssh/djo-personal
-            IdentitiesOnly yes
-            AddKeysToAgent yes
-
-            Host github github.com stash
-            ControlPath ~/.ssh/control-%h-%p-%r
-            ControlMaster auto
-            ControlPersist yes
-            ServerAliveInterval 30
-
-            Host azura tail9f1d8 dinosaur-crocodile mara akatosh 100.116.141.37 100.67.189.19
-            User dano
-            IdentityFile ~/.ssh/djo-personal
-            IdentitiesOnly yes
-            AddKeysToAgent yes
-            SetEnv TERM=xterm-256color
-          '';
-        };
-      };
+        Host azura tail9f1d8 dinosaur-crocodile mara akatosh 100.116.141.37 100.67.189.19
+        User dano
+        IdentityFile ~/.ssh/djo-personal
+        IdentitiesOnly yes
+        AddKeysToAgent yes
+        SetEnv TERM=xterm-256color
+      '';
     };
   };
 
