@@ -1,3 +1,4 @@
+# Baseline (always on).
 { env, pkgs, lib, ... }:
 let
   gh = lib.getExe pkgs.gh;

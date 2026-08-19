@@ -1,3 +1,4 @@
+# Baseline (always on).
 { pkgs, ... }: {
   environment.systemPackages = with pkgs; [
     # Including these because I noticed the nm-* icons were missing without them.

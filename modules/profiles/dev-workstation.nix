@@ -10,18 +10,18 @@ in
     lib.mkMerge [
       {
         my.programs = {
-          agents.enable = true;
-          dev-pkgs.enable = true;
-          js-package-security.enable = true;
-          claude-code.enable = true;
-          cursor.enable = true;
-          gws.enable = true;
-          localsend.enable = true;
-          obsidian.enable = true;
-          herdr.enable = true;
+          agents.enable = lib.mkDefault true;
+          dev-pkgs.enable = lib.mkDefault true;
+          js-package-security.enable = lib.mkDefault true;
+          claude-code.enable = lib.mkDefault true;
+          cursor.enable = lib.mkDefault true;
+          gws.enable = lib.mkDefault true;
+          localsend.enable = lib.mkDefault true;
+          obsidian.enable = lib.mkDefault true;
+          herdr.enable = lib.mkDefault true;
           micro = {
-            enable = true;
-            is-default-editor = true;
+            enable = lib.mkDefault true;
+            is-default-editor = lib.mkDefault true;
           };
         };
       }
@@ -29,11 +29,11 @@ in
         linux = {
           my = {
             programs = {
-              rtk.enable = true;
-              hunk.enable = true;
-              kitty.enable = true;
+              rtk.enable = lib.mkDefault true;
+              hunk.enable = lib.mkDefault true;
+              kitty.enable = lib.mkDefault true;
             };
-            programs.bun-scripts.enable = true;
+            programs.bun-scripts.enable = lib.mkDefault true;
           };
         };
       })

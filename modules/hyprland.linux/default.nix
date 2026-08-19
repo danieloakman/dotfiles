@@ -7,7 +7,7 @@ let
   hyprlandPkg = pkgs.hyprland;
   monitorConnector = monitor: lib.head (lib.splitString "," monitor);
   wallpaperPath = lib.optionalString (cfg.hyprpaper.wallpaper != null) (toString cfg.hyprpaper.wallpaper);
-  gamemodeScript = pkgs.pkgs.writeShellScriptBin "start" ''
+  gamemodeScript = pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
     if [ "$HYPRGAMEMODE" = 1 ] ; then
       hyprctl --batch "\
@@ -22,7 +22,7 @@ let
     fi
     hyprctl reload
   '';
-  screenSaveScript = pkgs.pkgs.writeShellScriptBin "screen-save" ''
+  screenSaveScript = pkgs.writeShellScriptBin "screen-save" ''
     mouse_move_enables_dpms=$(hyprctl getoption misc:mouse_move_enables_dpms | awk 'NR==1{print $2}')
     if [ "$mouse_move_enables_dpms" = 1 ] ; then
       hyprctl keyword misc:mouse_move_enables_dpms 0
@@ -104,9 +104,9 @@ in
     ];
     my = {
       programs = {
-        kitty.enable = true;
-        ydotool.enable = true;
-        rofi.enable = true;
+        kitty.enable = lib.mkDefault true;
+        ydotool.enable = lib.mkDefault true;
+        rofi.enable = lib.mkDefault true;
         webapps = {
           YouTube.url = "https://www.youtube.com";
           Twitch.url = "https://www.twitch.tv";
@@ -131,7 +131,7 @@ in
         };
       };
       desktop.hyprland = {
-        hyprshot.enable = true;
+        hyprshot.enable = lib.mkDefault true;
         # Haven't found a need for this again:
         pyprland.enable = false;
       };

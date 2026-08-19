@@ -1,3 +1,4 @@
+# Baseline (always on).
 { env, pkgs, lib, ... }:
 {
   home-manager.users.${env.user} = {

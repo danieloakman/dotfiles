@@ -1,4 +1,4 @@
-# Base configuration for every user, i.e. the whole system.
+# Baseline (always on). Base configuration for every user / host.
 
 { inputs, pkgs, lib, env, system, ... }:
 let
@@ -68,7 +68,6 @@ in
         enable = true;
         settings = {
           General = {
-            Name = "Hello";
             ControllerMode = "dual";
             FastConnectable = "true";
             Experimental = "true";

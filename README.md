@@ -32,7 +32,9 @@ nh darwin switch .  # macOS
 - Small changes can be made directly to the `main` branch.
 - Otherwise large features should have a new branch.
 - Modules live in `./modules`. Files named `*.linux.nix` or `*.darwin.nix` are only imported on that platform; other modules are shared. Files matching `*/_*.nix` and `flake.nix` are skipped.
-- Most modules should be defined with a set of option(s) to enable or tweak the module to suit the host machine. That is unless the module is always loaded on every host.
+- Optional modules: `options.my…` → `cfg = config.my…` → `config = lib.mkIf cfg.enable { … }`.
+- Always-on / baseline files (no `my.*` options) start with `# Baseline (always on).`
+- Profiles (`my.profiles.*`) and other aggregators set child `enable`s with `lib.mkDefault` so a host can override with a plain `enable = false`. Hyprland may bundle companions the same way.
 
 ## Secrets
 

@@ -1,3 +1,4 @@
+# Baseline (always on). Shared Home Manager user setup for Linux and Darwin.
 { env
 , config
 , pkgs
