@@ -95,7 +95,7 @@ in
 
     ref = lib.mkOption {
       type = lib.types.str;
-      default = "v0.28.0";
+      default = "v0.32.0";
       description = ''
         Git ref passed to `herdr plugin install AltanS/collie --ref …`.
         Pin a tag for reproducible installs; use `main` to track upstream tip.
@@ -317,17 +317,19 @@ in
               $DRY_RUN_CMD install -m 0600 ${config.sops.templates."herdr-collie.env".path} "$config_dir/.env"
             ''}
 
-            installed=0
-            if ${herdrBin} plugin list --json 2>/dev/null \
-              | ${lib.getExe pkgs.jq} -e '
+            installed_ref=$(${herdrBin} plugin list --json 2>/dev/null \
+              | ${lib.getExe pkgs.jq} -r '
                   .result.plugins[]?
-                  | select(.id == "${colliePluginId}")
-                ' >/dev/null 2>&1; then
-              installed=1
-            fi
+                  | select(.plugin_id == "${colliePluginId}" or .id == "${colliePluginId}")
+                  | .source.requested_ref // empty
+                ' | head -n1 || true)
 
-            if [ "$installed" -eq 0 ]; then
+            if [ -z "$installed_ref" ]; then
               echo "herdr.collie: installing ${collieSource}@${collie.ref}"
+              $DRY_RUN_CMD ${herdrBin} plugin install ${collieSource} \
+                --ref ${lib.escapeShellArg collie.ref} --yes
+            elif [ "$installed_ref" != ${lib.escapeShellArg collie.ref} ]; then
+              echo "herdr.collie: updating ${collieSource} $installed_ref → ${collie.ref}"
               $DRY_RUN_CMD ${herdrBin} plugin install ${collieSource} \
                 --ref ${lib.escapeShellArg collie.ref} --yes
             fi
@@ -337,8 +339,8 @@ in
               plugin_root=$(${herdrBin} plugin list --json 2>/dev/null \
                 | ${lib.getExe pkgs.jq} -r '
                     .result.plugins[]?
-                    | select(.id == "${colliePluginId}")
-                    | .path // .root // .directory // empty
+                    | select(.plugin_id == "${colliePluginId}" or .id == "${colliePluginId}")
+                    | .plugin_root // .path // .root // .directory // empty
                   ' | head -n1 || true)
               if [ -n "$plugin_root" ] && [ -d "$plugin_root" ]; then
                 echo "herdr.collie: ensuring web-push in $plugin_root"
