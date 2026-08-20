@@ -16,7 +16,6 @@
             username = env.user;
             homeDirectory = env.home;
             sessionVariables = {
-              GRANTED_ALIAS_CONFIGURED = "true";
               DOTFILES_DIR = "${env.home}/repos/personal/dotfiles";
             };
             sessionPath = [ "$HOME/bin" ];

@@ -30,10 +30,6 @@
                 '';
               }}
             '';
-            envExtra = ''
-              fpath=(${env.home}/.dgranted/zsh_autocomplete/assume/ $fpath)
-              fpath=(${env.home}/.dgranted/zsh_autocomplete/granted/ $fpath)
-            '';
             oh-my-zsh = {
               enable = true;
               plugins = [
@@ -55,11 +51,6 @@
             enable = true;
             enableZshIntegration = true;
             nix-direnv.enable = true;
-          };
-
-          granted = {
-            enable = true;
-            enableZshIntegration = true;
           };
         };
       };
