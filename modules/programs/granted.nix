@@ -4,6 +4,9 @@
 # flows print a URL you can open on the machine you're SSHing from. Elsewhere
 # default to Vivaldi. SSO login already uses device code in headless/SSH
 # sessions (prints a URL + user code).
+#
+# Config must be a mutable file: Granted opens ~/.granted/config with O_RDWR, so
+# a home-manager store symlink fails with "permission denied".
 { env, lib, pkgs, ... }:
 let
   isServer = env.deviceType == "server";
@@ -30,24 +33,32 @@ let
       '';
 in
 {
-  home-manager.users.${env.user} = {
-    home = {
-      sessionVariables.GRANTED_ALIAS_CONFIGURED = "true";
-      file.".granted/config".text = grantedConfig;
-    };
+  home-manager.users.${env.user} =
+    { lib, ... }:
+    {
+      home = {
+        sessionVariables.GRANTED_ALIAS_CONFIGURED = "true";
 
-    programs = {
-      zsh = {
-        envExtra = ''
-          fpath=(${env.home}/.dgranted/zsh_autocomplete/assume/ $fpath)
-          fpath=(${env.home}/.dgranted/zsh_autocomplete/granted/ $fpath)
+        activation.grantedConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD mkdir -p ${env.home}/.granted
+          $DRY_RUN_CMD rm -f ${env.home}/.granted/config
+          $DRY_RUN_CMD printf '%s' ${lib.escapeShellArg grantedConfig} > ${env.home}/.granted/config
+          $DRY_RUN_CMD chmod 600 ${env.home}/.granted/config
         '';
       };
 
-      granted = {
-        enable = true;
-        enableZshIntegration = true;
+      programs = {
+        zsh = {
+          envExtra = ''
+            fpath=(${env.home}/.dgranted/zsh_autocomplete/assume/ $fpath)
+            fpath=(${env.home}/.dgranted/zsh_autocomplete/granted/ $fpath)
+          '';
+        };
+
+        granted = {
+          enable = true;
+          enableZshIntegration = true;
+        };
       };
     };
-  };
 }
