@@ -10,7 +10,7 @@
     programs = {
       opencode = {
         enable = true;
-        # web.enable = true; # Disabling as we now use herdr-collie for this same usecase
+        # web.enable = true;
         providers = {
           cursor.enable = true;
           claude.enable = true;
@@ -18,7 +18,7 @@
       };
       herdr = {
         collie = {
-          enable = true;
+          # enable = true;
           # Tailscale login that may drive agents (see Collie README → security).
           trusted-user = "doakman94@gmail.com";
           # Exposed via services.tailscale.serve (not MagiDNS root serve).
