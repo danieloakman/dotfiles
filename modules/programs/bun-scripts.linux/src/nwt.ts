@@ -121,6 +121,10 @@ async function branchExists(branch: string, cwd: string): Promise<boolean> {
 	return gitOk(['show-ref', '--verify', '--quiet', `refs/heads/${branch}`], cwd);
 }
 
+function inHerdr(): boolean {
+	return process.env.HERDR_ENV === '1';
+}
+
 async function addWorktree(
 	targetPath: string,
 	branch: string,
@@ -131,6 +135,38 @@ async function addWorktree(
 		? ['worktree', 'add', '-b', branch, targetPath]
 		: ['worktree', 'add', targetPath, branch];
 	await git(args, cwd);
+}
+
+async function herdrCreateWorktree(
+	targetPath: string,
+	branch: string,
+	cwd: string
+): Promise<void> {
+	const args = [
+		'worktree',
+		'create',
+		'--cwd',
+		cwd,
+		'--branch',
+		branch,
+		'--path',
+		targetPath,
+		'--focus'
+	];
+	vlog(`$ herdr ${args.join(' ')}`);
+	const proc = Bun.spawn(['herdr', ...args], {
+		stdout: 'pipe',
+		stderr: 'pipe'
+	});
+	const [stdout, stderr, exitCode] = await Promise.all([
+		new Response(proc.stdout).text(),
+		new Response(proc.stderr).text(),
+		proc.exited
+	]);
+	if (exitCode !== 0) {
+		exit(stderr.trim() || stdout.trim() || `herdr ${args.join(' ')} failed`);
+	}
+	if (verbose && stdout.trim()) console.error(stdout.trim());
 }
 
 async function copySelected(
@@ -167,6 +203,9 @@ async function main() {
     $ nwt feat/foo .cl*          # shell expands, then we copy .claude
     $ nwt feat/foo '.cl*'        # quoted → no match
     $ nwt feat/foo -i            # interactively select ignored paths
+
+    Inside herdr (HERDR_ENV=1), creates via \`herdr worktree create --path\`
+    so the checkout opens as a grouped workspace; otherwise uses git worktree.
 
     Options:
     --help, -h           Show help
@@ -280,16 +319,24 @@ async function main() {
 	}
 	vlog(selected.length > 0 ? `Selected: ${selected.join(', ')}` : 'Selected: (none)');
 
-	const exists = await branchExists(branch, invokingRoot);
-	vlog(exists ? `Branch exists: ${branch}` : `Branch does not exist: ${branch}`);
+	const useHerdr = inHerdr();
+	vlog(useHerdr ? 'Detected herdr (HERDR_ENV=1)' : 'Not in herdr; using git worktree');
 
 	if (dryRun) {
 		console.error('Dry run — no changes will be made.');
-		console.error(
-			exists
-				? `Would attach worktree at ${targetPath} to existing branch ${branch}`
-				: `Would create branch ${branch} from HEAD and add worktree at ${targetPath}`
-		);
+		if (useHerdr) {
+			console.error(
+				`Would run: herdr worktree create --cwd ${invokingRoot} --branch ${branch} --path ${targetPath} --focus`
+			);
+		} else {
+			const exists = await branchExists(branch, invokingRoot);
+			vlog(exists ? `Branch exists: ${branch}` : `Branch does not exist: ${branch}`);
+			console.error(
+				exists
+					? `Would attach worktree at ${targetPath} to existing branch ${branch}`
+					: `Would create branch ${branch} from HEAD and add worktree at ${targetPath}`
+			);
+		}
 		console.error(
 			selected.length > 0 ? `Would copy: ${selected.join(', ')}` : 'Would copy: (nothing)'
 		);
@@ -298,7 +345,13 @@ async function main() {
 		return;
 	}
 
-	await addWorktree(targetPath, branch, invokingRoot, !exists);
+	if (useHerdr) {
+		await herdrCreateWorktree(targetPath, branch, invokingRoot);
+	} else {
+		const exists = await branchExists(branch, invokingRoot);
+		vlog(exists ? `Branch exists: ${branch}` : `Branch does not exist: ${branch}`);
+		await addWorktree(targetPath, branch, invokingRoot, !exists);
+	}
 	await copySelected(invokingRoot, targetPath, selected);
 
 	if (interactive && prefs) {

@@ -83,6 +83,7 @@ in
           onboarding = false;
           terminal.default_shell = "zsh";
           update.version_check = false;
+          worktrees.directory = "~/repos/worktrees";
           ui = {
             toast = {
               delivery = if env.deviceType == "server" then "herdr" else "system";
