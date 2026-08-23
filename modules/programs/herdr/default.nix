@@ -26,6 +26,9 @@ let
       # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
       aarch64-darwin = "sha256-JJkuFiXb3LGDVKWeKZ5LJjwxJACzE5bNwHzUbtV/JKc=";
     };
+    "0.8.0" = {
+      aarch64-darwin = "sha256-1Tqfk/zP38xVYyknv1EAL1rdCqeZC831CP+9hKxlgXg=";
+    };
   };
 
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
