@@ -160,7 +160,7 @@ in
         };
     })
 
-    (lib.mkIf (cfg.enable && gui.enable && env.platform == "linux") {
+    (lib.optionalAttrs (env.platform == "linux") (lib.mkIf (cfg.enable && gui.enable) {
       services.tailscale.serve.services = lib.mkIf skipServe {
         ${gui.tailscale-service} = {
           endpoints."tcp:443" = "http://${gui.host}:${toString gui.port}";
@@ -177,6 +177,6 @@ in
           else
             "https://${config.networking.hostName}";
       };
-    })
+    }))
   ];
 }

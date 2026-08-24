@@ -207,6 +207,7 @@
         linuxPkgs.lib.pipe import-tree [
           (i: i.filterNot (linuxPkgs.lib.hasInfix "flake")) # Skip other flake files
           (i: i.filterNot (linuxPkgs.lib.hasInfix ".darwin.")) # Skip darwin files
+          (i: i.filterNot (linuxPkgs.lib.hasInfix ".darwin/")) # Skip *.darwin/ directory modules
           (i: i ./modules)
         ];
 
@@ -215,6 +216,7 @@
         darwinPkgs.lib.pipe import-tree [
           (i: i.filterNot (darwinPkgs.lib.hasInfix "flake")) # Skip other flake files
           (i: i.filterNot (darwinPkgs.lib.hasInfix ".linux.")) # Skip .linux. files
+          (i: i.filterNot (darwinPkgs.lib.hasInfix ".linux/")) # Skip *.linux/ directory modules
           (i: i ./modules)
         ];
 

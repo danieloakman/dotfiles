@@ -363,7 +363,7 @@ in
         };
     })
 
-    (lib.mkIf (cfg.enable && collie.enable && collieWebPush) {
+    (lib.optionalAttrs (env.platform == "linux") (lib.mkIf (cfg.enable && collie.enable && collieWebPush) {
       sops.templates."herdr-collie.env" = {
         owner = env.user;
         group = "secrets";
@@ -377,9 +377,9 @@ in
             ""
           ];
       };
-    })
+    }))
 
-    (lib.mkIf (cfg.enable && collie.enable && env.platform == "linux") {
+    (lib.optionalAttrs (env.platform == "linux") (lib.mkIf (cfg.enable && collie.enable) {
       services.tailscale.serve.services = lib.mkIf (collieTailscaleService != null) {
         ${collieTailscaleService} = {
           endpoints."tcp:443" = "http://${collie.host}:${toString collie.port}";
@@ -396,6 +396,6 @@ in
           else
             "https://${config.networking.hostName}";
       };
-    })
+    }))
   ];
 }

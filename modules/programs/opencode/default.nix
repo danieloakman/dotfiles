@@ -225,12 +225,12 @@ in
         };
       };
     })
-    (lib.mkIf (cfg.enable && cfg.web.enable && env.platform == "linux") {
+    (lib.optionalAttrs (env.platform == "linux") (lib.mkIf (cfg.enable && cfg.web.enable) {
       # Test out if this is needed.
       # users.users.${env.user}.linger = true;
       services.tailscale.serve.services.${webTailscaleService} = {
         endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.web.port}";
       };
-    })
+    }))
   ];
 }
