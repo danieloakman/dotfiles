@@ -12,7 +12,7 @@ let
   herdrBin = lib.getExe cfg.package;
 
   colliePluginId = "herdr.collie";
-  collieSource = "AltanS/collie";
+  collieSource = collie.source;
   collieConfigRel = "herdr/plugins/config/${colliePluginId}";
 
   # Tailscale Service front door: Collie stays loopback-only; we publish with
@@ -97,8 +97,18 @@ in
       type = lib.types.str;
       default = "v0.32.0";
       description = ''
-        Git ref passed to `herdr plugin install AltanS/collie --ref …`.
-        Pin a tag for reproducible installs; use `main` to track upstream tip.
+        Git ref passed to `herdr plugin install <source> --ref …`.
+        Pin a tag for reproducible installs; use `main` to track tip.
+      '';
+    };
+
+    source = lib.mkOption {
+      type = lib.types.str;
+      default = "AltanS/collie";
+      example = "danieloakman/collie";
+      description = ''
+        GitHub `owner/repo` for `herdr plugin install`. Use your fork for the
+        chat/files/diffs Collie work; keep AltanS/collie for stock upstream.
       '';
     };
 
