@@ -18,7 +18,11 @@
       };
       herdr = {
         collie = {
-          # enable = true;
+          enable = true;
+          # Local checkout → plugin link. Switch to "danieloakman/collie" + ref
+          # for a pinned GitHub install.
+          source = /home/dano/repos/personal/collie;
+          ref = "61eabb7f586f8610a675ca12dd4e6c4366ab3bd5";
           # Tailscale login that may drive agents (see Collie README → security).
           trusted-user = "doakman94@gmail.com";
           # Exposed via services.tailscale.serve (not MagiDNS root serve).
