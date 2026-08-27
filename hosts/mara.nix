@@ -19,10 +19,14 @@
       herdr = {
         collie = {
           enable = true;
-          # Local checkout → plugin link. Switch to "danieloakman/collie" + ref
-          # for a pinned GitHub install.
+          # Source from Github repo:
+          # source = {
+          #   user = "danieloakman";
+          #   repo = "collie";
+          #   ref = "61eabb7f586f8610a675ca12dd4e6c4366ab3bd5";
+          # };
+          # Or source from local file path:
           source = /home/dano/repos/personal/collie;
-          ref = "61eabb7f586f8610a675ca12dd4e6c4366ab3bd5";
           # Tailscale login that may drive agents (see Collie README → security).
           trusted-user = "doakman94@gmail.com";
           # Exposed via services.tailscale.serve (not MagiDNS root serve).
@@ -31,7 +35,7 @@
           web-push.enable = true;
         };
         gui = {
-          enable = true;
+          enable = false;
           public-hosts = [ "herdr-gui.dinosaur-crocodile.ts.net" ];
           public-url = "https://herdr-gui.dinosaur-crocodile.ts.net";
         };

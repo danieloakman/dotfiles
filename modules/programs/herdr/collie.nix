@@ -13,11 +13,18 @@ let
 
   colliePluginId = "herdr.collie";
   collieSource = collie.source;
-  # Absolute path → `herdr plugin link`; otherwise GitHub `owner/repo` → install.
-  collieSourceIsPath =
-    builtins.isPath collieSource
-    || (builtins.isString collieSource && lib.hasPrefix "/" collieSource);
-  collieSourcePath = toString collieSource;
+  # Path → `herdr plugin link`; `{ user, repo, ref }` → `herdr plugin install`.
+  collieSourceIsPath = builtins.isPath collieSource;
+  collieGithub =
+    if collieSourceIsPath then
+      null
+    else
+      collieSource;
+  collieGithubSpec =
+    if collieGithub == null then
+      null
+    else
+      "${collieGithub.user}/${collieGithub.repo}";
   collieConfigRel = "herdr/plugins/config/${colliePluginId}";
 
   # Tailscale Service front door: Collie stays loopback-only; we publish with
@@ -98,25 +105,46 @@ in
       '';
     };
 
-    ref = lib.mkOption {
-      type = lib.types.str;
-      default = "v0.32.0";
-      description = ''
-        Git ref passed to `herdr plugin install <source> --ref …` when `source`
-        is a GitHub `owner/repo`. Ignored for a local checkout path.
-        Pin a tag for reproducible installs; use `main` to track tip.
-      '';
-    };
-
     source = lib.mkOption {
-      type = lib.types.either lib.types.path lib.types.str;
-      default = "AltanS/collie";
-      example = "danieloakman/collie";
+      type = lib.types.either lib.types.path (
+        lib.types.submodule {
+          options = {
+            user = lib.mkOption {
+              type = lib.types.str;
+              example = "danieloakman";
+              description = "GitHub owner / org.";
+            };
+            repo = lib.mkOption {
+              type = lib.types.str;
+              example = "collie";
+              description = "GitHub repository name.";
+            };
+            ref = lib.mkOption {
+              type = lib.types.str;
+              default = "v0.32.0";
+              example = "61eabb7f586f8610a675ca12dd4e6c4366ab3bd5";
+              description = ''
+                Git ref for `herdr plugin install … --ref`. Pin a tag or commit
+                for reproducible installs; use `main` to track tip.
+              '';
+            };
+          };
+        }
+      );
+      default = {
+        user = "AltanS";
+        repo = "collie";
+      };
+      example = {
+        user = "danieloakman";
+        repo = "collie";
+        ref = "v0.32.0";
+      };
       description = ''
         Collie plugin origin — one of:
-        - GitHub `owner/repo` → `herdr plugin install` (uses `ref`)
+        - `{ user, repo, ref? }` → `herdr plugin install user/repo --ref …`
         - Absolute path to a writable checkout → `herdr plugin link`
-          (edit → `collie-ctl.sh build` → restart; `ref` unused)
+          (edit → `collie-ctl.sh build` → restart)
       '';
     };
 
@@ -269,19 +297,6 @@ in
         {
           assertion =
             !collie.enable
-            || collieSourceIsPath
-            || (
-              builtins.isString collieSource
-              && builtins.match "[^/]+/[^/]+" collieSource != null
-            );
-          message = ''
-            my.programs.herdr.collie.source must be a GitHub owner/repo
-            (e.g. danieloakman/collie) or an absolute path to a local checkout.
-          '';
-        }
-        {
-          assertion =
-            !collie.enable
             || collie.serve-mode != "http"
             || collie.public-hosts != [ ]
             || collieSkipServe;
@@ -351,7 +366,7 @@ in
             ${
               if collieSourceIsPath then
                 ''
-                  link_path=${lib.escapeShellArg collieSourcePath}
+                  link_path=${lib.escapeShellArg (toString collieSource)}
                   if [ ! -d "$link_path" ]; then
                     echo "herdr.collie: source path does not exist: $link_path" >&2
                     exit 1
@@ -369,13 +384,13 @@ in
                       ' | head -n1 || true)
 
                   if [ -z "$installed_ref" ]; then
-                    echo "herdr.collie: installing ${collieSourcePath}@${collie.ref}"
-                    $DRY_RUN_CMD ${herdrBin} plugin install ${collieSourcePath} \
-                      --ref ${lib.escapeShellArg collie.ref} --yes
-                  elif [ "$installed_ref" != ${lib.escapeShellArg collie.ref} ]; then
-                    echo "herdr.collie: updating ${collieSourcePath} $installed_ref → ${collie.ref}"
-                    $DRY_RUN_CMD ${herdrBin} plugin install ${collieSourcePath} \
-                      --ref ${lib.escapeShellArg collie.ref} --yes
+                    echo "herdr.collie: installing ${collieGithubSpec}@${collieGithub.ref}"
+                    $DRY_RUN_CMD ${herdrBin} plugin install ${collieGithubSpec} \
+                      --ref ${lib.escapeShellArg collieGithub.ref} --yes
+                  elif [ "$installed_ref" != ${lib.escapeShellArg collieGithub.ref} ]; then
+                    echo "herdr.collie: updating ${collieGithubSpec} $installed_ref → ${collieGithub.ref}"
+                    $DRY_RUN_CMD ${herdrBin} plugin install ${collieGithubSpec} \
+                      --ref ${lib.escapeShellArg collieGithub.ref} --yes
                   fi
                 ''
             }
