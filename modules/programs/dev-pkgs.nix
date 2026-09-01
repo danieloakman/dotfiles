@@ -4,8 +4,12 @@
 let
   cfg = config.my.programs.dev-pkgs;
 
+  port-kill = pkgs.writeShellScriptBin "port-kill" ''
+    exec ${lib.getExe pkgs.killport} "$@"
+  '';
+
   # ss only shows a short process name; this resolves PIDs to full executable + args.
-  showport = pkgs.writeShellScriptBin "showport" ''
+  port-ls = pkgs.writeShellScriptBin "port-ls" ''
     set -euo pipefail
 
     SS=${lib.getExe' pkgs.iproute2 "ss"}
@@ -97,7 +101,7 @@ in
           just # Task runner, like `make`
           just-lsp # LSP for Just files
           fd # A better `find` command
-          killport # Kill processes listening on a port
+          port-kill # Kill processes listening on a port
           dust # A better `du` command. Just prints out size of directories in the CWD
           zbar # Can scan QR & bar codes using this
           awscli2
@@ -139,7 +143,7 @@ in
           # Fly.io control:
           flyctl
 
-          showport # List processes listening on a port, with full executable + args
+          port-ls # List processes listening on a port, with full executable + args
 
           # Editors that can be ssh'd into and used:
           vscode
