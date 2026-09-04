@@ -1,5 +1,5 @@
 import meow from 'meow';
-import { exit } from './utils/cli';
+import { exit, helpFlag } from './utils/cli';
 import {
 	SALARY_TYPES,
 	SORT_MODES,
@@ -76,7 +76,7 @@ Examples
 			importMeta: import.meta,
 			argv,
 			flags: {
-				help: { type: 'boolean', shortFlag: 'h', default: false },
+				...helpFlag,
 				table: { type: 'boolean', shortFlag: 't', default: false }
 			}
 		}
@@ -135,7 +135,7 @@ Examples
 			importMeta: import.meta,
 			argv,
 			flags: {
-				help: { type: 'boolean', shortFlag: 'h', default: false },
+				...helpFlag,
 				where: { type: 'string', shortFlag: 'w', default: '' },
 				salaryRange: { type: 'string', aliases: ['sr'], default: '' },
 				salaryType: {
@@ -227,7 +227,7 @@ Examples
 			importMeta: import.meta,
 			commands: ['search', 'detail'],
 			flags: {
-				help: { type: 'boolean', shortFlag: 'h', default: false }
+				...helpFlag
 			}
 		}
 	);

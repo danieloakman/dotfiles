@@ -1,19 +1,22 @@
 import meow from 'meow';
 import { chromium } from 'playwright-core';
+import { helpFlag } from './utils/cli';
 
 if (import.meta.main) {
-	const { flags } = meow(
+	const { flags, showHelp } = meow(
 		`
     Usage:
     $ remote-chromium [options]
 
     Options:
-    --headless  Run the browser in headless mode. Default: false
-    --port      The port to run the remote debugging server on. Default: 9222
+    -h, --help       Show help
+    --headless       Run the browser in headless mode. Default: false
+    --port           The port to run the remote debugging server on. Default: 9222
   `,
 		{
 			importMeta: import.meta,
 			flags: {
+				...helpFlag,
 				headless: {
 					type: 'boolean',
 					default: false
@@ -25,6 +28,7 @@ if (import.meta.main) {
 			}
 		}
 	);
+	if (flags.help) showHelp(0);
 
 	const server = await chromium.launchServer({
 		port: flags.port,

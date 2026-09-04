@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 import { basename, dirname, join, resolve } from 'path';
 import meow from 'meow';
 import { z } from 'zod';
-import { exit } from './utils/cli';
+import { exit, helpFlag } from './utils/cli';
 import { configdir } from './utils/env';
 
 let verbose = false;
@@ -137,11 +137,7 @@ async function addWorktree(
 	await git(args, cwd);
 }
 
-async function herdrCreateWorktree(
-	targetPath: string,
-	branch: string,
-	cwd: string
-): Promise<void> {
+async function herdrCreateWorktree(targetPath: string, branch: string, cwd: string): Promise<void> {
 	const args = [
 		'worktree',
 		'create',
@@ -217,10 +213,7 @@ async function main() {
 		{
 			importMeta: import.meta,
 			flags: {
-				help: {
-					type: 'boolean',
-					shortFlag: 'h'
-				},
+				...helpFlag,
 				path: {
 					type: 'string',
 					shortFlag: 'p'
@@ -244,19 +237,14 @@ async function main() {
 		}
 	);
 
-	if (cli.flags.help) {
-		console.error(cli.help);
-		return;
-	}
+	if (cli.flags.help) cli.showHelp(0);
 
 	verbose = cli.flags.verbose;
 	const dryRun = cli.flags.dryRun;
 	const interactive = cli.flags.interactive;
 	const branch = cli.input[0];
 	const paths = cli.input.slice(1);
-	if (!branch) {
-		exit('Usage: nwt <branch> [paths...] [--interactive] [--path <dir>] [--dry-run] [--verbose]');
-	}
+	if (!branch) cli.showHelp(1);
 	if (interactive && paths.length > 0) {
 		exit('Do not pass paths with --interactive');
 	}

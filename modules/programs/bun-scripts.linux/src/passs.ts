@@ -6,7 +6,7 @@ import { iter } from 'iteragain';
 import { join, relative } from 'path';
 import meow from 'meow';
 import clipboard from 'clipboardy';
-import { exit } from './utils/cli';
+import { exit, helpFlag } from './utils/cli';
 import { cachedir } from './utils/env';
 
 const previousPasswordFile = file(join(cachedir(), 'passs-previous'));
@@ -75,10 +75,7 @@ async function main() {
 		{
 			importMeta: import.meta,
 			flags: {
-				help: {
-					type: 'boolean',
-					shortFlag: 'h'
-				},
+				...helpFlag,
 				copy: {
 					type: 'boolean',
 					shortFlag: 'c'
@@ -87,10 +84,7 @@ async function main() {
 		}
 	);
 
-	if (cli.flags.help) {
-		console.log(cli.help);
-		return;
-	}
+	if (cli.flags.help) cli.showHelp(0);
 
 	const selectedPassword = await getSelectedPassword().then(async (result) => {
 		await write(previousPasswordFile, result);

@@ -1,7 +1,7 @@
 #! bun
 import meow from 'meow';
 import { z } from 'zod';
-import { exit } from './utils/cli';
+import { exit, helpFlag } from './utils/cli';
 import {
 	EXPENSES_APPEND_RANGE,
 	EXPENSES_LIST_RANGE,
@@ -215,6 +215,9 @@ Commands
   list                          Print the Expenses tab as CSV
   edit                          Edit Expenses in $EDITOR, then save back
 
+Options
+  -h, --help                    Show help
+
 Examples
   $ expenses-spreadsheet add 50.3 Kmart
   $ expenses-spreadsheet add "=30*2" "Shein - trotty's stuff"
@@ -225,7 +228,7 @@ Examples
 			importMeta: import.meta,
 			commands: ['add', 'list', 'edit'],
 			flags: {
-				help: { type: 'boolean', shortFlag: 'h', default: false }
+				...helpFlag
 			}
 		}
 	);

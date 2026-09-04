@@ -7,7 +7,7 @@ import { homedir } from 'os';
 import { attempt } from '@danoaky/js-utils';
 import { mkdir } from 'fs/promises';
 
-import { exit } from './utils/cli';
+import { exit, helpFlag } from './utils/cli';
 
 const DEFAULT_OUTPUT_DIR = Path.join(homedir(), 'Sync/3ds-backup');
 
@@ -75,16 +75,15 @@ async function downloadDirFrom(
 if (import.meta.main) {
 	const {
 		input,
-		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR },
+		flags: { verbose, user, password, dryRun, output = DEFAULT_OUTPUT_DIR, help },
 		showHelp
 	} = meow({
 		importMeta: import.meta,
-		autoHelp: true,
 		help: `
-				Usage: 3ds-backup <ip:port> 
+				Usage: 3ds-backup <ip:port>
 
 				Options:
-				--help           Show help
+				-h, --help       Show help
 				-u, --user       Username (default: anonymous)
 				-p, --password   Password (default: empty)
 				-v, --verbose    Show verbose output
@@ -92,6 +91,7 @@ if (import.meta.main) {
 				-o, --output     Output directory (default: ${DEFAULT_OUTPUT_DIR})
 			`,
 		flags: {
+			...helpFlag,
 			verbose: {
 				type: 'boolean',
 				default: false,
@@ -116,6 +116,8 @@ if (import.meta.main) {
 			}
 		}
 	});
+
+	if (help) showHelp(0);
 
 	const [host, port] = input[0]?.split(':') ?? [];
 	if (!host || !port || isNaN(parseInt(port))) {

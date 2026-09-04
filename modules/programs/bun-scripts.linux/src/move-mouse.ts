@@ -2,6 +2,7 @@
 import { noop, raise, randInteger, sleep } from '@danoaky/js-utils';
 import { moveMouse } from './utils/mouse';
 import meow from 'meow';
+import { helpFlag } from './utils/cli';
 
 function toMs(str: string): number {
 	if (/^\d+$/.test(str)) return parseInt(str);
@@ -24,17 +25,23 @@ function prettyTime(ms: number): string {
 
 if (import.meta.main) {
 	const {
-		flags: { duration, interval, silent }
+		flags: { duration, interval, silent, help },
+		showHelp
 	} = meow(
 		`
-    Help:
-      -d, --duration    How long the mouse is moved for (500ms, 1s, 1m, etc).
-      -i, --interval    How often the mouse is moved, as in, time inbetween each move (500ms, 1s, 1m, etc).
+    Usage:
+      $ move-mouse [Options]
+
+    Options:
+      -h, --help        Show help
+      -d, --duration    How long the mouse is moved for (500ms, 1s, 1m, etc). Default: 1d
+      -i, --interval    How often the mouse is moved (500ms, 1s, 1m, etc). Default: 1m
       -s, --silent      Silent mode, no output.
     `,
 		{
 			importMeta: import.meta,
 			flags: {
+				...helpFlag,
 				duration: {
 					type: 'string',
 					shortFlag: 'd',
@@ -53,6 +60,7 @@ if (import.meta.main) {
 			}
 		}
 	);
+	if (help) showHelp(0);
 	const d = toMs(duration);
 	const i = toMs(interval);
 	if (silent) console.log = noop;

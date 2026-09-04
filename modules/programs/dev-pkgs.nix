@@ -16,12 +16,20 @@ let
     SSH=${lib.getExe pkgs.openssh}
 
     usage() {
+      local code="''${1:-1}"
       echo "Usage: port-fwd <host> <port> [port...]" >&2
       echo "  port-fwd mara 8080           # localhost:8080 -> mara:8080" >&2
       echo "  port-fwd mara 5173 8080      # both ports, same on each side" >&2
-      exit 1
+      echo "" >&2
+      echo "Options:" >&2
+      echo "  -h, --help                   Show this help" >&2
+      exit "$code"
     }
 
+    [ $# -ge 1 ] || usage
+    case "$1" in
+      -h|--help) usage 0 ;;
+    esac
     [ $# -ge 2 ] || usage
 
     host="$1"
@@ -30,6 +38,7 @@ let
     forwards=()
     for port in "$@"; do
       case "$port" in
+        -h|--help) usage 0 ;;
         *[!0-9]*|"") echo "Invalid port: $port" >&2; exit 1 ;;
       esac
       forwards+=(-L "''${port}:localhost:''${port}")
@@ -49,6 +58,23 @@ let
 
     SS=${lib.getExe' pkgs.iproute2 "ss"}
     PS=${lib.getExe' pkgs.procps "ps"}
+
+    usage() {
+      local code="''${1:-1}"
+      echo "Usage: port-ls [port...]" >&2
+      echo "  port-ls              # list all listening TCP/UDP ports" >&2
+      echo "  port-ls 8080 5173    # list listeners on those ports" >&2
+      echo "" >&2
+      echo "Options:" >&2
+      echo "  -h, --help           Show this help" >&2
+      exit "$code"
+    }
+
+    for arg in "$@"; do
+      case "$arg" in
+        -h|--help) usage 0 ;;
+      esac
+    done
 
     extract_pid() {
       sed -n 's/.*pid=\([0-9][0-9]*\).*/\1/p'
@@ -99,6 +125,9 @@ let
     fi
 
     for port_num in "$@"; do
+      case "$port_num" in
+        *[!0-9]*|"") echo "Invalid port: $port_num" >&2; usage ;;
+      esac
       print_listeners tcp -tlnp "sport = :$port_num"
       print_listeners udp -ulnp "sport = :$port_num"
     done
