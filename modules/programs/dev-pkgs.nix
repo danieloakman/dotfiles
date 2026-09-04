@@ -8,6 +8,41 @@ let
     exec ${lib.getExe pkgs.killport} "$@"
   '';
 
+  # Local SSH port forward to a Tailscale host (e.g. `port-fwd mara 8080`).
+  # Each port is forwarded 1:1 (localhost:<port> -> <host>:<port>).
+  port-fwd = pkgs.writeShellScriptBin "port-fwd" ''
+    set -euo pipefail
+
+    SSH=${lib.getExe pkgs.openssh}
+
+    usage() {
+      echo "Usage: port-fwd <host> <port> [port...]" >&2
+      echo "  port-fwd mara 8080           # localhost:8080 -> mara:8080" >&2
+      echo "  port-fwd mara 5173 8080      # both ports, same on each side" >&2
+      exit 1
+    }
+
+    [ $# -ge 2 ] || usage
+
+    host="$1"
+    shift
+
+    forwards=()
+    for port in "$@"; do
+      case "$port" in
+        *[!0-9]*|"") echo "Invalid port: $port" >&2; exit 1 ;;
+      esac
+      forwards+=(-L "''${port}:localhost:''${port}")
+      echo "Forwarding localhost:$port -> $host:$port"
+    done
+    echo "(Ctrl-C to stop)"
+
+    exec "$SSH" -N \
+      -o ExitOnForwardFailure=yes \
+      "''${forwards[@]}" \
+      "$host"
+  '';
+
   # ss only shows a short process name; this resolves PIDs to full executable + args.
   port-ls = pkgs.writeShellScriptBin "port-ls" ''
     set -euo pipefail
@@ -102,6 +137,7 @@ in
           just-lsp # LSP for Just files
           fd # A better `find` command
           port-kill # Kill processes listening on a port
+          port-fwd # SSH local port forward to a Tailscale host
           dust # A better `du` command. Just prints out size of directories in the CWD
           zbar # Can scan QR & bar codes using this
           awscli2
