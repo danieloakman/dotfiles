@@ -204,16 +204,19 @@ in
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  nix.buildMachines = [
-    {
-      hostName = "mara";
-      system = "x86_64-linux";
-      maxJobs = 3;
-      speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-      mandatoryFeatures = [ ];
-    }
-  ];
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "mara";
+        system = "x86_64-linux";
+        maxJobs = 3;
+        speedFactor = 2;
+        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        mandatoryFeatures = [ ];
+      }
+    ];
+  };
 
   system.stateVersion = "23.11";
 }

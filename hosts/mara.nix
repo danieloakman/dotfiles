@@ -162,17 +162,20 @@
   # Configure console keymap
   console.keyMap = "us";
 
-  # Configure remote builders
-  nix.buildMachines = [
-    {
-      hostName = "akatosh";
-      system = "x86_64-linux";
-      maxJobs = 8;
-      speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-      mandatoryFeatures = [ ];
-    }
-  ];
+  # Prefer akatosh when available; local max-jobs stay auto so solo rebuilds stay fast.
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "akatosh";
+        system = "x86_64-linux";
+        maxJobs = 8;
+        speedFactor = 4;
+        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        mandatoryFeatures = [ ];
+      }
+    ];
+  };
 
   system.stateVersion = "25.05";
 
