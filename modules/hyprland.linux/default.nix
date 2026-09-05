@@ -5,7 +5,6 @@
 let
   cfg = config.my.desktop.hyprland;
   hyprlandPkg = pkgs.hyprland;
-  monitorConnector = monitor: lib.head (lib.splitString "," monitor);
   wallpaperPath = lib.optionalString (cfg.hyprpaper.wallpaper != null) (toString cfg.hyprpaper.wallpaper);
   gamemodeScript = pkgs.writeShellScriptBin "start" ''
     HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
@@ -33,6 +32,42 @@ let
     fi
   '';
   vivaldiExe = lib.getExe pkgs.vivaldi;
+  monitorOptionType = lib.types.submodule {
+    options = {
+      output = lib.mkOption {
+        type = lib.types.str;
+        description = "Monitor output name, e.g. DP-1.";
+      };
+      mode = lib.mkOption {
+        type = lib.types.str;
+        default = "preferred";
+        description = "Resolution and refresh rate, e.g. 1920x1080@144.";
+      };
+      position = lib.mkOption {
+        type = lib.types.str;
+        default = "auto";
+        description = "Layout position, e.g. 0x0.";
+      };
+      scale = lib.mkOption {
+        type = lib.types.either lib.types.float lib.types.str;
+        default = 1.0;
+        description = "Scale factor, e.g. 1.0 or \"auto\".";
+      };
+    };
+  };
+  workspaceOptionType = lib.types.submodule {
+    options = {
+      workspace = lib.mkOption {
+        type = lib.types.str;
+        description = "Workspace id or name, e.g. \"1\".";
+      };
+      monitor = lib.mkOption {
+        type = lib.types.str;
+        description = "Monitor to bind this workspace to.";
+      };
+    };
+  };
+  windowRuleOptionType = lib.types.attrsOf lib.types.anything;
 in
 {
   options.my.desktop = {
@@ -48,27 +83,30 @@ in
     enable = lib.mkEnableOption "Enable the Hyprland desktop environment.";
 
     monitors = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.listOf monitorOptionType;
       default = [ ];
       description = ''
-        Per-machine Hyprland monitor lines (`settings.monitor`), e.g.
-        `"DP-1, 1920x1080, 0x0, 1.0"`.
+        Per-machine Hyprland monitors (`hl.monitor`), e.g.
+        `{ output = "DP-1"; mode = "1920x1080"; position = "0x0"; scale = 1.0; }`.
       '';
     };
 
     workspaces = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.listOf workspaceOptionType;
       default = [ ];
       description = ''
-        Optional workspace-to-monitor bindings (`settings.workspace`), e.g.
-        `"1, monitor:DP-1"`.
+        Optional workspace-to-monitor bindings (`hl.workspace_rule`), e.g.
+        `{ workspace = "1"; monitor = "DP-1"; }`.
       '';
     };
 
     window-rules = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.listOf windowRuleOptionType;
       default = [ ];
-      description = "Optional Hyprland window rules (`settings.windowrule`).";
+      description = ''
+        Optional Hyprland window rules (`hl.window_rule`), e.g.
+        `{ match.class = "^(firefox)$"; workspace = "1"; }`.
+      '';
     };
 
     hyprpaper = {
@@ -175,285 +213,242 @@ in
       # ];
     };
 
-    home-manager.users.${env.user} = {
-      wayland.windowManager.hyprland = {
-        enable = true;
-        package = hyprlandPkg;
-        configType = "hyprlang";
-        # systemd.variables = ["--all"];
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ./_lua-lib.nix { inherit lib; };
+        browserCmd = "uwsm app -- ${vivaldiExe} --ozone-platform=wayland";
+      in
+      {
+        wayland.windowManager.hyprland = {
+          enable = true;
+          package = hyprlandPkg;
+          configType = "lua";
 
-        # plugins = [
-        #   # hyprPlugins.borders-plus-plus
-        # ];
+          settings = {
+            mod = hl.var "SUPER";
+            files = hl.var "nautilus";
+            browser = hl.var browserCmd;
 
-        settings = {
-          monitor = cfg.monitors;
-          workspace = cfg.workspaces;
-          windowrule = cfg.window-rules;
+            monitor = map (m: {
+              inherit (m) output mode position scale;
+            }) cfg.monitors;
 
-          "$mod" = "SUPER";
-          "$files" = "nautilus";
-          "$browser" = "uwsm app -- ${vivaldiExe} --ozone-platform=wayland";
-          "$webapp" = "$browser --app";
+            workspace_rule = map (w: {
+              inherit (w) workspace monitor;
+            }) cfg.workspaces;
 
-          bindm = [
-            # mouse movements
-            "$mod, mouse:272, movewindow"
-            "$mod, mouse:273, resizewindow"
-          ];
+            window_rule = cfg.window-rules;
 
-          bind = [
-            "$mod, K, exec, rofi-kill-processes"
-            # "$mod, Q, exec, rofi-pass"
-            "alt, F4, killactive"
-            "$mod, C, killactive"
-            "$mod, V, togglefloating"
-            "$mod, F10, exec, ${lib.getExe gamemodeScript}"
-            "$mod, F9, exec, ${lib.getExe screenSaveScript}" # Toggle turning display off and on
-            "$mod, T, exec, $files"
-            "$mod, P, exec, hyprpicker -a"
-            # "$mod, Q, exec, zsh -c 'passmenu'" # No longer needed as we have AGS based password search
-            "$mod, B, exec, $browser"
+            bind = [
+              (hl.bindm (hl.key "mouse:272") hl.drag)
+              (hl.bindm (hl.key "mouse:273") hl.resize)
 
-            # Opted to use desktop entries instead of this.
-            # Open webapps:
-            # "SUPER_SHIFT, Y, exec, $webapp=\"https://www.youtube.com\""
+              (hl.bind (hl.key "K") (hl.exec "rofi-kill-processes"))
+              (hl.bind "ALT + F4" hl.close)
+              (hl.bind (hl.key "C") hl.close)
+              (hl.bind (hl.key "V") hl.floatToggle)
+              (hl.bind (hl.key "F10") (hl.exec (lib.getExe gamemodeScript)))
+              (hl.bind (hl.key "F9") (hl.exec (lib.getExe screenSaveScript)))
+              (hl.bind (hl.key "T") (lib.generators.mkLuaInline "hl.dsp.exec_cmd(files)"))
+              (hl.bind (hl.key "P") (hl.exec "hyprpicker -a"))
+              (hl.bind (hl.key "B") (lib.generators.mkLuaInline "hl.dsp.exec_cmd(browser)"))
 
-            # Move focus between windows:
-            "$mod, left, movefocus, l"
-            "$mod, h, movefocus, l"
-            "$mod, right, movefocus, r"
-            "$mod, l, movefocus, r"
-            "$mod, up, movefocus, u"
-            "$mod, k, movefocus, u"
-            "$mod, down, movefocus, d"
-            "$mod, j, movefocus, d"
+              (hl.bind (hl.key "left") (hl.focusDir "l"))
+              (hl.bind (hl.key "h") (hl.focusDir "l"))
+              (hl.bind (hl.key "right") (hl.focusDir "r"))
+              (hl.bind (hl.key "l") (hl.focusDir "r"))
+              (hl.bind (hl.key "up") (hl.focusDir "u"))
+              (hl.bind (hl.key "k") (hl.focusDir "u"))
+              (hl.bind (hl.key "down") (hl.focusDir "d"))
+              (hl.bind (hl.key "j") (hl.focusDir "d"))
 
-            # Move windows between workspaces:
-            "SUPER_SHIFT, right, movetoworkspace, +1"
-            "SUPER_SHIFT, left, movetoworkspace, -1"
-          ]
-          ++ (
-            # workspaces
-            # binds $mod + [shift +] {1..10} to [move to] workspace {1..10}
-            builtins.concatLists (builtins.genList
-              (
-                x:
-                let
-                  ws =
-                    let
-                      c = (x + 1) / 10;
-                    in
-                    builtins.toString (x + 1 - (c * 10));
-                in
-                [
-                  "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                  "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-                ]
-              )
-              10)
-          );
+              (hl.bind (hl.keyShift "right") (hl.moveToWs "+1"))
+              (hl.bind (hl.keyShift "left") (hl.moveToWs "-1"))
+            ]
+            ++ (
+              builtins.concatLists (builtins.genList
+                (
+                  x:
+                  let
+                    ws =
+                      let
+                        c = (x + 1) / 10;
+                      in
+                      builtins.toString (x + 1 - (c * 10));
+                    n = x + 1;
+                  in
+                  [
+                    (hl.bind (hl.key ws) (hl.focusWs n))
+                    (hl.bind (hl.keyShift ws) (hl.moveToWs n))
+                  ]
+                )
+                10)
+            );
 
-          dwindle = {
-            preserve_split = true;
-            special_scale_factor = 0.95;
-          };
+            config = {
+              dwindle = {
+                preserve_split = true;
+                special_scale_factor = 0.95;
+              };
 
-          master = {
-            new_status = "master";
-            new_on_top = 1;
-            mfact = 0.5;
-          };
+              master = {
+                new_status = "master";
+                new_on_top = true;
+                mfact = 0.5;
+              };
 
-          general = {
-            border_size = 2;
-            gaps_in = 6;
-            gaps_out = 8;
+              general = {
+                border_size = 2;
+                gaps_in = 6;
+                gaps_out = 8;
+                resize_on_border = true;
+                layout = "dwindle";
+              };
 
-            resize_on_border = true;
+              decoration = {
+                rounding = 10;
+                active_opacity = 1.0;
+                inactive_opacity = 0.9;
+                fullscreen_opacity = 1.0;
+                dim_inactive = true;
+                dim_strength = 0.1;
+                dim_special = 0.8;
+                blur = {
+                  enabled = true;
+                  size = 6;
+                  passes = 2;
+                  ignore_opacity = true;
+                  new_optimizations = true;
+                  special = true;
+                };
+              };
 
-            # col.active_border = $color12;
-            # col.inactive_border = $backgroundCol;
+              animations = {
+                enabled = true;
+              };
 
-            layout = "dwindle";
-          };
+              binds = {
+                workspace_back_and_forth = true;
+                allow_workspace_cycles = true;
+                pass_mouse_when_bound = false;
+              };
 
-          decoration = {
-            rounding = 10;
+              input = {
+                kb_layout = "us";
+                repeat_rate = 50;
+                repeat_delay = 300;
+                numlock_by_default = true;
+                left_handed = false;
+                follow_mouse = 1;
+                float_switch_override_focus = 0;
+                touchpad = {
+                  disable_while_typing = true;
+                  natural_scroll = true;
+                  clickfinger_behavior = false;
+                  middle_button_emulation = true;
+                  tap_to_click = true;
+                  drag_lock = false;
+                };
+              };
 
-            active_opacity = 1.0;
-            inactive_opacity = 0.9;
-            fullscreen_opacity = 1.0;
+              gestures = {
+                workspace_swipe_touch = true;
+                workspace_swipe_invert = true;
+                workspace_swipe_min_speed_to_force = 30;
+                workspace_swipe_cancel_ratio = 0.33;
+                workspace_swipe_create_new = true;
+                workspace_swipe_forever = true;
+              };
 
-            dim_inactive = true;
-            dim_strength = 0.1;
-            dim_special = 0.8;
+              xwayland = {
+                force_zero_scaling = true;
+              };
 
-            # Does not exist now:
-            # drop_shadow = true;
-            # shadow_range = 6;
-            # shadow_render_power = 1;
-            # col.shadow = $color12;
-            # col.shadow_inactive = "0x50000000";
-
-            blur = {
-              enabled = true;
-              size = 6;
-              passes = 2;
-              ignore_opacity = true;
-              new_optimizations = true;
-              special = true;
+              misc = {
+                disable_hyprland_logo = true;
+                disable_splash_rendering = true;
+                middle_click_paste = false;
+                disable_autoreload = true;
+                mouse_move_enables_dpms = true;
+                enable_swallow = true;
+                swallow_regex = "^(kitty)$";
+                focus_on_activate = false;
+                initial_workspace_tracking = 0;
+              };
             };
-          };
 
-
-          animations = {
-            enabled = true;
-
-            bezier = [
-              "wind, 0.05, 0.9, 0.1, 1.05"
-              "winIn, 0.1, 1.1, 0.1, 1.1"
-              "winOut, 0.3, -0.3, 0, 1"
-              "liner, 1, 1, 1, 1"
+            curve = [
+              (hl.args [
+                "wind"
+                { type = "bezier"; points = [ [ 0.05 0.9 ] [ 0.1 1.05 ] ]; }
+              ])
+              (hl.args [
+                "winIn"
+                { type = "bezier"; points = [ [ 0.1 1.1 ] [ 0.1 1.1 ] ]; }
+              ])
+              (hl.args [
+                "winOut"
+                { type = "bezier"; points = [ [ 0.3 (-0.3) ] [ 0 1 ] ]; }
+              ])
+              (hl.args [
+                "liner"
+                { type = "bezier"; points = [ [ 1 1 ] [ 1 1 ] ]; }
+              ])
             ];
 
             animation = [
-              "windows, 1, 6, wind, slide"
-              "windowsIn, 1, 6, winIn, slide"
-              "windowsOut, 1, 5, winOut, slide"
-              "windowsMove, 1, 5, wind, slide"
-              "border, 1, 1, liner"
-              "borderangle, 1, 180, liner, loop" #used by rainbow borders and rotating colors
-              "fade, 1, 10, default"
-              "workspaces, 1, 5, wind"
+              { leaf = "windows"; enabled = true; speed = 6; bezier = "wind"; style = "slide"; }
+              { leaf = "windowsIn"; enabled = true; speed = 6; bezier = "winIn"; style = "slide"; }
+              { leaf = "windowsOut"; enabled = true; speed = 5; bezier = "winOut"; style = "slide"; }
+              { leaf = "windowsMove"; enabled = true; speed = 5; bezier = "wind"; style = "slide"; }
+              { leaf = "border"; enabled = true; speed = 1; bezier = "liner"; }
+              { leaf = "borderangle"; enabled = true; speed = 100; bezier = "liner"; style = "loop"; }
+              { leaf = "fade"; enabled = true; speed = 10; bezier = "default"; }
+              { leaf = "workspaces"; enabled = true; speed = 5; bezier = "wind"; }
+            ];
+
+            gesture = [
+              {
+                fingers = 3;
+                direction = "horizontal";
+                action = "workspace";
+              }
             ];
           };
+        };
 
-          binds = {
-            workspace_back_and_forth = true;
-            allow_workspace_cycles = true;
-            pass_mouse_when_bound = false;
+        home = {
+          sessionVariables = {
+            ELECTRON_OZONE_PLATFORM_HINT = "wayland";
           };
+        };
 
-          input = {
-            kb_layout = "us";
-            # kb_variant =
-            # kb_model =
-            # kb_options =
-            # kb_rules =
-            repeat_rate = 50;
-            repeat_delay = 300;
-            numlock_by_default = true;
-            left_handed = false;
-            follow_mouse = true;
-            float_switch_override_focus = false;
+        programs = {
+          # Image viewer
+          swayimg.enable = true;
+        };
 
-            touchpad = {
-              disable_while_typing = true;
-              natural_scroll = true;
-              clickfinger_behavior = false;
-              middle_button_emulation = true;
-              tap-to-click = true;
-              drag_lock = false;
+        services = {
+          hyprpaper = {
+            enable = true;
+            settings = {
+              ipc = "on";
+              splash = false;
+              splash_offset = 2;
+              preload = [ wallpaperPath ];
+              wallpaper = map (m: "${m.output},${wallpaperPath}") cfg.monitors;
             };
           };
 
-          gestures = {
-            workspace_swipe_touch = true;
-            workspace_swipe_invert = true;
-            workspace_swipe_min_speed_to_force = 30;
-            workspace_swipe_cancel_ratio = 0.33;
-            workspace_swipe_create_new = true;
-            workspace_swipe_forever = true;
-          };
+          playerctld.enable = true; # Media player control daemon
 
-          # Replaces removed gestures:workspace_swipe / workspace_swipe_fingers.
-          gesture = [ "3, horizontal, workspace" ];
-
-          # Could help when scaling and not pixelating
-          xwayland = {
-            force_zero_scaling = true;
-          };
-
-          # cursor section for Hyprland >= v0.41.0
-          # cursor = {
-          #   no_hardware_cursors = false;
-          #   enable_hyprcursor = true;
-          #   warp_on_change_workspace = true; # for -git or Hyprland >v0.41.1
-          # };
-
-          # TODO:
-          # group = {
-          #   col.border_active = "$color15";
-
-          #   groupbar = {
-          #     col.active = "$color0";
-          #   };
-          # };
-
-          misc = {
-            disable_hyprland_logo = true;
-            disable_splash_rendering = true;
-            middle_click_paste = false;
-            disable_autoreload = true;
-
-            mouse_move_enables_dpms = true;
-            enable_swallow = true;
-            swallow_regex = "^(kitty)$";
-            focus_on_activate = false;
-            initial_workspace_tracking = 0;
-          };
-
-          # "plugin:borders-plus-plus" = {
-          #   add_borders = 1; # 0 - 9
-
-          #   # you can add up to 9 borders
-          #   "col.border_1" = "rgb(ffffff)";
-          #   "col.border_2" = "rgb(2222ff)";
-
-          #   # -1 means "default" as in the one defined in general:border_size
-          #   border_size_1 = 10;
-          #   border_size_2 = -1;
-
-          #   # makes outer edges match rounding of the parent. Turn on / off to better understand. Default = on.
-          #   natural_rounding = "yes";
-          # };
-        };
-      };
-
-      home = {
-        sessionVariables = {
-          ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-        };
-
-      };
-
-      programs = {
-        # Image viewer
-        swayimg.enable = true;
-      };
-
-      services = {
-        hyprpaper = {
-          enable = true;
-          settings = {
-            ipc = "on";
-            splash = false;
-            splash_offset = 2;
-            preload = [ wallpaperPath ];
-            wallpaper = map (conn: "${conn},${wallpaperPath}") (map monitorConnector cfg.monitors);
+          # Clipboard history manager
+          cliphist = {
+            enable = true;
+            systemdTargets = [ "hyprland-session.target" ];
           };
         };
-
-        playerctld.enable = true; # Media player control daemon
-
-        # Clipboard history manager
-        cliphist = {
-          enable = true;
-          systemdTargets = [ "hyprland-session.target" ];
-        };
       };
-    };
 
     # greetd at boot (was only in hyprlock.nix; noctalia ui-shell left a TTY). Disable if using GDM etc:
     #   services.greetd.enable = lib.mkForce false;

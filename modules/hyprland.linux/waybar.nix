@@ -17,11 +17,15 @@ in
 
     # If we ever decided to use waybar again, we would need to enable other modules like blueman, lockscreen, etc.
 
-    home-manager.users.${env.user} = {
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ./_lua-lib.nix { inherit lib; };
+      in
+      {
       wayland.windowManager.hyprland = {
         settings = {
-          exec-once = [
-            "${pkgs.waybar}/bin/waybar &"
+          on = [
+            (hl.onStart [ "${pkgs.waybar}/bin/waybar" ])
           ];
         };
       };

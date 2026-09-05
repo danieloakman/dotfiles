@@ -15,30 +15,44 @@ in
       hyprland = {
         enable = true;
         monitors = [
-          "DVI-D-1, 1920x1080, 0x0, 1.0"
-          "DP-2, 3440x1440@144.00Hz, 1920x0, 1.0"
-          "HDMI-A-1, 1920x1080, 5360x0, 1.0"
+          {
+            output = "DVI-D-1";
+            mode = "1920x1080";
+            position = "0x0";
+            scale = 1.0;
+          }
+          {
+            output = "DP-2";
+            mode = "3440x1440@144.00Hz";
+            position = "1920x0";
+            scale = 1.0;
+          }
+          {
+            output = "HDMI-A-1";
+            mode = "1920x1080";
+            position = "5360x0";
+            scale = 1.0;
+          }
         ];
         # One workspace per monitor
         workspaces = [
-          "1, monitor:DVI-D-1"
-          "2, monitor:DP-2"
-          "3, monitor:HDMI-A-1"
+          { workspace = "1"; monitor = "DVI-D-1"; }
+          { workspace = "2"; monitor = "DP-2"; }
+          { workspace = "3"; monitor = "HDMI-A-1"; }
         ];
-        # hyprlang `windowrule` (windowrulev2 / class:… prefix were removed upstream)
         window-rules = [
-          "workspace 1, match:class ^(vivaldi-bin)$"
-          "workspace 1, match:class ^(vivaldi)$"
-          "workspace 1, match:class ^(chromium)$"
-          "workspace 1, match:class ^(chrome)$"
-          "workspace 1, match:class ^(firefox)$"
-          "workspace 1, match:class ^(google-chrome)$"
-          "workspace 2, match:class ^(Cursor)$"
-          "workspace 2, match:class ^(code)$"
-          "workspace 3, match:class ^(Spotify)$"
-          "workspace 2, match:class ^(obsidian)$"
-          "workspace 3, match:class ^(Discord)$"
-          "workspace 3, match:class ^(Steam)$"
+          { match.class = "^(vivaldi-bin)$"; workspace = "1"; }
+          { match.class = "^(vivaldi)$"; workspace = "1"; }
+          { match.class = "^(chromium)$"; workspace = "1"; }
+          { match.class = "^(chrome)$"; workspace = "1"; }
+          { match.class = "^(firefox)$"; workspace = "1"; }
+          { match.class = "^(google-chrome)$"; workspace = "1"; }
+          { match.class = "^(Cursor)$"; workspace = "2"; }
+          { match.class = "^(code)$"; workspace = "2"; }
+          { match.class = "^(Spotify)$"; workspace = "3"; }
+          { match.class = "^(obsidian)$"; workspace = "2"; }
+          { match.class = "^(Discord)$"; workspace = "3"; }
+          { match.class = "^(Steam)$"; workspace = "3"; }
         ];
         hyprpaper.wallpaper = wallpaperPath;
       };

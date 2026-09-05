@@ -26,36 +26,53 @@ in
       };
     }
     (lib.mkIf config.my.desktop.hyprland.enable {
-      home-manager.users.${env.user} = {
-        wayland.windowManager.hyprland = {
-          settings = {
-            "$term" = "kitty";
+      home-manager.users.${env.user} = { lib, ... }:
+        let
+          hl = import ../hyprland.linux/_lua-lib.nix { inherit lib; };
+        in
+        {
+          wayland.windowManager.hyprland = {
+            settings = {
+              term = hl.var "kitty";
 
-            exec-once = [
-              # Start a terminal in a special workspace.
-              "[workspace special silent] $term"
-              # "[workspace pass silent] $term -- passs -c"
-            ];
-
-            bind = [
-              "$mod, return, exec, $term"
-              "$mod, grave, togglespecialworkspace, special"
-              # "$mod, Q, togglespecialworkspace, pass"
-            ];
-
-            animations = {
-              animation = [
-                "specialWorkspace, 1, 4, default, slidevert"
+              on = [
+                # Start a terminal in a special workspace.
+                {
+                  _args = [
+                    "hyprland.start"
+                    (lib.generators.mkLuaInline ''
+                      function()
+                        hl.exec_cmd(term, { workspace = "special silent" })
+                      end
+                    '')
+                  ];
+                }
               ];
-            };
 
-            input = {
-              # Allow clicking around the terminal in its special workspace.
-              special_fallthrough = true;
+              bind = [
+                (hl.bind (hl.key "return") (lib.generators.mkLuaInline "hl.dsp.exec_cmd(term)"))
+                (hl.bind (hl.key "grave") (hl.toggleSpecial "special"))
+              ];
+
+              animation = [
+                {
+                  leaf = "specialWorkspace";
+                  enabled = true;
+                  speed = 4;
+                  bezier = "default";
+                  style = "slidevert";
+                }
+              ];
+
+              config = {
+                input = {
+                  # Allow clicking around the terminal in its special workspace.
+                  special_fallthrough = true;
+                };
+              };
             };
           };
         };
-      };
     })
   ]);
 }

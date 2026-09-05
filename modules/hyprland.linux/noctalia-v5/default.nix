@@ -5,8 +5,8 @@ let
   cfgEnabled = config.my.desktop.ui-shell == "noctalia-v5";
   ncfg = config.my.desktop.noctalia-v5;
 
-  # First token of a Hyprland monitor line ("DP-2, 3440x1440@144Hz, …").
-  connectorOf = line: builtins.head (lib.splitString "," line);
+  # Connector name from a Hyprland monitor attr (`{ output = "DP-2"; ... }`).
+  connectorOf = monitor: monitor.output;
   allConnectors = map connectorOf config.my.desktop.hyprland.monitors;
 
   # Emulate v4 `bar.monitors` allow-list: disable bar on connectors not listed.
@@ -182,12 +182,17 @@ in
       message = "Noctalia requires Hyprland to be enabled";
     }];
 
-    home-manager.users.${env.user} = { ... }: {
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ../_lua-lib.nix { inherit lib; };
+        noctaliaMsg = "noctalia msg";
+      in
+      {
       imports = [ inputs.noctalia.homeModules.default ];
 
       programs.noctalia = {
         enable = true;
-        # Launched via Hyprland exec-once below; set true to use the systemd user service instead.
+        # Launched via Hyprland on start below; set true to use the systemd user service instead.
         systemd.enable = false;
         settings = finalSettings;
       };
@@ -200,28 +205,27 @@ in
 
       wayland.windowManager.hyprland = {
         settings = {
-          exec-once = [ "noctalia" ];
-
-          "$noctaliaMsg" = "noctalia msg";
+          on = [
+            (hl.onStart [ "noctalia" ])
+          ];
 
           bind = [
-            "$mod, space, exec, $noctaliaMsg panel-toggle launcher" # Application launcher
-            "$mod, Q, exec, $noctaliaMsg panel-toggle launcher '/pass '" # Password-store (local/pass)
-            "$mod, S, exec, $noctaliaMsg panel-toggle launcher '/web '" # Web search (local/web-search)
-            "$mod, G, exec, $noctaliaMsg panel-toggle launcher /emo" # Emoji picker (launcher emoji provider)
-          ];
-          bindl = [
-            ", XF86MonBrightnessUp, exec, $noctaliaMsg brightness-up"
-            ", XF86MonBrightnessDown, exec, $noctaliaMsg brightness-down"
-            ", XF86AudioRaiseVolume, exec, $noctaliaMsg volume-up"
-            ", XF86AudioLowerVolume, exec, $noctaliaMsg volume-down"
-            "alt, F7, exec, $noctaliaMsg volume-up" # XF86 volume keys don't work on some keyboards
-            "alt, F6, exec, $noctaliaMsg volume-down"
-            ", XF86AudioMicMute, exec, $noctaliaMsg mic-mute"
-            ", XF86AudioMute, exec, $noctaliaMsg volume-mute"
-            ", XF86AudioPlay, exec, $noctaliaMsg media toggle"
-            ", XF86AudioPrev, exec, $noctaliaMsg media previous"
-            ", XF86AudioNext, exec, $noctaliaMsg media next"
+            (hl.bind (hl.key "space") (hl.exec "${noctaliaMsg} panel-toggle launcher"))
+            (hl.bind (hl.key "Q") (hl.exec "${noctaliaMsg} panel-toggle launcher '/pass '"))
+            (hl.bind (hl.key "S") (hl.exec "${noctaliaMsg} panel-toggle launcher '/web '"))
+            (hl.bind (hl.key "G") (hl.exec "${noctaliaMsg} panel-toggle launcher /emo"))
+
+            (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaMsg} brightness-up"))
+            (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaMsg} brightness-down"))
+            (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaMsg} volume-up"))
+            (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaMsg} volume-down"))
+            (hl.bindl "ALT + F7" (hl.exec "${noctaliaMsg} volume-up"))
+            (hl.bindl "ALT + F6" (hl.exec "${noctaliaMsg} volume-down"))
+            (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaMsg} mic-mute"))
+            (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaMsg} volume-mute"))
+            (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaMsg} media toggle"))
+            (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaMsg} media previous"))
+            (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaMsg} media next"))
           ];
         };
       };

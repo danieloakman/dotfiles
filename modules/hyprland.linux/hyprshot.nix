@@ -16,15 +16,19 @@ in
 
     environment.systemPackages = [ pkgs.hyprshot ];
 
-    home-manager.users.${env.user} = { lib, ... }: {
-      home.activation.createHyprshotScreenshotDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        $DRY_RUN_CMD mkdir -p "$HOME/Pictures/Screenshots"
-      '';
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ./_lua-lib.nix { inherit lib; };
+      in
+      {
+        home.activation.createHyprshotScreenshotDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          $DRY_RUN_CMD mkdir -p "$HOME/Pictures/Screenshots"
+        '';
 
-      wayland.windowManager.hyprland.settings.bind = [
-        ", Print, exec, ${hyprshotExe} -o ~/Pictures/Screenshots -m region"
-        "$mod, Print, exec, ${hyprshotExe} -o ~/Pictures/Screenshots -m output -m active"
-      ];
-    };
+        wayland.windowManager.hyprland.settings.bind = [
+          (hl.bind "Print" (hl.exec "${hyprshotExe} -o ~/Pictures/Screenshots -m region"))
+          (hl.bind (hl.key "Print") (hl.exec "${hyprshotExe} -o ~/Pictures/Screenshots -m output -m active"))
+        ];
+      };
   };
 }

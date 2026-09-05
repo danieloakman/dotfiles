@@ -1,4 +1,4 @@
-# Hyprlock as greeter: greetd auto-logs into Hyprland, then exec-once runs
+# Hyprlock as greeter: greetd auto-logs into Hyprland, then hyprland.start runs
 # hyprlock as the password gate. Not fully secure — the lock screen can be bypassed.
 { env, lib, config, ... }:
 {
@@ -12,7 +12,7 @@
       }
     ];
 
-    # Auto-login so hyprlock (exec-once below) is the login UI.
+    # Auto-login so hyprlock (on start below) is the login UI.
     my.desktop.hyprland.auto-login = true;
 
     security.pam.services = {
@@ -25,9 +25,13 @@
     };
     programs.hyprlock.enable = true; # Keep package available system-wide
 
-    home-manager.users.${env.user} = {
-      # Didn't end up looking that good, so just use default hyprlock config instead.
-      /* programs.hyprlock = {
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ./_lua-lib.nix { inherit lib; };
+      in
+      {
+        # Didn't end up looking that good, so just use default hyprlock config instead.
+        /* programs.hyprlock = {
       enable = true;
       # Configure hyprlock appearance via Home Manager
       settings = {
@@ -68,11 +72,9 @@
         ];
       };
       }; */
-      wayland.windowManager.hyprland = {
-        settings.exec-once = [
-          "hyprlock || hyprctl dispatch exit"
+        wayland.windowManager.hyprland.settings.on = [
+          (hl.onStart [ "hyprlock || hyprctl dispatch exit" ])
         ];
       };
-    };
   };
 }

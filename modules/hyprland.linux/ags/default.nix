@@ -46,26 +46,28 @@ in
       tray
     ]);
 
-    home-manager.users.${env.user} = {
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ../_lua-lib.nix { inherit lib; };
+      in
+      {
       # add the home manager module
       imports = [ inputs.ags.homeManagerModules.default ];
 
       wayland.windowManager.hyprland = {
         settings = {
-          exec-once = [
-            # We could maybe just call it from zsh too, and that would include all env vars we'd expect in dev to be set
-            # "PASSWORD_STORE_DIR=\"${env.home}/repos/personal/pwd-store\" ags run > /tmp/ags.log 2>&1"
-
+          on = [
             # We're running it directly from here so we get access to node_modules
             # It'd be possible to package an ags derivation ourselves that installs and includes node_modules, but for now
             # it's too much work.
-            "${lib.getExe agsStart}"
+            (hl.onStart [ (lib.getExe agsStart) ])
           ];
 
           bind = [
-            "$mod, Q, exec, ags request toggle password-search"
-            "$mod, space, exec, rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons" # Open app launcher. TODO: use the AGS app launcher instead.
-            "$mod, S, exec, rofi-google-search"
+            (hl.bind (hl.key "Q") (hl.exec "ags request toggle password-search"))
+            # Open app launcher. TODO: use the AGS app launcher instead.
+            (hl.bind (hl.key "space") (hl.exec "rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"))
+            (hl.bind (hl.key "S") (hl.exec "rofi-google-search"))
           ];
         };
       };

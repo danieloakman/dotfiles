@@ -16,16 +16,19 @@ in
       startupScript
     ];
 
-    home-manager.users.${env.user} = {
-      wayland.windowManager.hyprland.settings.exec-once = [
-        lib.getExe
-        startupScript
-      ];
+    home-manager.users.${env.user} = { lib, ... }:
+      let
+        hl = import ./_lua-lib.nix { inherit lib; };
+      in
+      {
+        wayland.windowManager.hyprland.settings.on = [
+          (hl.onStart [ (lib.getExe startupScript) ])
+        ];
 
-      home.file.".config/pypr/config.toml".text = ''
-        [pyprland]
-        terminal = "kitty"
-      '';
-    };
+        home.file.".config/pypr/config.toml".text = ''
+          [pyprland]
+          terminal = "kitty"
+        '';
+      };
   };
 }

@@ -45,7 +45,12 @@ in
       hyprland = {
         enable = true;
         monitors = [
-          "eDP-1, 1366x768, 0x0, 1.0"
+          {
+            output = "eDP-1";
+            mode = "1366x768";
+            position = "0x0";
+            scale = 1.0;
+          }
         ];
         hyprpaper.wallpaper = wallpaperPath;
         onscreen-keyboard.enable = true;

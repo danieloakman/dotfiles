@@ -352,7 +352,12 @@ in
       ])
     ];
 
-    home-manager.users.${env.user} = { config, ... }: {
+    home-manager.users.${env.user} = { config, lib, ... }:
+      let
+        hl = import ../_lua-lib.nix { inherit lib; };
+        noctaliaIpc = "${noctaliaCmd} ipc call";
+      in
+      {
       # Store the plugin in the nix store (can't debug):
       xdg.configFile."noctalia/plugins/pass-menu".source = ./plugins/pass-menu;
 
@@ -362,34 +367,27 @@ in
 
       wayland.windowManager.hyprland = {
         settings = {
-          exec-once = [
-            "${noctaliaCmd}"
+          on = [
+            (hl.onStart [ noctaliaCmd ])
           ];
-
-          "$noctaliaIpc" = "${noctaliaCmd} ipc call";
 
           bind = [
-            "$mod, space, exec, $noctaliaIpc launcher toggle" # Open Noctalia application launcher.
-            "$mod, Q, exec, $noctaliaIpc plugin:pass-menu toggle"
-            "$mod, S, exec, $noctaliaIpc plugin:web-search toggle"
-            "$mod, G, exec, $noctaliaIpc launcher emoji"
-          ];
-          bindl = [
-            ", XF86MonBrightnessUp, exec, $noctaliaIpc brightness increase"
-            ", XF86MonBrightnessDown, exec, $noctaliaIpc brightness decrease"
-            ", XF86AudioRaiseVolume, exec, $noctaliaIpc volume increase"
-            ", XF86AudioLowerVolume, exec, $noctaliaIpc volume decrease"
-            "alt, F7, exec, $noctaliaIpc volume increase" # Need these because XF86 volume keys don't work sometimes
-            "alt, F6, exec, $noctaliaIpc volume decrease"
-            ", XF86AudioMicMute, exec, $noctaliaIpc volume muteInput"
-            ", XF86AudioMute, exec, $noctaliaIpc volume muteOutput"
-            ", XF86AudioPlay, exec, $noctaliaIpc media playPause"
-            ", XF86AudioPrev, exec, $noctaliaIpc media previous"
-            ", XF86AudioNext, exec, $noctaliaIpc media next"
-          ];
-          bindr = [
-            # Not noctalia-shell osd for caps lock
-            # "CAPS, Caps_Lock, exec, ${noctaliaCmd} ipc call caps-lock toggle"
+            (hl.bind (hl.key "space") (hl.exec "${noctaliaIpc} launcher toggle"))
+            (hl.bind (hl.key "Q") (hl.exec "${noctaliaIpc} plugin:pass-menu toggle"))
+            (hl.bind (hl.key "S") (hl.exec "${noctaliaIpc} plugin:web-search toggle"))
+            (hl.bind (hl.key "G") (hl.exec "${noctaliaIpc} launcher emoji"))
+
+            (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaIpc} brightness increase"))
+            (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaIpc} brightness decrease"))
+            (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaIpc} volume increase"))
+            (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaIpc} volume decrease"))
+            (hl.bindl "ALT + F7" (hl.exec "${noctaliaIpc} volume increase"))
+            (hl.bindl "ALT + F6" (hl.exec "${noctaliaIpc} volume decrease"))
+            (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaIpc} volume muteInput"))
+            (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaIpc} volume muteOutput"))
+            (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaIpc} media playPause"))
+            (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaIpc} media previous"))
+            (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaIpc} media next"))
           ];
         };
       };

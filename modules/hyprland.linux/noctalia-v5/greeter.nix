@@ -8,15 +8,13 @@ let
   ncfg = config.my.desktop.noctalia-v5;
   hyprlandCfg = config.my.desktop.hyprland;
 
-  # "DP-2, 3440x1440, 1920x0, 1.0" → "DP-2:1920,0" (Hyprland XxY → greeter X,Y)
+  # { output = "DP-2"; position = "1920x0"; ... } → "DP-2:1920,0" (Hyprland XxY → greeter X,Y)
   layoutEntry =
-    line:
+    monitor:
     let
-      parts = lib.splitString "," line;
-      name = lib.trim (builtins.elemAt parts 0);
-      pos = builtins.replaceStrings [ "x" ] [ "," ] (lib.trim (builtins.elemAt parts 2));
+      pos = builtins.replaceStrings [ "x" ] [ "," ] monitor.position;
     in
-    "${name}:${pos}";
+    "${monitor.output}:${pos}";
 
   outputLayout =
     if hyprlandCfg.monitors == [ ] then
