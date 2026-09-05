@@ -69,12 +69,11 @@
       };
     };
     copyparty.url = "github:9001/copyparty";
+    # No nixpkgs.follows so nix-community.cachix.org can serve prebuilt
+    # cache-entry-creator (Zig) instead of compiling it against our nixpkgs.
     bun2nix = {
       url = "github:nix-community/bun2nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
+      inputs.systems.follows = "systems";
     };
     gws = {
       url = "github:googleworkspace/cli";
