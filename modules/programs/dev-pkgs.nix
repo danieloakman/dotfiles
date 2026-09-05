@@ -46,8 +46,12 @@ let
     done
     echo "(Ctrl-C to stop)"
 
+    # LogLevel=ERROR hides the INFO spam when a client hits the local
+    # forward before anything is listening on the remote port:
+    #   channel N: open failed: connect failed: ... connection refused
     exec "$SSH" -N \
       -o ExitOnForwardFailure=yes \
+      -o LogLevel=ERROR \
       "''${forwards[@]}" \
       "$host"
   '';
