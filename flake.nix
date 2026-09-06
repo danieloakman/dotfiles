@@ -201,8 +201,8 @@
       linuxPkgs = nixpkgsFor linuxSystem;
       darwinPkgs = nixpkgsFor darwinSystem;
 
+      # import-tree ./dir now returns a module lambda directly (was { imports = [ ... ]; }).
       importLinuxModules =
-        _:
         linuxPkgs.lib.pipe import-tree [
           (i: i.filterNot (linuxPkgs.lib.hasInfix "flake")) # Skip other flake files
           (i: i.filterNot (linuxPkgs.lib.hasInfix ".darwin")) # Skip darwin files/dirs
@@ -210,7 +210,6 @@
         ];
 
       importDarwinModules =
-        _:
         darwinPkgs.lib.pipe import-tree [
           (i: i.filterNot (darwinPkgs.lib.hasInfix "flake")) # Skip other flake files
           (i: i.filterNot (darwinPkgs.lib.hasInfix ".linux")) # Skip .linux files/dirs
