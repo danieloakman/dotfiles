@@ -114,6 +114,9 @@ in
           auto-optimise-store = true;
           # Enable distributed builds and use substitutes:
           builders-use-substitutes = true;
+          # If a binary-cache download fails (e.g. HTTP 206 from cachix),
+          # build from source instead of aborting the whole switch/boot.
+          fallback = true;
         };
         # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
         optimise.automatic = true;
