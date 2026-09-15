@@ -9,7 +9,6 @@
 }:
 let
   cfg = config.my.programs.herdr;
-  version = pkgs.herdr.version;
 
   # build.rs shells out to zig to compile vendored libghostty-vt. On Darwin,
   # zig's libc/SDK discovery relies on xcrun + system libtool, which aren't
@@ -19,8 +18,12 @@ let
     aarch64-darwin = "herdr-macos-aarch64";
   };
 
-  # Must match pkgs.herdr.version. Prefetch after a nixpkgs bump:
+  # Pinned independently of pkgs.herdr.version (nixpkgs' packaging cadence
+  # lags upstream releases, and the Darwin build never uses nixpkgs' source
+  # anyway — only its `meta`). Bump this directly to pick up a new release:
   #   nix store prefetch-file "https://github.com/ogulcancelik/herdr/releases/download/vVERSION/herdr-macos-aarch64"
+  darwinVersion = "0.8.2";
+
   binaryHashes = {
     "0.7.4" = {
       # x86_64-darwin = "sha256-V4D6B9u5p4155S0guGphAT9sugJmfyC2z4lmMBUJCEY=";
@@ -29,20 +32,23 @@ let
     "0.8.0" = {
       aarch64-darwin = "sha256-1Tqfk/zP38xVYyknv1EAL1rdCqeZC831CP+9hKxlgXg=";
     };
+    "0.8.2" = {
+      aarch64-darwin = "sha256-pdT01QTYswnJH4EQUFWTAPq6MSWEJfU8UIUvyW9q5XQ=";
+    };
   };
 
   herdrDarwin = pkgs.stdenvNoCC.mkDerivation {
     pname = "herdr";
-    inherit version;
+    version = darwinVersion;
 
     src = pkgs.fetchurl {
-      url = "https://github.com/ogulcancelik/herdr/releases/download/v${version}/${
+      url = "https://github.com/ogulcancelik/herdr/releases/download/v${darwinVersion}/${
         binaryAssetMap.${pkgs.stdenv.hostPlatform.system}
           or (throw "my.programs.herdr: unsupported Darwin system ${pkgs.stdenv.hostPlatform.system}")
       }";
       hash =
-        (binaryHashes.${version} or (throw "my.programs.herdr: add Darwin binaryHashes.\"${version}\" (see comment above)")).${pkgs.stdenv.hostPlatform.system}
-          or (throw "my.programs.herdr: missing Darwin hash for ${pkgs.stdenv.hostPlatform.system} at ${version}");
+        (binaryHashes.${darwinVersion} or (throw "my.programs.herdr: add Darwin binaryHashes.\"${darwinVersion}\" (see comment above)")).${pkgs.stdenv.hostPlatform.system}
+          or (throw "my.programs.herdr: missing Darwin hash for ${pkgs.stdenv.hostPlatform.system} at ${darwinVersion}");
     };
 
     dontUnpack = true;
