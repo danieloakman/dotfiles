@@ -111,7 +111,7 @@ let
       pkg = pkgs.claude-code;
       binName = "claude";
       outName = "claude-sandboxed";
-      rwDirs = [ "$HOME/.claude" ];
+      rwDirs = [ "$HOME/.claude" ] ++ cfg.extra-rw-dirs;
       roDirs = agentSkillRoDirs;
       env = {
         CLAUDE_CODE_OAUTH_TOKEN = "$CLAUDE_CODE_OAUTH_TOKEN";
@@ -129,7 +129,8 @@ let
       rwDirs = [
         "$HOME/.cursor"
         "$HOME/.config/cursor"
-      ];
+      ]
+      ++ cfg.extra-rw-dirs;
       roDirs = agentSkillRoDirs;
       env = {
         CURSOR_API_KEY = "$CURSOR_API_KEY";
@@ -172,6 +173,15 @@ in
       description = ''
         Additional `allowedDomains` entries merged into every sandbox
         (agent-sandbox.nix format: domain → "*" or HTTP methods list).
+      '';
+    };
+
+    extra-rw-dirs = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = ''
+        Extra directories bound read-write into every agent sandbox
+        (in addition to the project tree and agent config dirs).
       '';
     };
   };
