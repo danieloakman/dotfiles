@@ -376,12 +376,26 @@ in
                 ''
               else
                 ''
-                  installed_ref=$(${herdrBin} plugin list --json 2>/dev/null \
+                  plugin_json=$(${herdrBin} plugin list --json 2>/dev/null || true)
+                  source_kind=$(printf '%s' "$plugin_json" \
+                    | ${lib.getExe pkgs.jq} -r '
+                        .result.plugins[]?
+                        | select(.plugin_id == "${colliePluginId}" or .id == "${colliePluginId}")
+                        | .source.kind // empty
+                      ' | head -n1 || true)
+                  installed_ref=$(printf '%s' "$plugin_json" \
                     | ${lib.getExe pkgs.jq} -r '
                         .result.plugins[]?
                         | select(.plugin_id == "${colliePluginId}" or .id == "${colliePluginId}")
                         | .source.requested_ref // empty
                       ' | head -n1 || true)
+
+                  # Local links block `plugin install`; drop them before GitHub install.
+                  if [ "$source_kind" = "local" ]; then
+                    echo "herdr.collie: unlinking local checkout before GitHub install"
+                    $DRY_RUN_CMD ${herdrBin} plugin unlink ${colliePluginId}
+                    installed_ref=""
+                  fi
 
                   if [ -z "$installed_ref" ]; then
                     echo "herdr.collie: installing ${collieGithubSpec}@${collieGithub.ref}"
