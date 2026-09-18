@@ -12,6 +12,28 @@
         enable = true;
         docker-alias = true;
       };
+      mlx-lm = {
+        enable = true;
+        # Nemotron tokenizers ship custom code; mlx-lm's OpenCode gist uses this model.
+        trust-remote-code = true;
+        models = {
+          # Attr name = short OpenCode id. Use `path` for an already-downloaded
+          # MLX directory (like llama-cpp), or `repo` / bare attr name for HF.
+          "TinyLlama-1.1B" = {
+            path = "${env.home}/.cache/huggingface/hub/models--KrorngAI--TinyLlama-1.1B-Chat-v1.0-mlx-4bit/snapshots/c603ea76ecdc2e84c5283eed410b79606e773539";
+            display-name = "TinyLlama 1.1B";
+            context-size = 2048; # TinyLlama native max_position_embeddings
+            default = true;
+          };
+          "Nemotron-3-Nano" = {
+            repo = "mlx-community/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
+            # path = "${env.home}/models/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
+            display-name = "Nemotron 3 Nano";
+            # Native window is 256k (max 1M); keep this lower for unified-memory KV cache.
+            context-size = 32768;
+          };
+        };
+      };
     };
     programs = {
       desktop-pkgs.enable = true;
@@ -19,6 +41,10 @@
       # Disabled: hunk's bun2nix build fetches npm packages at build time,
       # and IT blocks the npm registry on this machine.
       hunk.enable = false;
+      opencode = {
+        enable = true;
+        providers.mlx.enable = true;
+      };
     };
   };
 
@@ -201,11 +227,6 @@
       {
         # Keep brew service management until my.services.syncthing covers Darwin.
         name = "syncthing";
-        restart_service = "changed";
-      }
-      {
-        # Brew service integration; nixpkgs has the package but not this service wiring.
-        name = "mlx-lm";
         restart_service = "changed";
       }
     ];

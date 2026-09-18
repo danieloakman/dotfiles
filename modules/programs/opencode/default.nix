@@ -1,4 +1,4 @@
-# OpenCode TUI/web agent: local llama provider + Cursor via patched cursor-proxy plugin.
+# OpenCode TUI/web agent: local llama/mlx providers + Cursor via patched cursor-proxy plugin.
 { config
 , lib
 , pkgs
@@ -12,10 +12,33 @@ let
     port = 11343;
     models = { };
   };
+  mlxLmCfg = config.my.services.mlx-lm or {
+    enable = false;
+    port = 11345;
+    models = { };
+  };
 
   llamaSwapUrl = "http://127.0.0.1:${toString (llamaCppCfg.port + 1)}/v1";
+  mlxUrl = "http://127.0.0.1:${toString mlxLmCfg.port}/v1";
 
   llamaMaxOutputTokens = context: lib.min 8192 (lib.div context 2);
+
+  modelDisplayName = name: model:
+    if (model.display-name or "") != "" then model.display-name
+    else
+      lib.last (
+        lib.splitString "/" (
+          if model.path != null then toString model.path
+          else if model.repo != null then model.repo
+          else name
+        )
+      );
+
+  # mlx_lm.server expects a local directory or Hugging Face id in the request body.
+  mlxServerModelId = name: model:
+    if model.path != null then toString model.path
+    else if model.repo != null then model.repo
+    else name;
 
   llamaModelsFromService = lib.mapAttrs
     (
@@ -38,6 +61,48 @@ let
         }
     )
     llamaCppCfg.models;
+
+  mlxModelsFromService = lib.mapAttrs
+    (
+      name: model:
+        let
+          repo = model.repo or null;
+          path = model.path or null;
+          vlHaystack = lib.concatStringsSep " " (
+            [ name ]
+            ++ lib.optional (repo != null) repo
+            ++ lib.optional (path != null) path
+          );
+        in
+        {
+          name = modelDisplayName name model;
+          # Short OpenCode key stays `name`; `id` is what mlx_lm.server loads.
+          id = mlxServerModelId name model;
+          limit = {
+            context = model.context-size;
+            output = llamaMaxOutputTokens model.context-size;
+          };
+        }
+        // lib.optionalAttrs (lib.hasInfix "VL" vlHaystack) {
+          modalities = {
+            input = [
+              "image"
+              "text"
+            ];
+            output = [ "text" ];
+          };
+        }
+    )
+    mlxLmCfg.models;
+
+  mlxDefaultModelId =
+    let
+      marked = lib.attrNames (lib.filterAttrs (_: model: model.default or false) mlxLmCfg.models);
+      ids = lib.attrNames mlxLmCfg.models;
+    in
+    if marked != [ ] then lib.head marked
+    else if builtins.length ids == 1 then lib.head ids
+    else null;
 
   cursorAgentPackage = config.my.programs.cursor.agent.package;
 
@@ -94,6 +159,17 @@ let
       model = "cursor-acp/${cfg.providers.cursor.default-model}";
       small_model = "cursor-acp/${cfg.providers.cursor.default-model}";
     })
+    (lib.mkIf
+      (
+        cfg.providers.mlx.enable
+        && mlxLmCfg.enable
+        && mlxDefaultModelId != null
+        && !cfg.providers.cursor.enable
+      )
+      {
+        model = "mlx/${mlxDefaultModelId}";
+        small_model = "mlx/${mlxDefaultModelId}";
+      })
     {
       provider = lib.mkMerge [
         (lib.mkIf (cfg.providers.llama-cpp.enable && llamaCppCfg.enable) {
@@ -107,6 +183,18 @@ let
             models = llamaModelsFromService;
           };
         })
+        (lib.mkIf (cfg.providers.mlx.enable && mlxLmCfg.enable) {
+          mlx = {
+            npm = "@ai-sdk/openai-compatible";
+            name = "MLX (local)";
+            options = {
+              baseURL = mlxUrl;
+              apiKey = "none";
+              includeUsage = true;
+            };
+            models = mlxModelsFromService;
+          };
+        })
       ];
     }
   ];
@@ -114,7 +202,7 @@ let
 in
 {
   options.my.programs.opencode = {
-    enable = lib.mkEnableOption "Enable OpenCode (TUI, web, Cursor/llama providers)";
+    enable = lib.mkEnableOption "Enable OpenCode (TUI, web, Cursor/llama/mlx providers)";
 
     providers = {
       cursor = {
@@ -144,7 +232,16 @@ in
         Expose the local llama-swap OpenAI API in OpenCode.
 
         Reads `my.services.llama-cpp.port` and `my.services.llama-cpp.models`
-        automatically; requires `my.services.llama-cpp.enable = true` on the host.
+        automatically; requires `my.services.llama-cpp.enable = true` on this host.
+      '';
+
+      mlx.enable = lib.mkEnableOption ''
+        Expose the local mlx-lm OpenAI API in OpenCode.
+
+        Reads `my.services.mlx-lm.port` and `my.services.mlx-lm.models`
+        automatically; requires `my.services.mlx-lm.enable = true` on this host.
+        Each model may set `path` (local MLX dir), `repo` (Hugging Face id), or
+        use the attribute name as the Hugging Face id.
       '';
     };
 
@@ -188,6 +285,22 @@ in
               builtins.attrValues llamaCppCfg.models
             );
           message = "my.programs.opencode.providers.llama-cpp.enable requires context-size on every my.services.llama-cpp.models entry.";
+        }
+        {
+          assertion = !cfg.providers.mlx.enable || mlxLmCfg.enable;
+          message = "my.programs.opencode.providers.mlx.enable requires my.services.mlx-lm.enable on this host.";
+        }
+        {
+          assertion = !cfg.providers.mlx.enable || mlxLmCfg.models != { };
+          message = "my.programs.opencode.providers.mlx.enable requires at least one model in my.services.mlx-lm.models.";
+        }
+        {
+          assertion =
+            !cfg.providers.mlx.enable
+            || builtins.all (model: model ? context-size && model.context-size > 0) (
+              builtins.attrValues mlxLmCfg.models
+            );
+          message = "my.programs.opencode.providers.mlx.enable requires context-size on every my.services.mlx-lm.models entry.";
         }
       ];
     }
