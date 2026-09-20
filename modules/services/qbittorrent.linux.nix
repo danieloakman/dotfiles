@@ -8,7 +8,40 @@ let
   authPath = "/run/secrets/pia-openvpn-auth";
   profileDir = "/var/lib/qBittorrent";
   enginesDir = "${profileDir}/qBittorrent/data/nova3/engines";
+  vpnRemotePath = "${profileDir}/vpn-remote.conf";
   python3 = "${pkgs.python3}/bin/python3";
+
+  piaProfiles = import ./pia.linux/_profiles.nix;
+
+  parseRemote =
+    remote:
+    let
+      parts = lib.splitString " " remote;
+    in
+    {
+      host = builtins.elemAt parts 0;
+      port = lib.toInt (builtins.elemAt parts 1);
+      proto = builtins.elemAt parts 2;
+    };
+
+  slugFromHost = host: builtins.head (lib.splitString "." host);
+
+  profilesBySlug = lib.mapAttrs' (
+    name: p:
+    let
+      parsed = parseRemote p.remote;
+    in
+    lib.nameValuePair (slugFromHost parsed.host) (
+      parsed
+      // {
+        inherit name;
+        id = p.id;
+      }
+    )
+  ) piaProfiles;
+
+  vpnProfile = cfg.vpn.profile;
+  vpnEndpoint = profilesBySlug.${vpnProfile};
 
   # Official nova3 Pirate Bay plugin (searches apibay.org).
   # apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits),
@@ -35,6 +68,21 @@ let
       "${enginesDir}/piratebay.py"
   '';
 
+  # Seed runtime OpenVPN remote only when missing (CLI switches own the file after that).
+  seedVpnRemote = pkgs.writeShellScript "qbittorrent-seed-vpn-remote" ''
+    set -euo pipefail
+    conf=${lib.escapeShellArg vpnRemotePath}
+    if [[ -f "$conf" ]]; then
+      exit 0
+    fi
+    ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$conf")"
+    {
+      echo "# qbittorrent-vpn profile=${vpnProfile}"
+      echo "proto ${vpnEndpoint.proto}"
+      echo "remote ${vpnEndpoint.host} ${toString vpnEndpoint.port}"
+    } >"$conf"
+  '';
+
   # Python search plugins need writable+executable memory pages + an explicit interpreter
   # (systemd hardening can leave auto-detect failing even when qbittorrent-nox wraps PATH).
   qbittorrentSearchServiceConfig = {
@@ -49,6 +97,11 @@ let
   qbittorrentSearchPrefs = {
     # Point nova3 at nixpkgs python instead of relying on PATH detection.
     pythonExecutablePath = python3;
+  };
+
+  vpnTools = pkgs.callPackage ./qbittorrent.linux/_vpn-tools.nix {
+    inherit profilesBySlug vpnRemotePath;
+    defaultProfile = vpnProfile;
   };
 
   # Stable IDs so host bind-mounts (downloads + profile) match the container user.
@@ -78,21 +131,16 @@ in
         Run qBittorrent inside a private NixOS container whose only WAN path is
         a PIA OpenVPN tunnel (kill-switched: qBittorrent binds to the OpenVPN unit).
       '';
-      remote = lib.mkOption {
-        type = lib.types.str;
+      profile = lib.mkOption {
+        type = lib.types.enum (lib.attrNames profilesBySlug);
         # DE Streaming Optimized — AU Sydney was blackholing apibay/TPB search.
-        default = "de-germany-so.privacy.network";
-        description = "PIA OpenVPN remote hostname.";
-      };
-      remote-port = lib.mkOption {
-        type = lib.types.port;
-        default = 1197;
-        description = "PIA OpenVPN remote port.";
-      };
-      proto = lib.mkOption {
-        type = lib.types.enum [ "udp" "tcp" ];
-        default = "udp";
-        description = "OpenVPN transport protocol.";
+        default = "de-germany-so";
+        description = ''
+          PIA endpoint slug (hostname label before `.privacy.network`).
+          Seeds `${vpnRemotePath}` on first boot; afterwards use
+          `qbittorrent-vpn-switch` / `qbittorrent-vpn-test` to change without a rebuild.
+          See `qbittorrent-vpn-list`.
+        '';
       };
       host-address = lib.mkOption {
         type = lib.types.str;
@@ -124,6 +172,10 @@ in
         {
           assertion = !cfg.vpn.enable || cfg.vpn.external-interface != "";
           message = "my.services.qbittorrent.vpn.external-interface must be set when vpn.enable is true";
+        }
+        {
+          assertion = !cfg.vpn.enable || profilesBySlug ? ${cfg.vpn.profile};
+          message = "my.services.qbittorrent.vpn.profile '${cfg.vpn.profile}' is not a known PIA slug";
         }
       ];
 
@@ -195,6 +247,8 @@ in
 
     # Private network container + PIA OpenVPN kill switch.
     (lib.mkIf cfg.vpn.enable {
+      environment.systemPackages = [ vpnTools ];
+
       sops.templates."pia-openvpn-auth" = {
         content = ''
           ${config.sops.placeholder.pia_username}
@@ -280,11 +334,11 @@ in
               # Keep container nameservers (1.1.1.1 through the tunnel). PIA DNS can sink indexers.
               updateResolvConf = false;
               authUserPass = authPath;
+              # remote/proto live in vpn-remote.conf (seeded from vpn.profile, switched by CLI).
               config = ''
                 client
                 dev tun
-                proto ${cfg.vpn.proto}
-                remote ${cfg.vpn.remote} ${toString cfg.vpn.remote-port}
+                config ${vpnRemotePath}
                 resolv-retry infinite
                 nobind
                 persist-key
@@ -303,6 +357,10 @@ in
                 pull-filter ignore "dhcp-option DNS6"
               '';
             };
+
+            systemd.services.openvpn-pia.serviceConfig.ExecStartPre = [
+              "+${seedVpnRemote}"
+            ];
 
             services.qbittorrent = {
               enable = true;

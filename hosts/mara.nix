@@ -90,7 +90,8 @@
           enable = true;
           external-interface = "eno1";
           # DE Streaming Optimized — AU Sydney blackholed apibay/TPB search.
-          remote = "de-germany-so.privacy.network";
+          # Runtime hops: qbittorrent-vpn-switch / qbittorrent-vpn-test.
+          profile = "de-germany-so";
         };
       };
       stirling-pdf.enable = true;
