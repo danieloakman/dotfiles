@@ -27,12 +27,17 @@ let
     in
     lib.concatStringsSep "\n" lines;
 
+  # pnpm 11+ rejects allowBuilds in the global config; put it in each project's
+  # pnpm-workspace.yaml (or share via config dependencies).
   pnpmConfigYaml = lib.generators.toYAML { } {
     minimumReleaseAge = minReleaseAgeMinutes;
     minimumReleaseAgeExclude = cfg.minimum-release-age-exclude;
     trustPolicy = "no-downgrade";
     blockExoticSubdeps = true;
     strictDepBuilds = true;
+  };
+
+  pnpmAllowBuildsWorkspaceYaml = lib.generators.toYAML { } {
     allowBuilds = lib.genAttrs cfg.allow-builds (_: true);
   };
 
@@ -102,7 +107,11 @@ in
         "rolldown"
         "unrs-resolver"
       ];
-      description = "pnpm packages permitted to run install/build lifecycle scripts.";
+      description = ''
+        pnpm packages permitted to run install/build lifecycle scripts.
+        Written to ~/.config/pnpm/allow-builds.workspace.yaml as a snippet to
+        merge into each project's pnpm-workspace.yaml (cannot live in global config).
+      '';
     };
 
     minimum-release-age-exclude = lib.mkOption {
@@ -159,6 +168,12 @@ in
           };
 
           "${pnpmConfigPath}".text = pnpmConfigYaml;
+
+          ".config/pnpm/allow-builds.workspace.yaml".text = ''
+            # Merge `allowBuilds` into each project's pnpm-workspace.yaml.
+            # pnpm 11 ignores allowBuilds in the global config file.
+            ${pnpmAllowBuildsWorkspaceYaml}
+          '';
 
           ".bunfig.toml".text = bunfigToml;
         };

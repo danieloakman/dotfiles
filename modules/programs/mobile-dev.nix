@@ -108,10 +108,9 @@ in
           };
         };
         users.users.${env.user} = {
-          # These groups might not be required anymore, but leaving them here anyway:
+          # kvm still needed for the emulator; USB adb uses systemd uaccess (android-tools).
           extraGroups = [
-            "adbusers" # Allows access to using `adb`
-            "kvm" # Required for Android emulator
+            "kvm"
           ];
         };
       };

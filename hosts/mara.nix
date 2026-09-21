@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, ... }:
+{ config, lib, modulesPath, pkgs, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -40,7 +40,7 @@
           public-url = "https://herdr-gui.dinosaur-crocodile.ts.net";
         };
       };
-      # mobile-dev.enable = false;
+      # mobile-dev.enable = false; # Together flake supplies the Android SDK
       # tmux.enable = true;
       # zellij = {
       #   enable = true;
@@ -159,6 +159,10 @@
   };
 
   networking.hostName = "mara";
+
+  # Physical Android devices over USB (Together flake provides the SDK).
+  # systemd 258+ applies Android uaccess rules from android-tools automatically.
+  environment.systemPackages = [ pkgs.android-tools ];
 
   # Configure console keymap
   console.keyMap = "us";
