@@ -1,5 +1,6 @@
---- a/Cargo.toml
-+++ b/Cargo.toml
+diff -u -N -r a/Cargo.toml b/Cargo.toml
+--- a/Cargo.toml	1970-01-01 10:00:01.000000000 +1000
++++ b/Cargo.toml	2026-09-23 07:45:07.655293553 +1000
 @@ -29,7 +29,7 @@
  ratatui = "0.29"
  ratatui-explorer = "0.2"
@@ -9,30 +10,9 @@
  rustix = { version = "1", default-features = false, features = ["system"] }
  serde = { version = "1", features = ["derive"] }
  serde_json = "1"
---- a/src/lib.rs
-+++ b/src/lib.rs
-@@ -123,9 +123,19 @@
-         socket.set_multicast_ttl_v4(1)?; // local subnet only
-         socket.join_multicast_v4(MULTICAST_IP, *addr.ip())?;
- 
-+        // Official LocalSend HTTPS servers require mutual TLS (client cert).
-+        // Present our device cert/key so prepare-upload and register succeed.
-+        // reqwest only exposes Identity behind the `native-tls` feature (not
-+        // plain `default-tls`), hence the Cargo.toml feature bump.
-+        let (key_path, cert_path) = config.ssl();
-+        let cert = std::fs::read(&cert_path)?;
-+        let key = std::fs::read(&key_path)?;
-+        let identity = reqwest::Identity::from_pkcs8_pem(&cert, &key)?;
-+
-         let client = reqwest::ClientBuilder::new()
-             // localsend certs are self-signed
-             .danger_accept_invalid_certs(true)
-+            .identity(identity)
-             .build()?;
- 
-         Ok((
---- a/src/discovery.rs
-+++ b/src/discovery.rs
+diff -u -N -r a/src/discovery.rs b/src/discovery.rs
+--- a/src/discovery.rs	1970-01-01 10:00:01.000000000 +1000
++++ b/src/discovery.rs	2026-09-23 07:45:07.655808814 +1000
 @@ -79,14 +79,16 @@
                  return;
              }
@@ -66,3 +46,37 @@
  }
  
  //-************************************************************************
+diff -u -N -r a/src/lib.rs b/src/lib.rs
+--- a/src/lib.rs	1970-01-01 10:00:01.000000000 +1000
++++ b/src/lib.rs	2026-09-23 07:45:07.655647553 +1000
+@@ -117,15 +117,27 @@
+         config: Config,
+     ) -> crate::error::Result<(Self, UnboundedReceiver<JocalEvent>)> {
+         let (tx, rx) = mpsc::unbounded_channel();
+-        let addr = SocketAddrV4::new(config.local_ip_addr, DEFAULT_PORT);
+-        let socket = UdpSocket::bind(addr).await?;
++        // Bind INADDR_ANY so we receive multicast destined to 224.0.0.167
++        // (a unicast bind only gets packets addressed to that unicast IP).
++        let if_addr = config.local_ip_addr;
++        let socket = UdpSocket::bind(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, DEFAULT_PORT)).await?;
+         socket.set_multicast_loop_v4(false)?;
+         socket.set_multicast_ttl_v4(1)?; // local subnet only
+-        socket.join_multicast_v4(MULTICAST_IP, *addr.ip())?;
++        socket.join_multicast_v4(MULTICAST_IP, if_addr)?;
++
++        // Official LocalSend HTTPS servers require mutual TLS (client cert).
++        // Present our device cert/key so prepare-upload and register succeed.
++        // reqwest only exposes Identity behind the `native-tls` feature (not
++        // plain `default-tls`), hence the Cargo.toml feature bump.
++        let (key_path, cert_path) = config.ssl();
++        let cert = std::fs::read(&cert_path)?;
++        let key = std::fs::read(&key_path)?;
++        let identity = reqwest::Identity::from_pkcs8_pem(&cert, &key)?;
+ 
+         let client = reqwest::ClientBuilder::new()
+             // localsend certs are self-signed
+             .danger_accept_invalid_certs(true)
++            .identity(identity)
+             .build()?;
+ 
+         Ok((

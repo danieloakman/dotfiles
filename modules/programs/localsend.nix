@@ -2,9 +2,9 @@
 let
   cfg = config.my.programs.localsend;
 
-  # Official LocalSend HTTPS requires mutual TLS. Upstream jocalsend's reqwest
-  # client accepts peer certs but never presents ours, so prepare-upload/register
-  # fail with TLSV1_ALERT_CERTIFICATE_REQUIRED against current LocalSend apps.
+  # Upstream jocalsend: (1) binds UDP to the unicast LAN IP so it never receives
+  # multicast discovery on 224.0.0.167; (2) HTTPS client never presents our
+  # device cert, so register/prepare-upload fail mTLS against official apps.
   jocalsend = pkgs.jocalsend.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./patches/jocalsend-mtls-client-cert.patch
