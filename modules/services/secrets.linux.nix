@@ -9,6 +9,7 @@ let
 
     "dano_pwd"
     "cursor_api_key"
+    "google_places_api_key"
     "main_gh_token"
     "postiz_jwt_secret"
     "jellyfin_api_key"
