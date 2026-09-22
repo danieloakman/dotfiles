@@ -45,7 +45,7 @@ in
           # Leaving out the (Oakman) part annoyingly because the new enterprise git server doesn't allow me to edit my name and put it in.
           name = Daniel Brown
           email = daniel.brown@futuresecure.ai
-          signingkey = ${if pkgs.stdenv.isDarwin then "~/.ssh/id_rsa.pub" else "~/.ssh/fsai.pub"}
+          signingkey = ${if env.platform == "darwin" then "~/.ssh/id_rsa.pub" else "~/.ssh/fsai.pub"}
         [gpg]
           format = ssh
       '';

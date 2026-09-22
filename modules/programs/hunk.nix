@@ -43,7 +43,8 @@ in
       ) "${hunkPackage}/skills/hunk-review";
 
     home-manager.users.${env.user} = {
-      imports = [ inputs.hunk.homeManagerModules.default ];
+      # Prefer .hunk over .default — the latter also force-evals the flake package default.
+      imports = [ inputs.hunk.homeManagerModules.hunk ];
 
       home.sessionVariables = lib.mkIf cfg.enable-git-integration {
         GIT_PAGER = "hunk pager";

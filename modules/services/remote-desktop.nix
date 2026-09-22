@@ -13,7 +13,7 @@ in
       services = {
         xserver = {
           enable = true;
-          layout = "us";
+          xkb.layout = "us";
           videoDrivers = [ "dummy" ];
           # Virtual resolution for headless (no physical monitor).
           monitorSection = ''
