@@ -1,0 +1,68 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -29,7 +29,7 @@
+ ratatui = "0.29"
+ ratatui-explorer = "0.2"
+ rcgen = "0.14"
+-reqwest = { version = "0.12", features = ["json"] }
++reqwest = { version = "0.12", features = ["json", "native-tls"] }
+ rustix = { version = "1", default-features = false, features = ["system"] }
+ serde = { version = "1", features = ["derive"] }
+ serde_json = "1"
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -123,9 +123,19 @@
+         socket.set_multicast_ttl_v4(1)?; // local subnet only
+         socket.join_multicast_v4(MULTICAST_IP, *addr.ip())?;
+ 
++        // Official LocalSend HTTPS servers require mutual TLS (client cert).
++        // Present our device cert/key so prepare-upload and register succeed.
++        // reqwest only exposes Identity behind the `native-tls` feature (not
++        // plain `default-tls`), hence the Cargo.toml feature bump.
++        let (key_path, cert_path) = config.ssl();
++        let cert = std::fs::read(&cert_path)?;
++        let key = std::fs::read(&key_path)?;
++        let identity = reqwest::Identity::from_pkcs8_pem(&cert, &key)?;
++
+         let client = reqwest::ClientBuilder::new()
+             // localsend certs are self-signed
+             .danger_accept_invalid_certs(true)
++            .identity(identity)
+             .build()?;
+ 
+         Ok((
+--- a/src/discovery.rs
++++ b/src/discovery.rs
+@@ -79,14 +79,16 @@
+                 return;
+             }
+ 
+-            // Announce in return upon receiving a valid device message and it wants
+-            // announcements
++            // Announce ourselves back (protocol: reply with our device info).
++            let mut me = self.config.device.clone();
++            me.announce = Some(false);
+             if let Err(e) =
+-                announce_multicast(&device, config.multicast_addr, self.socket.clone()).await
++                announce_multicast(&me, config.multicast_addr, self.socket.clone()).await
+             {
+                 warn!("Error during multicast announcement: {e}");
+             }
+-            if let Err(e) = announce_http(&device, Some(src), self.client.clone()).await {
++            if let Err(e) = announce_http(&self.config.device, Some(src), self.client.clone()).await
++            {
+                 warn!("Error during HTTP announcement: {e}");
+             };
+         } else {
+@@ -110,8 +112,9 @@
+         .peers
+         .write()
+         .await
+-        .insert(device.fingerprint.clone(), (addr, device.clone()));
+-    Json(device).into_response()
++        .insert(device.fingerprint.clone(), (addr, device));
++    // Protocol: respond with *our* device info, not an echo of the registrant.
++    Json(service.config.device.clone()).into_response()
+ }
+ 
+ //-************************************************************************
