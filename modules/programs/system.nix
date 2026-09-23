@@ -10,7 +10,7 @@ in
   config = env.selectPlatform {
     any = {
       # Necessary for using flakes on every platform/system:
-      nix.settings.experimental-features = "nix-command flakes";
+      nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
       nixpkgs.config = {
         allowUnfree = true;
