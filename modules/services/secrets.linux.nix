@@ -21,6 +21,7 @@ let
     "adguard_pwd"
     "paperless_username"
     "paperless_pwd"
+    "paperless_api_token"
     "collie_vapid_public"
     "collie_vapid_private"
     "tailscale_api_key"
