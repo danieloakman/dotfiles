@@ -57,12 +57,13 @@
         ];
       };
       docker.enable = true;
-      glances.enable = true;
+      # glances.enable = true;
       headroom.enable = true;
       homepage = let port = 9092; in {
         inherit port;
         enable = true;
         allowed-hosts = "${config.networking.hostName}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
+        widgets.search.enable = false;
         # integrations.tailscale = {
         #   enable = true;
         #   device-id = "nvPnGBzJke11CNTRL";
@@ -108,7 +109,7 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
-      uptime-kuma.enable = true;
+      # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
     };
   };
