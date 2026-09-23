@@ -107,7 +107,7 @@ let
           GitHub = [
             {
               abbr = "GH";
-              href = "https://github.com/";
+              href = "https://github.com/danieloakman/dotfiles";
             }
           ];
         }
