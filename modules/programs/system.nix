@@ -1,6 +1,6 @@
 # Baseline (always on). Base configuration for every user / host.
 
-{ inputs, pkgs, lib, env, system, ... }:
+{ inputs, pkgs, lib, env, system, config, ... }:
 let
   # Import pinned nixpkgs directly so we don't go through its flake `legacyPackages`
   # (that path can touch deprecated `pkgs.system` on current nixpkgs during eval).
@@ -10,7 +10,12 @@ in
   config = env.selectPlatform {
     any = {
       # Necessary for using flakes on every platform/system:
-      nix.settings.experimental-features = [ "nix-command" "flakes" ];
+      nix.settings = {
+        experimental-features = [ "nix-command" "flakes" ];
+        # If a binary-cache download fails, build from source instead of aborting.
+        # (Linux / nix-darwin-managed Nix. Determinate on Darwin uses nix.custom.conf.)
+        fallback = true;
+      };
 
       nixpkgs.config = {
         allowUnfree = true;
@@ -114,9 +119,6 @@ in
           auto-optimise-store = true;
           # Enable distributed builds and use substitutes:
           builders-use-substitutes = true;
-          # If a binary-cache download fails (e.g. HTTP 206 from cachix),
-          # build from source instead of aborting the whole switch/boot.
-          fallback = true;
         };
         # Optimise automaticaly see: https://nixos.wiki/wiki/Storage_optimization#Automatic
         optimise.automatic = true;
@@ -238,6 +240,25 @@ in
           fi
         '';
       };
+    };
+
+    darwin = {
+      # Determinate Nix (nix.enable = false) ignores nix-darwin's nix.settings.
+      # Don't claim /etc/nix/nix.custom.conf via environment.etc — the installer
+      # already owns that file and activation aborts on unrecognized content.
+      # Append fallback idempotently instead.
+      system.activationScripts.extraActivation.text = lib.mkIf (!config.nix.enable) (lib.mkAfter ''
+        custom=/etc/nix/nix.custom.conf
+        mkdir -p /etc/nix
+        if [ ! -f "$custom" ]; then
+          printf '%s\n' \
+            '# Managed by dotfiles for Determinate Nix (`nix.conf` !includes this file).' \
+            'fallback = true' \
+            > "$custom"
+        elif ! grep -Eq '^[[:space:]]*fallback[[:space:]]*=' "$custom"; then
+          printf '\n# Added by dotfiles: build from source when a binary-cache download fails.\nfallback = true\n' >> "$custom"
+        fi
+      '');
     };
   };
 }

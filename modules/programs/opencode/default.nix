@@ -306,7 +306,11 @@ in
     }
     (lib.mkIf cfg.enable {
       home-manager.users.${env.user} = {
-        home.file.".config/opencode/plugins/cursor-proxy-local".source = cursorProxyPlugin;
+        # npm-fetched @types/node — skip on hosts that block registry.npmjs.org
+        # (e.g. Boethiah) unless the Cursor provider is actually enabled.
+        home.file.".config/opencode/plugins/cursor-proxy-local" = lib.mkIf cfg.providers.cursor.enable {
+          source = cursorProxyPlugin;
+        };
 
         home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
           CURSOR_AGENT_BIN = "${lib.getExe cursorAgentPackage}";
