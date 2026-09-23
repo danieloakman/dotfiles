@@ -74,6 +74,7 @@ in
         type = "immich";
         url = "http://127.0.0.1:${toString cfg.port}";
         key = "{{HOMEPAGE_FILE_IMMICH_API_KEY}}";
+        version = 2;
         fields = [
           "users"
           "photos"
