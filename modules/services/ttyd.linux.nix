@@ -32,6 +32,8 @@ in
     my.services.homepage.services."ttyd" = {
       description = "Web terminal";
       href = "https://ttyd.dinosaur-crocodile.ts.net";
+      group = "Admin";
+      icon = "mdi-console";
     };
   };
 }

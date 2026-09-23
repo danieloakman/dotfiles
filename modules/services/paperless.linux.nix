@@ -46,5 +46,22 @@ in
     services.tailscale.serve.services.paperless = {
       endpoints."tcp:443" = "http://${hostname}:${toString port}";
     };
+
+    my.services.homepage.services."Paperless" = {
+      description = "Document management";
+      href = "https://paperless.dinosaur-crocodile.ts.net";
+      group = "Documents";
+      icon = "paperless-ngx.png";
+      widget = {
+        type = "paperlessngx";
+        url = "http://127.0.0.1:${toString port}";
+        username = "{{HOMEPAGE_FILE_PAPERLESS_USERNAME}}";
+        password = "{{HOMEPAGE_FILE_PAPERLESS_PASSWORD}}";
+        fields = [
+          "total"
+          "inbox"
+        ];
+      };
+    };
   };
 }

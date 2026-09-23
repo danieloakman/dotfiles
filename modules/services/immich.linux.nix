@@ -64,5 +64,23 @@ in
         icon = "folder-pictures";
       };
     };
+
+    my.services.homepage.services."Immich" = {
+      description = "Photo and video management";
+      href = "https://immich.dinosaur-crocodile.ts.net";
+      group = "Media";
+      icon = "immich.png";
+      widget = {
+        type = "immich";
+        url = "http://127.0.0.1:${toString cfg.port}";
+        key = "{{HOMEPAGE_FILE_IMMICH_API_KEY}}";
+        fields = [
+          "users"
+          "photos"
+          "videos"
+          "storage"
+        ];
+      };
+    };
   };
 }

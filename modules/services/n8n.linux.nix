@@ -69,6 +69,8 @@ in
         description = "Automation platform";
         # href = "http://${config.networking.hostName}:${toString cfg.port}";
         href = "https://n8n.dinosaur-crocodile.ts.net";
+        group = "Admin";
+        icon = "n8n.png";
       };
       programs.webapps."N8N Automation Platform" = {
         url = "http://localhost:${toString cfg.port}";

@@ -348,6 +348,12 @@ in
       services.tailscale.serve.services.${webTailscaleService} = {
         endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.web.port}";
       };
+      my.services.homepage.services."OpenCode" = {
+        description = "AI agent web UI (Cursor, skills, local models)";
+        href = "https://opencode.dinosaur-crocodile.ts.net";
+        group = "AI";
+        icon = "mdi-code-braces";
+      };
     }))
   ];
 }

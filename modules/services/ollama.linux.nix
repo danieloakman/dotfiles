@@ -56,6 +56,8 @@ in
     my.services.homepage.services."Ollama" = {
       description = "LLM Chat, hosted by ${config.networking.hostName}";
       href = "http://${config.networking.hostName}:${toString ollamaUiPort}";
+      group = "AI";
+      icon = "ollama.png";
     };
   };
 }

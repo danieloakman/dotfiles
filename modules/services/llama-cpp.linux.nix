@@ -122,6 +122,8 @@ in
       services.homepage.services."Llama Swap" = {
         description = "Llama Chat";
         href = "http://${config.networking.hostName}:${toString llamaSwapPort}";
+        group = "AI";
+        icon = "mdi-llama";
       };
       programs.webapps = {
         "Llama Swap" = {

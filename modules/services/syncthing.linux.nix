@@ -47,5 +47,12 @@ in
         };
       };
     };
+
+    my.services.homepage.services."Syncthing" = {
+      description = "File synchronization";
+      href = "http://127.0.0.1:8384";
+      group = "Files";
+      icon = "syncthing.png";
+    };
   };
 }

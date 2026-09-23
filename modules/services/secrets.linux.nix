@@ -23,6 +23,9 @@ let
     "paperless_pwd"
     "collie_vapid_public"
     "collie_vapid_private"
+    "tailscale_api_key"
+    "speedtest_tracker_app_key"
+    "speedtest_tracker_api_key"
   ];
   group = "secrets"; # Group to access the secrets
 in

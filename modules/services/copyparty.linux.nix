@@ -78,8 +78,9 @@ in
 
     my.services.homepage.services."Copyparty" = {
       description = "File System UI";
-      # href = "http://${config.networking.hostName}:${toString cfg.port}";
       href = "https://copyparty.dinosaur-crocodile.ts.net";
+      group = "Files";
+      icon = "mdi-folder-network";
     };
   };
 }
