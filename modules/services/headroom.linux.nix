@@ -106,6 +106,8 @@ in
       my.services.homepage.services."Headroom" = {
         description = "LLM context compression proxy";
         href = "http://${config.networking.hostName}:${portStr}/dashboard";
+        group = "AI";
+        icon = "mdi-brain";
       };
 
       my.programs.webapps."Headroom" = {

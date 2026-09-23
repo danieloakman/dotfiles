@@ -470,6 +470,8 @@ in
             "https://${builtins.head collie.public-hosts}"
           else
             "https://${config.networking.hostName}";
+        group = "AI";
+        icon = "mdi-robot";
       };
     }))
   ];

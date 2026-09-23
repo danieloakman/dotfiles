@@ -57,11 +57,16 @@
         ];
       };
       docker.enable = true;
+      glances.enable = true;
       headroom.enable = true;
       homepage = let port = 9092; in {
         inherit port;
         enable = true;
         allowed-hosts = "${config.networking.hostName}:${toString port},localhost:${toString port},homepage.dinosaur-crocodile.ts.net";
+        # integrations.tailscale = {
+        #   enable = true;
+        #   device-id = "nvPnGBzJke11CNTRL";
+        # };
       };
       immich = {
         enable = true;
@@ -94,6 +99,7 @@
           profile = "de-germany-so";
         };
       };
+      # speedtest-tracker.enable = true;
       stirling-pdf.enable = true;
       streaming.jellyfin.enable = true;
       syncthing.enable = true;
@@ -102,6 +108,7 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
+      uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
     };
   };

@@ -66,6 +66,8 @@ in
     my.services.homepage.services."Cockpit" = {
       description = "System management";
       href = publicHref;
+      group = "Admin";
+      icon = "cockpit.png";
     };
   };
 }

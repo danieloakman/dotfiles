@@ -20,6 +20,25 @@ in
     services.tailscale.serve.services.jellyfin = lib.mkIf cfg.jellyfin.enable {
       endpoints."tcp:443" = "http://127.0.0.1:${toString jellyfinPort}";
     };
+    my.services.homepage.services."Jellyfin" = lib.mkIf cfg.jellyfin.enable {
+      description = "Media server";
+      href = "https://jellyfin.dinosaur-crocodile.ts.net";
+      group = "Media";
+      icon = "jellyfin.png";
+      widget = {
+        type = "jellyfin";
+        url = "http://127.0.0.1:${toString jellyfinPort}";
+        key = "{{HOMEPAGE_FILE_JELLYFIN_API_KEY}}";
+        # Jellyfin >= 10.12 requires widget API version 2.
+        version = 2;
+        enableBlocks = true;
+        enableNowPlaying = true;
+        enableUser = true;
+        enableMediaControl = true;
+        showEpisodeNumber = true;
+        expandOneStreamToTwoRows = true;
+      };
+    };
     my.programs.webapps = {
       "Jellyfin" = lib.mkIf cfg.jellyfin.enable {
         url = "http://localhost:${toString jellyfinPort}";

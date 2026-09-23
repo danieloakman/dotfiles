@@ -176,6 +176,8 @@ in
             "https://${builtins.head gui.public-hosts}"
           else
             "https://${config.networking.hostName}";
+        group = "AI";
+        icon = "mdi-view-dashboard";
       };
     }))
   ];

@@ -89,9 +89,10 @@ in
     };
 
     my.services.homepage.services."Stirling PDF" = {
-      description = "PDF Viewer";
-      # href = "http://${config.networking.hostName}:${toString cfg.port}";
+      description = "PDF tools";
       href = "https://stirling-pdf.dinosaur-crocodile.ts.net";
+      group = "Documents";
+      icon = "mdi-file-pdf-box";
     };
   };
 }

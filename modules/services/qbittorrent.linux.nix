@@ -200,6 +200,24 @@ in
       my.services.homepage.services."qBittorrent" = {
         description = "BitTorrent download manager";
         href = "https://qbittorrent.dinosaur-crocodile.ts.net";
+        group = "Media";
+        icon = "qbittorrent.png";
+        widget = {
+          type = "qbittorrent";
+          url =
+            if cfg.vpn.enable then
+              "http://${cfg.vpn.local-address}:${portStr}"
+            else
+              "http://127.0.0.1:${portStr}";
+          # WebUI auth is bypassed for the host (AuthSubnetWhitelist / LocalHostAuth).
+          enableLeechProgress = true;
+          fields = [
+            "leech"
+            "download"
+            "seed"
+            "upload"
+          ];
+        };
       };
 
       services.tailscale.serve.services.qbittorrent = {
