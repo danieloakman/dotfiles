@@ -61,5 +61,6 @@ cursor-agent -p --force --trust --workspace "$DOTFILES_DIR" \
   "Follow the paperless-triage skill. Auto-apply. Process triage-tagged documents."
 ```
 
-The systemd timer only starts this agent when the triage queue count is ≥ `@threshold@`.
+The systemd timer only starts this agent when the triage queue count is ≥ `@threshold@`,
+or when the oldest triage document (`added`) is older than `@maxAge@`.
 Manual runs ignore that gate.

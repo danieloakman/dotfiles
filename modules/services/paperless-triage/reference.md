@@ -12,6 +12,9 @@ curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/tags/?name=triage"
 # Documents with a tag (count in .count)
 curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/documents/?tags__id=TAG_ID&page_size=25"
 
+# Oldest triage document by added time (timer age gate)
+curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/documents/?tags__id=TAG_ID&ordering=added&page_size=1"
+
 # Full document including OCR text
 curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/documents/DOC_ID/"
 ```

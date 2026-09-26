@@ -29,12 +29,14 @@ let
       --subst-var-by port ${lib.escapeShellArg (toString port)} \
       --subst-var-by tag ${lib.escapeShellArg triageCfg.tag} \
       --subst-var-by needsReviewTag ${lib.escapeShellArg triageCfg.needs-review-tag} \
-      --subst-var-by threshold ${lib.escapeShellArg (toString triageCfg.threshold)}
+      --subst-var-by threshold ${lib.escapeShellArg (toString triageCfg.threshold)} \
+      --subst-var-by maxAge ${lib.escapeShellArg triageCfg.max-age}
   '';
 
   paperlessTriageRun = pkgs.writeShellApplication {
     name = "paperless-triage-run";
     runtimeInputs = with pkgs; [
+      coreutils
       curl
       jq
     ];
@@ -42,6 +44,7 @@ let
       set -euo pipefail
 
       THRESHOLD=${toString triageCfg.threshold}
+      MAX_AGE=${lib.escapeShellArg triageCfg.max-age}
       TAG_NAME=${lib.escapeShellArg triageCfg.tag}
       PAPERLESS_URL=${lib.escapeShellArg localUrl}
       TOKEN_FILE=${lib.escapeShellArg tokenPath}
@@ -76,12 +79,33 @@ let
         exit 1
       fi
 
-      if (( count < THRESHOLD )); then
-        echo "paperless-triage: count=''${count} < ''${THRESHOLD}; skip agent"
+      if (( count == 0 )); then
+        echo "paperless-triage: count=0; skip agent"
         exit 0
       fi
 
-      echo "paperless-triage: count=''${count} >= ''${THRESHOLD}; starting cursor-agent"
+      reason=""
+      if (( count >= THRESHOLD )); then
+        reason="count=''${count} >= ''${THRESHOLD}"
+      else
+        oldest_json="$(curl -sf "''${auth_hdr[@]}" \
+          "''${PAPERLESS_URL}/api/documents/?tags__id=''${tag_id}&ordering=added&page_size=1")"
+        oldest_added="$(echo "$oldest_json" | jq -r '.results[0].added // empty')"
+        if [[ -z "$oldest_added" ]]; then
+          echo "paperless-triage: count=''${count} < ''${THRESHOLD}; could not read oldest added; skip" >&2
+          exit 0
+        fi
+        oldest_epoch="$(date -d "$oldest_added" +%s)"
+        cutoff_epoch="$(date -d "now - $MAX_AGE" +%s)"
+        if (( oldest_epoch <= cutoff_epoch )); then
+          reason="oldest added=''${oldest_added} older than ''${MAX_AGE} (count=''${count})"
+        else
+          echo "paperless-triage: count=''${count} < ''${THRESHOLD} and oldest added=''${oldest_added} within ''${MAX_AGE}; skip agent"
+          exit 0
+        fi
+      fi
+
+      echo "paperless-triage: ''${reason}; starting cursor-agent"
       export PAPERLESS_URL PAPERLESS_TOKEN_FILE="$TOKEN_FILE"
       exec "$CURSOR_AGENT" -p --force --trust \
         --workspace "$DOTFILES_DIR" \
@@ -112,7 +136,8 @@ in
     triage = {
       enable = lib.mkEnableOption ''
         Install the paperless-triage skill and a user timer that runs cursor-agent
-        when at least `threshold` documents have the triage tag.
+        when at least `threshold` documents have the triage tag, or when the
+        oldest triage document is older than `max-age`.
       '' // {
         default = true;
       };
@@ -120,6 +145,14 @@ in
         type = lib.types.ints.positive;
         default = 10;
         description = "Minimum triage-tagged document count before starting cursor-agent.";
+      };
+      max-age = lib.mkOption {
+        type = lib.types.str;
+        default = "1 day";
+        description = ''
+          GNU date relative duration. If the oldest triage-tagged document (by
+          `added`) is older than this, run cursor-agent even when below threshold.
+        '';
       };
       tag = lib.mkOption {
         type = lib.types.str;
@@ -133,7 +166,7 @@ in
       };
       interval = lib.mkOption {
         type = lib.types.str;
-        default = "15min";
+        default = "30min";
         description = "systemd OnUnitActiveSec / OnBootSec interval for the triage count check.";
       };
     };
@@ -212,7 +245,7 @@ in
 
         systemd.user.services.paperless-triage = {
           Unit = {
-            Description = "Paperless AI triage (cursor-agent when triage queue >= ${toString triageCfg.threshold})";
+            Description = "Paperless AI triage (cursor-agent when queue >= ${toString triageCfg.threshold} or oldest > ${triageCfg.max-age})";
             After = [ "network-online.target" ];
           };
           Service = {
