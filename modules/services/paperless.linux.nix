@@ -64,8 +64,12 @@ let
 
       auth_hdr=( -H "Authorization: Token ''${TOKEN}" -H "Accept: application/json" )
 
-      tag_json="$(curl -sf "''${auth_hdr[@]}" "''${PAPERLESS_URL}/api/tags/?name=''${TAG_NAME}")"
-      tag_id="$(echo "$tag_json" | jq -r '.results[0].id // empty')"
+      # name= is not exact; use name__iexact and still require an exact name match.
+      tag_json="$(curl -sf --get "''${auth_hdr[@]}" \
+        --data-urlencode "name__iexact=''${TAG_NAME}" \
+        "''${PAPERLESS_URL}/api/tags/")"
+      tag_id="$(echo "$tag_json" | jq -r --arg n "$TAG_NAME" \
+        '.results[] | select(.name == $n) | .id' | head -n1)"
       if [[ -z "$tag_id" ]]; then
         echo "paperless-triage: tag ''${TAG_NAME} not found; create it and a Document Added workflow" >&2
         exit 0

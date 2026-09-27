@@ -6,8 +6,8 @@ Auth header: `Authorization: Token $TOKEN`.
 ## List / filter
 
 ```bash
-# Tag by exact name
-curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/tags/?name=triage"
+# Tag by exact name (use name__iexact; plain name= is not exact)
+curl -sf --get "${AUTH[@]}" --data-urlencode "name__iexact=triage" "$PAPERLESS_URL/api/tags/"
 
 # Documents with a tag (count in .count)
 curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/documents/?tags__id=TAG_ID&page_size=25"
