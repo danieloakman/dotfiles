@@ -12,26 +12,14 @@ in
         enable = true;
         location = "center";
         cycle = true;
-        pass = {
-          enable = true;
-          stores = [
-            "${env.home}/repos/personal/pwd-store"
-          ];
-          extraConfig = ''
-            URL_field='url'
-            USERNAME_field='username'
-            AUTOTYPE_field='autotype'
-            default_autotype='username :tab pass :tab url :tab notes'
-            backend='wtype'
-          '';
-        };
+        # programs.rofi.pass removed upstream (rofi-pass unmaintained / dropped from nixpkgs).
+        # Using passmenu instead.
         modes = [
           "drun"
           "emoji"
         ];
         plugins = with pkgs; [
           rofi-emoji
-          # rofi-pass # Unmaintained. Using passmenu instead.
           # rofi-calc # I think just running node in terminal is easier for me.
           # rofi-file-browser # Would rather just use lf
           # rofi-screenshot # Would rather just use gnome-screenshot
