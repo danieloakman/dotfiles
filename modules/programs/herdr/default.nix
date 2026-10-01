@@ -22,7 +22,7 @@ let
   # lags upstream releases, and the Darwin build never uses nixpkgs' source
   # anyway — only its `meta`). Bump this directly to pick up a new release:
   #   nix store prefetch-file "https://github.com/ogulcancelik/herdr/releases/download/vVERSION/herdr-macos-aarch64"
-  darwinVersion = "0.8.2";
+  darwinVersion = "0.9.0";
 
   binaryHashes = {
     "0.7.4" = {
@@ -34,6 +34,9 @@ let
     };
     "0.8.2" = {
       aarch64-darwin = "sha256-pdT01QTYswnJH4EQUFWTAPq6MSWEJfU8UIUvyW9q5XQ=";
+    };
+    "0.9.0" = {
+      aarch64-darwin = "sha256-MrU98JhyYoBZx4mmnwKmuOKeFN3yZxFCHzRj9wwa7xc=";
     };
   };
 
