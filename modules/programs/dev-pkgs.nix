@@ -150,7 +150,6 @@ in
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
-      my.programs.antigravity-cli.enable = true;
       my.programs.micro.enable = true;
     }
     (env.selectPlatform {
