@@ -9,6 +9,9 @@
         AWSCONFIG = "${env.home}/.aws/config";
       };
 
+      # X11 forwarding (ssh -Y / ForwardX11*) needs OpenSSH with X11Forwarding +
+      # xauth on both ends. Tailscale SSH does not support it; use loopback sshd
+      # and `ssh -J host user@127.0.0.1 -Y`, or disable Tailscale SSH.
       file.".ssh/config".source = ../../files/home/.ssh/config;
     };
 
