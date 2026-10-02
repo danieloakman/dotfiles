@@ -20,6 +20,7 @@ in
           localsend.enable = lib.mkDefault true;
           obsidian.enable = lib.mkDefault true;
           herdr.enable = lib.mkDefault true;
+          nebula.enable = lib.mkDefault true;
           micro = {
             enable = lib.mkDefault true;
             is-default-editor = lib.mkDefault true;
