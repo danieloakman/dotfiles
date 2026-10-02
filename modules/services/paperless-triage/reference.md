@@ -29,11 +29,15 @@ curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/correspondents/?page_size=100"
 curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/document_types/?page_size=100"
 ```
 
-Create when required:
+These endpoints are the live source of truth for names/ids. Classification
+*policy* (what each field is for, reuse vs create) lives in `SKILL.md` —
+do not hardcode an inventory of tags or correspondents here.
+
+Create when required (only after a close match fails; see skill policy):
 
 ```bash
 curl -sf "${AUTH[@]}" -H "Content-Type: application/json" \
-  -d '{"name":"Tax"}' "$PAPERLESS_URL/api/tags/"
+  -d '{"name":"Example"}' "$PAPERLESS_URL/api/tags/"
 # same shape for /api/correspondents/ and /api/document_types/
 ```
 
