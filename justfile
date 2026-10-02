@@ -87,3 +87,9 @@ gen-rm *gens:
 [linux]
 clean:
     nh clean all -a --keep 1
+
+# Rank profile packages by least-recent binary access; hint modules/hosts refs.
+# Examples: `just unused-bins` | `just unused-bins --limit 20` | `just unused-bins --all`
+[linux, positional-arguments]
+unused-bins *args:
+    @{{ repo }}/scripts/unused-bins.sh "$@"
