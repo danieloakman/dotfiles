@@ -81,10 +81,34 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    my.programs.agents.skills.herdr = builtins.fetchurl {
-      url = "https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md";
-      sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
-    };
+    my.programs.agents.skills.herdr =
+      (builtins.readFile (
+        builtins.fetchurl {
+          url = "https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md";
+          sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
+        }
+      ))
+      + ''
+
+        ## worktrees
+
+        when creating a git worktree from inside herdr, prefer `nwt` over raw
+        `herdr worktree create` or `git worktree add`. `nwt` picks the path and
+        already calls `herdr worktree create --path … --focus` when `HERDR_ENV=1`.
+
+        ```bash
+        nwt feat/foo
+        # optional: copy top-level ignored paths into the new worktree
+        nwt feat/foo .claude tmp
+        ```
+
+        path layout: sibling of the primary repo root —
+        `../''${repo}_''${branch-slug}` (e.g. `~/repos/dotfiles` → `~/repos/dotfiles_feat-foo`).
+        stdout is the new worktree path.
+
+        do not use `nwt --interactive` from an agent (needs a TTY). pass copy paths
+        as args, or omit them. use `--dry-run` if you only need the derived path.
+      '';
 
     home-manager.users.${env.user} = {
       programs.herdr = {
