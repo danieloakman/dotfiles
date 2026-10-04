@@ -10,7 +10,8 @@
 }:
 let
   # PyPI CLI version; independent of the Docker image tag in headroom.linux.nix.
-  version = "0.32.1";
+  # 0.32.1 crashed on `mcp serve` (MCP SDK: Server has no list_tools).
+  version = "0.39.1";
   extras = "proxy,code,mcp";
   # uvx wheels (onnxruntime) are not Nix-patched; Kompress needs libstdc++ at
   # import time. Without this, `is_kompress_available()` is false, large

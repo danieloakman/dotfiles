@@ -32,9 +32,8 @@ in
     enable = lib.mkEnableOption ''
       Headroom context-compression proxy and CLI (`headroom`), run from the uvx
       package as ${env.user}'s user service. Enabling it always wires the agents:
-      Claude Code is routed through the proxy (plus MCP), and shared agents MCP
-      registers the Headroom server for cursor/opencode. Also reachable on the
-      tailnet at http://<host>:<port>/dashboard.
+      Claude Code is routed through the proxy (plus Claude-only MCP for CCR).
+      Also reachable on the tailnet at http://<host>:<port>/dashboard.
     '';
 
     port = lib.mkOption {
@@ -117,13 +116,6 @@ in
     }
 
     {
-      # Headroom's MCP transport is stdio (`headroom mcp serve`), not an HTTP
-      # endpoint on the proxy port. See the canonical server.json / README contract.
-      my.programs.agents.mcp.headroom = {
-        command = lib.getExe cfg.package;
-        args = [ "mcp" "serve" ];
-      };
-
       my.programs.agents.sandbox.extra-allowed-domains = {
         "127.0.0.1" = "*";
         localhost = "*";
@@ -132,6 +124,20 @@ in
       my.programs.claude-code.managed-settings.env = {
         ANTHROPIC_BASE_URL = baseUrl;
         ENABLE_TOOL_SEARCH = "true";
+      };
+
+      # Claude-only: CCR retrieve after proxy compression. Not via agents.mcp —
+      # Cursor never routes through the proxy, so shared ~/.cursor/mcp.json would
+      # only add tool-schema token tax.
+      home-manager.users.${env.user}.programs.claude-code.mcpServers.headroom = {
+        type = "stdio";
+        command = lib.getExe cfg.package;
+        args = [
+          "mcp"
+          "serve"
+          "--proxy-url"
+          baseUrl
+        ];
       };
     }
   ]);
