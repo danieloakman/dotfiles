@@ -1,7 +1,8 @@
 # AdGuard Home — DNS ad blocking over Tailscale.
 #
 # Host exposure is always Tailscale-only: DNS (53) and the dashboard port open on
-# tailscale0; the web UI binds to loopback (Homepage uses 127.0.0.1).
+# tailscale0; LAN/public stay closed. The web UI listens on all interfaces but the
+# firewall only admits it from the tailnet (Homepage widget still uses loopback).
 #
 # Mode (`my.services.dns-ad-block.mode`):
 #
@@ -196,7 +197,8 @@ in
     services.adguardhome = {
       enable = true;
       openFirewall = false;
-      host = "127.0.0.1";
+      # Reachable on the tailnet via hostname:port; firewall keeps LAN closed.
+      host = "0.0.0.0";
       inherit (cfg) port;
       # Non-null settings are required for nixpkgs to merge host/port into the
       # mutable AdGuardHome.yaml (otherwise bind stays at AdGuard defaults).
@@ -249,7 +251,7 @@ in
           "Network-wide ad blocking DNS (Tailscale tailnet-wide)"
         else
           "Network-wide ad blocking DNS (Tailscale opt-in)";
-      href = "http://127.0.0.1:${toString cfg.port}";
+      href = "http://${config.networking.hostName}:${toString cfg.port}";
       group = "Network";
       icon = "adguard-home.png";
       widget = {
