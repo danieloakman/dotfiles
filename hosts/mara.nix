@@ -48,7 +48,14 @@
       # };
     };
     services = {
-      dns-ad-block.enable = true;
+      dns-ad-block = {
+        enable = true;
+        # opt-in: per-device DNS → mara Tailscale IP.
+        # tailnet: all peers using Tailscale DNS → AdGuard (API sync).
+        mode = "opt-in";
+        # This host uses local AdGuard (127.0.0.1); default is already true.
+        useLocally = true;
+      };
       cockpit = let port = 19090; in {
         enable = true;
         inherit port;
