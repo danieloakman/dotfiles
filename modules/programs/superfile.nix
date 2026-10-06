@@ -27,6 +27,8 @@ in
           firstUseCheck = false;
           # Nix owns updates; skip the exit-time check.
           settings = {
+            # Only override what we care about; use upstream defaults for the rest.
+            ignore_missing_fields = true;
             theme = "catppuccin-mocha";
             auto_check_update = false;
             # Blank => $EDITOR (micro on workstations).
