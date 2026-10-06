@@ -25,6 +25,8 @@ in
             enable = lib.mkDefault true;
             is-default-editor = lib.mkDefault true;
           };
+          # Preferred TUI file manager; lf stays opt-in (my.programs.lf).
+          superfile.enable = lib.mkDefault true;
         };
       }
       (env.selectPlatform {

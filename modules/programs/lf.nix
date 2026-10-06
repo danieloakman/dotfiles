@@ -3,6 +3,7 @@ let
   cfg = config.my.programs.lf;
 in
 {
+  # Prefer my.programs.superfile for day-to-day use; lf is the minimalist opt-in.
   options.my.programs.lf.enable = lib.mkEnableOption "Enable and configure lf.";
 
   config = lib.mkIf cfg.enable (env.selectPlatform {
