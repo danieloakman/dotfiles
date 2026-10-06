@@ -51,8 +51,8 @@
       dns-ad-block = {
         enable = true;
         # opt-in: per-device DNS → mara Tailscale IP.
-        # tailnet: all peers using Tailscale DNS → AdGuard (API sync).
-        mode = "opt-in";
+        # tailnet: peers with "Use Tailscale DNS" → AdGuard (set Override + nameserver in admin console).
+        mode = "tailnet";
         # This host uses local AdGuard (127.0.0.1); default is already true.
         useLocally = true;
       };

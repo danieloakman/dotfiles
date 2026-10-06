@@ -10,18 +10,18 @@
 #     Devices keep router/ISP DNS. Opt in by setting a device's DNS to this
 #     host's Tailscale IPv4 (`tailscale ip -4`). Opt out by restoring DHCP DNS.
 #
-#   tailnet — Push this host as the Tailscale global nameserver and enable
-#     Override local DNS (via Tailscale API). Every peer that accepts Tailscale
-#     DNS uses AdGuard. Per-device off: uncheck "Use Tailscale DNS" /
+#   tailnet — This host should be the Tailscale global nameserver with Override
+#     local DNS on. Every peer that accepts Tailscale DNS uses AdGuard.
+#     Per-device off: uncheck "Use Tailscale DNS" /
 #     `tailscale set --accept-dns=false` (also disables MagicDNS on that device).
-#     Requires a real `tailscale_api_key` in sops (DNS write scope). The current
-#     placeholder key will soft-fail for opt-in and hard-fail for tailnet.
 #
 # This host (`useLocally`, default true): system DNS is 127.0.0.1 → AdGuard;
 # Tailscale accept-dns is off; `*.ts.net` is forwarded to 100.100.100.100.
 #
-# Switching modes runs `adguard-tailscale-dns.service` on activation (needs
-# `tailscale_api_key` in sops). Verify:
+# `adguard-tailscale-dns.service` runs on activation. If a usable
+# `tailscale_api_key` is present it may sync admin DNS; otherwise it only logs
+# the manual Tailscale admin console steps for the current mode (API keys expire
+# every 90 days — manual config is the expected path). Verify:
 #   dig @<mara-tailscale-ip> doubleclick.net   # expect blocked
 #   dig @<mara-tailscale-ip> example.com       # expect normal A
 #
@@ -37,15 +37,9 @@ let
 
     mode=${lib.escapeShellArg cfg.mode}
     tailnet=${lib.escapeShellArg cfg.tailnet}
-    api_key_file="''${CREDENTIALS_DIRECTORY}/tailscale_api_key"
+    api_key_file="''${CREDENTIALS_DIRECTORY:-}/tailscale_api_key"
 
-    if [[ ! -r "$api_key_file" ]]; then
-      echo "adguard-tailscale-dns: missing API key credential" >&2
-      exit 1
-    fi
-    api_key="$(tr -d '\n' < "$api_key_file")"
-
-    # Wait briefly for Tailscale to have an IPv4.
+    # Wait briefly for Tailscale to have an IPv4 (needed for the checklist).
     ip=""
     for _ in $(seq 1 30); do
       ip="$(${ts} ip -4 2>/dev/null || true)"
@@ -55,31 +49,46 @@ let
       sleep 1
     done
     if [[ -z "$ip" ]]; then
-      echo "adguard-tailscale-dns: no Tailscale IPv4 yet" >&2
-      exit 1
+      echo "adguard-tailscale-dns: no Tailscale IPv4 yet; cannot print DNS checklist" >&2
+      exit 0
+    fi
+
+    log_manual() {
+      local reason="$1"
+      echo "adguard-tailscale-dns: $reason" >&2
+      echo "adguard-tailscale-dns: Tailscale API key not usable — apply DNS manually at https://login.tailscale.com/admin/dns" >&2
+      if [[ "$mode" == "tailnet" ]]; then
+        echo "adguard-tailscale-dns: mode=tailnet — ensure AdGuard works:" >&2
+        echo "adguard-tailscale-dns:   1. Global nameservers: add $ip (this host)" >&2
+        echo "adguard-tailscale-dns:   2. Turn ON \"Override DNS servers\"" >&2
+        echo "adguard-tailscale-dns:   3. On each device: enable \"Use Tailscale DNS\"" >&2
+        echo "adguard-tailscale-dns: If this host is offline later: turn Override OFF (or remove $ip) in the admin console." >&2
+      else
+        echo "adguard-tailscale-dns: mode=opt-in — ensure AdGuard stays opt-in only:" >&2
+        echo "adguard-tailscale-dns:   1. Remove $ip from Global nameservers (if listed)" >&2
+        echo "adguard-tailscale-dns:   2. Keep \"Override DNS servers\" OFF" >&2
+        echo "adguard-tailscale-dns:   3. Opt in a device by setting its DNS to $ip while on Tailscale" >&2
+      fi
+    }
+
+    api_key=""
+    if [[ -r "$api_key_file" ]]; then
+      api_key="$(tr -d '[:space:]' < "$api_key_file")"
+    fi
+    if [[ -z "$api_key" ]]; then
+      log_manual "no Tailscale API key present"
+      exit 0
     fi
 
     base="https://api.tailscale.com/api/v2/tailnet/''${tailnet}/dns"
     auth=(-u "''${api_key}:")
 
-    # Soft-fail helper: opt-in must not break nixos-rebuild when the API key is
-    # missing/placeholder; tailnet mode needs a working key to do its job.
-    fail_or_soft() {
-      local msg="$1"
-      if [[ "$mode" == "tailnet" ]]; then
-        echo "adguard-tailscale-dns: ERROR: $msg" >&2
-        echo "adguard-tailscale-dns: set a real sops secret tailscale_api_key (DNS write scope), or apply DNS manually in the Tailscale admin console." >&2
-        exit 1
-      fi
-      echo "adguard-tailscale-dns: WARNING: $msg (opt-in continues; apply Tailscale DNS manually if needed)" >&2
-      exit 0
-    }
-
     http_body="$(mktemp)"
     trap 'rm -f "$http_body"' EXIT
     http_code="$(${curl} -sS -o "$http_body" -w '%{http_code}' "''${auth[@]}" "$base/configuration" || true)"
     if [[ "$http_code" != "200" ]]; then
-      fail_or_soft "GET dns/configuration HTTP $http_code ($(head -c 200 "$http_body"))"
+      log_manual "GET dns/configuration HTTP $http_code ($(head -c 200 "$http_body"))"
+      exit 0
     fi
     cfg_json="$(cat "$http_body")"
 
@@ -108,7 +117,8 @@ let
       --data-binary "$body" \
       "$base/configuration" || true)"
     if [[ "$http_code" != "200" ]]; then
-      fail_or_soft "POST dns/configuration HTTP $http_code ($(head -c 200 "$http_body"))"
+      log_manual "POST dns/configuration HTTP $http_code ($(head -c 200 "$http_body"))"
+      exit 0
     fi
 
     # Clearing all nameservers can disable MagicDNS; re-assert it for opt-in.
@@ -119,11 +129,12 @@ let
         --data-binary '{"magicDNS":true}' \
         "$base/preferences" || true)"
       if [[ "$http_code" != "200" ]]; then
-        fail_or_soft "POST dns/preferences HTTP $http_code ($(head -c 200 "$http_body"))"
+        log_manual "POST dns/preferences HTTP $http_code ($(head -c 200 "$http_body"))"
+        exit 0
       fi
     fi
 
-    echo "adguard-tailscale-dns: synced"
+    echo "adguard-tailscale-dns: synced via API"
   '';
 in
 {
@@ -146,14 +157,18 @@ in
           set a device's DNS to this host's Tailscale IP to use AdGuard.
         - `tailnet`: set this host as the Tailscale global nameserver and enable
           Override local DNS so every peer that accepts Tailscale DNS uses AdGuard.
+
+        Apply the matching settings in the Tailscale admin DNS page. Optional API
+        sync runs only when a usable `tailscale_api_key` is present; otherwise the
+        oneshot service logs the checklist and exits successfully.
       '';
     };
     tailnet = lib.mkOption {
       type = lib.types.str;
       default = "-";
       description = ''
-        Tailscale API tailnet id for DNS sync (`-` = default tailnet for the API key).
-        Used by `adguard-tailscale-dns.service` when applying `mode`.
+        Tailscale API tailnet id for optional DNS sync (`-` = default tailnet for
+        the API key). Unused when no usable `tailscale_api_key` is present.
       '';
     };
     useLocally = lib.mkOption {
@@ -217,9 +232,9 @@ in
       };
     };
 
-    # Apply Tailscale admin DNS to match `mode` after AdGuard / Tailscale are up.
+    # Optional API sync / manual checklist for `mode` after AdGuard / Tailscale are up.
     systemd.services.adguard-tailscale-dns = {
-      description = "Sync Tailscale DNS settings for AdGuard (${cfg.mode})";
+      description = "AdGuard Tailscale DNS checklist/sync (${cfg.mode})";
       after = [
         "network-online.target"
         "tailscaled.service"
