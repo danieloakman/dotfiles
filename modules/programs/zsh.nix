@@ -35,11 +35,19 @@
               plugins = [
                 "git"
                 "sudo"
-                "z"
                 "git-auto-fetch"
               ];
               theme = "robbyrussell";
             };
+          };
+
+          # Replaces Oh My Zsh `z`. Interactive `cd` is frecency-aware;
+          # use `\cd` / `builtin cd` for the real builtin. Optional one-time
+          # history import: `zoxide import --from z ~/.z`
+          zoxide = {
+            enable = true;
+            enableZshIntegration = true;
+            options = [ "--cmd" "cd" ];
           };
 
           starship = {

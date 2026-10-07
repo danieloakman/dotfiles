@@ -43,8 +43,7 @@ in
             show_panel_footer_info = true;
             # Size + mtime columns, matching lf's info = [size time].
             file_panel_extra_columns = 2;
-            # oh-my-zsh `z`, not zoxide (see issue #45).
-            zoxide_support = false;
+            zoxide_support = true;
           };
           pinnedFolders = [
             {

@@ -65,14 +65,6 @@
           git push --set-upstream origin "$1"
         }
 
-        function zcode() {
-          z "$1" && code . && cd -
-        }
-
-        function zcursor() {
-          z "$1" && cursor . && cd -
-        }
-
         # Pass create
         function passc() {
           pass generate "$1"
@@ -80,7 +72,7 @@
         }
 
         function passlg() {
-          z $PASSWORD_STORE_DIR && lazygit && cd -
+          cd $PASSWORD_STORE_DIR && lazygit && cd -
         }
 
         function passsync() {
