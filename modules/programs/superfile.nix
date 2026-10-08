@@ -1,8 +1,17 @@
 # Prefer this over `my.programs.lf` for interactive browsing; keep lf for a
 # minimalist alternative when you want it (`my.programs.lf.enable`).
-{ env, config, lib, ... }:
+{ env, config, lib, pkgs, ... }:
 let
   cfg = config.my.programs.superfile;
+
+  # Upstream truncates preview lines to the panel width; soft-wrap instead.
+  # doCheck off: upstream preview tests assert truncation semantics we replace.
+  superfile = pkgs.superfile.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./patches/superfile-preview-softwrap.patch
+    ];
+    doCheck = false;
+  });
 
   # Matches upstream cd_on_quit shell snippet paths:
   # https://superfile.netlify.app/configure/superfile-config/
@@ -21,9 +30,14 @@ in
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${env.user} = {
+      # Persisted toggle (not a config.toml key). `true` = show dotfiles on launch.
+      # Runtime `.` still flips the in-session view; HM resets this file on switch.
+      xdg.dataFile."superfile/toggleDotFile".text = "true";
+
       programs = {
         superfile = {
           enable = true;
+          package = superfile;
           firstUseCheck = false;
           # Nix owns updates; skip the exit-time check.
           settings = {

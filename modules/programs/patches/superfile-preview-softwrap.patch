@@ -1,0 +1,91 @@
+--- a/src/internal/ui/rendering/truncate.go
++++ b/src/internal/ui/rendering/truncate.go
+@@ -13,6 +13,8 @@
+ const (
+ 	PlainTruncateRight = iota
+ 	TailsTruncateRight
++	// SoftWrap wraps long lines to maxWidth instead of truncating (preview panel).
++	SoftWrap
+ )
+ 
+ func TruncateBasedOnStyle(line string, maxWidth int, truncateStyle TruncateStyle) string {
+@@ -21,6 +23,9 @@
+ 		return ansi.Truncate(line, maxWidth, "")
+ 	case TailsTruncateRight:
+ 		return ansi.Truncate(line, maxWidth, "...")
++	case SoftWrap:
++		// SoftWrap is handled in ContentRenderer (produces multiple lines).
++		return line
+ 	default:
+ 		slog.Error("Invalid truncate style", "style", truncateStyle)
+ 		return ""
+--- a/src/internal/ui/rendering/content_renderer.go
++++ b/src/internal/ui/rendering/content_renderer.go
+@@ -4,6 +4,7 @@
+ 	"log/slog"
+ 	"strings"
+ 
++	xansi "github.com/charmbracelet/x/ansi"
+ 	"github.com/yorukot/superfile/src/internal/common"
+ )
+ 
+@@ -36,6 +37,7 @@
+ 
+ // Maybe better return an error ?
+ // AddLineWithCustomTruncate adds lines to the renderer, truncating each line according to the specified style.
++// SoftWrap wraps to maxLineWidth (word wrap with hard-wrap fallback) instead of truncating.
+ // It does not trims whitespace, and its possible to add multiple empty lines using this.
+ func (r *ContentRenderer) AddLineWithCustomTruncate(lineStr string, truncateStyle TruncateStyle) {
+ 	// If string is multiline, add individual lines separately
+@@ -50,6 +52,19 @@
+ 		if r.sanitizeContent {
+ 			line = common.MakePrintableWithEscCheck(line, true)
+ 		}
++
++		if truncateStyle == SoftWrap {
++			wrapped := xansi.Wrap(line, r.maxLineWidth, "")
++			for wrappedLine := range strings.SplitSeq(wrapped, "\n") {
++				if len(r.lines) >= r.maxLines {
++					slog.Error("Max lines reached", "maxLines", r.maxLines)
++					return
++				}
++				r.lines = append(r.lines, wrappedLine)
++			}
++			continue
++		}
++
+ 		// Some characters like "\t" are considered 1 width
+ 		line = TruncateBasedOnStyle(line, r.maxLineWidth, truncateStyle)
+ 
+--- a/src/internal/ui/spf_renderers.go
++++ b/src/internal/ui/spf_renderers.go
+@@ -57,6 +57,7 @@
+ 	cfg.ContentFGColor = common.FilePanelFGColor
+ 	cfg.ContentBGColor = common.FilePanelBGColor
+ 	cfg.BorderRequired = false
++	cfg.DefTruncateStyle = rendering.SoftWrap
+ 
+ 	r, err := rendering.NewRenderer(cfg)
+ 	if err != nil {
+--- a/src/internal/model_render.go
++++ b/src/internal/model_render.go
+@@ -540,7 +540,9 @@
+ 	lineCount := 0
+ 	for scanner.Scan() {
+ 		line := scanner.Text()
+-		line = ansi.Truncate(line, maxLineLength, "")
++		if maxLineLength > 0 {
++			line = ansi.Truncate(line, maxLineLength, "")
++		}
+ 		resultBuilder.WriteString(line)
+ 		resultBuilder.WriteRune('\n')
+ 		lineCount++
+@@ -661,7 +663,7 @@
+ 		}
+ 	}
+ 
+-	fileContent, err := readFileContent(itemPath, previewWidth, previewHeight)
++	fileContent, err := readFileContent(itemPath, 0, previewHeight)
+ 	if err != nil {
+ 		slog.Error("Error open file", "error", err)
+ 		return box.Render(common.FilePreviewError)
