@@ -23,6 +23,8 @@
           l = "eza -F";
           lt = "eza . -a -T -L";
           lg = "lazygit";
+          # zoxide is bound to `cd` (--cmd cd); keep `z` as a synonym
+          z = "cd";
           aliasg = "alias | grep";
           wanip = "curl ifconfig.me";
           lanip = "ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*' | grep -v '127.0.0.1'";
