@@ -53,6 +53,7 @@
     "expenses-spreadsheet": "dist/expenses-spreadsheet.js",
     "nwt": "dist/nwt.js",
     "move-mouse": "dist/move-mouse.js",
-    "passs": "dist/passs.js"
+    "passs": "dist/passs.js",
+    "weather": "dist/weather.js"
   }
 }
