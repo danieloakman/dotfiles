@@ -74,6 +74,11 @@ in
       };
       games.enable = true;
       desktop-pkgs.enable = true;
+      # Photo editing: PhotoCraft (editor, replaces gimp) + LightCraft (library/raw).
+      artcraft = {
+        photocraft.enable = true;
+        lightcraft.enable = true;
+      };
       comma.enable = true;
       ms-apps.enable = true;
     };

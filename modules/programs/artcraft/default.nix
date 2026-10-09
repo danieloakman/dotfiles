@@ -28,7 +28,10 @@ let
     deckcraft = "DeckCraft — presentations (PowerPoint-style)";
   };
 
-  enabledCraftPackages = lib.filterAttrs (name: _: cfg.${name}.enable) craftPackages;
+  # callPackage adds override* attrs; only consider real craft app names.
+  enabledCraftPackages = lib.filterAttrs (name: _: cfg.${name}.enable) (
+    lib.getAttrs (lib.attrNames craftApps) craftPackages
+  );
 
   anyCraftEnabled = enabledCraftPackages != { };
   ideEnabled = cfg.ide.enable;
