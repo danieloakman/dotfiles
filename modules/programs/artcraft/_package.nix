@@ -11,6 +11,7 @@
   makeWrapper,
   autoPatchelfHook,
   autoAddDriverRunpath,
+  alsa-lib,
   libxkbcommon,
   wayland,
   vulkan-loader,
@@ -179,9 +180,11 @@ let
         makeWrapper
       ];
 
-      # Release binaries link libgcc_s; autoPatchelf needs it on the buildInputs path.
+      # Release binaries link libgcc_s / libasound; autoPatchelf needs them on
+      # the buildInputs path (soundcraft, filmcraft, effectcraft, deckcraft).
       buildInputs = [
         stdenv.cc.cc
+        alsa-lib
       ];
 
       dontStrip = true;
