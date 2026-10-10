@@ -17,6 +17,7 @@ in
           cursor.enable = lib.mkDefault true;
           gws.enable = lib.mkDefault true;
           goplaces.enable = lib.mkDefault true;
+          playwright-cli.enable = lib.mkDefault true;
           localsend.enable = lib.mkDefault true;
           obsidian.enable = lib.mkDefault true;
           herdr.enable = lib.mkDefault true;
