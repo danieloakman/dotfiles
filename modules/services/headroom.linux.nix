@@ -38,7 +38,7 @@ in
 
     port = lib.mkOption {
       type = lib.types.port;
-      default = 8787;
+      default = 19838;
       description = "Host port mapped to the Headroom proxy.";
     };
 
