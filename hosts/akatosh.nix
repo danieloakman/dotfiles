@@ -74,13 +74,12 @@ in
       };
       games.enable = true;
       desktop-pkgs.enable = true;
-      # Photo editing: PhotoCraft (editor, replaces gimp) + LightCraft (library/raw).
-      artcraft = {
-        photocraft.enable = true;
-        lightcraft.enable = true;
-      };
+      # ArtCraft suite (Adobe/Office clones): Photo, Light, Film, PDF, Vector, Effect,
+      # Design, Word, CAD, Grid, Sound, Deck. IDE has no Linux release yet.
+      artcraft.enable = true;
       comma.enable = true;
       ms-apps.enable = true;
+      t3code.enable = true;
     };
     services = {
       stylix = {

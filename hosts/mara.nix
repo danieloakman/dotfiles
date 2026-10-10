@@ -16,6 +16,7 @@
           claude.enable = true;
         };
       };
+      t3code.enable = true;
       herdr = {
         collie = {
           enable = true;
