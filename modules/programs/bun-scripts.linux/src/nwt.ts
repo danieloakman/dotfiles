@@ -146,8 +146,7 @@ async function herdrCreateWorktree(targetPath: string, branch: string, cwd: stri
 		'--branch',
 		branch,
 		'--path',
-		targetPath,
-		'--focus'
+		targetPath
 	];
 	vlog(`$ herdr ${args.join(' ')}`);
 	const proc = Bun.spawn(['herdr', ...args], {
@@ -314,7 +313,7 @@ async function main() {
 		console.error('Dry run — no changes will be made.');
 		if (useHerdr) {
 			console.error(
-				`Would run: herdr worktree create --cwd ${invokingRoot} --branch ${branch} --path ${targetPath} --focus`
+				`Would run: herdr worktree create --cwd ${invokingRoot} --branch ${branch} --path ${targetPath}`
 			);
 		} else {
 			const exists = await branchExists(branch, invokingRoot);
