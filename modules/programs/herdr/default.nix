@@ -21,7 +21,7 @@ let
   # Pinned independently of pkgs.herdr.version (nixpkgs' packaging cadence
   # lags upstream releases, and the Darwin build never uses nixpkgs' source
   # anyway — only its `meta`). Bump this directly to pick up a new release:
-  #   nix store prefetch-file "https://github.com/ogulcancelik/herdr/releases/download/vVERSION/herdr-macos-aarch64"
+  #   nix store prefetch-file "https://github.com/herdrdev/herdr/releases/download/vVERSION/herdr-macos-aarch64"
   darwinVersion = "0.9.0";
 
   binaryHashes = {
@@ -45,7 +45,7 @@ let
     version = darwinVersion;
 
     src = pkgs.fetchurl {
-      url = "https://github.com/ogulcancelik/herdr/releases/download/v${darwinVersion}/${
+      url = "https://github.com/herdrdev/herdr/releases/download/v${darwinVersion}/${
         binaryAssetMap.${pkgs.stdenv.hostPlatform.system}
           or (throw "my.programs.herdr: unsupported Darwin system ${pkgs.stdenv.hostPlatform.system}")
       }";
@@ -70,7 +70,7 @@ in
 {
   options.my.programs.herdr = {
     enable = lib.mkEnableOption ''
-      Herdr (ogulcancelik/herdr): install and configure the agent terminal multiplexer
+      Herdr (herdrdev/herdr): install and configure the agent terminal multiplexer
     '';
 
     package = lib.mkOption {
@@ -84,8 +84,8 @@ in
     my.programs.agents.skills.herdr =
       (builtins.readFile (
         builtins.fetchurl {
-          url = "https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md";
-          sha256 = "sha256-dYJkUsoJYjpzCcCg2b1rKbJMVc8QBjL8g71ppoUkHxc=";
+          url = "https://raw.githubusercontent.com/herdrdev/herdr/master/skills/herdr/SKILL.md";
+          sha256 = "sha256-+9nVAnZ/ff8pwhFQWgvZujTpgO1MxFYkfircFkKIOYQ=";
         }
       ))
       + ''
