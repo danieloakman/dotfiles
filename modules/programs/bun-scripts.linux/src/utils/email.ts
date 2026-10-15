@@ -18,6 +18,7 @@ export interface EmailClient {
 		query?: string;
 		max?: number;
 	}): Promise<EmailMessage[]>;
+	getEmail(id: string): Promise<EmailMessage>;
 	markAsRead(id: string): Promise<void>;
 	markAsUnread(id: string): Promise<void>;
 }
@@ -34,17 +35,17 @@ const gmailAddressSchema = z.object({
 const gmailReadSchema = z.object({
 	from: gmailAddressSchema,
 	to: z.array(gmailAddressSchema),
-	subject: z.string().optional(),
-	date: z.string().optional(),
-	body_text: z.string().optional(),
-	body_html: z.string().optional()
+	subject: z.string().nullable().optional(),
+	date: z.string().nullable().optional(),
+	body_text: z.string().nullable().optional(),
+	body_html: z.string().nullable().optional()
 });
 
 function formatAddress({ name, email }: z.infer<typeof gmailAddressSchema>): string {
 	return name ? `${name} <${email}>` : email;
 }
 
-async function fetchMessage(id: string): Promise<EmailMessage> {
+export async function getEmail(id: string): Promise<EmailMessage> {
 	const message = await gwsJson(
 		['gmail', '+read', '--id', id, '--headers', '--format', 'json'],
 		gmailReadSchema
@@ -81,8 +82,9 @@ export const emailClient: EmailClient = {
 			gmailMessageListSchema
 		);
 		if (!list.messages?.length) return [];
-		return Promise.all(list.messages.map((message) => fetchMessage(message.id)));
+		return Promise.all(list.messages.map((message) => getEmail(message.id)));
 	},
+	getEmail,
 	async markAsRead(id) {
 		await gwsJson(['gmail', 'users', 'messages', 'markAsRead', '--id', id], z.unknown());
 	},
