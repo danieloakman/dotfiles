@@ -12,9 +12,23 @@ export interface EmailMessage {
 	attachments: unknown[];
 }
 
+/** Metadata-only hit from `gws gmail +triage` (no body fetch). */
+export interface EmailSummary {
+	id: string;
+	subject: string;
+	from: string;
+	date: string;
+}
+
 export interface EmailClient {
-	listEmails(options?: {
+	/** Lightweight search via `gws gmail +triage` (headers only, no body). */
+	searchSummaries(options?: {
 		/** Gmail search query, e.g. `from:boss is:unread`. Defaults to `in:inbox`. */
+		query?: string;
+		max?: number;
+	}): Promise<EmailSummary[]>;
+	/** Full-read each hit (N+1). Prefer searchSummaries + getEmail for agent use. */
+	listEmails(options?: {
 		query?: string;
 		max?: number;
 	}): Promise<EmailMessage[]>;
@@ -25,6 +39,19 @@ export interface EmailClient {
 
 const gmailMessageListSchema = z.object({
 	messages: z.array(z.object({ id: z.string(), threadId: z.string() })).optional()
+});
+
+const gmailTriageSchema = z.object({
+	messages: z
+		.array(
+			z.object({
+				id: z.string(),
+				from: z.string(),
+				subject: z.string().nullable().optional(),
+				date: z.string().nullable().optional()
+			})
+		)
+		.optional()
 });
 
 const gmailAddressSchema = z.object({
@@ -63,6 +90,27 @@ export async function getEmail(id: string): Promise<EmailMessage> {
 }
 
 export const emailClient: EmailClient = {
+	async searchSummaries({ query = 'in:inbox', max = 20 } = {}) {
+		const data = await gwsJson(
+			[
+				'gmail',
+				'+triage',
+				'--query',
+				query,
+				'--max',
+				String(max),
+				'--format',
+				'json'
+			],
+			gmailTriageSchema
+		);
+		return (data.messages ?? []).map((message) => ({
+			id: message.id,
+			from: message.from,
+			subject: message.subject ?? '',
+			date: message.date ?? ''
+		}));
+	},
 	async listEmails({ query = 'in:inbox', max = 50 } = {}) {
 		const list = await gwsJson(
 			[

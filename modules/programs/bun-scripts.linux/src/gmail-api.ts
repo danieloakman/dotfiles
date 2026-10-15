@@ -2,7 +2,10 @@
 import { $ } from 'bun';
 import meow from 'meow';
 import { exit, helpFlag } from './utils/cli';
-import { emailClient, type EmailMessage } from './utils/email';
+import { emailClient, type EmailMessage, type EmailSummary } from './utils/email';
+
+/** Default max chars of bodyText in `read -j` (agents); use --full to disable. */
+const JSON_BODY_MAX = 4000;
 
 function quoteOperatorValue(value: string): string {
 	const trimmed = value.trim();
@@ -30,32 +33,34 @@ export function buildGmailQuery(options: {
 	return parts.join(' ') || 'in:inbox';
 }
 
-function snippet(text: string, max = 120): string {
-	const oneLine = text.replace(/\s+/g, ' ').trim();
-	if (oneLine.length <= max) return oneLine;
-	return `${oneLine.slice(0, max - 1)}…`;
-}
-
-function toJsonRead(message: EmailMessage, { html = false } = {}) {
+function toJsonRead(
+	message: EmailMessage,
+	{ html = false, full = false }: { html?: boolean; full?: boolean } = {}
+) {
+	const bodyText =
+		full || message.bodyText.length <= JSON_BODY_MAX
+			? message.bodyText
+			: `${message.bodyText.slice(0, JSON_BODY_MAX)}…`;
 	return {
 		id: message.id,
 		subject: message.subject,
 		from: message.from,
 		to: message.to,
 		date: message.date,
-		bodyText: message.bodyText,
+		bodyText,
+		...(full || message.bodyText.length <= JSON_BODY_MAX
+			? {}
+			: { truncated: true, bodyLength: message.bodyText.length }),
 		...(html ? { bodyHtml: message.bodyHtml } : {})
 	};
 }
 
-function toJsonSearchHit(message: EmailMessage) {
+function toJsonSearchHit(message: EmailSummary) {
 	return {
 		id: message.id,
 		from: message.from,
-		to: message.to,
 		subject: message.subject,
-		date: message.date,
-		snippet: snippet(message.bodyText)
+		date: message.date
 	};
 }
 
@@ -71,7 +76,7 @@ function printMessage(message: EmailMessage) {
 	else console.log('(empty body)');
 }
 
-function printList(messages: EmailMessage[]) {
+function printList(messages: EmailSummary[]) {
 	if (!messages.length) {
 		console.log('No messages found.');
 		return;
@@ -79,8 +84,6 @@ function printList(messages: EmailMessage[]) {
 	for (const [i, m] of messages.entries()) {
 		console.log(`${i + 1}. ${m.date}  ${m.from}  ${m.subject}`);
 		console.log(`   id: ${m.id}`);
-		const teaser = snippet(m.bodyText);
-		if (teaser) console.log(`   ${teaser}`);
 		console.log();
 	}
 }
@@ -92,7 +95,7 @@ function pickLine(lines: string): Promise<string> {
 	return cmd.text().then((stdout) => stdout.trim());
 }
 
-async function pickMessage(messages: EmailMessage[]): Promise<EmailMessage> {
+async function pickSummary(messages: EmailSummary[]): Promise<EmailSummary> {
 	const lines = messages
 		.map((m, i) => `${i + 1}. ${m.date}  ${m.from}  ${m.subject}`)
 		.join('\n');
@@ -118,10 +121,12 @@ Options
   --help, -h     Show help
   --json, -j     Compact JSON (text body only; omits HTML)
   --html, -H     With --json, include bodyHtml
+  --full, -F     With --json, do not truncate bodyText (${JSON_BODY_MAX} chars)
 
 Examples
   $ gmail-api read 18c2f1a2b3c4d5e6
   $ gmail-api read 18c2f1a2b3c4d5e6 -j
+  $ gmail-api read 18c2f1a2b3c4d5e6 -jF
   $ gmail-api read 18c2f1a2b3c4d5e6 -jH
 		`.trimStart(),
 		{
@@ -130,7 +135,8 @@ Examples
 			flags: {
 				...helpFlag,
 				json: { type: 'boolean', shortFlag: 'j', default: false },
-				html: { type: 'boolean', shortFlag: 'H', default: false }
+				html: { type: 'boolean', shortFlag: 'H', default: false },
+				full: { type: 'boolean', shortFlag: 'F', default: false }
 			}
 		}
 	);
@@ -145,8 +151,11 @@ Examples
 
 	try {
 		const message = await emailClient.getEmail(id);
-		if (flags.json) console.log(JSON.stringify(toJsonRead(message, { html: flags.html })));
-		else printMessage(message);
+		if (flags.json) {
+			console.log(
+				JSON.stringify(toJsonRead(message, { html: flags.html, full: flags.full }))
+			);
+		} else printMessage(message);
 	} catch (err) {
 		exit(`Read failed: ${err instanceof Error ? err.message : err}`);
 	}
@@ -158,10 +167,10 @@ async function runSearch(argv: string[]) {
 Usage
   $ gmail-api search [options] [keywords...]
 
-Search Gmail via gws. Flags compose a Gmail query (AND).
-By default (interactive), pick a result with fzf/rofi and print the full message.
+Search Gmail via gws +triage (metadata only; no body fetch).
+By default (interactive), pick a result with fzf/rofi then full-read it.
 Use --list or --json to skip the picker.
-JSON search hits are summaries (id + snippet); use read -j for full body.
+JSON hits are {id,from,subject,date}; use read -j for the body.
 
 Options
   --help, -h           Show help
@@ -212,7 +221,7 @@ Examples
 	});
 
 	try {
-		const messages = await emailClient.listEmails({ query, max: flags.max });
+		const messages = await emailClient.searchSummaries({ query, max: flags.max });
 		if (flags.json) {
 			console.log(
 				JSON.stringify({
@@ -232,8 +241,9 @@ Examples
 			exit('No messages found.', 1);
 		}
 		console.error(`Query: ${query} (${messages.length} shown)`);
-		const picked = await pickMessage(messages);
-		printMessage(picked);
+		const picked = await pickSummary(messages);
+		const full = await emailClient.getEmail(picked.id);
+		printMessage(full);
 	} catch (err) {
 		exit(`Search failed: ${err instanceof Error ? err.message : err}`);
 	}
