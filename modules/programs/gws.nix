@@ -55,12 +55,14 @@ let
     {
       echo '---'
       echo 'name: gws'
-      echo 'description: "Google Workspace gateway (Gmail, Drive, Calendar, Docs, Sheets, Chat, Meet, Forms, Tasks, Slides, Apps Script, Classroom, Keep, People, Admin). Load this skill first to access the indexed sub-skills."'
+      echo 'description: "Google Workspace gateway (Drive, Calendar, Docs, Sheets, Chat, Meet, Forms, Tasks, Slides, Apps Script, Classroom, Keep, People, Admin; Gmail send/reply/labels/filters/watch). For Gmail search/list/read prefer the gmail-api skill. Load this skill first to access the indexed sub-skills."'
       echo '---'
       echo ""
       echo '# Google Workspace skills'
       echo ""
       echo 'Sub-skills are installed at `~/.claude/gws-skills/`. They are NOT auto-discovered as skills to keep the global skill list small. To use one, Read the relevant SKILL.md path below and follow its instructions.'
+      echo ""
+      echo '**Gmail search / list / read:** prefer the `gmail-api` skill (`gmail-api search -j`, `gmail-api read <id> -j`) over `gws-gmail-triage` / `gws-gmail-read`.'
       echo ""
       echo '## Index'
       echo ""
@@ -68,7 +70,14 @@ let
         name=$(basename "$dir")
         if [ -f "$dir/SKILL.md" ]; then
           desc=$(awk '/^description:/ { sub(/^description: */, ""); gsub(/^"|"$/, ""); print; exit }' "$dir/SKILL.md")
-          echo "- **$name** — $desc"
+          case "$name" in
+            gws-gmail-triage|gws-gmail-read)
+              echo "- **$name** — $desc *(prefer gmail-api)*"
+              ;;
+            *)
+              echo "- **$name** — $desc"
+              ;;
+          esac
           echo "  - \`~/.claude/gws-skills/$name/SKILL.md\`"
         fi
       done
