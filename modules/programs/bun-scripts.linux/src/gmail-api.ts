@@ -36,6 +36,29 @@ function snippet(text: string, max = 120): string {
 	return `${oneLine.slice(0, max - 1)}…`;
 }
 
+function toJsonRead(message: EmailMessage, { html = false } = {}) {
+	return {
+		id: message.id,
+		subject: message.subject,
+		from: message.from,
+		to: message.to,
+		date: message.date,
+		bodyText: message.bodyText,
+		...(html ? { bodyHtml: message.bodyHtml } : {})
+	};
+}
+
+function toJsonSearchHit(message: EmailMessage) {
+	return {
+		id: message.id,
+		from: message.from,
+		to: message.to,
+		subject: message.subject,
+		date: message.date,
+		snippet: snippet(message.bodyText)
+	};
+}
+
 function printMessage(message: EmailMessage) {
 	console.log(`From: ${message.from}`);
 	console.log(`To: ${message.to}`);
@@ -93,17 +116,21 @@ Fetch one Gmail message by id and print headers + body.
 
 Options
   --help, -h     Show help
-  --json         Print JSON instead of human text
+  --json, -j     Compact JSON (text body only; omits HTML)
+  --html, -H     With --json, include bodyHtml
 
 Examples
   $ gmail-api read 18c2f1a2b3c4d5e6
+  $ gmail-api read 18c2f1a2b3c4d5e6 -j
+  $ gmail-api read 18c2f1a2b3c4d5e6 -jH
 		`.trimStart(),
 		{
 			importMeta: import.meta,
 			argv,
 			flags: {
 				...helpFlag,
-				json: { type: 'boolean', default: false }
+				json: { type: 'boolean', shortFlag: 'j', default: false },
+				html: { type: 'boolean', shortFlag: 'H', default: false }
 			}
 		}
 	);
@@ -118,7 +145,7 @@ Examples
 
 	try {
 		const message = await emailClient.getEmail(id);
-		if (flags.json) console.log(JSON.stringify(message, null, 2));
+		if (flags.json) console.log(JSON.stringify(toJsonRead(message, { html: flags.html })));
 		else printMessage(message);
 	} catch (err) {
 		exit(`Read failed: ${err instanceof Error ? err.message : err}`);
@@ -134,38 +161,39 @@ Usage
 Search Gmail via gws. Flags compose a Gmail query (AND).
 By default (interactive), pick a result with fzf/rofi and print the full message.
 Use --list or --json to skip the picker.
+JSON search hits are summaries (id + snippet); use read -j for full body.
 
 Options
   --help, -h           Show help
-  --from <addr>        from: operator
-  --to <addr>          to: operator
-  --subject <text>     subject: operator
-  --after <date>       after:YYYY/MM/DD
-  --before <date>      before:YYYY/MM/DD
+  --from, -f <addr>    from: operator
+  --to, -t <addr>      to: operator
+  --subject, -s <text> subject: operator
+  --after, -a <date>   after:YYYY/MM/DD
+  --before, -b <date>  before:YYYY/MM/DD
   --query, -q <q>      Raw Gmail query fragment (AND with flags)
-  --max <n>            Max results (default 20)
+  --max, -m <n>        Max results (default 20)
   --list, -l           Print human listing only (no picker)
-  --json               Print JSON listing (no picker)
+  --json, -j           Compact JSON summaries (no picker)
 
 Examples
-  $ gmail-api search invoice --from accounting@example.com --after 2025/01/01
-  $ gmail-api search --subject "statement" --list
-  $ gmail-api search --query 'has:attachment larger:5M' --json
+  $ gmail-api search invoice -f accounting@example.com -a 2025/01/01
+  $ gmail-api search -s "statement" -l
+  $ gmail-api search -q 'has:attachment larger:5M' -j -m 5
 		`.trimStart(),
 		{
 			importMeta: import.meta,
 			argv,
 			flags: {
 				...helpFlag,
-				from: { type: 'string', default: '' },
-				to: { type: 'string', default: '' },
-				subject: { type: 'string', default: '' },
-				after: { type: 'string', default: '' },
-				before: { type: 'string', default: '' },
+				from: { type: 'string', shortFlag: 'f', default: '' },
+				to: { type: 'string', shortFlag: 't', default: '' },
+				subject: { type: 'string', shortFlag: 's', default: '' },
+				after: { type: 'string', shortFlag: 'a', default: '' },
+				before: { type: 'string', shortFlag: 'b', default: '' },
 				query: { type: 'string', shortFlag: 'q', default: '' },
-				max: { type: 'number', default: 20 },
+				max: { type: 'number', shortFlag: 'm', default: 20 },
 				list: { type: 'boolean', shortFlag: 'l', default: false },
-				json: { type: 'boolean', default: false }
+				json: { type: 'boolean', shortFlag: 'j', default: false }
 			}
 		}
 	);
@@ -186,7 +214,12 @@ Examples
 	try {
 		const messages = await emailClient.listEmails({ query, max: flags.max });
 		if (flags.json) {
-			console.log(JSON.stringify({ query, messages }, null, 2));
+			console.log(
+				JSON.stringify({
+					query,
+					messages: messages.map(toJsonSearchHit)
+				})
+			);
 			return;
 		}
 		if (flags.list) {
