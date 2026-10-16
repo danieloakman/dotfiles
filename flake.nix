@@ -263,6 +263,8 @@
         bun-scripts = pkgs.callPackage ./modules/programs/bun-scripts.linux/_package.nix {
           inherit bun2nix;
         };
+        # Live installer ISO; host is chosen at install: nixos-install --flake .#HOST
+        iso = self.nixosConfigurations.installer.config.system.build.isoImage;
       });
 
       checks = {
@@ -292,6 +294,11 @@
         mara = mkNixosHost {
           name = "mara";
           deviceType = "server";
+        };
+
+        # Shared live installer (not a production host). Build: nix build .#iso
+        installer = nixpkgs.lib.nixosSystem {
+          modules = [ ./hosts/installer.nix ];
         };
       };
 

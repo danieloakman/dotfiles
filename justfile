@@ -39,6 +39,11 @@ check-host *host:
 update:
     sudo nix flake update --flake .
 
+# Build live installer ISO → result/iso/*.iso (then: nixos-install --flake .#HOST)
+[linux]
+iso:
+    nix build {{ repo }}#iso
+
 [linux]
 build:
     nh os build {{ repo }}

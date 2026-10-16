@@ -26,6 +26,23 @@ nh os switch .      # Linux
 nh darwin switch .  # macOS
 ```
 
+## Installer ISO
+
+One shared live installer for all Linux hosts (not a per-host image). Build on an existing Nix machine:
+
+```bash
+just iso
+# or: nix build .#iso
+```
+
+The ISO is at `result/iso/*.iso`. Boot it, partition disks, clone or copy this flake onto the target, then install a host:
+
+```bash
+sudo nixos-install --flake /path/to/dotfiles#akatosh   # or azura / mara
+```
+
+The live image enables flakes, includes `git`/`neovim`, and authorizes your SSH keys for remote install.
+
 ## Development or making changes
 
 - When updating the flake, i.e. the `flake.lock` file, always make a new branch for those changes.
