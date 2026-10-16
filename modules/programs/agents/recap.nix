@@ -363,7 +363,7 @@ in
   config = lib.mkIf enable {
     my.programs.agents.skill-dirs.recap = recapSkill;
 
-    # Keep defaults (nodejs/gh) and append gather for sandboxed agent PATH.
+    # Keep the sandbox defaults and append gather for sandboxed agent PATH.
     my.programs.agents.sandbox.extra-allowed-packages = lib.mkAfter [ recapGather ];
 
     home-manager.users.${env.user} = {

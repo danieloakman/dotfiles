@@ -161,8 +161,10 @@ in
     extra-allowed-packages = lib.mkOption {
       type = lib.types.listOf lib.types.package;
       default = [
-        pkgs.nodejs_24
+        pkgs.nodejs_26
         pkgs.gh
+        pkgs.python3
+        pkgs.uv
       ];
       description = "Extra packages exposed on the sandbox PATH for all wrapped agents.";
     };

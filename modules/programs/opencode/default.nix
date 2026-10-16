@@ -126,7 +126,7 @@ let
   webServiceBinPath = lib.makeBinPath (
     [
       pkgs.coreutils
-      pkgs.nodejs_24
+      pkgs.nodejs_26
     ]
     ++ lib.optionals cfg.providers.cursor.enable [
       cursorAgentPackage
@@ -139,7 +139,7 @@ let
   webServiceEnv =
     lib.optionals cfg.providers.cursor.enable [
       "CURSOR_AGENT_BIN=${lib.getExe cursorAgentPackage}"
-      "NODE_BIN=${lib.getExe pkgs.nodejs_24}"
+      "NODE_BIN=${lib.getExe pkgs.nodejs_26}"
       "CURSOR_PROXY_SCRIPT=${cursorProxyScript}"
       "CURSOR_PROXY_QUIET=true"
     ]
@@ -315,7 +315,7 @@ in
         home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
           CURSOR_AGENT_BIN = "${lib.getExe cursorAgentPackage}";
           # CURSOR_PROXY_QUIET = "true";
-          NODE_BIN = "${lib.getExe pkgs.nodejs_24}";
+          NODE_BIN = "${lib.getExe pkgs.nodejs_26}";
           CURSOR_PROXY_SCRIPT = cursorProxyScript;
         };
 

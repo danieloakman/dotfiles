@@ -32,6 +32,11 @@ in
           + ''
             - When reporting information to me, be extremely concise and sacrifice grammar for sake of concision.
           '';
+        python = ''
+          ## Python
+          - Adhoc scripts that stay in the standard library: run them with `python3`.
+          - Anything that imports a third-party package: `uv run --with <package> script.py` (repeat `--with` for each package). `pip` and `python -m venv` are not available; this Python is externally managed.
+        '';
         git = ''
           ## Git
           - Git commits: group into logical changesets. First line under 72 chars, present tense ("Add feature" not "Added feature"). No prefixes (`feat:`, `fix:`, `chore:`, `[ABC-123]`), no ticket numbers, unless project conventions require them.

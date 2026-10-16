@@ -158,7 +158,7 @@ in
           nixpkgs-fmt
           statix
           nil
-          nodejs_24
+          nodejs_26
           bun
           pnpm
           pnpm-shell-completion
@@ -174,7 +174,9 @@ in
           zbar # Can scan QR & bar codes using this
           awscli2
           mprocs
-          uv # Python package manager; can install packages and run them adhoc
+          # Python:
+          python3
+          uv # Package manager; can install packages and run them adhoc
           pandoc # Document converter
           rtk # More efficient token usage for LLMs
           defuddle # Extract clean HTML/markdown/metadata from web pages
