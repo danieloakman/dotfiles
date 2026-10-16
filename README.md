@@ -28,20 +28,28 @@ nh darwin switch .  # macOS
 
 ## Installer ISO
 
-One shared live installer for all Linux hosts (not a per-host image). Build on an existing Nix machine:
+One live USB for every Linux host. The host (`akatosh`, `azura`, or `mara`) is chosen in the install command. The image has flakes, `git`, `neovim`, your SSH keys (console user `nixos`, or SSH as `root` / `nixos`), and a snapshot of this repo at `/etc/dotfiles`. Rebuild the ISO after you change the repo. `just iso` also copies your age key onto a partition labeled `NIXOSDATA`. The live system mounts that partition at `/nixosdata` and prints the next steps when the console shell starts.
+
+1. On a machine that already has Nix, build the image and write it to a USB stick. The script lists disks and asks you to type the device name before it overwrites anything:
 
 ```bash
 just iso
-# or: nix build .#iso
 ```
 
-The ISO is at `result/iso/*.iso`. Boot it, partition disks, clone or copy this flake onto the target, then install a host:
+To build without writing, use `nix build .#iso`. The file is `result/iso/*.iso`.
+
+2. Boot the target machine from that stick. The console logs in as `nixos` and prints what to do next.
+
+3. Partition the target disk and mount its root at `/mnt` (EFI at `/mnt/boot` when the host uses it). The layout and UUIDs have to match `hosts/<name>.nix`. Reinstalling an existing machine means mounting the disks already described there.
+
+4. Install the host. This copies the age key from `/nixosdata` and runs `nixos-install`:
 
 ```bash
-sudo nixos-install --flake /path/to/dotfiles#akatosh   # or azura / mara
+install-host akatosh
+# or: install-host azura / install-host mara
 ```
 
-The live image enables flakes, includes `git`/`neovim`, and authorizes your SSH keys for remote install.
+5. Reboot and remove the USB stick.
 
 ## Development or making changes
 

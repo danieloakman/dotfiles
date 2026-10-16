@@ -39,10 +39,11 @@ check-host *host:
 update:
     sudo nix flake update --flake .
 
-# Build live installer ISO → result/iso/*.iso (then: nixos-install --flake .#HOST)
+# Build the installer ISO and write it to a USB disk (prompts for the device).
 [linux]
 iso:
-    nix build {{ repo }}#iso
+    nix build {{ repo }}#iso -o {{ repo }}/result
+    {{ repo }}/scripts/write-iso.sh
 
 [linux]
 build:

@@ -297,7 +297,11 @@
         };
 
         # Shared live installer (not a production host). Build: nix build .#iso
+        # self.outPath is the flake source; passing the outputs attrset recurses.
         installer = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            dotfiles = self.outPath;
+          };
           modules = [ ./hosts/installer.nix ];
         };
       };
