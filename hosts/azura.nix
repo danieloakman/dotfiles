@@ -81,10 +81,11 @@ in
 
   system.stateVersion = "23.05";
 
-  # Configure remote builders
+  # Remote builders are Tailscale-only and accept the dano user, not root.
   nix.buildMachines = [
     {
       hostName = "akatosh";
+      sshUser = "dano";
       system = "x86_64-linux";
       maxJobs = 8;
       speedFactor = 2;
@@ -93,6 +94,7 @@ in
     }
     {
       hostName = "mara";
+      sshUser = "dano";
       system = "x86_64-linux";
       maxJobs = 3;
       speedFactor = 2;

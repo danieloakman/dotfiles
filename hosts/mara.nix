@@ -189,6 +189,7 @@
     buildMachines = [
       {
         hostName = "akatosh";
+        sshUser = "dano";
         system = "x86_64-linux";
         maxJobs = 8;
         speedFactor = 4;

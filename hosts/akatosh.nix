@@ -213,6 +213,7 @@ in
     buildMachines = [
       {
         hostName = "mara";
+        sshUser = "dano";
         system = "x86_64-linux";
         maxJobs = 3;
         speedFactor = 2;
