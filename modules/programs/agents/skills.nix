@@ -43,6 +43,25 @@ in
           - Forbid AI co-authoring in commit messages: never add `Co-authored-by` trailers for agents or tools (Cursor, Claude, etc.), never add "Made with Cursor" or similar attribution trailers, and never use `git commit --trailer` for attribution.
           - Git stash: always prefix the stash message with the current branch name (e.g. `git stash push -m "<branch>: …"`). When listing, applying, popping, or dropping stashes, only touch entries whose message starts with the current branch name — never other agents' stashes.
         '';
+        prefer-lists = ''
+          ## Output: prefer lists over tables
+          When reporting structured results to the user, use lists. Do not use markdown tables.
+
+          Multi-field items: a heading, then one bullet per item, with each field nested:
+
+          # Google Places
+          - Tokyo
+            - <link to Tokyo>
+            - other column value
+          - London
+            - <link to London>
+            - other column value
+
+          Simple rows: one bullet per item, fields inline:
+
+          - Item 1, link to item 1, extra info
+          - Item 2, link to item 2, extra info
+        '';
       };
       skills = {
         grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
