@@ -31,16 +31,18 @@ API details: [reference.md](reference.md).
 
 Live lists from `GET /api/tags/`, `/api/correspondents/`, and
 `/api/document_types/` are the **source of truth**. This section is policy
-only — do not treat any example name below as an exclusive allow-list.
+only. Do not treat any example name below as an exclusive allow-list.
 
 | Field | Means | Prefer | Avoid |
 | --- | --- | --- | --- |
 | **Correspondent** | Who issued or authored the document (org or professional) | Stable org/person name already in the API; close alias → reuse that id | Personal inbox/forwarder emails; clinic mailbox addresses when an org name exists |
 | **Document type** | Form of the document (how it would be named in a filing cabinet) | Closest existing type (receipt vs invoice vs letter vs report vs quote, etc.) | Forcing everything into one catch-all type |
 | **Tags** | Topic / facet for filtering (life area, program, subject) | Small set of topical tags already in the API | Putting the issuer in tags when it belongs in correspondent |
-| **Title** | Distinctive subject for search, lists, and the download name | What the document is, plus what sets it apart from others with the same correspondent and `created` date | Correspondent name; repeating `created`; Paperless `added` or `modified`; `Fw:`/`Fwd:`, scanner filenames, UUIDs, raw mail subjects |
+| **Title** | Distinctive subject for search, lists, and the download name | What the document is, plus what sets it apart from others with the same correspondent and `created` date | Correspondent name; repeating `created`; Paperless `added` or `modified`; `Fw:`/`Fwd:`, scanner filenames, UUIDs, raw mail subjects; em dashes |
 
-**Download filename:** A single download, bulk zip, and email attachment are named `{created} {correspondent} {title}.{ext}` (`Document.__str__`; `PAPERLESS_FILENAME_FORMAT` is unset). `created` is the date on the document, and it is already the date a recipient sees. `added` and `modified` are archive timestamps; leave them out of the title. Document type and tags are not in that name, so a short form word (invoice, letter, report) still belongs in the title when the subject does not already say it. Repeat a date in the title only when the document itself names a further date or period that the single `created` value does not show: a statement period (`Statement — March 2026` when `created` is the closing day), a tax year, an appointment day on a letter, or a validity range. Example: title `Invoice — annual checkup` downloads as `2026-10-07 Acme Clinic Invoice — annual checkup.pdf`.
+**No em dashes:** Do not use an em dash (`—`, U+2014) in any document property: title, correspondent, document type, or tag. This applies to values you set on a document and to names you create through the API. Where a separator is needed, use a hyphen (`-`).
+
+**Download filename:** A single download, bulk zip, and email attachment are named `{created} {correspondent} {title}.{ext}` (`Document.__str__`; `PAPERLESS_FILENAME_FORMAT` is unset). `created` is the date on the document, and it is already the date a recipient sees. `added` and `modified` are archive timestamps; leave them out of the title. Document type and tags are not in that name, so a short form word (invoice, letter, report) still belongs in the title when the subject does not already say it. Repeat a date in the title only when the document itself names a further date or period that the single `created` value does not show: a statement period (`Statement - March 2026` when `created` is the closing day), a tax year, an appointment day on a letter, or a validity range. Example: title `Invoice - annual checkup` downloads as `2026-10-07 Acme Clinic Invoice - annual checkup.pdf`.
 
 **Reuse vs create:** Reuse on close match (case, spacing, abbreviation, email↔org
 alias). Create only when nothing fits **and** the same kind of document is
@@ -60,7 +62,7 @@ applied).
 3. Once per run, cache taxonomy from the API (source of truth):
    - `GET /api/tags/`, `/api/correspondents/`, `/api/document_types/`
 4. For each document (process the queued batch; if huge, do at least 10 then stop):
-   - `GET /api/documents/{id}/` — use `content` (OCR), `title`, existing tags
+   - `GET /api/documents/{id}/`. Use `content` (OCR), `title`, existing tags
    - Choose title, document_type, correspondent, and tags using **Taxonomy policy**
    - Apply via `PATCH /api/documents/{id}/` and/or `POST /api/documents/bulk_edit/`
    - Remove the `@tag@` tag (`bulk_edit` `remove_tag` or PATCH tags without it)
@@ -72,7 +74,7 @@ applied).
 - Prefer quality over tag count (roughly 1–4 topical tags besides system tags).
 - Do not delete documents. Do not change storage paths in v1.
 - Do not invent secrets into titles. Redact account numbers in titles if they appear.
-- If the API returns 401/403, stop and report — do not retry with guessed credentials.
+- If the API returns 401/403, stop and report. Do not retry with guessed credentials.
 
 ## Manual invoke
 

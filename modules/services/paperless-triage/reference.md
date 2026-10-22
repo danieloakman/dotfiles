@@ -30,8 +30,8 @@ curl -sf "${AUTH[@]}" "$PAPERLESS_URL/api/document_types/?page_size=100"
 ```
 
 These endpoints are the live source of truth for names/ids. Classification
-*policy* (what each field is for, reuse vs create) lives in `SKILL.md` —
-do not hardcode an inventory of tags or correspondents here.
+*policy* (what each field is for, reuse vs create) lives in `SKILL.md`.
+Do not hardcode an inventory of tags or correspondents here.
 
 Create when required (only after a close match fails; see skill policy):
 
@@ -43,7 +43,7 @@ curl -sf "${AUTH[@]}" -H "Content-Type: application/json" \
 
 ## Update one document
 
-`PATCH` replaces the **entire** `tags` list when `tags` is sent — include every
+`PATCH` replaces the **entire** `tags` list when `tags` is sent. Include every
 tag id you want to keep (minus triage, plus new ones).
 
 ```bash
