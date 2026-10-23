@@ -4,10 +4,13 @@ let
 
   # Upstream jocalsend: (1) binds UDP to the unicast LAN IP so it never receives
   # multicast discovery on 224.0.0.167; (2) HTTPS client never presents our
-  # device cert, so register/prepare-upload fail mTLS against official apps.
+  # device cert, so register/prepare-upload fail mTLS against official apps;
+  # (3) upload route caps the body at 1 GiB and buffers it in RAM, so larger
+  # files fail with HTTP 413.
   jocalsend = pkgs.jocalsend.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./patches/jocalsend-mtls-client-cert.patch
+      ./patches/jocalsend-stream-uploads.patch
     ];
   });
 in

@@ -1,0 +1,141 @@
+diff -u -N -r a/src/http_server.rs b/src/http_server.rs
+--- a/src/http_server.rs
++++ b/src/http_server.rs
+@@ -10,7 +10,6 @@
+     ServerConfig,
+     pki_types::{CertificateDer, PrivateKeyDer, pem::PemObject},
+ };
+-use tower_http::limit::RequestBodyLimitLayer;
+ 
+ use crate::{
+     JocalService,
+@@ -63,7 +62,6 @@
+             .route("/api/localsend/v2/upload", post(handle_receive_upload))
+             .route("/api/localsend/v2/cancel", post(handle_cancel))
+             .layer(DefaultBodyLimit::disable())
+-            .layer(RequestBodyLimitLayer::new(1024 * 1024 * 1024))
+             .with_state(self.clone())
+     }
+ }
+diff -u -N -r a/src/transfer.rs b/src/transfer.rs
+--- a/src/transfer.rs
++++ b/src/transfer.rs
+@@ -7,16 +7,20 @@
+ 
+ use axum::{
+     Json,
+-    body::Bytes,
++    body::{Body, Bytes},
+     extract::{ConnectInfo, Query, State},
+     http::StatusCode,
+     response::IntoResponse,
+ };
++use futures::StreamExt;
+ use julid::Julid;
+ use log::{debug, error, info, warn};
+ use reqwest::Client;
+ use serde::{Deserialize, Serialize};
+-use tokio::sync::mpsc::{UnboundedSender, unbounded_channel};
++use tokio::{
++    io::{AsyncWriteExt, BufWriter},
++    sync::mpsc::{UnboundedSender, unbounded_channel},
++};
+ 
+ use crate::{
+     JocalEvent, JocalService, Peers, ReceiveDialog, ReceiveRequest, SendingType, Sessions,
+@@ -273,7 +277,7 @@
+ pub async fn handle_receive_upload(
+     Query(params): Query<UploadParams>,
+     State(service): State<JocalService>,
+-    body: Bytes,
++    body: Body,
+ ) -> impl IntoResponse {
+     // Extract query parameters
+     let session_id = &params.session_id;
+@@ -301,7 +305,7 @@
+ 
+     // Get file metadata
+     let file_metadata = match session.files.get(file_id) {
+-        Some(metadata) => metadata,
++        Some(metadata) => metadata.clone(),
+         None => {
+             return (StatusCode::BAD_REQUEST, "File not found".to_string()).into_response();
+         }
+@@ -315,14 +319,72 @@
+         return (StatusCode::INTERNAL_SERVER_ERROR, "could not save content").into_response();
+     }
+ 
+-    // Create file path
++    // Stream to a partial file so a multi-gigabyte upload is not buffered in RAM.
++    // The previous handler took `Bytes`, which hit the 1 GiB body limit and returned 413.
+     let file_path = service.config.download_dir.join(&file_metadata.file_name);
++    let mut partial_path = file_path.clone();
++    partial_path.as_mut_os_string().push(".partial");
++
++    let mut file = match tokio::fs::File::create(&partial_path).await {
++        Ok(f) => BufWriter::new(f),
++        Err(e) => {
++            log::warn!("could not create {partial_path:?}, got {e}");
++            return (StatusCode::INTERNAL_SERVER_ERROR, "could not save content").into_response();
++        }
++    };
++
++    let mut stream = body.into_data_stream();
++    let mut num_bytes: u64 = 0;
++    let mut failed: Option<String> = None;
++
++    while let Some(frame) = stream.next().await {
++        let chunk = match frame {
++            Ok(chunk) => chunk,
++            Err(e) => {
++                failed = Some(format!("read body: {e}"));
++                break;
++            }
++        };
++        let next = num_bytes.saturating_add(chunk.len() as u64);
++        if next > file_metadata.size {
++            failed = Some(format!(
++                "sender exceeded declared size {} (got at least {next})",
++                file_metadata.size
++            ));
++            break;
++        }
++        if let Err(e) = file.write_all(&chunk).await {
++            failed = Some(format!("write: {e}"));
++            break;
++        }
++        num_bytes = next;
++    }
++
++    if failed.is_none()
++        && let Err(e) = file.flush().await
++    {
++        failed = Some(format!("flush: {e}"));
++    }
++    drop(file);
+ 
+-    let num_bytes = body.len();
++    if let Some(reason) = &failed {
++        log::warn!("could not save content to {file_path:?}: {reason}");
++        let _ = tokio::fs::remove_file(&partial_path).await;
++        return (StatusCode::INTERNAL_SERVER_ERROR, "could not save content").into_response();
++    }
++
++    if num_bytes != file_metadata.size {
++        log::warn!(
++            "short upload for {file_path:?}: got {num_bytes}, expected {}",
++            file_metadata.size
++        );
++        let _ = tokio::fs::remove_file(&partial_path).await;
++        return (StatusCode::BAD_REQUEST, "incomplete upload").into_response();
++    }
+ 
+-    // Write file
+-    if let Err(e) = tokio::fs::write(&file_path, body).await {
+-        log::warn!("could not save content to {file_path:?}, got {e}");
++    if let Err(e) = tokio::fs::rename(&partial_path, &file_path).await {
++        log::warn!("could not rename {partial_path:?} to {file_path:?}, got {e}");
++        let _ = tokio::fs::remove_file(&partial_path).await;
+         return (StatusCode::INTERNAL_SERVER_ERROR, "could not save content").into_response();
+     }
+ 
