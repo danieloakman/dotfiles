@@ -117,6 +117,7 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
+      telegram-bot.enable = true;
       # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
     };
