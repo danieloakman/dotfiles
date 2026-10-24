@@ -62,6 +62,10 @@ in
       desktop-pkgs.enable = true;
     };
     services = {
+      immich.immich-go = {
+        enable = true;
+        server = "https://immich.dinosaur-crocodile.ts.net";
+      };
       syncthing.enable = true;
       stylix = {
         enable = true;

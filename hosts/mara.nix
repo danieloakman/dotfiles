@@ -79,7 +79,7 @@
       };
       immich = {
         enable = true;
-        immich-go = true;
+        immich-go.enable = true;
         media-location = "/run/media/HDD_1/immich";
       };
       # n8n.enable = true;
