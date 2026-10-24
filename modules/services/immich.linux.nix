@@ -15,6 +15,7 @@ in
       type = lib.types.str;
       description = "The location of the media files for Immich";
     };
+    immich-go = lib.mkEnableOption "Install immich-go, the Immich bulk-upload CLI";
   };
 
   config = lib.mkIf config.my.services.immich.enable {
@@ -47,7 +48,7 @@ in
 
     environment.systemPackages = with pkgs; [
       immich-cli
-    ];
+    ] ++ lib.optional cfg.immich-go pkgs.immich-go;
 
     services.tailscale.serve.services.immich = {
       endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
