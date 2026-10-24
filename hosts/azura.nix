@@ -55,6 +55,7 @@ in
         hyprpaper.wallpaper = wallpaperPath;
         onscreen-keyboard.enable = true;
       };
+      # phosh.enable = true;
       ui-shell = "ags";
     };
     programs = {
