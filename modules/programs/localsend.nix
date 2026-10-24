@@ -38,7 +38,7 @@ in
       description = ''
         Absolute directory where jocalsend saves received files.
         Null saves into the directory the command was started from.
-        Applies to the Linux jocalsend package. The download_dir entry in
+        jocalsend is installed only on servers. The download_dir entry in
         ~/.config/jocalsend.toml is ignored.
       '';
     };
@@ -50,8 +50,9 @@ in
       message = "my.programs.localsend.download-dir must be an absolute path";
     };
     linux = {
-      environment.systemPackages = [
-        jocalsendBin # Rust based TUI for localsend
+      # Headless receive client. Desktops and laptops use programs.localsend.
+      environment.systemPackages = lib.mkIf (env.deviceType == "server") [
+        jocalsendBin
       ];
       programs.localsend = {
         enable = true;
