@@ -179,7 +179,11 @@ in
         };
 
         home.activation.mergeNpmrc = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          # security.npmrc is mode 0444 in the Nix store. cp applies those bits,
+          # so a later activation cannot overwrite ~/.npmrc and the append fails.
+          $DRY_RUN_CMD rm -f ${env.home}/.npmrc
           $DRY_RUN_CMD cp ${env.home}/.config/npm/security.npmrc ${env.home}/.npmrc
+          $DRY_RUN_CMD chmod 644 ${env.home}/.npmrc
           if [ -f ${env.home}/.npmrc.auth ]; then
             $DRY_RUN_CMD printf '\n' >> ${env.home}/.npmrc
             $DRY_RUN_CMD cat ${env.home}/.npmrc.auth >> ${env.home}/.npmrc
