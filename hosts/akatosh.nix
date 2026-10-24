@@ -80,6 +80,7 @@ in
       comma.enable = true;
       ms-apps.enable = true;
       t3code.enable = true;
+      # espanso.enable = true;
     };
     services = {
       stylix = {
@@ -110,6 +111,7 @@ in
       wakeonlan.enable = true;
       syncthing.enable = true;
       pia.enable = true;
+      # firefly.enable = true;
     };
   };
   systemd.tmpfiles.rules = [ "d /models 0755 root root -" ];
