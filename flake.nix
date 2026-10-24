@@ -259,6 +259,7 @@
     {
       packages = forAllSystems (pkgs: {
         opencode-cursor-proxy = pkgs.callPackage ./modules/programs/opencode/cursor-proxy/_package.nix { };
+        telegram-bot = pkgs.callPackage ./modules/services/telegram-bot/_package.nix { };
       } // nixpkgs.lib.optionalAttrs (pkgs.stdenv.hostPlatform.system == linuxSystem) {
         bun-scripts = pkgs.callPackage ./modules/programs/bun-scripts.linux/_package.nix {
           inherit bun2nix;
@@ -271,9 +272,11 @@
         ${linuxSystem} = {
           opencode-cursor-proxy = self.packages.${linuxSystem}.opencode-cursor-proxy;
           bun-scripts = self.packages.${linuxSystem}.bun-scripts;
+          telegram-bot = self.packages.${linuxSystem}.telegram-bot;
         };
         ${darwinSystem} = {
           opencode-cursor-proxy = self.packages.${darwinSystem}.opencode-cursor-proxy;
+          telegram-bot = self.packages.${darwinSystem}.telegram-bot;
         };
       };
 

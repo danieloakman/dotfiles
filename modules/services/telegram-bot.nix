@@ -2,8 +2,11 @@
 #
 # The bot is not a member of the chat. A mention (@bot …) arrives as a
 # guest_message; answerGuestQuery posts the confirmation into that DM.
-# Confirm runs gws. Create the bot in @BotFather, enable Guest Mode, and
-# put its token in sops as telegram_bot_token before turning this on.
+# A private chat with the bot is a normal message. Confirm runs gws.
+# Slash commands parse locally. Anything else goes through the interpreter,
+# which is cursor-agent today and replaceable behind the same request type.
+# Create the bot in @BotFather, enable Guest Mode, and put its token in sops
+# as telegram_bot_token before turning this on.
 { config, lib, pkgs, env, gws, system, ... }:
 let
   cfg = config.my.services.telegram-bot;
@@ -14,7 +17,8 @@ in
       Long-poll a Telegram bot. Private chats and guest mentions get a
       confirmation, and a Confirm tap appends an expense, inserts a calendar
       event, or adds a task through gws.
-      Requires the sops secret telegram_bot_token and Guest Mode in BotFather.
+      Requires the sops secret telegram_bot_token, Guest Mode in BotFather,
+      and my.programs.cursor.agent.enable.
     '';
 
     spreadsheet-id = lib.mkOption {
@@ -74,21 +78,20 @@ in
       '';
     };
 
-    agent.enable = lib.mkEnableOption ''
-      Ask cursor-agent to interpret a mention that is not a direct command,
-      then still wait for Confirm before writing.
-    '';
-
-    agent.workspace = lib.mkOption {
+    interpreter.workspace = lib.mkOption {
       type = lib.types.str;
       default = "${env.home}/repos/personal/dotfiles";
-      description = "Workspace passed to cursor-agent.";
+      description = ''
+        Workspace passed to the interpreter. The current interpreter is
+        cursor-agent; a later provider can replace that binary.
+      '';
     };
   };
 
   config = lib.mkIf cfg.enable (env.selectPlatform {
     linux =
       let
+        telegramBot = pkgs.callPackage ./telegram-bot/_package.nix { };
         gwsExe = lib.getExe gws.packages.${system}.default;
         cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
         settings = pkgs.writeText "telegram-bot-settings.json" (builtins.toJSON {
@@ -98,8 +101,7 @@ in
           calendarId = cfg.calendar-id;
           allowedChatIds = cfg.allowed-chat-ids;
           allowedUserIds = cfg.allowed-user-ids;
-          agent = cfg.agent.enable;
-          workspace = cfg.agent.workspace;
+          workspace = cfg.interpreter.workspace;
         });
         tokenPath = config.sops.secrets.telegram_bot_token.path;
       in
@@ -110,8 +112,8 @@ in
             message = "my.services.telegram-bot.enable requires my.programs.gws.enable.";
           }
           {
-            assertion = !cfg.agent.enable || config.my.programs.cursor.agent.enable;
-            message = "my.services.telegram-bot.agent.enable requires my.programs.cursor.agent.enable.";
+            assertion = config.my.programs.cursor.agent.enable;
+            message = "my.services.telegram-bot.enable requires my.programs.cursor.agent.enable.";
           }
         ];
 
@@ -129,7 +131,7 @@ in
             After = [ "network-online.target" ];
           };
           Service = {
-            ExecStart = "${pkgs.python3}/bin/python3 ${./telegram-bot.py}";
+            ExecStart = lib.getExe telegramBot;
             Restart = "on-failure";
             RestartSec = 5;
             StateDirectory = "telegram-bot";
@@ -137,8 +139,9 @@ in
               "TELEGRAM_BOT_TOKEN_FILE=${tokenPath}"
               "TELEGRAM_BOT_SETTINGS=${settings}"
               "GWS=${gwsExe}"
+              "CURSOR_AGENT=${cursorAgentExe}"
               "GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=${env.home}/Sync/secrets/google/gws_credentials.json"
-            ] ++ lib.optional cfg.agent.enable "CURSOR_AGENT=${cursorAgentExe}";
+            ];
           };
           Install.WantedBy = [ "default.target" ];
         };
