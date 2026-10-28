@@ -5,7 +5,8 @@ import { exit, helpFlag } from './utils/cli';
 import {
 	EXPENSES_APPEND_RANGE,
 	EXPENSES_LIST_RANGE,
-	EXPENSES_SPREADSHEET_ID
+	EXPENSES_SPREADSHEET_ID,
+	canonicalPayer
 } from './utils/expenses';
 import { gwsJson } from './utils/gws';
 
@@ -149,11 +150,13 @@ async function saveRows(rows: string[][]) {
 	);
 }
 
-async function add(input: string[]) {
+async function add(input: string[], paidBy: string) {
 	const [amount, description] = input;
 	if (!amount || !description || input.length !== 2) {
-		exit('Usage: expenses-spreadsheet add <amount> <description>');
+		exit('Usage: expenses-spreadsheet add [--paid-by Dan|Trotty] <amount> <description>');
 	}
+	const payer = canonicalPayer(paidBy);
+	if (!payer) exit('Paid by must be Dan or Trotty');
 
 	const date = todayDate();
 	await gwsJson(
@@ -165,13 +168,13 @@ async function add(input: string[]) {
 			'--range',
 			EXPENSES_APPEND_RANGE,
 			'--json-values',
-			JSON.stringify([['Dan', date, amount, description]]),
+			JSON.stringify([[payer, date, amount, description]]),
 			'--format',
 			'json'
 		],
 		z.unknown()
 	);
-	console.log(`Added: Dan / ${date} / ${amount} — ${description}`);
+	console.log(`Added: ${payer} / ${date} / ${amount} — ${description}`);
 }
 
 async function list() {
@@ -211,15 +214,17 @@ Usage
   $ expenses-spreadsheet <command> ...
 
 Commands
-  add <amount> <description>    Append a row (Paid by Dan, Date = today)
+  add <amount> <description>    Append a row (Date = today). Paid by Dan unless --paid-by is set
   list                          Print the Expenses tab as CSV
   edit                          Edit Expenses in $EDITOR, then save back
 
 Options
   -h, --help                    Show help
+  -p, --paid-by <name>          Dan or Trotty (Sheridan). Default: Dan
 
 Examples
   $ expenses-spreadsheet add 50.3 Kmart
+  $ expenses-spreadsheet add --paid-by Trotty 0 "TODO Kmart, $24 Trotty"
   $ expenses-spreadsheet add "=30*2" "Shein - trotty's stuff"
   $ expenses-spreadsheet list
   $ expenses-spreadsheet edit
@@ -228,7 +233,12 @@ Examples
 			importMeta: import.meta,
 			commands: ['add', 'list', 'edit'],
 			flags: {
-				...helpFlag
+				...helpFlag,
+				paidBy: {
+					type: 'string',
+					shortFlag: 'p',
+					default: 'Dan'
+				}
 			}
 		}
 	);
@@ -236,7 +246,7 @@ Examples
 	if (!cli.command || cli.flags.help) cli.showHelp(cli.command ? 0 : 1);
 
 	try {
-		if (cli.command === 'add') await add(cli.input);
+		if (cli.command === 'add') await add(cli.input, cli.flags.paidBy);
 		else if (cli.command === 'list') await list();
 		else if (cli.command === 'edit') await edit();
 	} catch (err) {

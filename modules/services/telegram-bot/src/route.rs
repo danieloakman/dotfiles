@@ -18,7 +18,8 @@ pub enum Prepared {
 
 pub fn help_text() -> &'static str {
     "Send one of:\n\
-     /expense amex 15 coffee\n\
+     /expense 15 coffee\n\
+     /expense Kmart\n\
      /task buy milk\n\
      /cal 2026-10-25 15:00 dentist\n\
      /cal 2026-10-25 15:00 90 dentist\n\
@@ -65,11 +66,7 @@ pub fn apply(interpreted: Interpreted, request: &InterpretRequest) -> Decision {
     }
 }
 
-fn plan_text(
-    text: &str,
-    timezone: &str,
-    shortcut: &dyn Fn(&str) -> Option<Action>,
-) -> Prepared {
+fn plan_text(text: &str, timezone: &str, shortcut: &dyn Fn(&str) -> Option<Action>) -> Prepared {
     let text = text.trim();
     if text.is_empty() {
         return Prepared::Help;
@@ -97,6 +94,7 @@ fn plan_text(
         timezone: timezone.to_string(),
         command: None,
         parse_error: None,
+        sender: String::new(),
     })
 }
 
@@ -108,6 +106,7 @@ fn finish_parse(kind: CommandKind, args: &str, text: &str, timezone: &str) -> Pr
             timezone: timezone.to_string(),
             command: Some(kind),
             parse_error: Some(error),
+            sender: String::new(),
         }),
     }
 }
@@ -193,7 +192,7 @@ mod tests {
             title: "nope".into(),
         }));
         let decision = route(
-            "@secretary /expense amex $15",
+            "@secretary /expense $15 coffee",
             None,
             "Australia/Sydney",
             &no_shortcut,
@@ -203,9 +202,10 @@ mod tests {
         assert_eq!(
             decision,
             Decision::Action(Action::Expense {
-                card: "amex".into(),
                 amount: "15".into(),
-                note: String::new(),
+                description: "coffee".into(),
+                payer: String::new(),
+                share: None,
             })
         );
         assert!(interpreter.calls.borrow().is_empty());
@@ -214,12 +214,13 @@ mod tests {
     #[test]
     fn invalid_slash_fixes_that_command() {
         let interpreter = fake(Interpreted::Action(Action::Expense {
-            card: "amex".into(),
             amount: "15".into(),
-            note: "milk".into(),
+            description: "milk".into(),
+            payer: String::new(),
+            share: None,
         }));
         let decision = route(
-            "/expense buy milk",
+            "/expense 10 coffee 2",
             None,
             "Australia/Sydney",
             &no_shortcut,
@@ -239,7 +240,7 @@ mod tests {
             title: "buy milk".into(),
         }));
         let decision = route(
-            "/expense buy milk",
+            "/expense",
             None,
             "Australia/Sydney",
             &no_shortcut,
@@ -318,11 +319,25 @@ mod tests {
     fn help_and_start_do_not_call_the_interpreter() {
         let interpreter = fake(Interpreted::Clarify("nope".into()));
         assert_eq!(
-            route("/help", None, "Australia/Sydney", &no_shortcut, &interpreter).unwrap(),
+            route(
+                "/help",
+                None,
+                "Australia/Sydney",
+                &no_shortcut,
+                &interpreter
+            )
+            .unwrap(),
             Decision::Help
         );
         assert_eq!(
-            route("/start", None, "Australia/Sydney", &no_shortcut, &interpreter).unwrap(),
+            route(
+                "/start",
+                None,
+                "Australia/Sydney",
+                &no_shortcut,
+                &interpreter
+            )
+            .unwrap(),
             Decision::Help
         );
         assert_eq!(
@@ -345,7 +360,7 @@ mod tests {
     fn command_suffix_is_still_a_local_command() {
         let interpreter = fake(Interpreted::Clarify("nope".into()));
         let decision = route(
-            "/expense@BrownFamBot amex 15",
+            "/expense@BrownFamBot 15 coffee",
             None,
             "Australia/Sydney",
             &no_shortcut,
@@ -355,9 +370,10 @@ mod tests {
         assert_eq!(
             decision,
             Decision::Action(Action::Expense {
-                card: "amex".into(),
                 amount: "15".into(),
-                note: String::new(),
+                description: "coffee".into(),
+                payer: String::new(),
+                share: None,
             })
         );
         assert!(interpreter.calls.borrow().is_empty());

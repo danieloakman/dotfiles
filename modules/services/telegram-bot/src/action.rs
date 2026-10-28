@@ -6,9 +6,12 @@ use crate::commands::CommandKind;
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Action {
     Expense {
-        card: String,
         amount: String,
-        note: String,
+        description: String,
+        payer: String,
+        /// Sender's share from `($24- mine)`. Folded into the description once the payer is known.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        share: Option<String>,
     },
     Task {
         title: String,
@@ -30,24 +33,17 @@ impl Action {
     }
 }
 
-pub fn summary(action: &Action, payer: &str, today: &str) -> String {
+pub fn summary(action: &Action, today: &str) -> String {
     match action {
         Action::Expense {
-            card,
             amount,
-            note,
+            description,
+            payer,
+            ..
         } => {
-            let mut lines = vec![
-                "Log expense?".to_string(),
-                format!("Date: {today}"),
-                format!("Card: {card}"),
-                format!("Amount: {amount}"),
-                format!("Payer: {payer}"),
-            ];
-            if !note.is_empty() {
-                lines.push(format!("Note: {note}"));
-            }
-            lines.join("\n")
+            format!(
+                "Log expense?\nDate: {today}\nAmount: {amount}\nPaid by: {payer}\nDescription: {description}"
+            )
         }
         Action::Task { title } => format!("Add task?\n{title}"),
         Action::Calendar {
@@ -56,4 +52,43 @@ pub fn summary(action: &Action, payer: &str, today: &str) -> String {
             end,
         } => format!("Add event?\n{summary}\n{start}\n{end}"),
     }
+}
+
+/// Fill in who paid. A share note becomes `, $24 Trotty` on the description.
+pub fn bind_payer(action: Action, payer: &str) -> Result<Action, String> {
+    match action {
+        Action::Expense {
+            amount,
+            description,
+            share,
+            ..
+        } => {
+            if payer.trim().is_empty() {
+                return Err("I don't know whether this is Dan or Trotty.".into());
+            }
+            let description = append_share(description, share.as_deref(), payer);
+            if description.trim().is_empty() {
+                return Err("That expense needs a description.".into());
+            }
+            Ok(Action::Expense {
+                amount,
+                description,
+                payer: payer.to_string(),
+                share: None,
+            })
+        }
+        other => Ok(other),
+    }
+}
+
+fn append_share(description: String, share: Option<&str>, payer: &str) -> String {
+    let mut description = description.trim().to_string();
+    let Some(share) = share else {
+        return description;
+    };
+    if !description.is_empty() {
+        description.push_str(", ");
+    }
+    description.push_str(&format!("${share} {payer}"));
+    description
 }

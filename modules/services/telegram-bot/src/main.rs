@@ -41,6 +41,7 @@ fn run() -> Result<(), String> {
         telegram::Telegram::new(token),
         state,
         env_var("GWS")?.into(),
+        env_var("EXPENSES_SPREADSHEET")?.into(),
         interpreter,
     );
     service.run()
