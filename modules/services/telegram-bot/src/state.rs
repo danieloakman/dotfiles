@@ -50,13 +50,16 @@ impl State {
         };
         let offset_path = dir.join("offset");
         let offset = if offset_path.exists() {
-            let text = fs::read_to_string(&offset_path)
-                .map_err(|err| format!("reading offset: {err}"))?;
+            let text =
+                fs::read_to_string(&offset_path).map_err(|err| format!("reading offset: {err}"))?;
             let text = text.trim();
             if text.is_empty() {
                 None
             } else {
-                Some(text.parse::<i64>().map_err(|err| format!("parsing offset: {err}"))?)
+                Some(
+                    text.parse::<i64>()
+                        .map_err(|err| format!("parsing offset: {err}"))?,
+                )
             }
         } else {
             None
@@ -127,7 +130,8 @@ impl State {
 
 fn random_id() -> Result<String, String> {
     let mut bytes = [0u8; 4];
-    let mut file = fs::File::open("/dev/urandom").map_err(|err| format!("opening urandom: {err}"))?;
+    let mut file =
+        fs::File::open("/dev/urandom").map_err(|err| format!("opening urandom: {err}"))?;
     file.read_exact(&mut bytes)
         .map_err(|err| format!("reading urandom: {err}"))?;
     Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())

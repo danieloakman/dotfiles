@@ -24,7 +24,9 @@ pub struct Telegram {
 
 impl Telegram {
     pub fn new(token: &str) -> Self {
-        Self { bot: Bot::new(token) }
+        Self {
+            bot: Bot::new(token),
+        }
     }
 
     pub fn updates(&self, offset: Option<i64>) -> Result<Vec<Update>, String> {

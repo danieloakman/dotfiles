@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use chrono::Utc;
 use chrono_tz::Tz;
-use frankenstein::types::{CallbackQuery, ChatType, MaybeInaccessibleMessage, Message};
+use frankenstein::types::{CallbackQuery, ChatType, MaybeInaccessibleMessage, Message, User};
 use frankenstein::updates::{Update, UpdateContent};
 
 use crate::action::{self, Action};
@@ -20,6 +20,7 @@ pub struct Service {
     telegram: Telegram,
     state: State,
     gws: PathBuf,
+    expenses: PathBuf,
     interpreter: CursorCliInterpreter,
 }
 
@@ -30,6 +31,7 @@ impl Service {
         telegram: Telegram,
         state: State,
         gws: PathBuf,
+        expenses: PathBuf,
         interpreter: CursorCliInterpreter,
     ) -> Self {
         Self {
@@ -38,6 +40,7 @@ impl Service {
             telegram,
             state,
             gws,
+            expenses,
             interpreter,
         }
     }
@@ -80,10 +83,7 @@ impl Service {
         };
         let chat_id = message.chat.id;
         let user_id = message.from.as_ref().map(|user| user.id);
-        log::info!(
-            "guest chat_id={chat_id} user_id={}",
-            user_label(user_id)
-        );
+        log::info!("guest chat_id={chat_id} user_id={}", user_label(user_id));
         let origin = Origin::Guest {
             query_id: query_id.clone(),
         };
@@ -107,10 +107,7 @@ impl Service {
         }
         let chat_id = message.chat.id;
         let user_id = message.from.as_ref().map(|user| user.id);
-        log::info!(
-            "private chat_id={chat_id} user_id={}",
-            user_label(user_id)
-        );
+        log::info!("private chat_id={chat_id} user_id={}", user_label(user_id));
         if !self.allowed(chat_id, user_id) {
             self.telegram.send(
                 chat_id,
@@ -129,6 +126,7 @@ impl Service {
         user_id: Option<u64>,
         message: &Message,
     ) -> Result<(), String> {
+        let user = message.from.as_deref();
         let own = message
             .text
             .as_deref()
@@ -138,16 +136,24 @@ impl Service {
             .reply_to_message
             .as_ref()
             .and_then(|reply| reply.text.as_deref().or(reply.caption.as_deref()));
-        let prepared = route::plan(own, reply, &self.settings.timezone, &shortcuts::match_shortcut);
+        let prepared = route::plan(
+            own,
+            reply,
+            &self.settings.timezone,
+            &shortcuts::match_shortcut,
+        );
         match prepared {
             Prepared::Help => {
                 self.reply(&origin, Outgoing::New, route::help_text(), None)?;
                 Ok(())
             }
             Prepared::Action(action) => {
-                self.propose(origin, chat_id, user_id, Outgoing::New, action)
+                self.propose_action(origin, chat_id, user_id, user, Outgoing::New, action)
             }
-            Prepared::Model(request) => {
+            Prepared::Model(mut request) => {
+                if let Some(name) = payer_name(&self.settings, user) {
+                    request.sender = name;
+                }
                 let target = self.reply(&origin, Outgoing::New, "Working on it…", None)?;
                 match self.interpreter.interpret(&request) {
                     Ok(interpreted) => match route::apply(interpreted, &request) {
@@ -158,7 +164,14 @@ impl Service {
                             self.reply(&origin, Outgoing::Edit(target), &text, None)?;
                         }
                         Decision::Action(action) => {
-                            self.propose(origin, chat_id, user_id, Outgoing::Edit(target), action)?;
+                            self.propose_action(
+                                origin,
+                                chat_id,
+                                user_id,
+                                user,
+                                Outgoing::Edit(target),
+                                action,
+                            )?;
                         }
                     },
                     Err(err) => {
@@ -176,6 +189,25 @@ impl Service {
         }
     }
 
+    fn propose_action(
+        &mut self,
+        origin: Origin,
+        chat_id: i64,
+        user_id: Option<u64>,
+        user: Option<&User>,
+        outgoing: Outgoing,
+        action: Action,
+    ) -> Result<(), String> {
+        let action = match prepare_action(&self.settings, action, user) {
+            Ok(action) => action,
+            Err(text) => {
+                self.reply(&origin, outgoing, &text, None)?;
+                return Ok(());
+            }
+        };
+        self.propose(origin, chat_id, user_id, outgoing, action)
+    }
+
     fn propose(
         &mut self,
         origin: Origin,
@@ -185,12 +217,20 @@ impl Service {
         action: Action,
     ) -> Result<(), String> {
         let today = Utc::now().with_timezone(&self.tz).format("%Y-%m-%d");
-        let text = action::summary(&action, &self.settings.payer, &today.to_string());
+        let text = action::summary(&action, &today.to_string());
         let action_id = self.state.new_id()?;
-        let target = self.reply(&origin, outgoing, &text, Some(telegram::buttons(&action_id)))?;
+        let target = self.reply(
+            &origin,
+            outgoing,
+            &text,
+            Some(telegram::buttons(&action_id)),
+        )?;
         let (inline_message_id, reply_chat_id, reply_message_id) = match &target {
             EditTarget::Inline(id) => (Some(id.clone()), None, None),
-            EditTarget::Chat { chat_id, message_id } => (None, Some(*chat_id), Some(*message_id)),
+            EditTarget::Chat {
+                chat_id,
+                message_id,
+            } => (None, Some(*chat_id), Some(*message_id)),
         };
         self.state.insert(
             action_id,
@@ -236,11 +276,12 @@ impl Service {
                 .answer_callback(&callback.id, Some("That confirmation expired."))?;
             return Ok(());
         };
-        if record.user_id.is_some_and(|owner| owner != callback.from.id) {
-            self.telegram.answer_callback(
-                &callback.id,
-                Some("Only the person who asked can confirm."),
-            )?;
+        if record
+            .user_id
+            .is_some_and(|owner| owner != callback.from.id)
+        {
+            self.telegram
+                .answer_callback(&callback.id, Some("Only the person who asked can confirm."))?;
             return Ok(());
         }
         let target = callback_target(&record, &callback);
@@ -263,7 +304,7 @@ impl Service {
         self.state.insert(action_id.clone(), record.clone())?;
         self.telegram
             .answer_callback(&callback.id, Some("Saving…"))?;
-        match gws::perform(&self.gws, &self.settings, self.tz, &record.action) {
+        match gws::perform(&self.gws, &self.expenses, &self.settings, &record.action) {
             Ok(result) => {
                 self.state.remove(&action_id)?;
                 if let Some(target) = target {
@@ -272,7 +313,7 @@ impl Service {
                 }
             }
             Err(err) => {
-                log::error!("gws failed: {err}");
+                log::error!("save failed: {err}");
                 record.status = Status::Pending;
                 self.state.insert(action_id.clone(), record)?;
                 if let Some(target) = target {
@@ -346,6 +387,59 @@ fn parse_callback(data: &str) -> Option<(bool, String)> {
         "c" => Some((true, id.to_string())),
         "x" => Some((false, id.to_string())),
         _ => None,
+    }
+}
+
+fn prepare_action(
+    settings: &Settings,
+    action: Action,
+    user: Option<&User>,
+) -> Result<Action, String> {
+    if !matches!(action, Action::Expense { .. }) {
+        return Ok(action);
+    }
+    let payer = payer_name(settings, user).ok_or_else(|| unknown_payer(user))?;
+    action::bind_payer(action, &payer)
+}
+
+fn payer_name(settings: &Settings, user: Option<&User>) -> Option<String> {
+    let user = user?;
+    let id = i64::try_from(user.id).ok();
+    for person in &settings.payers {
+        if person.telegram_id.is_some() && person.telegram_id == id {
+            return Some(person.name.clone());
+        }
+    }
+    let labels = [
+        Some(user.first_name.as_str()),
+        user.last_name.as_deref(),
+        user.username.as_deref(),
+    ];
+    for label in labels.into_iter().flatten() {
+        for person in &settings.payers {
+            if person.name.eq_ignore_ascii_case(label)
+                || person
+                    .aliases
+                    .iter()
+                    .any(|alias| alias.eq_ignore_ascii_case(label))
+            {
+                return Some(person.name.clone());
+            }
+        }
+    }
+    None
+}
+
+fn unknown_payer(user: Option<&User>) -> String {
+    match user {
+        Some(user) => {
+            let shown = user.username.as_deref().unwrap_or(user.first_name.as_str());
+            format!(
+                "I don't know whether {shown} ({}) is Dan or Trotty.",
+                user.id
+            )
+        }
+        None => "I don't know whether this is Dan or Trotty.".into(),
     }
 }
 

@@ -25,8 +25,7 @@ impl CommandKind {
 }
 
 pub fn timezone(name: &str) -> Result<Tz, String> {
-    name.parse()
-        .map_err(|_| format!("unknown timezone {name}"))
+    name.parse().map_err(|_| format!("unknown timezone {name}"))
 }
 
 pub fn parse_command(kind: CommandKind, args: &str, timezone_name: &str) -> Result<Action, String> {
@@ -38,20 +37,95 @@ pub fn parse_command(kind: CommandKind, args: &str, timezone_name: &str) -> Resu
 }
 
 fn parse_expense(args: &str) -> Result<Action, String> {
-    static EXPENSE: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(
-            r"^(?P<card>[A-Za-z][\w-]*)\s+\$?(?P<amount>\d+(?:\.\d{1,2})?)\b\s*(?P<note>.*)$",
-        )
-        .expect("expense regex")
-    });
-    let Some(caps) = EXPENSE.captures(args.trim()) else {
-        return Err("expected `/expense <card> <amount> [note]`".into());
+    let args = args.trim();
+    if args.is_empty() {
+        return Err("expected an amount and a description".into());
+    }
+    let (share, rest) = extract_share(args)?;
+    let (amount, rest) = extract_amount(&rest)?;
+    let description = clean_description(&rest);
+    if description.is_empty() && share.is_none() {
+        return Err("expected a description".into());
+    }
+    let partial = amount.is_none();
+    let description = if partial && description.is_empty() {
+        "TODO".to_string()
+    } else if partial {
+        format!("TODO {description}")
+    } else {
+        description
     };
     Ok(Action::Expense {
-        card: caps["card"].to_string(),
-        amount: caps["amount"].to_string(),
-        note: caps["note"].trim().to_string(),
+        amount: amount.unwrap_or_else(|| "0".to_string()),
+        description,
+        payer: String::new(),
+        share,
     })
+}
+
+/// `($24- mine)` is the sender's share, not the expense total.
+fn extract_share(text: &str) -> Result<(Option<String>, String), String> {
+    static SHARE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"(?i)\(\s*\$?(?P<share>\d+(?:\.\d+)?)\s*-\s*mine\s*\)").expect("share regex")
+    });
+    let found: Vec<_> = SHARE.find_iter(text).collect();
+    if found.len() > 1 {
+        return Err("expected one share note".into());
+    }
+    let Some(found) = found.first() else {
+        return Ok((None, text.to_string()));
+    };
+    let share = SHARE.captures(found.as_str()).expect("share capture")["share"].to_string();
+    let mut rest = String::new();
+    rest.push_str(&text[..found.start()]);
+    rest.push_str(&text[found.end()..]);
+    Ok((Some(share), rest))
+}
+
+fn extract_amount(text: &str) -> Result<(Option<String>, String), String> {
+    static AMOUNT: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"\$?(?P<amount>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)")
+            .expect("amount regex")
+    });
+    let found: Vec<_> = AMOUNT
+        .captures_iter(text)
+        .filter(|caps| {
+            let matched = caps.get(0).expect("amount match");
+            amount_boundary(text, matched.start(), matched.end())
+        })
+        .collect();
+    if found.len() > 1 {
+        return Err("expected one amount".into());
+    }
+    let Some(caps) = found.first() else {
+        return Ok((None, text.to_string()));
+    };
+    let matched = caps.get(0).expect("amount match");
+    let amount = caps["amount"].replace(',', "");
+    let mut rest = String::new();
+    rest.push_str(&text[..matched.start()]);
+    rest.push_str(&text[matched.end()..]);
+    Ok((Some(amount), rest))
+}
+
+fn amount_boundary(text: &str, start: usize, end: usize) -> bool {
+    let prev_ok = text[..start]
+        .chars()
+        .next_back()
+        .is_none_or(|ch| !ch.is_alphanumeric());
+    let next_ok = text[end..]
+        .chars()
+        .next()
+        .is_none_or(|ch| !ch.is_alphanumeric());
+    prev_ok && next_ok
+}
+
+/// The sheet has no card column. Amex is how a payment is mentioned, not a description.
+fn clean_description(text: &str) -> String {
+    text.split_whitespace()
+        .filter(|word| !word.eq_ignore_ascii_case("amex"))
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn parse_task(args: &str) -> Result<Action, String> {
@@ -105,20 +179,57 @@ mod tests {
     use super::*;
 
     #[test]
-    fn expense_amount_and_note() {
+    fn expense_amount_is_any_number_and_the_rest_is_the_description() {
         assert_eq!(
-            parse_command(CommandKind::Expense, "amex $15", "Australia/Sydney").unwrap(),
+            parse_command(CommandKind::Expense, "$15 coffee", "Australia/Sydney").unwrap(),
             Action::Expense {
-                card: "amex".into(),
                 amount: "15".into(),
-                note: String::new(),
+                description: "coffee".into(),
+                payer: String::new(),
+                share: None,
             }
         );
-        match parse_command(CommandKind::Expense, "Visa 20.50 lunch", "Australia/Sydney").unwrap()
-        {
-            Action::Expense { note, .. } => assert_eq!(note, "lunch"),
-            other => panic!("expected expense, got {other:?}"),
-        }
+        assert_eq!(
+            parse_command(CommandKind::Expense, "lunch 20.50", "Australia/Sydney").unwrap(),
+            Action::Expense {
+                amount: "20.50".into(),
+                description: "lunch".into(),
+                payer: String::new(),
+                share: None,
+            }
+        );
+    }
+
+    #[test]
+    fn expense_without_a_total_is_a_todo() {
+        assert_eq!(
+            parse_command(CommandKind::Expense, "Kmart Amex", "Australia/Sydney").unwrap(),
+            Action::Expense {
+                amount: "0".into(),
+                description: "TODO Kmart".into(),
+                payer: String::new(),
+                share: None,
+            }
+        );
+        assert_eq!(
+            parse_command(
+                CommandKind::Expense,
+                "Kmart Amex ($24- mine)",
+                "Australia/Sydney",
+            )
+            .unwrap(),
+            Action::Expense {
+                amount: "0".into(),
+                description: "TODO Kmart".into(),
+                payer: String::new(),
+                share: Some("24".into()),
+            }
+        );
+    }
+
+    #[test]
+    fn expense_with_two_amounts_is_left_for_the_assistant() {
+        assert!(parse_command(CommandKind::Expense, "10 coffee 2", "Australia/Sydney").is_err());
     }
 
     #[test]
@@ -141,7 +252,11 @@ mod tests {
         )
         .unwrap()
         {
-            Action::Calendar { summary, start, end } => {
+            Action::Calendar {
+                summary,
+                start,
+                end,
+            } => {
                 assert_eq!(summary, "dentist");
                 assert_eq!(start, "2026-10-25T15:00:00+11:00");
                 assert_eq!(end, "2026-10-25T16:00:00+11:00");

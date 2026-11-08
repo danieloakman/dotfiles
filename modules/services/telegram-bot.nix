@@ -2,12 +2,12 @@
 #
 # The bot is not a member of the chat. A mention (@bot …) arrives as a
 # guest_message; answerGuestQuery posts the confirmation into that DM.
-# A private chat with the bot is a normal message. Confirm runs gws.
+# A private chat with the bot is a normal message. Confirm runs expenses-spreadsheet or gws.
 # Slash commands parse locally. Anything else goes through the interpreter,
 # which is cursor-agent today and replaceable behind the same request type.
 # Create the bot in @BotFather, enable Guest Mode, and put its token in sops
 # as telegram_bot_token before turning this on.
-{ config, lib, pkgs, env, gws, system, ... }:
+{ config, lib, pkgs, env, gws, system, ... }@args:
 let
   cfg = config.my.services.telegram-bot;
 in
@@ -15,31 +15,45 @@ in
   options.my.services.telegram-bot = {
     enable = lib.mkEnableOption ''
       Long-poll a Telegram bot. Private chats and guest mentions get a
-      confirmation, and a Confirm tap appends an expense, inserts a calendar
-      event, or adds a task through gws.
+      confirmation, and a Confirm tap appends an expense through
+      expenses-spreadsheet, or inserts a calendar event or task through gws.
       Requires the sops secret telegram_bot_token, Guest Mode in BotFather,
       and my.programs.cursor.agent.enable.
     '';
 
-    spreadsheet-id = lib.mkOption {
-      type = lib.types.str;
-      default = "";
+    payers = lib.mkOption {
+      type = lib.types.listOf (lib.types.submodule {
+        options = {
+          name = lib.mkOption {
+            type = lib.types.str;
+            description = "Name written in the Paid by column. Dan or Trotty.";
+          };
+          telegram-id = lib.mkOption {
+            type = lib.types.nullOr lib.types.int;
+            default = null;
+            description = "Telegram user id. Matched before aliases.";
+          };
+          aliases = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "Telegram first name, last name, or username that maps to this payer.";
+          };
+        };
+      });
+      default = [
+        {
+          name = "Dan";
+          aliases = [ "Dan" ];
+        }
+        {
+          name = "Trotty";
+          aliases = [ "Trotty" "Sheridan" ];
+        }
+      ];
       description = ''
-        Expenses spreadsheet id. Each confirmed expense appends
-        date, card, amount, payer, note. Empty disables expense writes.
+        Who a Telegram user is. Confirmed expenses are appended with
+        `expenses-spreadsheet add --paid-by <name>`.
       '';
-    };
-
-    sheet-range = lib.mkOption {
-      type = lib.types.str;
-      default = "Expenses!A1";
-      description = "A1 range passed to `gws sheets +append`. The tab must already exist.";
-    };
-
-    payer = lib.mkOption {
-      type = lib.types.str;
-      default = "Dan";
-      description = "Payer written into the expense row.";
     };
 
     calendar-id = lib.mkOption {
@@ -92,16 +106,21 @@ in
     linux =
       let
         telegramBot = pkgs.callPackage ./telegram-bot/_package.nix { };
+        expensesSpreadsheet = lib.getExe' (pkgs.callPackage ../programs/bun-scripts.linux/_package.nix {
+          bun2nix = args.bun2nix;
+        }) "expenses-spreadsheet";
         gwsExe = lib.getExe gws.packages.${system}.default;
         cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
         settings = pkgs.writeText "telegram-bot-settings.json" (builtins.toJSON {
-          inherit (cfg) payer tasklist timezone;
-          spreadsheetId = cfg.spreadsheet-id;
-          sheetRange = cfg.sheet-range;
+          inherit (cfg) tasklist timezone;
           calendarId = cfg.calendar-id;
           allowedChatIds = cfg.allowed-chat-ids;
           allowedUserIds = cfg.allowed-user-ids;
           workspace = cfg.interpreter.workspace;
+          payers = map (payer: {
+            inherit (payer) name aliases;
+            telegramId = payer.telegram-id;
+          }) cfg.payers;
         });
         tokenPath = config.sops.secrets.telegram_bot_token.path;
       in
@@ -139,6 +158,8 @@ in
               "TELEGRAM_BOT_TOKEN_FILE=${tokenPath}"
               "TELEGRAM_BOT_SETTINGS=${settings}"
               "GWS=${gwsExe}"
+              "GWS_BIN=${gwsExe}"
+              "EXPENSES_SPREADSHEET=${expensesSpreadsheet}"
               "CURSOR_AGENT=${cursorAgentExe}"
               "GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE=${env.home}/Sync/secrets/google/gws_credentials.json"
             ];
