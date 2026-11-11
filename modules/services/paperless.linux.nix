@@ -197,6 +197,11 @@ in
         configureTika = true;
       };
 
+      # Default Gotenberg :3000 collides with Docker Grafana on mara
+      # (Paperless then hits Grafana's /login 302). Stay on loopback;
+      # avoid the usual 3000/3001 dev-server range.
+      services.gotenberg.port = 18765;
+
       users.users.${user}.extraGroups = [ "storage" ];
 
       services.tailscale.serve.services.paperless = {
