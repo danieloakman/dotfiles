@@ -194,6 +194,7 @@ in
         enable = true;
         address = hostname;
         inherit (cfg) domain;
+        configureTika = true;
       };
 
       users.users.${user}.extraGroups = [ "storage" ];
