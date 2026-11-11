@@ -243,6 +243,9 @@ in
             TempPath = incompleteDir;
             TempPathEnabled = true;
             Port = torrenting-port;
+            GlobalMaxRatioEnabled = true;
+            GlobalMaxRatio = 0;
+            MaxRatioAction = 0; # pause
           };
           Preferences = {
             WebUI = {
@@ -392,6 +395,9 @@ in
                   TempPath = incompleteDir;
                   TempPathEnabled = true;
                   Port = torrenting-port;
+                  GlobalMaxRatioEnabled = true;
+                  GlobalMaxRatio = 0;
+                  MaxRatioAction = 0; # pause
                 };
                 Preferences = {
                   WebUI = {
