@@ -150,6 +150,63 @@
       CustomUserPreferences = {
         "com.apple.symbolichotkeys" = {
           AppleSymbolicHotKeys = {
+            # Screenshots: disable Save screen (⇧⌘3), Copy screen (⌃⇧⌘3),
+            # Save selection (⇧⌘4); keep Copy selection (⌥⇧S) and options (⌥⇧⌘S).
+            "28" = {
+              enabled = false;
+              value = {
+                parameters = [
+                  51
+                  20
+                  1179648
+                ];
+                type = "standard";
+              };
+            };
+            "29" = {
+              enabled = false;
+              value = {
+                parameters = [
+                  51
+                  20
+                  1441792
+                ];
+                type = "standard";
+              };
+            };
+            "30" = {
+              enabled = false;
+              value = {
+                parameters = [
+                  52
+                  21
+                  1179648
+                ];
+                type = "standard";
+              };
+            };
+            "31" = {
+              enabled = true;
+              value = {
+                parameters = [
+                  115
+                  1
+                  655360
+                ]; # ⌥⇧S
+                type = "standard";
+              };
+            };
+            "184" = {
+              enabled = true;
+              value = {
+                parameters = [
+                  115
+                  1
+                  1703936
+                ]; # ⌥⇧⌘S
+                type = "standard";
+              };
+            };
             # Disable '^ + Space' for selecting the previous input source
             "60" = {
               enabled = false;
