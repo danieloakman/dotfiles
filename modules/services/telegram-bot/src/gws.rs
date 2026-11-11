@@ -18,7 +18,7 @@ pub fn perform(
             payer,
             ..
         } => append_expense(expenses, payer, amount, description),
-        Action::Task { title } => insert_task(gws, settings, title),
+        Action::Task { title, due } => insert_task(gws, settings, title, due.as_deref()),
         Action::Calendar {
             summary,
             start,
@@ -69,9 +69,17 @@ fn insert_event(
     Ok(format!("Added {summary}."))
 }
 
-fn insert_task(gws: &Path, settings: &Settings, title: &str) -> Result<String, String> {
+fn insert_task(
+    gws: &Path,
+    settings: &Settings,
+    title: &str,
+    due: Option<&str>,
+) -> Result<String, String> {
     let params = serde_json::json!({ "tasklist": settings.tasklist }).to_string();
-    let body = serde_json::json!({ "title": title }).to_string();
+    let body = match due {
+        Some(due) => serde_json::json!({ "title": title, "due": due }).to_string(),
+        None => serde_json::json!({ "title": title }).to_string(),
+    };
     run(
         gws,
         [

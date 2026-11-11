@@ -133,9 +133,34 @@ fn parse_task(args: &str) -> Result<Action, String> {
     if title.is_empty() {
         return Err("expected `/task <title>`".into());
     }
+    if task_implies_due(title) {
+        return Err("task looks dated; needs due-date interpretation".into());
+    }
     Ok(Action::Task {
         title: title.to_string(),
+        due: None,
     })
+}
+
+/// Relative or absolute date cues mean the assistant should set `due`.
+fn task_implies_due(text: &str) -> bool {
+    static DUE_CUE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(
+            r"(?ix)
+            \b(
+                today | tomorrow | tonight |
+                monday | tuesday | wednesday | thursday | friday | saturday | sunday |
+                next | due | by
+            )\b
+            |
+            \b\d{4}-\d{1,2}-\d{1,2}\b
+            |
+            \b\d{1,2}/\d{1,2}(?:/\d{2,4})?\b
+            ",
+        )
+        .expect("task due cue regex")
+    });
+    DUE_CUE.is_match(text)
 }
 
 fn parse_calendar(args: &str, timezone_name: &str) -> Result<Action, String> {
@@ -238,9 +263,24 @@ mod tests {
             parse_command(CommandKind::Task, "buy milk", "Australia/Sydney").unwrap(),
             Action::Task {
                 title: "buy milk".into(),
+                due: None,
             }
         );
         assert!(parse_command(CommandKind::Task, "  ", "Australia/Sydney").is_err());
+    }
+
+    #[test]
+    fn dated_task_is_left_for_the_assistant() {
+        assert!(
+            parse_command(CommandKind::Task, "buy milk tomorrow", "Australia/Sydney").is_err()
+        );
+        assert!(
+            parse_command(CommandKind::Task, "dentist next Tuesday", "Australia/Sydney").is_err()
+        );
+        assert!(parse_command(CommandKind::Task, "pay rent by Friday", "Australia/Sydney").is_err());
+        assert!(
+            parse_command(CommandKind::Task, "submit form 2026-11-20", "Australia/Sydney").is_err()
+        );
     }
 
     #[test]

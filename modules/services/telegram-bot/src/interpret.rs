@@ -80,8 +80,12 @@ fn prompt(request: &InterpretRequest) -> String {
          There is no card column. A card name such as Amex is not part of the description. \
          When the total is unknown, description starts with TODO. \
          A note like ($24- mine) is the sender's share of an unknown total: keep amount 0 unless another number is the total, and end the description with the share and the sender name. \
-         task needs title. \
+         task needs title and optional due as RFC3339 date in {tz} (date-only midnight is fine). \
+         Include due when the message implies a day; omit due when there is no date. \
          calendar needs summary, start, and end as RFC3339 in {tz}. \
+         Resolve relative calendar dates (tomorrow, next Tuesday, Friday 3pm) in {tz}. \
+         Default calendar duration is 60 minutes when unspecified. \
+         If a calendar message has no usable time, action is none. \
          none needs reply, a short question asking for the missing detail. ",
         tz = request.timezone,
     );
@@ -116,6 +120,7 @@ pub fn parse_model_output(raw: &str) -> Result<Interpreted, InterpretError> {
         })),
         "task" => Ok(Interpreted::Action(Action::Task {
             title: required(parsed.title, "title")?,
+            due: optional(parsed.due),
         })),
         "calendar" => Ok(Interpreted::Action(Action::Calendar {
             summary: required(parsed.summary, "summary")?,
@@ -151,6 +156,10 @@ fn required(value: Option<String>, field: &str) -> Result<String, InterpretError
         .ok_or_else(|| InterpretError::new(format!("missing {field}")))
 }
 
+fn optional(value: Option<String>) -> Option<String> {
+    value.filter(|value| !value.trim().is_empty())
+}
+
 fn amount(value: Option<Value>) -> Result<String, InterpretError> {
     match value {
         Some(Value::String(text)) if !text.trim().is_empty() => Ok(text),
@@ -165,6 +174,7 @@ struct ModelJson {
     amount: Option<Value>,
     description: Option<String>,
     title: Option<String>,
+    due: Option<String>,
     summary: Option<String>,
     start: Option<String>,
     end: Option<String>,
@@ -182,6 +192,19 @@ mod tests {
             parse_model_output(raw).unwrap(),
             Interpreted::Action(Action::Task {
                 title: "buy milk".into(),
+                due: None,
+            })
+        );
+    }
+
+    #[test]
+    fn task_due_is_optional() {
+        let raw = r#"{"action":"task","title":"buy milk","due":"2026-11-13T00:00:00+11:00"}"#;
+        assert_eq!(
+            parse_model_output(raw).unwrap(),
+            Interpreted::Action(Action::Task {
+                title: "buy milk".into(),
+                due: Some("2026-11-13T00:00:00+11:00".into()),
             })
         );
     }

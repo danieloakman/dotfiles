@@ -21,8 +21,10 @@ pub fn help_text() -> &'static str {
      /expense 15 coffee\n\
      /expense Kmart\n\
      /task buy milk\n\
+     /task buy milk tomorrow\n\
      /cal 2026-10-25 15:00 dentist\n\
      /cal 2026-10-25 15:00 90 dentist\n\
+     /cal dentist tomorrow 3pm\n\
      \n\
      Anything else is read by the assistant, then confirmed before it is saved."
 }
@@ -190,6 +192,7 @@ mod tests {
     fn valid_slash_skips_the_interpreter() {
         let interpreter = fake(Interpreted::Action(Action::Task {
             title: "nope".into(),
+            due: None,
         }));
         let decision = route(
             "@secretary /expense $15 coffee",
@@ -238,6 +241,7 @@ mod tests {
     fn forced_command_rejects_a_different_action() {
         let interpreter = fake(Interpreted::Action(Action::Task {
             title: "buy milk".into(),
+            due: None,
         }));
         let decision = route(
             "/expense",
@@ -254,6 +258,99 @@ mod tests {
     }
 
     #[test]
+    fn forced_cal_rejects_a_task() {
+        let interpreter = fake(Interpreted::Action(Action::Task {
+            title: "buy milk".into(),
+            due: None,
+        }));
+        let decision = route(
+            "/cal dentist tomorrow",
+            None,
+            "Australia/Sydney",
+            &no_shortcut,
+            &interpreter,
+        )
+        .unwrap();
+        assert_eq!(
+            decision,
+            Decision::Clarify("That /calendar still needs the right details.".into())
+        );
+        let calls = interpreter.calls.borrow();
+        assert_eq!(calls.len(), 1);
+        assert_eq!(calls[0].command, Some(CommandKind::Calendar));
+    }
+
+    #[test]
+    fn freeform_cal_forces_calendar() {
+        let interpreter = fake(Interpreted::Action(Action::Calendar {
+            summary: "dentist".into(),
+            start: "2026-11-13T15:00:00+11:00".into(),
+            end: "2026-11-13T16:00:00+11:00".into(),
+        }));
+        let decision = route(
+            "/cal dentist tomorrow",
+            None,
+            "Australia/Sydney",
+            &no_shortcut,
+            &interpreter,
+        )
+        .unwrap();
+        assert!(matches!(decision, Decision::Action(Action::Calendar { .. })));
+        let calls = interpreter.calls.borrow();
+        assert_eq!(calls.len(), 1);
+        assert_eq!(calls[0].command, Some(CommandKind::Calendar));
+        assert!(calls[0].parse_error.is_some());
+    }
+
+    #[test]
+    fn dated_task_forces_task() {
+        let interpreter = fake(Interpreted::Action(Action::Task {
+            title: "buy milk".into(),
+            due: Some("2026-11-13T00:00:00+11:00".into()),
+        }));
+        let decision = route(
+            "/task buy milk tomorrow",
+            None,
+            "Australia/Sydney",
+            &no_shortcut,
+            &interpreter,
+        )
+        .unwrap();
+        assert_eq!(
+            decision,
+            Decision::Action(Action::Task {
+                title: "buy milk".into(),
+                due: Some("2026-11-13T00:00:00+11:00".into()),
+            })
+        );
+        let calls = interpreter.calls.borrow();
+        assert_eq!(calls.len(), 1);
+        assert_eq!(calls[0].command, Some(CommandKind::Task));
+        assert!(calls[0].parse_error.is_some());
+    }
+
+    #[test]
+    fn plain_task_skips_the_interpreter() {
+        let interpreter = fake(Interpreted::Clarify("nope".into()));
+        let decision = route(
+            "/task buy milk",
+            None,
+            "Australia/Sydney",
+            &no_shortcut,
+            &interpreter,
+        )
+        .unwrap();
+        assert_eq!(
+            decision,
+            Decision::Action(Action::Task {
+                title: "buy milk".into(),
+                due: None,
+            })
+        );
+        assert!(interpreter.calls.borrow().is_empty());
+    }
+
+    #[test]
     fn shortcut_skips_the_interpreter() {
         let interpreter = fake(Interpreted::Clarify("nope".into()));
         let decision = route(
@@ -263,6 +360,7 @@ mod tests {
             &|text| {
                 (text == "milk").then(|| Action::Task {
                     title: "buy milk".into(),
+                    due: None,
                 })
             },
             &interpreter,
@@ -272,6 +370,7 @@ mod tests {
             decision,
             Decision::Action(Action::Task {
                 title: "buy milk".into(),
+                due: None,
             })
         );
         assert!(interpreter.calls.borrow().is_empty());
@@ -310,6 +409,7 @@ mod tests {
             decision,
             Decision::Action(Action::Task {
                 title: "buy milk".into(),
+                due: None,
             })
         );
         assert!(interpreter.calls.borrow().is_empty());
@@ -351,6 +451,7 @@ mod tests {
             .unwrap(),
             Decision::Action(Action::Task {
                 title: "buy milk".into(),
+                due: None,
             })
         );
         assert!(interpreter.calls.borrow().is_empty());

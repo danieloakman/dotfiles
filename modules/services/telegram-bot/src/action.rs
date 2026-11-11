@@ -15,6 +15,8 @@ pub enum Action {
     },
     Task {
         title: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        due: Option<String>,
     },
     Calendar {
         summary: String,
@@ -45,7 +47,10 @@ pub fn summary(action: &Action, today: &str) -> String {
                 "Log expense?\nDate: {today}\nAmount: {amount}\nPaid by: {payer}\nDescription: {description}"
             )
         }
-        Action::Task { title } => format!("Add task?\n{title}"),
+        Action::Task { title, due } => match due {
+            Some(due) => format!("Add task?\n{title}\nDue: {due}"),
+            None => format!("Add task?\n{title}"),
+        },
         Action::Calendar {
             summary,
             start,
