@@ -46,6 +46,12 @@ in
       environment.systemPackages = with pkgs; [
         raycast
       ];
+      homebrew.casks = [
+        "slack"
+        "spotify"
+        "vivaldi"
+        "zoom"
+      ];
     };
   });
 }

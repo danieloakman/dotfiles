@@ -290,11 +290,8 @@
     ];
 
     casks = [
-      "vivaldi"
       "visual-studio-code"
       "iterm2"
-      "zoom"
-      "spotify" # idk why but this causes an message to pop up to delete the spotify app. But uninstalling it and reinstalling it seems to fix it.
       "private-internet-access"
       "gimp"
       "claude-code" # For Boethiah, npmjs registry is blocked. So we have to get claude-code from homebrew and not using the home-manager option
