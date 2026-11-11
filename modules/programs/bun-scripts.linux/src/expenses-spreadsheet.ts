@@ -1,4 +1,6 @@
 #! bun
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import meow from 'meow';
 import { z } from 'zod';
 import { exit, helpFlag } from './utils/cli';
@@ -10,6 +12,8 @@ import {
 } from './utils/expenses';
 import { gwsJson } from './utils/gws';
 
+dayjs.extend(customParseFormat);
+
 const EDIT_FILE = '/tmp/expenses-spreadsheet.csv';
 
 const cellSchema = z.union([z.string(), z.number(), z.boolean()]);
@@ -18,6 +22,19 @@ const readSchema = z.object({
 });
 
 type Cell = string | number | boolean;
+
+/** Formats accepted by --date. Slash dates are day-first (D/M/YYYY). */
+const DATE_INPUT_FORMATS = [
+	'YYYY-MM-DD',
+	'D/M/YYYY',
+	'DD/MM/YYYY',
+	'D-M-YYYY',
+	'DD-MM-YYYY',
+	'D MMM YYYY',
+	'DD MMM YYYY',
+	'D MMMM YYYY',
+	'DD MMMM YYYY'
+] as const;
 
 function csvEscape(cell: string): string {
 	if (/[",\n\r]/.test(cell)) return `"${cell.replaceAll('"', '""')}"`;
@@ -83,9 +100,25 @@ function parseCsv(text: string): string[][] {
 	return rows;
 }
 
+/** Sheet Date column style used by existing rows from `add` (M/D/YYYY). */
+function formatSheetDate(d: dayjs.Dayjs): string {
+	return `${d.month() + 1}/${d.date()}/${d.year()}`;
+}
+
 function todayDate(): string {
-	const now = new Date();
-	return `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
+	return formatSheetDate(dayjs());
+}
+
+function resolveDate(raw?: string): string {
+	if (!raw?.trim()) return todayDate();
+	const input = raw.trim();
+	for (const format of DATE_INPUT_FORMATS) {
+		const parsed = dayjs(input, format, true);
+		if (parsed.isValid()) return formatSheetDate(parsed);
+	}
+	exit(
+		`Invalid --date "${input}". Use YYYY-MM-DD or D/M/YYYY (e.g. 2026-10-28 or 28/10/2026).`
+	);
 }
 
 async function fetchRows(): Promise<Cell[][]> {
@@ -150,15 +183,17 @@ async function saveRows(rows: string[][]) {
 	);
 }
 
-async function add(input: string[], paidBy: string) {
+async function add(input: string[], paidBy: string, dateFlag?: string) {
 	const [amount, description] = input;
 	if (!amount || !description || input.length !== 2) {
-		exit('Usage: expenses-spreadsheet add [--paid-by Dan|Trotty] <amount> <description>');
+		exit(
+			'Usage: expenses-spreadsheet add [--paid-by Dan|Trotty] [--date YYYY-MM-DD] <amount> <description>'
+		);
 	}
 	const payer = canonicalPayer(paidBy);
 	if (!payer) exit('Paid by must be Dan or Trotty');
 
-	const date = todayDate();
+	const date = resolveDate(dateFlag);
 	await gwsJson(
 		[
 			'sheets',
@@ -214,41 +249,52 @@ Usage
   $ expenses-spreadsheet <command> ...
 
 Commands
-  add <amount> <description>    Append a row (Date = today). Paid by Dan unless --paid-by is set
+  add <amount> <description>    Append a row (Date = today, or --date). Paid by Dan unless --paid-by is set
   list                          Print the Expenses tab as CSV
   edit                          Edit Expenses in $EDITOR, then save back
 
 Options
   -h, --help                    Show help
   -p, --paid-by <name>          Dan or Trotty (Sheridan). Default: Dan
+  -d, --date <date>             Row date (YYYY-MM-DD or D/M/YYYY). Default: today
 
 Examples
   $ expenses-spreadsheet add 50.3 Kmart
   $ expenses-spreadsheet add --paid-by Trotty 0 "TODO Kmart, $24 Trotty"
+  $ expenses-spreadsheet add --date 2026-10-28 --paid-by Trotty 19.08 "TSUTAKOTSU - Visa Purchase"
   $ expenses-spreadsheet add "=30*2" "Shein - trotty's stuff"
   $ expenses-spreadsheet list
   $ expenses-spreadsheet edit
 		`.trimStart(),
 		{
 			importMeta: import.meta,
-			commands: ['add', 'list', 'edit'],
+			// Parse command from input ourselves so flags work before or after it
+			// (meow's `commands` option only accepts flags placed before the command).
 			flags: {
 				...helpFlag,
 				paidBy: {
 					type: 'string',
 					shortFlag: 'p',
 					default: 'Dan'
+				},
+				date: {
+					type: 'string',
+					shortFlag: 'd'
 				}
 			}
 		}
 	);
 
-	if (!cli.command || cli.flags.help) cli.showHelp(cli.command ? 0 : 1);
+	const [command, ...args] = cli.input;
+	if (!command || cli.flags.help) cli.showHelp(command ? 0 : 1);
+	if (command !== 'add' && command !== 'list' && command !== 'edit') {
+		exit(`Unknown command: ${command}`);
+	}
 
 	try {
-		if (cli.command === 'add') await add(cli.input, cli.flags.paidBy);
-		else if (cli.command === 'list') await list();
-		else if (cli.command === 'edit') await edit();
+		if (command === 'add') await add(args, cli.flags.paidBy, cli.flags.date);
+		else if (command === 'list') await list();
+		else if (command === 'edit') await edit();
 	} catch (err) {
 		exit(err instanceof Error ? err.message : String(err));
 	}
