@@ -243,9 +243,10 @@ in
             TempPath = incompleteDir;
             TempPathEnabled = true;
             Port = torrenting-port;
+            # No seeding: pause torrents as soon as the download finishes.
             GlobalMaxRatioEnabled = true;
             GlobalMaxRatio = 0;
-            MaxRatioAction = 0; # pause
+            MaxRatioAction = 0;
           };
           Preferences = {
             WebUI = {
@@ -395,9 +396,10 @@ in
                   TempPath = incompleteDir;
                   TempPathEnabled = true;
                   Port = torrenting-port;
+                  # No seeding: pause torrents as soon as the download finishes.
                   GlobalMaxRatioEnabled = true;
                   GlobalMaxRatio = 0;
-                  MaxRatioAction = 0; # pause
+                  MaxRatioAction = 0;
                 };
                 Preferences = {
                   WebUI = {
