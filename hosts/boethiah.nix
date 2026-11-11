@@ -38,9 +38,10 @@
     programs = {
       desktop-pkgs.enable = true;
       warp.enable = true;
-      # Disabled: hunk's bun2nix build fetches npm packages at build time,
+      # Disabled: these builds fetch npm packages at build time,
       # and IT blocks the npm registry on this machine.
       hunk.enable = false;
+      playwright-cli.enable = false;
       opencode = {
         enable = true;
         providers.mlx.enable = true;
