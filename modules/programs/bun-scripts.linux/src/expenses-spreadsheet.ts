@@ -143,44 +143,56 @@ async function fetchRows(): Promise<Cell[][]> {
 	return data.values ?? [];
 }
 
-async function saveRows(rows: string[][]) {
-	await gwsJson(
-		[
-			'sheets',
-			'spreadsheets',
-			'values',
-			'clear',
-			'--params',
-			JSON.stringify({ spreadsheetId: EXPENSES_SPREADSHEET_ID, range: EXPENSES_LIST_RANGE }),
-			'--json',
-			'{}',
-			'--format',
-			'json'
-		],
-		z.unknown()
-	);
+/** Keep each gws --json payload small (full-sheet update hits E2BIG / ARG_MAX). */
+const SAVE_CHUNK_ROWS = 40;
 
-	if (rows.length === 0) return;
+async function saveRows(rows: string[][], previousRowCount: number) {
+	if (rows.length === 0) exit('Refusing to save empty sheet');
 
-	await gwsJson(
-		[
-			'sheets',
-			'spreadsheets',
-			'values',
-			'update',
-			'--params',
-			JSON.stringify({
-				spreadsheetId: EXPENSES_SPREADSHEET_ID,
-				range: EXPENSES_APPEND_RANGE,
-				valueInputOption: 'USER_ENTERED'
-			}),
-			'--json',
-			JSON.stringify({ values: rows }),
-			'--format',
-			'json'
-		],
-		z.unknown()
-	);
+	// Overwrite in chunks first — never clear-before-write (a failed update used to wipe the tab).
+	for (let start = 0; start < rows.length; start += SAVE_CHUNK_ROWS) {
+		const chunk = rows.slice(start, start + SAVE_CHUNK_ROWS);
+		const range = `Expenses!A${start + 1}`;
+		await gwsJson(
+			[
+				'sheets',
+				'spreadsheets',
+				'values',
+				'update',
+				'--params',
+				JSON.stringify({
+					spreadsheetId: EXPENSES_SPREADSHEET_ID,
+					range,
+					valueInputOption: 'USER_ENTERED'
+				}),
+				'--json',
+				JSON.stringify({ values: chunk }),
+				'--format',
+				'json'
+			],
+			z.unknown()
+		);
+	}
+
+	// Drop trailing old rows if the sheet shrank.
+	if (previousRowCount > rows.length) {
+		const clearRange = `Expenses!A${rows.length + 1}:D${previousRowCount}`;
+		await gwsJson(
+			[
+				'sheets',
+				'spreadsheets',
+				'values',
+				'clear',
+				'--params',
+				JSON.stringify({ spreadsheetId: EXPENSES_SPREADSHEET_ID, range: clearRange }),
+				'--json',
+				'{}',
+				'--format',
+				'json'
+			],
+			z.unknown()
+		);
+	}
 }
 
 async function add(input: string[], paidBy: string, dateFlag?: string) {
@@ -236,9 +248,8 @@ async function edit() {
 		console.log('No changes');
 		return;
 	}
-	if (afterRows.length === 0) exit('Refusing to save empty sheet');
 
-	await saveRows(afterRows);
+	await saveRows(afterRows, beforeRows.length);
 	console.log(`Saved ${afterRows.length} rows to spreadsheet`);
 }
 
