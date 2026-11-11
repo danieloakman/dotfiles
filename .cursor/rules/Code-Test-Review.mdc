@@ -1,5 +1,0 @@
----
-alwaysApply: true
----
-
-All code must be checked with `just check-host` if only applies to the current host, or `just check` for full coverage.
