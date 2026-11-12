@@ -72,6 +72,7 @@ in
           llama-cpp.enable = true;
         };
       };
+      superwhisper.enable = true;
       games.enable = true;
       desktop-pkgs.enable = true;
       # ArtCraft suite (Adobe/Office clones): Photo, Light, Film, PDF, Vector, Effect,

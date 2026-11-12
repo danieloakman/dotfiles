@@ -60,6 +60,7 @@ in
     };
     programs = {
       desktop-pkgs.enable = true;
+      superwhisper.enable = true;
     };
     services = {
       immich.immich-go = {
