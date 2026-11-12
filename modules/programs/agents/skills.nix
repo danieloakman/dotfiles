@@ -5,14 +5,13 @@ let
   # you bump rev. To upgrade: set rev to the new commit, then run
   #   nix flake prefetch github:owner/repo/<rev>
   # and copy the printed hash into sha256.
-  # TODO: update rev/sha256 and prefetch to fetch newer mattpocock/skills.
   mattpocockSkills =
     (pkgs.fetchFromGitHub {
-      # https://github.com/mattpocock/skills/tree/aaf2453fbdfe7a15c07f11d861224f34ab4b53cb/skills
+      # https://github.com/mattpocock/skills/tree/4ae2317ddb22b046e26455e4f9c9b3aaaf62212d/skills
       owner = "mattpocock";
       repo = "skills";
-      rev = "aaf2453fbdfe7a15c07f11d861224f34ab4b53cb";
-      sha256 = "sha256-+Px3qIMHGKvi0PK2l5H4j/4YRQ448G9kuWX28cgqPCI=";
+      rev = "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d";
+      sha256 = "sha256-3vhd77xfZjKUYJsIwPFevIZPUAzUgZXr0RYj5NQrBwk=";
     })
     + "/skills";
   # Other skill repos that could be added in the future:
@@ -67,9 +66,13 @@ in
         grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
         # caveman = mattpocockSkills + "/productivity/caveman/SKILL.md"; # not really using this atm
         handoff = mattpocockSkills + "/productivity/handoff/SKILL.md";
-        write-a-skill = mattpocockSkills + "/productivity/write-a-skill/SKILL.md";
       };
       skill-dirs = {
+        # Full dirs so sibling refs resolve (e.g. writing-for-agents → SKILL-MECHANICS.md).
+        # write-a-skill was removed upstream; writing-for-agents is the replacement and
+        # a dependency of retro.
+        retro = mattpocockSkills + "/engineering/retro";
+        writing-for-agents = mattpocockSkills + "/productivity/writing-for-agents";
         "ui-design-brain" = pkgs.fetchFromGitHub {
           # https://github.com/carmahhawwari/ui-design-brain/tree/38f04c5a1dee55d99c686a16643cef4e2ce0f7a2
           owner = "carmahhawwari";
