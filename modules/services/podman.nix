@@ -41,8 +41,11 @@ in
             "podman"
             "podman-tui"
             "podman-compose"
-            # krunkit dependencies must be listed explicitly so brew bundle cleanup
-            # can load them under Homebrew 6.0 tap trust and avoid zapping them.
+            # Tap formulae must be listed explicitly so brew bundle cleanup can
+            # load them under Homebrew 6.0 tap trust and avoid zapping them.
+            # libkrun renamed its GPU dep virglrenderer → virglrenderer-krun;
+            # without this entry, cleanup still looks up the old name from the
+            # installed receipt and fails with "formula is unreadable".
             {
               name = "slp/krun/gvproxy";
               trusted = true;
@@ -53,6 +56,10 @@ in
             }
             {
               name = "slp/krun/libkrunfw";
+              trusted = true;
+            }
+            {
+              name = "slp/krun/virglrenderer-krun";
               trusted = true;
             }
             {

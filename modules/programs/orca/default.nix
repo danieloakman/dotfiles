@@ -206,39 +206,43 @@ in
         );
       })
 
-      (lib.mkIf (serve.enable && env.platform == "linux") {
-        # Keep the user service up without an interactive login (headless mara).
-        users.users.${env.user}.linger = true;
+      # selectPlatform (not mkIf + platform): Darwin has no networking.firewall /
+      # linger, and inactive mkIf defs still require those options to exist.
+      (lib.mkIf serve.enable (env.selectPlatform {
+        linux = {
+          # Keep the user service up without an interactive login (headless mara).
+          users.users.${env.user}.linger = true;
 
-        networking.firewall.interfaces."tailscale0".allowedTCPPorts = lib.mkIf serve.open-firewall [
-          serve.port
-        ];
+          networking.firewall.interfaces."tailscale0".allowedTCPPorts = lib.mkIf serve.open-firewall [
+            serve.port
+          ];
 
-        home-manager.users.${env.user} = {
-          systemd.user.services.orca-serve = {
-            Unit = {
-              Description = "Orca headless runtime (orca-ide serve)";
-              Documentation = [
-                "https://orca.dev/docs/remote-servers"
-              ];
-              After = [ "network-online.target" ];
-              Wants = [ "network-online.target" ];
+          home-manager.users.${env.user} = {
+            systemd.user.services.orca-serve = {
+              Unit = {
+                Description = "Orca headless runtime (orca-ide serve)";
+                Documentation = [
+                  "https://orca.dev/docs/remote-servers"
+                ];
+                After = [ "network-online.target" ];
+                Wants = [ "network-online.target" ];
+              };
+              Service = {
+                Type = "simple";
+                # Match upstream `orca serve service install`: supervise + no pairing
+                # in the unit log. Pair with `orca-ide pair` while this is running.
+                ExecStart = lib.escapeShellArgs ([ orcaBin ] ++ serveArgs);
+                Restart = "on-failure";
+                RestartSec = 5;
+                TimeoutStopSec = 30;
+                # AppImage / first-run extract can be slow.
+                TimeoutStartSec = 120;
+              };
+              Install.WantedBy = [ "default.target" ];
             };
-            Service = {
-              Type = "simple";
-              # Match upstream `orca serve service install`: supervise + no pairing
-              # in the unit log. Pair with `orca-ide pair` while this is running.
-              ExecStart = lib.escapeShellArgs ([ orcaBin ] ++ serveArgs);
-              Restart = "on-failure";
-              RestartSec = 5;
-              TimeoutStopSec = 30;
-              # AppImage / first-run extract can be slow.
-              TimeoutStartSec = 120;
-            };
-            Install.WantedBy = [ "default.target" ];
           };
         };
-      })
+      }))
     ]
   );
 }
