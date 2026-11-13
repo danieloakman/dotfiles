@@ -5,6 +5,18 @@ let
   adbGroup = "adbusers";
   # USB ADB ACL: systemd uaccess alone needs a logind seat; agents/SSH often have none.
   usbEnabled = cfg.usb.enable || cfg.enable;
+  androidAdbSkill = ./mobile-dev/android-adb;
+
+  # Shared by android-adb-* wrappers. Escaping is for Nix indented strings.
+  adbSetup = ''
+    # Optional: ANDROID_SERIAL=<serial> when multiple devices are attached.
+    adb_args=()
+    if [[ -n "''${ANDROID_SERIAL:-}" ]]; then
+      adb_args+=(-s "$ANDROID_SERIAL")
+    fi
+    adb() { command adb "''${adb_args[@]}" "$@"; }
+    adb wait-for-device
+  '';
 in
 {
   options.my.programs.mobile-dev = {
@@ -31,7 +43,6 @@ in
             text = ''
               set -euo pipefail
               # Usage: android-adb-unlock <pin>
-              # Optional: ANDROID_SERIAL=<serial> when multiple devices are attached.
 
               if [[ $# -lt 1 ]]; then
                 echo "usage: android-adb-unlock <pin>" >&2
@@ -43,13 +54,8 @@ in
                 exit 1
               fi
 
-              adb_args=()
-              if [[ -n "''${ANDROID_SERIAL:-}" ]]; then
-                adb_args+=(-s "$ANDROID_SERIAL")
-              fi
-              adb() { command adb "''${adb_args[@]}" "$@"; }
+              ${adbSetup}
 
-              adb wait-for-device
               adb shell input keyevent KEYCODE_WAKEUP >/dev/null
               sleep 0.4
 
@@ -80,32 +86,237 @@ in
               exit 1
             '';
           };
+
           androidAdbLock = pkgs.writeShellApplication {
             name = "android-adb-lock";
             runtimeInputs = [ pkgs.android-tools ];
             text = ''
               set -euo pipefail
               # Usage: android-adb-lock
-              # Optional: ANDROID_SERIAL=<serial> when multiple devices are attached.
 
-              adb_args=()
-              if [[ -n "''${ANDROID_SERIAL:-}" ]]; then
-                adb_args+=(-s "$ANDROID_SERIAL")
-              fi
-              adb() { command adb "''${adb_args[@]}" "$@"; }
-
-              adb wait-for-device
+              ${adbSetup}
               adb shell input keyevent KEYCODE_SLEEP >/dev/null
               echo "android-adb-lock: locked"
             '';
           };
-        in
-        {
-          environment.systemPackages = [
+
+          androidAdbInfo = pkgs.writeShellApplication {
+            name = "android-adb-info";
+            runtimeInputs = [ pkgs.android-tools pkgs.gnugrep pkgs.coreutils pkgs.gawk ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-info
+
+              ${adbSetup}
+
+              serial="$(adb get-serialno 2>/dev/null || true)"
+              model="$(adb shell getprop ro.product.model 2>/dev/null | tr -d '\r' || true)"
+              release="$(adb shell getprop ro.build.version.release 2>/dev/null | tr -d '\r' || true)"
+              sdk="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' || true)"
+              battery="$(adb shell dumpsys battery 2>/dev/null | awk -F': ' '/level:/{print $2; exit}' | tr -d '\r' || true)"
+              screen_on="$(adb shell dumpsys power 2>/dev/null | awk '/mHoldingDisplaySuspendBlocker=/{print $1; exit}' | tr -d '\r' || true)"
+              if [[ "$screen_on" == *true* ]]; then
+                screen="on"
+              else
+                screen="off"
+              fi
+              if adb shell dumpsys window 2>/dev/null | grep -q 'isKeyguardShowing=false'; then
+                keyguard="unlocked"
+              else
+                keyguard="locked"
+              fi
+              fg="$(adb shell dumpsys activity activities 2>/dev/null \
+                | awk '/mResumedActivity|topResumedActivity/{print; exit}' \
+                | tr -d '\r' || true)"
+              if [[ -z "$fg" ]]; then
+                fg="unknown"
+              fi
+
+              echo "serial=$serial"
+              echo "model=$model"
+              echo "android=$release sdk=$sdk"
+              echo "battery=''${battery:-unknown}%"
+              echo "screen=$screen"
+              echo "keyguard=$keyguard"
+              echo "foreground=$fg"
+            '';
+          };
+
+          androidAdbScreenshot = pkgs.writeShellApplication {
+            name = "android-adb-screenshot";
+            runtimeInputs = [ pkgs.android-tools pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-screenshot [path]
+              # Default: $XDG_RUNTIME_DIR/android-adb/screenshot-YYYYMMDD-HHMMSS.png
+              #          (falls back to /tmp/android-adb/)
+
+              ${adbSetup}
+
+              outdir="''${XDG_RUNTIME_DIR:-/tmp}/android-adb"
+              mkdir -p "$outdir"
+              path="''${1:-$outdir/screenshot-$(date +%Y%m%d-%H%M%S).png}"
+              mkdir -p "$(dirname "$path")"
+              adb exec-out screencap -p > "$path"
+              echo "$path"
+            '';
+          };
+
+          androidAdbClear = pkgs.writeShellApplication {
+            name = "android-adb-clear";
+            runtimeInputs = [ pkgs.android-tools ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-clear <package>
+
+              if [[ $# -lt 1 ]]; then
+                echo "usage: android-adb-clear <package>" >&2
+                exit 1
+              fi
+              pkg="$1"
+
+              ${adbSetup}
+              adb shell pm clear "$pkg" >/dev/null
+              echo "android-adb-clear: cleared $pkg"
+            '';
+          };
+
+          androidAdbLaunch = pkgs.writeShellApplication {
+            name = "android-adb-launch";
+            runtimeInputs = [ pkgs.android-tools ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-launch <package|component|uri>
+              #   package   → launcher activity via monkey
+              #   pkg/.Act  → am start -n
+              #   https://… → VIEW intent
+
+              if [[ $# -lt 1 ]]; then
+                echo "usage: android-adb-launch <package|component|uri>" >&2
+                exit 1
+              fi
+              target="$1"
+
+              ${adbSetup}
+
+              if [[ "$target" == *"://"* ]]; then
+                adb shell am start -a android.intent.action.VIEW -d "$target" >/dev/null
+                echo "android-adb-launch: opened $target"
+              elif [[ "$target" == */* ]]; then
+                adb shell am start -n "$target" >/dev/null
+                echo "android-adb-launch: started $target"
+              else
+                adb shell monkey -p "$target" -c android.intent.category.LAUNCHER 1 >/dev/null
+                echo "android-adb-launch: launched $target"
+              fi
+            '';
+          };
+
+          androidAdbLog = pkgs.writeShellApplication {
+            name = "android-adb-log";
+            runtimeInputs = [ pkgs.android-tools pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-log <package> [--follow] [--lines N]
+              # Default: dump last 200 lines for the package's PID (or all -d if not running).
+
+              if [[ $# -lt 1 ]]; then
+                echo "usage: android-adb-log <package> [--follow] [--lines N]" >&2
+                exit 1
+              fi
+              pkg="$1"
+              shift
+              follow=0
+              lines=200
+              while [[ $# -gt 0 ]]; do
+                case "$1" in
+                  --follow) follow=1; shift ;;
+                  --lines)
+                    if [[ $# -lt 2 ]]; then
+                      echo "android-adb-log: --lines needs a value" >&2
+                      exit 1
+                    fi
+                    lines="$2"
+                    shift 2
+                    ;;
+                  *)
+                    echo "usage: android-adb-log <package> [--follow] [--lines N]" >&2
+                    exit 1
+                    ;;
+                esac
+              done
+
+              ${adbSetup}
+
+              pid="$(adb shell pidof -s "$pkg" 2>/dev/null | tr -d '\r' || true)"
+              if [[ -n "$pid" ]]; then
+                if [[ "$follow" -eq 1 ]]; then
+                  adb logcat --pid="$pid"
+                else
+                  adb logcat -d --pid="$pid" -t "$lines"
+                fi
+              else
+                echo "android-adb-log: $pkg not running; dumping unfiltered buffer (-t $lines)" >&2
+                if [[ "$follow" -eq 1 ]]; then
+                  adb logcat
+                else
+                  adb logcat -d -t "$lines"
+                fi
+              fi
+            '';
+          };
+
+          androidAdbGrant = pkgs.writeShellApplication {
+            name = "android-adb-grant";
+            runtimeInputs = [ pkgs.android-tools ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-grant <package> <permission...>
+              # Short names (CAMERA) expand to android.permission.CAMERA.
+              # Pass android.permission.* (or other namespaces) unchanged.
+
+              if [[ $# -lt 2 ]]; then
+                echo "usage: android-adb-grant <package> <permission...>" >&2
+                exit 1
+              fi
+              pkg="$1"
+              shift
+
+              ${adbSetup}
+
+              for raw in "$@"; do
+                if [[ "$raw" == *.* ]]; then
+                  perm="$raw"
+                else
+                  perm="android.permission.$raw"
+                fi
+                adb shell pm grant "$pkg" "$perm"
+                echo "android-adb-grant: $pkg ← $perm"
+              done
+            '';
+          };
+
+          androidAdbPackages = [
             pkgs.android-tools
             androidAdbUnlock
             androidAdbLock
+            androidAdbInfo
+            androidAdbScreenshot
+            androidAdbClear
+            androidAdbLaunch
+            androidAdbLog
+            androidAdbGrant
           ];
+        in
+        {
+          environment.systemPackages = androidAdbPackages;
+
+          my.programs.agents.skill-dirs.android-adb = lib.mkIf config.my.programs.agents.enable androidAdbSkill;
+
+          my.programs.agents.sandbox.extra-allowed-packages = lib.mkIf config.my.programs.agents.enable (
+            lib.mkAfter androidAdbPackages
+          );
+
           users.groups.${adbGroup} = { };
           users.users.${env.user}.extraGroups = [ adbGroup ];
           # After systemd sets ID_DEBUG_APPLIANCE=android (70-uaccess.rules).

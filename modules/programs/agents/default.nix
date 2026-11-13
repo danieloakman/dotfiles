@@ -60,6 +60,68 @@ let
   rulesIndexText =
     ruleNames:
     lib.concatMapStrings (name: "@~/.claude/rules/${name}.md\n") (lib.sort lib.lessThan ruleNames);
+
+  # Cursor omits disable-model-invocation skills from available_skills and does not
+  # inject their body on `/name` (danieloakman/dotfiles#52). User-level slash
+  # commands at ~/.cursor/commands/<name>.md still inject, so stub those to Read
+  # the real SKILL.md. Detect DMI from installed skill sources — no per-skill list.
+  skillContentIsDmi =
+    content:
+    lib.hasInfix "disable-model-invocation: true" content
+    || lib.hasInfix "disable-model-invocation:true" content;
+
+  skillPathIsDmi =
+    path: builtins.pathExists path && skillContentIsDmi (builtins.readFile path);
+
+  dmiSkillNamesFromDirs = lib.concatLists (
+    lib.mapAttrsToList (
+      name: dir:
+      if skillPathIsDmi "${dir}/SKILL.md" then
+        [ name ]
+      else if builtins.pathExists dir then
+        lib.concatLists (
+          lib.mapAttrsToList (
+            skillName: type:
+            if type == "directory" && skillPathIsDmi "${dir}/${skillName}/SKILL.md" then
+              [ skillName ]
+            else
+              [ ]
+          ) (builtins.readDir dir)
+        )
+      else
+        [ ]
+    ) cfg.skill-dirs
+  );
+
+  dmiSkillNamesFromFiles = lib.concatLists (
+    lib.mapAttrsToList (
+      name: skill:
+      let
+        # Path to SKILL.md vs inline skill body (attrsOf path|str).
+        isFilePath =
+          builtins.isPath skill
+          || (
+            builtins.isString skill
+            && lib.hasPrefix "/" skill
+            && !(lib.hasInfix "\n" skill)
+            && builtins.pathExists skill
+          );
+        content = if isFilePath then builtins.readFile skill else skill;
+      in
+      if skillContentIsDmi content then [ name ] else [ ]
+    ) cfg.skills
+  );
+
+  dmiSkillNames = lib.unique (dmiSkillNamesFromDirs ++ dmiSkillNamesFromFiles);
+
+  cursorDmiCommandText =
+    name: ''
+      Read `~/.claude/skills/${name}/SKILL.md` and follow it exactly for this turn.
+
+      Cursor has no Skill tool: if the skill says to call or invoke a Skill by name, Read `~/.claude/skills/<skill-name>/SKILL.md` instead and follow that.
+
+      Treat any text the user included with this slash command as arguments for the skill.
+    '';
 in
 {
   options.my.programs.agents = {
@@ -81,6 +143,16 @@ in
       type = lib.types.attrsOf lib.types.path;
       default = { };
       description = "Skill directories to add for all AI agents. If a directory contains a SKILL.md it is treated as a single skill; otherwise each subdirectory is symlinked individually.";
+    };
+    cursor-dmi-slash-stubs = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        For skills with `disable-model-invocation: true`, write
+        `~/.cursor/commands/<name>.md` stubs that instruct the agent to Read
+        `~/.claude/skills/<name>/SKILL.md`. Workaround for Cursor not injecting
+        DMI skill bodies on `/name` (see danieloakman/dotfiles#52).
+      '';
     };
     mcp = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule mcpServerOpts);
@@ -171,7 +243,19 @@ in
                   })
                   (lib.filterAttrs (_: type: type == "directory") (builtins.readDir dir))
           )
-          cfg.skill-dirs;
+          cfg.skill-dirs
+        # Cursor `/name` stubs for DMI skills (see cursor-dmi-slash-stubs / #52).
+        // lib.optionalAttrs cfg.cursor-dmi-slash-stubs (
+          lib.listToAttrs (
+            map (name: {
+              name = ".cursor/commands/${name}.md";
+              value = {
+                text = cursorDmiCommandText name;
+                force = true;
+              };
+            }) dmiSkillNames
+          )
+        );
 
         programs = {
           claude-code = {
