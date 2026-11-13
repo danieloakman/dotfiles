@@ -80,11 +80,31 @@ in
               exit 1
             '';
           };
+          androidAdbLock = pkgs.writeShellApplication {
+            name = "android-adb-lock";
+            runtimeInputs = [ pkgs.android-tools ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-lock
+              # Optional: ANDROID_SERIAL=<serial> when multiple devices are attached.
+
+              adb_args=()
+              if [[ -n "''${ANDROID_SERIAL:-}" ]]; then
+                adb_args+=(-s "$ANDROID_SERIAL")
+              fi
+              adb() { command adb "''${adb_args[@]}" "$@"; }
+
+              adb wait-for-device
+              adb shell input keyevent KEYCODE_SLEEP >/dev/null
+              echo "android-adb-lock: locked"
+            '';
+          };
         in
         {
           environment.systemPackages = [
             pkgs.android-tools
             androidAdbUnlock
+            androidAdbLock
           ];
           users.groups.${adbGroup} = { };
           users.users.${env.user}.extraGroups = [ adbGroup ];
