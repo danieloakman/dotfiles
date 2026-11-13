@@ -1,4 +1,4 @@
-{ config, lib, modulesPath, pkgs, ... }:
+{ config, lib, modulesPath, ... }:
 {
   imports = [
     # Include the results of the hardware scan.
@@ -42,6 +42,7 @@
         };
       };
       # mobile-dev.enable = false; # Together flake supplies the Android SDK
+      mobile-dev.usb.enable = true; # seatless USB ADB (adbusers); SDK stays in project flakes
       # tmux.enable = true;
       # zellij = {
       #   enable = true;
@@ -177,10 +178,6 @@
   };
 
   networking.hostName = "mara";
-
-  # Physical Android devices over USB (Together flake provides the SDK).
-  # systemd 258+ applies Android uaccess rules from android-tools automatically.
-  environment.systemPackages = [ pkgs.android-tools ];
 
   # Configure console keymap
   console.keyMap = "us";
