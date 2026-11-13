@@ -23,16 +23,77 @@ in
   config = lib.mkMerge [
     (lib.mkIf usbEnabled (env.selectPlatform {
       darwin = { }; # USB udev is Linux-only; Darwin uses macOS device permissions
-      linux = {
-        environment.systemPackages = [ pkgs.android-tools ];
-        users.groups.${adbGroup} = { };
-        users.users.${env.user}.extraGroups = [ adbGroup ];
-        # After systemd sets ID_DEBUG_APPLIANCE=android (70-uaccess.rules).
-        services.udev.extraRules = ''
-          # Android ADB / Fastboot — group access for seatless sessions (agents, SSH)
-          ENV{ID_DEBUG_APPLIANCE}=="android", MODE="0660", GROUP="${adbGroup}"
-        '';
-      };
+      linux =
+        let
+          androidAdbUnlock = pkgs.writeShellApplication {
+            name = "android-adb-unlock";
+            runtimeInputs = [ pkgs.android-tools pkgs.gnugrep pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-unlock <pin>
+              # Optional: ANDROID_SERIAL=<serial> when multiple devices are attached.
+
+              if [[ $# -lt 1 ]]; then
+                echo "usage: android-adb-unlock <pin>" >&2
+                exit 1
+              fi
+              pin="$1"
+              if [[ ! "$pin" =~ ^[0-9]+$ ]]; then
+                echo "android-adb-unlock: PIN must be digits only" >&2
+                exit 1
+              fi
+
+              adb_args=()
+              if [[ -n "''${ANDROID_SERIAL:-}" ]]; then
+                adb_args+=(-s "$ANDROID_SERIAL")
+              fi
+              adb() { command adb "''${adb_args[@]}" "$@"; }
+
+              adb wait-for-device
+              adb shell input keyevent KEYCODE_WAKEUP >/dev/null
+              sleep 0.4
+
+              if adb shell dumpsys window 2>/dev/null | grep -q 'isKeyguardShowing=false'; then
+                echo "android-adb-unlock: already unlocked"
+                exit 0
+              fi
+
+              # Reveal PIN pad (works for swipe → PIN on most Samsung/AOSP lockscreens)
+              adb shell input swipe 540 2000 540 800 300 >/dev/null
+              sleep 0.5
+
+              # Digit keyevents are more reliable on the keyguard than `input text`
+              i=0
+              while [[ $i -lt ''${#pin} ]]; do
+                d="''${pin:$i:1}"
+                adb shell input keyevent $((7 + d)) >/dev/null
+                i=$((i + 1))
+              done
+              adb shell input keyevent KEYCODE_ENTER >/dev/null
+              sleep 0.6
+
+              if adb shell dumpsys window 2>/dev/null | grep -q 'isKeyguardShowing=false'; then
+                echo "android-adb-unlock: unlocked"
+                exit 0
+              fi
+              echo "android-adb-unlock: keyguard still showing (wrong PIN or UI changed)" >&2
+              exit 1
+            '';
+          };
+        in
+        {
+          environment.systemPackages = [
+            pkgs.android-tools
+            androidAdbUnlock
+          ];
+          users.groups.${adbGroup} = { };
+          users.users.${env.user}.extraGroups = [ adbGroup ];
+          # After systemd sets ID_DEBUG_APPLIANCE=android (70-uaccess.rules).
+          services.udev.extraRules = ''
+            # Android ADB / Fastboot — group access for seatless sessions (agents, SSH)
+            ENV{ID_DEBUG_APPLIANCE}=="android", MODE="0660", GROUP="${adbGroup}"
+          '';
+        };
     }))
 
     (lib.mkIf cfg.enable (env.selectPlatform {
