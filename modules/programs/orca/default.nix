@@ -2,8 +2,6 @@
 # https://orca.dev/
 # Linux: pinned AppImage as `orca-ide`. Darwin: Homebrew cask stablyai/orca/orca.
 # Headless runtime: my.programs.orca.serve (Linux user systemd unit).
-# Integrations (Settings → Connect integrations) live on the runtime host
-# (remote server for `orca serve`), not the client laptop.
 { env
 , config
 , lib
@@ -13,7 +11,6 @@
 let
   cfg = config.my.programs.orca;
   serve = cfg.serve;
-  integrations = cfg.integrations;
 
   # Keep in sync with `_package.nix` default and skills source rev.
   version = "1.4.258";
@@ -46,11 +43,6 @@ let
   };
 
   orcaBin = lib.getExe cfg.package;
-
-  hasMainGhToken =
-    env.platform == "linux" && builtins.hasAttr "main_gh_token" (config.sops.secrets or { });
-
-  integrationPackages = lib.optionals integrations.enable integrations.packages;
 
   serveArgs =
     [
@@ -100,31 +92,6 @@ in
         "orchestration"
         "orca-linear"
       ];
-    };
-
-    integrations = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = ''
-          Install provider CLIs Orca uses under Settings → Connect integrations
-          (`integrations.packages`). On Linux with `serve.enable` and
-          `sops.secrets.main_gh_token`, also inject `GH_TOKEN` into the
-          `orca-serve` user unit so the headless runtime is authenticated
-          without an interactive shell.
-        '';
-      };
-
-      packages = lib.mkOption {
-        type = lib.types.listOf lib.types.package;
-        default = [ pkgs.gh ];
-        defaultText = lib.literalExpression "[ pkgs.gh ]";
-        example = lib.literalExpression "[ pkgs.gh pkgs.glab ]";
-        description = ''
-          CLI packages for Orca source-control integrations. These must be on
-          the runtime host (e.g. mara for `orca serve`), not only the client.
-        '';
-      };
     };
 
     serve = {
@@ -208,11 +175,10 @@ in
 
       (env.selectPlatform {
         linux = {
-          home-manager.users.${env.user}.home.packages = [ cfg.package ] ++ integrationPackages;
+          home-manager.users.${env.user}.home.packages = [ cfg.package ];
         };
 
         darwin = {
-          environment.systemPackages = integrationPackages;
           homebrew = {
             # Bare `orca` is Plotly; always use the stablyai tap.
             taps = [
@@ -240,61 +206,39 @@ in
         );
       })
 
-      (lib.mkIf (serve.enable && env.platform == "linux") (
-        lib.mkMerge [
-          {
-            # Keep the user service up without an interactive login (headless mara).
-            users.users.${env.user}.linger = true;
+      (lib.mkIf (serve.enable && env.platform == "linux") {
+        # Keep the user service up without an interactive login (headless mara).
+        users.users.${env.user}.linger = true;
 
-            networking.firewall.interfaces."tailscale0".allowedTCPPorts = lib.mkIf serve.open-firewall [
-              serve.port
-            ];
+        networking.firewall.interfaces."tailscale0".allowedTCPPorts = lib.mkIf serve.open-firewall [
+          serve.port
+        ];
 
-            home-manager.users.${env.user} = {
-              systemd.user.services.orca-serve = {
-                Unit = {
-                  Description = "Orca headless runtime (orca-ide serve)";
-                  Documentation = [
-                    "https://orca.dev/docs/remote-servers"
-                  ];
-                  After = [ "network-online.target" ];
-                  Wants = [ "network-online.target" ];
-                };
-                Service = {
-                  Type = "simple";
-                  # Match upstream `orca serve service install`: supervise + no pairing
-                  # in the unit log. Pair with `orca-ide pair` while this is running.
-                  ExecStart = lib.escapeShellArgs ([ orcaBin ] ++ serveArgs);
-                  Restart = "on-failure";
-                  RestartSec = 5;
-                  TimeoutStopSec = 30;
-                  # AppImage / first-run extract can be slow.
-                  TimeoutStartSec = 120;
-                };
-                Install.WantedBy = [ "default.target" ];
-              };
+        home-manager.users.${env.user} = {
+          systemd.user.services.orca-serve = {
+            Unit = {
+              Description = "Orca headless runtime (orca-ide serve)";
+              Documentation = [
+                "https://orca.dev/docs/remote-servers"
+              ];
+              After = [ "network-online.target" ];
+              Wants = [ "network-online.target" ];
             };
-          }
-
-          # Headless GitHub auth for integrations. Interactive `gh auth login` /
-          # ~/.config/gh is not reliable for every spawn path; GH_TOKEN is.
-          (lib.mkIf (integrations.enable && hasMainGhToken) {
-            sops.templates."orca-serve.env" = {
-              owner = env.user;
-              group = "secrets";
-              mode = "0440";
-              content = ''
-                GH_TOKEN=${config.sops.placeholder.main_gh_token}
-              '';
+            Service = {
+              Type = "simple";
+              # Match upstream `orca serve service install`: supervise + no pairing
+              # in the unit log. Pair with `orca-ide pair` while this is running.
+              ExecStart = lib.escapeShellArgs ([ orcaBin ] ++ serveArgs);
+              Restart = "on-failure";
+              RestartSec = 5;
+              TimeoutStopSec = 30;
+              # AppImage / first-run extract can be slow.
+              TimeoutStartSec = 120;
             };
-
-            home-manager.users.${env.user}.systemd.user.services.orca-serve = {
-              Unit.After = [ "sops-nix.service" ];
-              Service.EnvironmentFile = [ config.sops.templates."orca-serve.env".path ];
-            };
-          })
-        ]
-      ))
+            Install.WantedBy = [ "default.target" ];
+          };
+        };
+      })
     ]
   );
 }
