@@ -17,6 +17,11 @@
         };
       };
       t3code.enable = true;
+      orca.serve = {
+        enable = true;
+        # Tailscale MagicDNS — clients (akatosh, phone) dial this, not localhost.
+        pairing-address = "mara.dinosaur-crocodile.ts.net";
+      };
       herdr = {
         collie = {
           enable = true;
