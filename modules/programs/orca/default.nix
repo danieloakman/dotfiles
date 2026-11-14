@@ -42,7 +42,23 @@ let
     hash = "sha256-yEeRd1VZuvDsqOpzI/xk5I0LUtOJkn+8M3QihfANeLs=";
   };
 
-  orcaBin = lib.getExe cfg.package;
+  # Headless serve must NOT use the AppImage `wrapType2` binary: that runs under
+  # bubblewrap, which sets NoNewPrivileges, so every Orca terminal inherits it and
+  # `sudo` / `nh os switch` fail. Upstream `orca serve` uses the orcad Node CLI
+  # instead (`~/.config/orca/cli/bin/orca`), which has no bwrap.
+  orcaUserData = "${env.home}/.config/orca";
+  orcaServeBin = pkgs.writeShellScriptBin "orca-serve" ''
+    set -euo pipefail
+    export ORCA_USER_DATA_PATH=''${ORCA_USER_DATA_PATH:-${lib.escapeShellArg orcaUserData}}
+    cli="$ORCA_USER_DATA_PATH/cli/bin/orca"
+    if [[ ! -x "$cli" ]]; then
+      echo "orca-serve: missing $cli" >&2
+      echo "Bootstrap the orcad CLI once (desktop Orca or a one-shot AppImage run)," >&2
+      echo "then restart orca-serve. Do not point this unit at the AppImage bwrap wrapper." >&2
+      exit 1
+    fi
+    exec "$cli" "$@"
+  '';
 
   serveArgs =
     [
@@ -96,11 +112,13 @@ in
 
     serve = {
       enable = lib.mkEnableOption ''
-        Run a headless Orca runtime (`orca-ide serve --supervise --no-pairing`)
-        as a Linux systemd user service. Pair clients afterward with
-        `orca-ide pair --address <pairing-address>` or
-        `orca-ide pair --mobile --address <pairing-address>`.
-        Requires `my.programs.orca.enable`. Linux only.
+        Run a headless Orca runtime (`orca serve --supervise --no-pairing`) as a
+        Linux systemd user service via the orcad Node CLI (not the AppImage
+        bwrap wrapper, so terminals keep sudo). Pair clients afterward with
+        `orca pair --address <pairing-address>` or
+        `orca pair --mobile --address <pairing-address>`.
+        Requires `my.programs.orca.enable` and a bootstrapped
+        `~/.config/orca/cli/bin/orca`. Linux only.
       '';
 
       port = lib.mkOption {
@@ -218,9 +236,10 @@ in
           ];
 
           home-manager.users.${env.user} = {
+            home.packages = [ orcaServeBin ];
             systemd.user.services.orca-serve = {
               Unit = {
-                Description = "Orca headless runtime (orca-ide serve)";
+                Description = "Orca headless runtime (orca serve / orcad)";
                 Documentation = [
                   "https://orca.dev/docs/remote-servers"
                 ];
@@ -230,12 +249,18 @@ in
               Service = {
                 Type = "simple";
                 # Match upstream `orca serve service install`: supervise + no pairing
-                # in the unit log. Pair with `orca-ide pair` while this is running.
-                ExecStart = lib.escapeShellArgs ([ orcaBin ] ++ serveArgs);
+                # in the unit log. Pair with `orca pair` while this is running.
+                # Use orcad CLI (not AppImage/bwrap) so PTYs are not NoNewPrivileges.
+                Environment = [
+                  "ORCA_USER_DATA_PATH=${orcaUserData}"
+                ];
+                ExecStart = lib.escapeShellArgs (
+                  [ (lib.getExe orcaServeBin) ] ++ serveArgs
+                );
                 Restart = "on-failure";
                 RestartSec = 5;
                 TimeoutStopSec = 30;
-                # AppImage / first-run extract can be slow.
+                # orcad artifact fetch / first start can be slow.
                 TimeoutStartSec = 120;
               };
               Install.WantedBy = [ "default.target" ];
