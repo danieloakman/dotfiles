@@ -7,9 +7,9 @@
   my = {
     profiles.dev-workstation.enable = true;
     services = {
-      # docker.enable = true;
+      docker.enable = false;
       podman = {
-        enable = true;
+        enable = false;
         docker-alias = true;
       };
       mlx-lm = {
