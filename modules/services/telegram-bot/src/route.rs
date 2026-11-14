@@ -19,6 +19,7 @@ pub enum Prepared {
 pub fn help_text() -> &'static str {
     "Send one of:\n\
      /expense 15 coffee\n\
+     /expense trotty paid 232.80 eye specialist\n\
      /expense Kmart\n\
      /task buy milk\n\
      /task buy milk tomorrow\n\
@@ -26,7 +27,7 @@ pub fn help_text() -> &'static str {
      /cal 2026-10-25 15:00 90 dentist\n\
      /cal dentist tomorrow 3pm\n\
      \n\
-     Anything else is read by the assistant, then confirmed before it is saved."
+     Free-form also works — the assistant reads it, then you confirm before it is saved."
 }
 
 pub fn plan(
@@ -97,6 +98,7 @@ fn plan_text(text: &str, timezone: &str, shortcut: &dyn Fn(&str) -> Option<Actio
         command: None,
         parse_error: None,
         sender: String::new(),
+        payers: String::new(),
     })
 }
 
@@ -109,6 +111,7 @@ fn finish_parse(kind: CommandKind, args: &str, text: &str, timezone: &str) -> Pr
             command: Some(kind),
             parse_error: Some(error),
             sender: String::new(),
+            payers: String::new(),
         }),
     }
 }

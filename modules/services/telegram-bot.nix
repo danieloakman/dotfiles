@@ -36,14 +36,17 @@ in
           aliases = lib.mkOption {
             type = lib.types.listOf lib.types.str;
             default = [ ];
-            description = "Telegram first name, last name, or username that maps to this payer.";
+            description = ''
+              Telegram first name, last name, or username that maps to this payer.
+              Matching is case-insensitive; a leading @ on usernames is ignored.
+            '';
           };
         };
       });
       default = [
         {
           name = "Dan";
-          aliases = [ "Dan" ];
+          aliases = [ "Dan" "Daniel" ];
         }
         {
           name = "Trotty";

@@ -20,6 +20,8 @@ pub struct InterpretRequest {
     pub command: Option<CommandKind>,
     pub parse_error: Option<String>,
     pub sender: String,
+    /// Known payers for the prompt, e.g. `Dan (Daniel), Trotty (Sheridan)`.
+    pub payers: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -80,6 +82,9 @@ fn prompt(request: &InterpretRequest) -> String {
          There is no card column. A card name such as Amex is not part of the description. \
          When the total is unknown, description starts with TODO. \
          A note like ($24- mine) is the sender's share of an unknown total: keep amount 0 unless another number is the total, and end the description with the share and the sender name. \
+         Known paid-by names: {payers}. \
+         When the message says who paid (for example \"trotty paid\" or \"paid by dan\"), set payer to that name or alias and do not leave the paid-by phrase in the description. \
+         Omit payer when the message does not name who paid; the sender is assumed. \
          task needs title and optional due as RFC3339 date in {tz} (date-only midnight is fine). \
          Include due when the message implies a day; omit due when there is no date. \
          calendar needs summary, start, and end as RFC3339 in {tz}. \
@@ -88,6 +93,11 @@ fn prompt(request: &InterpretRequest) -> String {
          If a calendar message has no usable time, action is none. \
          none needs reply, a short question asking for the missing detail. ",
         tz = request.timezone,
+        payers = if request.payers.is_empty() {
+            "Dan, Trotty"
+        } else {
+            request.payers.as_str()
+        },
     );
     if let Some(command) = request.command {
         text.push_str(&format!(
@@ -115,7 +125,7 @@ pub fn parse_model_output(raw: &str) -> Result<Interpreted, InterpretError> {
         "expense" => Ok(Interpreted::Action(Action::Expense {
             amount: amount(parsed.amount)?,
             description: required(parsed.description, "description")?,
-            payer: String::new(),
+            payer: optional(parsed.payer).unwrap_or_default(),
             share: None,
         })),
         "task" => Ok(Interpreted::Action(Action::Task {
@@ -173,6 +183,7 @@ struct ModelJson {
     action: String,
     amount: Option<Value>,
     description: Option<String>,
+    payer: Option<String>,
     title: Option<String>,
     due: Option<String>,
     summary: Option<String>,
@@ -233,11 +244,32 @@ mod tests {
             command: Some(CommandKind::Expense),
             parse_error: Some("expected one amount".into()),
             sender: "Trotty".into(),
+            payers: "Dan (Daniel), Trotty (Sheridan)".into(),
         };
         let text = prompt(&request);
         assert!(text.contains("action must be expense or none"));
         assert!(text.contains("expected one amount"));
         assert!(text.contains("The sender is Trotty."));
+        assert!(text.contains("Known paid-by names: Dan (Daniel), Trotty (Sheridan)."));
         assert!(text.contains("Message: /expense buy milk"));
+    }
+
+    #[test]
+    fn expense_may_name_a_payer() {
+        let raw =
+            r#"{"action":"expense","amount":"232.8","description":"eye specialist","payer":"trotty"}"#;
+        match parse_model_output(raw).unwrap() {
+            Interpreted::Action(Action::Expense {
+                amount,
+                description,
+                payer,
+                ..
+            }) => {
+                assert_eq!(amount, "232.8");
+                assert_eq!(description, "eye specialist");
+                assert_eq!(payer, "trotty");
+            }
+            other => panic!("expected expense, got {other:?}"),
+        }
     }
 }

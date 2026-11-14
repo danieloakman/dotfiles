@@ -42,6 +42,7 @@ fn parse_expense(args: &str) -> Result<Action, String> {
         return Err("expected an amount and a description".into());
     }
     let (share, rest) = extract_share(args)?;
+    let (payer, rest) = extract_payer(&rest)?;
     let (amount, rest) = extract_amount(&rest)?;
     let description = clean_description(&rest);
     if description.is_empty() && share.is_none() {
@@ -58,9 +59,46 @@ fn parse_expense(args: &str) -> Result<Action, String> {
     Ok(Action::Expense {
         amount: amount.unwrap_or_else(|| "0".to_string()),
         description,
-        payer: String::new(),
+        payer: payer.unwrap_or_default(),
         share,
     })
+}
+
+/// `trotty paid` / `paid by dan` name who paid; stripped from the description.
+fn extract_payer(text: &str) -> Result<(Option<String>, String), String> {
+    static PAID: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(
+            r"(?i)(?:\b(?P<who1>[A-Za-z]+)\s+paid\b|\bpaid\s+by\s+(?P<who2>[A-Za-z]+)\b)",
+        )
+        .expect("payer regex")
+    });
+    let found: Vec<_> = PAID.find_iter(text).collect();
+    if found.len() > 1 {
+        return Err("expected one paid-by note".into());
+    }
+    let Some(found) = found.first() else {
+        return Ok((None, text.to_string()));
+    };
+    let caps = PAID.captures(found.as_str()).expect("payer capture");
+    let who = caps
+        .name("who1")
+        .or_else(|| caps.name("who2"))
+        .expect("payer who")
+        .as_str();
+    if is_payer_pronoun(who) {
+        return Ok((None, text.to_string()));
+    }
+    let mut rest = String::new();
+    rest.push_str(&text[..found.start()]);
+    rest.push_str(&text[found.end()..]);
+    Ok((Some(who.to_string()), rest))
+}
+
+fn is_payer_pronoun(who: &str) -> bool {
+    matches!(
+        who.to_ascii_lowercase().as_str(),
+        "i" | "we" | "he" | "she" | "they" | "someone" | "who"
+    )
 }
 
 /// `($24- mine)` is the sender's share, not the expense total.
@@ -122,7 +160,9 @@ fn amount_boundary(text: &str, start: usize, end: usize) -> bool {
 
 /// The sheet has no card column. Amex is how a payment is mentioned, not a description.
 fn clean_description(text: &str) -> String {
-    text.split_whitespace()
+    text.split(|ch: char| ch.is_whitespace() || ch == ',')
+        .map(str::trim)
+        .filter(|word| !word.is_empty())
         .filter(|word| !word.eq_ignore_ascii_case("amex"))
         .collect::<Vec<_>>()
         .join(" ")
@@ -219,6 +259,52 @@ mod tests {
             Action::Expense {
                 amount: "20.50".into(),
                 description: "lunch".into(),
+                payer: String::new(),
+                share: None,
+            }
+        );
+    }
+
+    #[test]
+    fn expense_can_name_who_paid() {
+        assert_eq!(
+            parse_command(
+                CommandKind::Expense,
+                "trotty paid 232.8 eye specialist",
+                "Australia/Sydney",
+            )
+            .unwrap(),
+            Action::Expense {
+                amount: "232.8".into(),
+                description: "eye specialist".into(),
+                payer: "trotty".into(),
+                share: None,
+            }
+        );
+        assert_eq!(
+            parse_command(
+                CommandKind::Expense,
+                "paid by dan, 42.49, pharmacy",
+                "Australia/Sydney",
+            )
+            .unwrap(),
+            Action::Expense {
+                amount: "42.49".into(),
+                description: "pharmacy".into(),
+                payer: "dan".into(),
+                share: None,
+            }
+        );
+        assert_eq!(
+            parse_command(
+                CommandKind::Expense,
+                "I paid 15 coffee",
+                "Australia/Sydney",
+            )
+            .unwrap(),
+            Action::Expense {
+                amount: "15".into(),
+                description: "I paid coffee".into(),
                 payer: String::new(),
                 share: None,
             }

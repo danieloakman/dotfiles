@@ -124,7 +124,26 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
-      telegram-bot.enable = true;
+      telegram-bot = {
+        enable = true;
+        # Telegram first names are Daniel / Sheridan; sheet columns stay Dan / Trotty.
+        allowed-user-ids = [
+          8348310754 # Dan
+          8789816198 # Sheridan / Trotty
+        ];
+        payers = [
+          {
+            name = "Dan";
+            telegram-id = 8348310754;
+            aliases = [ "Dan" "Daniel" ];
+          }
+          {
+            name = "Trotty";
+            telegram-id = 8789816198;
+            aliases = [ "Trotty" "Sheridan" ];
+          }
+        ];
+      };
       # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
     };

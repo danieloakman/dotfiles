@@ -154,6 +154,7 @@ impl Service {
                 if let Some(name) = payer_name(&self.settings, user) {
                     request.sender = name;
                 }
+                request.payers = self.settings.payer_prompt();
                 let target = self.reply(&origin, Outgoing::New, "Working on it…", None)?;
                 match self.interpreter.interpret(&request) {
                     Ok(interpreted) => match route::apply(interpreted, &request) {
@@ -276,12 +277,11 @@ impl Service {
                 .answer_callback(&callback.id, Some("That confirmation expired."))?;
             return Ok(());
         };
-        if record
-            .user_id
-            .is_some_and(|owner| owner != callback.from.id)
-        {
-            self.telegram
-                .answer_callback(&callback.id, Some("Only the person who asked can confirm."))?;
+        if !self.can_confirm(&record, &callback.from) {
+            self.telegram.answer_callback(
+                &callback.id,
+                Some("Only Dan or Trotty can confirm."),
+            )?;
             return Ok(());
         }
         let target = callback_target(&record, &callback);
@@ -341,6 +341,14 @@ impl Service {
             .and_then(|id| i64::try_from(id).ok())
             .is_some_and(|id| self.settings.allowed_user_ids.contains(&id))
     }
+
+    /// Either partner may confirm in the shared chat — not only the requester.
+    fn can_confirm(&self, record: &Pending, from: &User) -> bool {
+        if record.user_id == Some(from.id) {
+            return true;
+        }
+        payer_name(&self.settings, Some(from)).is_some()
+    }
 }
 
 enum Origin {
@@ -398,8 +406,21 @@ fn prepare_action(
     if !matches!(action, Action::Expense { .. }) {
         return Ok(action);
     }
-    let payer = payer_name(settings, user).ok_or_else(|| unknown_payer(user))?;
-    action::bind_payer(action, &payer)
+    let sender = payer_name(settings, user);
+    let explicit = match &action {
+        Action::Expense { payer, .. } if !payer.trim().is_empty() => Some(payer.as_str()),
+        _ => None,
+    };
+    let payer = match explicit {
+        Some(label) => settings
+            .resolve_payer(label)
+            .map(str::to_string)
+            .ok_or_else(|| format!("I don't know a payer named {label}."))?,
+        None => sender
+            .clone()
+            .ok_or_else(|| unknown_payer(user))?,
+    };
+    action::bind_payer(action, &payer, sender.as_deref())
 }
 
 fn payer_name(settings: &Settings, user: Option<&User>) -> Option<String> {
@@ -416,15 +437,8 @@ fn payer_name(settings: &Settings, user: Option<&User>) -> Option<String> {
         user.username.as_deref(),
     ];
     for label in labels.into_iter().flatten() {
-        for person in &settings.payers {
-            if person.name.eq_ignore_ascii_case(label)
-                || person
-                    .aliases
-                    .iter()
-                    .any(|alias| alias.eq_ignore_ascii_case(label))
-            {
-                return Some(person.name.clone());
-            }
+        if let Some(name) = settings.resolve_payer(label) {
+            return Some(name.to_string());
         }
     }
     None
