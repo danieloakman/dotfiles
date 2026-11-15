@@ -20,7 +20,6 @@ in
           playwright-cli.enable = lib.mkDefault true;
           localsend.enable = lib.mkDefault true;
           obsidian.enable = lib.mkDefault true;
-          herdr.enable = lib.mkDefault true;
           orca.enable = lib.mkDefault true;
           nebula.enable = lib.mkDefault true;
           micro = {
@@ -36,7 +35,7 @@ in
           my = {
             programs = {
               rtk.enable = lib.mkDefault true;
-              hunk.enable = lib.mkDefault true;
+              hunk.enable = lib.mkDefault false;
               kitty.enable = lib.mkDefault true;
             };
             programs.bun-scripts.enable = lib.mkDefault true;
