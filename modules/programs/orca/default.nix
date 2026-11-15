@@ -47,6 +47,10 @@ let
   # sudo/nh fail. The official orca-server tarball is plain Node/orcad — use that.
   orcaUserData = "${env.home}/.config/orca";
 
+  # Darwin: Homebrew cask CLI (`orca`). Linux: AppImage wrap (`orca-ide`).
+  orcaCli = if env.platform == "darwin" then "orca" else lib.getExe cfg.package;
+  jqBin = lib.getExe pkgs.jq;
+
   serveArgs =
     [
       "serve"
@@ -95,6 +99,22 @@ in
         "orchestration"
         "orca-linear"
       ];
+    };
+
+    plugins = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ "stablyai.orca-nix" ];
+      example = [
+        "stablyai.orca-nix"
+        "stablyai.orca-systemd"
+      ];
+      description = ''
+        Catalog plugin ids (or other `orca plugin install` sources) ensured on
+        home-manager activation. Content-only plugins (themes, syntaxes) install
+        and enable without approval. Requires an Orca runtime with the plugin
+        service (desktop Electron). Headless `orca-serve` (orcad) has no plugin
+        service yet — activation warns and continues. Empty list installs nothing.
+      '';
     };
 
     serve = {
@@ -217,6 +237,52 @@ in
             value = "${orcaSkillsSrc}/skills/${name}";
           }) cfg.skills
         );
+      })
+
+      (lib.mkIf (cfg.plugins != [ ]) {
+        home-manager.users.${env.user} =
+          { lib, ... }:
+          {
+            # Best-effort: needs a live Orca host that exposes plugins (not orcad).
+            home.activation.installOrcaPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+              export ORCA_USER_DATA_PATH=${lib.escapeShellArg orcaUserData}
+              orca_bin=${lib.escapeShellArg orcaCli}
+              if [ ! -x "$orca_bin" ]; then
+                orca_bin=$(command -v "$orca_bin" 2>/dev/null || true)
+              fi
+              if [ -z "$orca_bin" ]; then
+                echo "orca.plugins: CLI not found; skip"
+                exit 0
+              fi
+
+              list_json=$("$orca_bin" plugin list --json 2>/dev/null || true)
+              if ! printf '%s' "$list_json" | ${jqBin} -e '.ok == true' >/dev/null 2>&1; then
+                msg=$(printf '%s' "$list_json" | ${jqBin} -r '.error.message // "plugin list failed"' 2>/dev/null || echo "plugin list failed")
+                echo "orca.plugins: skip ($msg). Needs desktop Electron Orca; headless orcad has no plugin service."
+                exit 0
+              fi
+
+              $DRY_RUN_CMD "$orca_bin" plugin system on --json >/dev/null 2>&1 || true
+
+              for id in ${lib.escapeShellArgs cfg.plugins}; do
+                installed=$(printf '%s' "$list_json" | ${jqBin} -r --arg id "$id" '
+                  [.result.plugins[]?
+                    | select(.id == $id or .pluginKey == $id or .key == $id or .plugin_id == $id)
+                    | .id // .pluginKey // .key // empty
+                  ] | first // empty
+                ')
+                if [ -n "$installed" ]; then
+                  echo "orca.plugins: $id already installed"
+                  continue
+                fi
+                echo "orca.plugins: installing $id"
+                # Soft-fail: do not abort home-manager activation if Orca rejects install.
+                $DRY_RUN_CMD "$orca_bin" plugin install "$id" --json \
+                  || echo "orca.plugins: failed to install $id" >&2
+                list_json=$("$orca_bin" plugin list --json 2>/dev/null || printf '%s' "$list_json")
+              done
+            '';
+          };
       })
 
       # selectPlatform (not mkIf + platform): Darwin has no networking.firewall /

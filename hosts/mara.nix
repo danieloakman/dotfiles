@@ -23,8 +23,9 @@
         pairing-address = "mara.dinosaur-crocodile.ts.net";
       };
       herdr = {
+        enable = false;
         collie = {
-          enable = true;
+          enable = false;
           # Source from Github repo:
           source = {
             user = "AltanS";
