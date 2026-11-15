@@ -2,8 +2,9 @@
 name: android-adb
 description: >-
   Drive a physical Android phone over ADB with android-adb-* wrappers (unlock,
-  lock, info, screenshot, clear, launch, log, grant). Use for on-device mobile
-  app testing, agent phone loops, or remote device control when not at the desk.
+  lock, info, screenshot, clear, launch, log, grant, screen-awake). Use for
+  on-device mobile app testing, agent phone loops, or remote device control
+  when not at the desk.
 ---
 
 # android-adb
@@ -18,6 +19,7 @@ All commands honor `ANDROID_SERIAL` when multiple devices are attached.
 android-adb-info                 # serial, model, battery, screen, keyguard, foreground
 android-adb-unlock <pin>         # wake + PIN; no-op if already unlocked
 android-adb-lock                 # KEYCODE_SLEEP
+android-adb-screen-awake true    # Stay awake while charging (dev option); false to clear
 ```
 
 PIN comes from the user/env for the run — do not hardcode it in the skill or commit it.
@@ -49,6 +51,7 @@ android-adb-lock
 | `android-adb-launch <target>` | package → launcher; `pkg/.Act` → component; `https://…` → VIEW |
 | `android-adb-log <pkg> [--follow] [--lines N]` | logcat for package PID (default dump 200 lines) |
 | `android-adb-grant <pkg> <perm…>` | Short names (`CAMERA`) → `android.permission.CAMERA` |
+| `android-adb-screen-awake [true|false]` | Developer “Stay awake” while charging; no args = query |
 
 ## Observe
 

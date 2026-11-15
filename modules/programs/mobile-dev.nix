@@ -296,6 +296,54 @@ in
             '';
           };
 
+          # Developer option "Stay awake" → global stay_on_while_plugged_in
+          # (keeps screen on while charging: AC|USB|wireless).
+          androidAdbScreenAwake = pkgs.writeShellApplication {
+            name = "android-adb-screen-awake";
+            runtimeInputs = [ pkgs.android-tools pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-screen-awake [true|false|on|off|1|0]
+              # No args: print current state.
+              # Maps to Developer options → Stay awake (while charging).
+
+              ${adbSetup}
+
+              # BatteryManager: AC=1 USB=2 WIRELESS=4 → all plugged = 7
+              on_value=7
+              off_value=0
+
+              current="$(adb shell settings get global stay_on_while_plugged_in 2>/dev/null | tr -d '\r' || true)"
+              if [[ -z "$current" || "$current" == "null" ]]; then
+                current="0"
+              fi
+
+              if [[ $# -lt 1 ]]; then
+                if [[ "$current" != "0" ]]; then
+                  echo "android-adb-screen-awake: on (stay_on_while_plugged_in=$current)"
+                else
+                  echo "android-adb-screen-awake: off (stay_on_while_plugged_in=0)"
+                fi
+                exit 0
+              fi
+
+              case "$1" in
+                true|on|1)
+                  adb shell settings put global stay_on_while_plugged_in "$on_value"
+                  echo "android-adb-screen-awake: on (stay_on_while_plugged_in=$on_value)"
+                  ;;
+                false|off|0)
+                  adb shell settings put global stay_on_while_plugged_in "$off_value"
+                  echo "android-adb-screen-awake: off (stay_on_while_plugged_in=$off_value)"
+                  ;;
+                *)
+                  echo "usage: android-adb-screen-awake [true|false|on|off|1|0]" >&2
+                  exit 1
+                  ;;
+              esac
+            '';
+          };
+
           androidAdbPackages = [
             pkgs.android-tools
             androidAdbUnlock
@@ -306,6 +354,7 @@ in
             androidAdbLaunch
             androidAdbLog
             androidAdbGrant
+            androidAdbScreenAwake
           ];
         in
         {
