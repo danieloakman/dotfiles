@@ -55,14 +55,14 @@ let
     {
       echo '---'
       echo 'name: gws'
-      echo 'description: "Google Workspace gateway (Drive, Calendar, Docs, Sheets, Chat, Meet, Forms, Tasks, Slides, Apps Script, Classroom, Keep, People, Admin; Gmail send/reply/labels/filters/watch). For Gmail search/list/read prefer the gmail-api skill. Load this skill first to access the indexed sub-skills."'
+      echo 'description: "Google Workspace gateway (Drive, Calendar, Docs, Sheets, Chat, Meet, Forms, Tasks, Slides, Apps Script, Classroom, Keep, People, Admin; Gmail send/reply/labels/filters/watch). For Gmail search/list/read/attachments prefer the gmail-api skill. Load this skill first to access the indexed sub-skills."'
       echo '---'
       echo ""
       echo '# Google Workspace skills'
       echo ""
       echo 'Sub-skills are installed at `~/.claude/gws-skills/`. They are NOT auto-discovered as skills to keep the global skill list small. To use one, Read the relevant SKILL.md path below and follow its instructions.'
       echo ""
-      echo '**Gmail search / list / read:** prefer the `gmail-api` skill (`gmail-api search -j`, `gmail-api read <id> -j`) over `gws-gmail-triage` / `gws-gmail-read`.'
+      echo '**Gmail search / list / read / attachments:** prefer the `gmail-api` skill (`gmail-api search -j`, `gmail-api read <id> -j`, `gmail-api attachments <id> -j`, `gmail-api download <id> <file>`) over `gws-gmail-triage` / `gws-gmail-read` / raw attachment gets.'
       echo ""
       echo '## Index'
       echo ""

@@ -1,8 +1,15 @@
 #! bun
+import { join, resolve } from 'node:path';
 import { $ } from 'bun';
 import meow from 'meow';
 import { exit, helpFlag } from './utils/cli';
-import { emailClient, type EmailMessage, type EmailSummary } from './utils/email';
+import {
+	emailClient,
+	resolveDownloadPath,
+	type EmailAttachment,
+	type EmailMessage,
+	type EmailSummary
+} from './utils/email';
 
 /** Default max chars of bodyText in `read -j` (agents); use --full to disable. */
 const JSON_BODY_MAX = 4000;
@@ -161,6 +168,203 @@ Examples
 	}
 }
 
+function toJsonAttachment(a: EmailAttachment) {
+	return {
+		id: a.id,
+		filename: a.filename,
+		mimeType: a.mimeType,
+		size: a.size,
+		inline: a.inline
+	};
+}
+
+function printAttachments(attachments: EmailAttachment[]) {
+	if (!attachments.length) {
+		console.log('No attachments.');
+		return;
+	}
+	for (const [i, a] of attachments.entries()) {
+		const kind = a.inline ? 'inline' : 'attachment';
+		console.log(`${i + 1}. ${a.filename}  (${a.mimeType}, ${a.size} bytes, ${kind})`);
+		console.log(`   id: ${a.id}`);
+		console.log();
+	}
+}
+
+function matchAttachment(
+	attachments: EmailAttachment[],
+	selector: string
+): EmailAttachment {
+	const byId = attachments.find((a) => a.id === selector);
+	if (byId) return byId;
+	const exact = attachments.filter((a) => a.filename === selector);
+	if (exact.length === 1) return exact[0]!;
+	if (exact.length > 1) {
+		exit(`Multiple attachments named "${selector}"; pass the attachment id instead`);
+	}
+	const loose = attachments.filter((a) =>
+		a.filename.toLowerCase().includes(selector.toLowerCase())
+	);
+	if (loose.length === 1) return loose[0]!;
+	if (loose.length > 1) {
+		exit(
+			`Ambiguous attachment "${selector}" matched: ${loose.map((a) => a.filename).join(', ')}`
+		);
+	}
+	exit(`No attachment matching "${selector}"`);
+}
+
+async function runAttachments(argv: string[]) {
+	const { flags, input, showHelp } = meow(
+		`
+Usage
+  $ gmail-api attachments <message-id>
+
+List attachment metadata for a message (id, filename, mimeType, size, inline).
+Does not download bytes — use download for that.
+
+Options
+  --help, -h     Show help
+  --json, -j     Compact JSON array
+
+Examples
+  $ gmail-api attachments 18c2f1a2b3c4d5e6 -j
+		`.trimStart(),
+		{
+			importMeta: import.meta,
+			argv,
+			flags: {
+				...helpFlag,
+				json: { type: 'boolean', shortFlag: 'j', default: false }
+			}
+		}
+	);
+
+	if (flags.help) showHelp(0);
+
+	const id = input.join(' ').trim();
+	if (!id) {
+		showHelp(1);
+		exit('Provide a message id');
+	}
+
+	try {
+		const attachments = await emailClient.listAttachments(id);
+		if (flags.json) {
+			console.log(
+				JSON.stringify({
+					id,
+					attachments: attachments.map(toJsonAttachment)
+				})
+			);
+		} else printAttachments(attachments);
+	} catch (err) {
+		exit(`Attachments failed: ${err instanceof Error ? err.message : err}`);
+	}
+}
+
+async function runDownload(argv: string[]) {
+	const { flags, input, showHelp } = meow(
+		`
+Usage
+  $ gmail-api download <message-id> [filename-or-attachment-id]
+
+Download one attachment (or all with --all) to disk.
+Omit the selector when the message has exactly one attachment.
+Default destination is ./<filename> (use -o for another path or directory/).
+
+Options
+  --help, -h           Show help
+  --all, -a            Download every attachment
+  --output, -o <path>  File path (single) or directory/ (trailing slash or --all)
+  --json, -j           Compact JSON result(s)
+
+Examples
+  $ gmail-api download 18c2f1a2b3c4d5e6 invoice.pdf
+  $ gmail-api download 18c2f1a2b3c4d5e6 -a -o ./inbox/
+  $ gmail-api download 18c2f1a2b3c4d5e6 -j
+		`.trimStart(),
+		{
+			importMeta: import.meta,
+			argv,
+			flags: {
+				...helpFlag,
+				all: { type: 'boolean', shortFlag: 'a', default: false },
+				output: { type: 'string', shortFlag: 'o', default: '' },
+				json: { type: 'boolean', shortFlag: 'j', default: false }
+			}
+		}
+	);
+
+	if (flags.help) showHelp(0);
+
+	const messageId = input[0]?.trim() ?? '';
+	const selector = input.slice(1).join(' ').trim();
+	if (!messageId) {
+		showHelp(1);
+		exit('Provide a message id');
+	}
+	if (flags.all && selector) {
+		exit('Pass either --all or a filename/id, not both');
+	}
+
+	try {
+		const attachments = await emailClient.listAttachments(messageId);
+		if (!attachments.length) exit('No attachments on that message', 1);
+
+		const chosen = flags.all
+			? attachments
+			: [
+					selector
+						? matchAttachment(attachments, selector)
+						: attachments.length === 1
+							? attachments[0]!
+							: exit(
+									`Message has ${attachments.length} attachments; pass a filename/id or --all`
+								)
+				];
+
+		const outFlag = flags.output.trim();
+		const results: { filename: string; path: string; size: number; id: string }[] = [];
+
+		for (const att of chosen) {
+			const dest = (() => {
+				if (!outFlag) return resolve(att.filename);
+				if (flags.all || outFlag.endsWith('/') || outFlag.endsWith('\\')) {
+					return resolveDownloadPath(
+						outFlag.endsWith('/') || outFlag.endsWith('\\') ? outFlag : `${outFlag}/`,
+						att.filename
+					);
+				}
+				if (chosen.length === 1) return resolve(outFlag);
+				return join(resolve(outFlag), att.filename);
+			})();
+
+			const saved = await emailClient.downloadAttachment({
+				messageId,
+				attachmentId: att.id,
+				path: dest
+			});
+			results.push({
+				filename: att.filename,
+				path: saved.path,
+				size: saved.size,
+				id: att.id
+			});
+		}
+
+		if (flags.json) {
+			console.log(JSON.stringify({ id: messageId, downloaded: results }));
+		} else {
+			for (const r of results) {
+				console.log(`Saved ${r.filename} → ${r.path} (${r.size} bytes)`);
+			}
+		}
+	} catch (err) {
+		exit(`Download failed: ${err instanceof Error ? err.message : err}`);
+	}
+}
+
 async function runSearch(argv: string[]) {
 	const { flags, input, showHelp } = meow(
 		`
@@ -256,18 +460,22 @@ Usage
   $ gmail-api <command> ...
 
 Commands
-  search [keywords...]    Search mail (pick result interactively by default)
-  read <id>               Print one message by id
+  search [keywords...]         Search mail (pick result interactively by default)
+  read <id>                    Print one message by id
+  attachments <id>             List attachment metadata for a message
+  download <id> [name-or-id]   Download attachment(s) to disk
 
 Examples
   $ gmail-api search invoice --from boss@example.com
   $ gmail-api search --subject receipt --list
   $ gmail-api read 18c2f1a2b3c4d5e6
+  $ gmail-api attachments 18c2f1a2b3c4d5e6 -j
+  $ gmail-api download 18c2f1a2b3c4d5e6 invoice.pdf
   $ gmail-api search --help
 		`.trimStart(),
 		{
 			importMeta: import.meta,
-			commands: ['search', 'read'],
+			commands: ['search', 'read', 'attachments', 'download'],
 			flags: {
 				...helpFlag
 			}
@@ -278,4 +486,6 @@ Examples
 
 	if (cli.command === 'read') await runRead(cli.input);
 	else if (cli.command === 'search') await runSearch(cli.input);
+	else if (cli.command === 'attachments') await runAttachments(cli.input);
+	else if (cli.command === 'download') await runDownload(cli.input);
 }
