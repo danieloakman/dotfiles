@@ -1,8 +1,8 @@
 # Orca headless server — pinned linux tarball from stablyai/orca releases.
 # https://orca.dev/docs/remote-servers · https://github.com/stablyai/orca/releases
 #
-# Prefer this over the AppImage for `orca serve`: no Electron/bwrap, so agent
-# PTYs are not NoNewPrivileges (sudo / nh keep working).
+# Prefer this over the desktop Electron package for `orca serve`: plain Node
+# orcad, smaller, no GUI deps.
 #
 # Bump version + both hashes together (and AppImage / skills hashes in sibling files):
 #   nix store prefetch-file "https://github.com/stablyai/orca/releases/download/vVERSION/orca-server-linux-x64.tar.gz"

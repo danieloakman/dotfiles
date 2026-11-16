@@ -1,7 +1,8 @@
 # Orca — agent development environment (ADE).
 # https://orca.dev/
-# Linux: pinned AppImage as `orca-ide`. Darwin: Homebrew cask stablyai/orca/orca.
-# Headless runtime: my.programs.orca.serve → orca-server tarball (not AppImage/bwrap).
+# Linux desktop: extracted AppImage + autoPatchelf as `orca-ide` (no bwrap/FHS).
+# Darwin: Homebrew cask stablyai/orca/orca.
+# Headless runtime: my.programs.orca.serve → orca-server tarball.
 { env
 , config
 , lib
@@ -43,12 +44,12 @@ let
     hash = "sha256-yEeRd1VZuvDsqOpzI/xk5I0LUtOJkn+8M3QihfANeLs=";
   };
 
-  # AppImage wrapType2 sets bubblewrap NoNewPrivileges; agent PTYs inherit it and
-  # sudo/nh fail. The official orca-server tarball is plain Node/orcad — use that.
+  # Desktop package autoPatchelfs the AppImage (no bwrap), so agent PTYs keep
+  # privileges. Headless serve still uses the plain Node orca-server tarball.
   orcaUserData = "${env.home}/.config/orca";
 
-  # Darwin: Homebrew cask CLI (`orca`). Linux: AppImage wrap (`orca-ide`).
-  orcaCli = if env.platform == "darwin" then "orca" else lib.getExe cfg.package;
+  # Darwin: Homebrew cask CLI (`orca`). Linux: ELECTRON_RUN_AS_NODE CLI from the package.
+  orcaCli = if env.platform == "darwin" then "orca" else lib.getExe' cfg.package "orca";
   jqBin = lib.getExe pkgs.jq;
 
   serveArgs =
@@ -72,14 +73,14 @@ in
   options.my.programs.orca = {
     enable = lib.mkEnableOption ''
       Orca (stablyai/orca): agent development environment. Linux installs the
-      pinned AppImage as `orca-ide`; Darwin installs the Homebrew cask
-      `stablyai/orca/orca` (not the unrelated Plotly `orca` cask).
+      pinned AppImage extracted + autoPatchelf'd as `orca-ide` (no bubblewrap);
+      Darwin installs the Homebrew cask `stablyai/orca/orca` (not Plotly `orca`).
     '';
 
     package = lib.mkOption {
       type = lib.types.package;
       default = defaultPackage;
-      description = "Orca package (Linux AppImage wrap). Unused on Darwin (Homebrew).";
+      description = "Orca desktop package (Linux AppImage extract). Unused on Darwin (Homebrew).";
     };
 
     skills = lib.mkOption {
@@ -121,8 +122,8 @@ in
       enable = lib.mkEnableOption ''
         Run a headless Orca runtime (`orca-serve serve --supervise --no-pairing`)
         as a Linux systemd user service from the official orca-server tarball
-        (not the AppImage bwrap wrapper, so terminals keep sudo). Pair clients
-        afterward with `orca-serve pair --address <pairing-address>` or
+        (plain Node/orcad — no Electron). Pair clients afterward with
+        `orca-serve pair --address <pairing-address>` or
         `orca-serve pair --mobile --address <pairing-address>`.
         Requires `my.programs.orca.enable`. Linux only.
       '';
@@ -311,7 +312,7 @@ in
                 Type = "simple";
                 # Match upstream `orca serve service install`: supervise + no pairing
                 # in the unit log. Pair with `orca-serve pair` while this is running.
-                # orca-server tarball (not AppImage/bwrap) so PTYs keep privileges.
+                # orca-server tarball (plain Node; desktop Electron is separate).
                 Environment = [
                   "ORCA_USER_DATA_PATH=${orcaUserData}"
                 ];
