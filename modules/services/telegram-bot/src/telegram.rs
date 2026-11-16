@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use frankenstein::client_ureq::Bot;
 use frankenstein::inline_mode::{
     InlineQueryResult, InlineQueryResultArticle, InputTextMessageContent,
@@ -11,6 +13,9 @@ use frankenstein::updates::Update;
 use frankenstein::TelegramApi;
 
 const TEXT_LIMIT: usize = 3500;
+/// Long-poll is 50s; keep a small margin so a dead socket recovers instead of
+/// sitting on frankenstein's default 500s global timeout.
+const HTTP_TIMEOUT: Duration = Duration::from_secs(70);
 
 #[derive(Clone, Debug)]
 pub enum EditTarget {
@@ -24,8 +29,17 @@ pub struct Telegram {
 
 impl Telegram {
     pub fn new(token: &str) -> Self {
+        let agent = ureq::Agent::new_with_config(
+            ureq::config::Config::builder()
+                .http_status_as_error(false)
+                .timeout_global(Some(HTTP_TIMEOUT))
+                .build(),
+        );
         Self {
-            bot: Bot::new(token),
+            bot: Bot::builder()
+                .api_url(format!("https://api.telegram.org/bot{token}"))
+                .request_agent(agent)
+                .build(),
         }
     }
 

@@ -100,6 +100,11 @@ impl Service {
 
     fn handle_private(&mut self, message: Message) -> Result<(), String> {
         if message.chat.type_field != ChatType::Private {
+            log::info!(
+                "ignoring non-private message chat_id={} type={:?}",
+                message.chat.id,
+                message.chat.type_field
+            );
             return Ok(());
         }
         if message.from.as_ref().is_some_and(|user| user.is_bot) {
