@@ -104,6 +104,12 @@
       };
       # Soft-remediate internet/Tailscale failures; reboot up to 3 times then stay up.
       connectivity-watchdog.enable = true;
+      # Weekly vulnix scan + optional security-feed poller → Telegram (Dan).
+      vuln-monitor = {
+        enable = true;
+        notify.telegram.chat-ids = [ 8348310754 ]; # Dan
+        feeds.enable = true;
+      };
       pia.enable = true;
       qbittorrent = {
         enable = true;
