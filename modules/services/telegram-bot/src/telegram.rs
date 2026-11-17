@@ -5,12 +5,17 @@ use frankenstein::inline_mode::{
     InlineQueryResult, InlineQueryResultArticle, InputTextMessageContent,
 };
 use frankenstein::methods::{
-    AnswerCallbackQueryParams, AnswerGuestQueryParams, EditMessageTextParams, GetUpdatesParams,
-    SendMessageParams,
+    AnswerCallbackQueryParams, AnswerGuestQueryParams, DeleteMyCommandsParams,
+    EditMessageTextParams, GetMyCommandsParams, GetUpdatesParams, SendMessageParams,
+    SetMyCommandsParams,
 };
-use frankenstein::types::{AllowedUpdate, InlineKeyboardButton, InlineKeyboardMarkup, ReplyMarkup};
+use frankenstein::types::{
+    AllowedUpdate, BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, ReplyMarkup,
+};
 use frankenstein::updates::Update;
 use frankenstein::TelegramApi;
+
+use crate::commands::{self, MenuCommand};
 
 const TEXT_LIMIT: usize = 3500;
 /// Long-poll is 50s; keep a small margin so a dead socket recovers instead of
@@ -143,6 +148,67 @@ impl Telegram {
             .map(|_| ())
             .map_err(|err| err.to_string())
     }
+
+    /// Converge Telegram's default-scope command menu to `desired`.
+    /// Reads first and skips the write when already equal.
+    pub fn sync_commands(&self, desired: &[MenuCommand]) -> Result<CommandSync, String> {
+        let current = self.get_commands()?;
+        let pairs: Vec<(String, String)> = current
+            .iter()
+            .map(|command| (command.command.clone(), command.description.clone()))
+            .collect();
+        if commands::commands_match(&pairs, desired) {
+            return Ok(CommandSync::Unchanged);
+        }
+        if desired.is_empty() {
+            self.delete_commands()?;
+        } else {
+            self.set_commands(desired)?;
+        }
+        Ok(CommandSync::Updated {
+            from: current.len(),
+            to: desired.len(),
+        })
+    }
+
+    fn get_commands(&self) -> Result<Vec<BotCommand>, String> {
+        let params = GetMyCommandsParams::builder().build();
+        self.bot
+            .get_my_commands(&params)
+            .map(|response| response.result)
+            .map_err(|err| err.to_string())
+    }
+
+    fn set_commands(&self, desired: &[MenuCommand]) -> Result<(), String> {
+        let commands = desired
+            .iter()
+            .map(|command| {
+                BotCommand::builder()
+                    .command(command.command.to_string())
+                    .description(command.description.to_string())
+                    .build()
+            })
+            .collect();
+        let params = SetMyCommandsParams::builder().commands(commands).build();
+        self.bot
+            .set_my_commands(&params)
+            .map(|_| ())
+            .map_err(|err| err.to_string())
+    }
+
+    fn delete_commands(&self) -> Result<(), String> {
+        let params = DeleteMyCommandsParams::builder().build();
+        self.bot
+            .delete_my_commands(&params)
+            .map(|_| ())
+            .map_err(|err| err.to_string())
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CommandSync {
+    Unchanged,
+    Updated { from: usize, to: usize },
 }
 
 pub fn buttons(action_id: &str) -> InlineKeyboardMarkup {
