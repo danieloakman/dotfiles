@@ -35,23 +35,23 @@ pub struct MenuCommand {
 pub const MENU_COMMANDS: &[MenuCommand] = &[
     MenuCommand {
         command: "expense",
-        description: "Log an expense",
+        description: "e.g. 15 coffee · trotty paid 40 lunch · Kmart Amex",
     },
     MenuCommand {
         command: "task",
-        description: "Add a Google Task",
+        description: "e.g. buy milk · buy milk tomorrow",
     },
     MenuCommand {
         command: "cal",
-        description: "Add a calendar event",
+        description: "e.g. 2026-10-25 15:00 dentist · or free-form",
     },
     MenuCommand {
         command: "help",
-        description: "Show usage",
+        description: "show usage examples",
     },
     MenuCommand {
         command: "start",
-        description: "Show usage",
+        description: "show usage examples",
     },
 ];
 
@@ -295,19 +295,19 @@ mod tests {
     #[test]
     fn menu_commands_match_is_order_and_description_sensitive() {
         let current = vec![
-            ("expense", "Log an expense"),
-            ("task", "Add a Google Task"),
+            ("expense", "15 coffee"),
+            ("task", "buy milk"),
         ];
         assert!(commands_match(
             &current,
             &[
                 MenuCommand {
                     command: "expense",
-                    description: "Log an expense",
+                    description: "15 coffee",
                 },
                 MenuCommand {
                     command: "task",
-                    description: "Add a Google Task",
+                    description: "buy milk",
                 },
             ],
         ));
@@ -316,11 +316,11 @@ mod tests {
             &[
                 MenuCommand {
                     command: "task",
-                    description: "Add a Google Task",
+                    description: "buy milk",
                 },
                 MenuCommand {
                     command: "expense",
-                    description: "Log an expense",
+                    description: "15 coffee",
                 },
             ],
         ));
@@ -333,14 +333,11 @@ mod tests {
                 },
                 MenuCommand {
                     command: "task",
-                    description: "Add a Google Task",
+                    description: "buy milk",
                 },
             ],
         ));
-        assert!(commands_match(
-            &Vec::<(&str, &str)>::new(),
-            &[],
-        ));
+        assert!(commands_match(&Vec::<(&str, &str)>::new(), &[]));
     }
 
     #[test]
@@ -352,6 +349,18 @@ mod tests {
         assert!(names.contains(&"help"));
         assert!(names.contains(&"start"));
         assert!(!names.contains(&"calendar"));
+        for command in MENU_COMMANDS {
+            assert!(
+                (1..=256).contains(&command.description.len()),
+                "{} description length",
+                command.command
+            );
+            assert!(
+                !command.description.is_empty(),
+                "{} needs a helpful description",
+                command.command
+            );
+        }
     }
 
     #[test]
