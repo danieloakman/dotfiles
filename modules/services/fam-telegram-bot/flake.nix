@@ -1,5 +1,5 @@
 {
-  description = "Couple Telegram bot";
+  description = "Family Telegram bot (expenses / calendar / tasks)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -15,7 +15,7 @@
         packages.default = pkgs.callPackage ./_package.nix { };
 
         devShells.default = pkgs.mkShell {
-          name = "telegram-bot";
+          name = "fam-telegram-bot";
           packages = with pkgs; [
             cargo
             rustc

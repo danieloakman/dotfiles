@@ -26,7 +26,7 @@ fn run() -> Result<(), String> {
         .map_err(|err| format!("reading telegram token: {err}"))?;
     let token = token.trim();
     if token.is_empty() || token == "REPLACE_ME" {
-        return Err("telegram_bot_token is missing".into());
+        return Err("fam_telegram_bot_token is missing".into());
     }
     let settings = settings::Settings::load(Path::new(&env_var("TELEGRAM_BOT_SETTINGS")?))?;
     let tz = commands::timezone(&settings.timezone)?;

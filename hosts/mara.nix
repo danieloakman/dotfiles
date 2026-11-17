@@ -107,8 +107,9 @@
       # Weekly vulnix scan + optional security-feed poller → Telegram (Dan).
       vuln-monitor = {
         enable = true;
-        notify.telegram.chat-ids = [ 8348310754 ]; # Dan
+        # Notify via agent-telegram-bot (chat-ids configured there).
         feeds.enable = true;
+        triage.enable = true;
       };
       pia.enable = true;
       qbittorrent = {
@@ -131,7 +132,7 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
-      telegram-bot = {
+      fam-telegram-bot = {
         enable = true;
         # Telegram first names are Daniel / Sheridan; sheet columns stay Dan / Trotty.
         allowed-user-ids = [
@@ -150,6 +151,11 @@
             aliases = [ "Trotty" "Sheridan" ];
           }
         ];
+      };
+      agent-telegram-bot = {
+        enable = true;
+        chat-ids = [ 8348310754 ]; # Dan
+        allowed-user-ids = [ 8348310754 ];
       };
       # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
