@@ -110,7 +110,7 @@ impl App {
             return Ok(());
         }
 
-        if text == "/help" || text == "/start" {
+        if text == "/help" {
             let _ = self.telegram.send(
                 chat_id,
                 "Agent bridge.\n\

@@ -49,10 +49,6 @@ pub const MENU_COMMANDS: &[MenuCommand] = &[
         command: "help",
         description: "show usage examples",
     },
-    MenuCommand {
-        command: "start",
-        description: "show usage examples",
-    },
 ];
 
 /// True when Telegram's current list already matches the desired menu.
@@ -347,7 +343,7 @@ mod tests {
         assert!(names.contains(&"task"));
         assert!(names.contains(&"cal"));
         assert!(names.contains(&"help"));
-        assert!(names.contains(&"start"));
+        assert!(!names.contains(&"start"));
         assert!(!names.contains(&"calendar"));
         for command in MENU_COMMANDS {
             assert!(

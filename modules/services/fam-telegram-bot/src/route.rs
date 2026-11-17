@@ -77,8 +77,6 @@ fn plan_text(text: &str, timezone: &str, shortcut: &dyn Fn(&str) -> Option<Actio
     if let Some((name, args)) = split_slash(text) {
         match name.as_str() {
             "help" => return Prepared::Help,
-            "start" if args.is_empty() => return Prepared::Help,
-            "start" => return plan_text(args, timezone, shortcut),
             "expense" => {
                 return finish_parse(CommandKind::Expense, args, text, timezone);
             }
@@ -419,7 +417,7 @@ mod tests {
     }
 
     #[test]
-    fn help_and_start_do_not_call_the_interpreter() {
+    fn help_does_not_call_the_interpreter() {
         let interpreter = fake(Interpreted::Clarify("nope".into()));
         assert_eq!(
             route(
@@ -431,31 +429,6 @@ mod tests {
             )
             .unwrap(),
             Decision::Help
-        );
-        assert_eq!(
-            route(
-                "/start",
-                None,
-                "Australia/Sydney",
-                &no_shortcut,
-                &interpreter
-            )
-            .unwrap(),
-            Decision::Help
-        );
-        assert_eq!(
-            route(
-                "/start /task buy milk",
-                None,
-                "Australia/Sydney",
-                &no_shortcut,
-                &interpreter,
-            )
-            .unwrap(),
-            Decision::Action(Action::Task {
-                title: "buy milk".into(),
-                due: None,
-            })
         );
         assert!(interpreter.calls.borrow().is_empty());
     }

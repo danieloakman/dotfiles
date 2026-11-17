@@ -245,6 +245,8 @@ in
           { lib, ... }:
           {
             # Best-effort: needs a live Orca host that exposes plugins (not orcad).
+            # Never `exit` here — this snippet is inlined into HM activate; exit
+            # aborts linkGeneration / sd-switch (e.g. telegram user units).
             home.activation.installOrcaPlugins = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
               export ORCA_USER_DATA_PATH=${lib.escapeShellArg orcaUserData}
               orca_bin=${lib.escapeShellArg orcaCli}
@@ -253,35 +255,33 @@ in
               fi
               if [ -z "$orca_bin" ]; then
                 echo "orca.plugins: CLI not found; skip"
-                exit 0
-              fi
+              else
+                list_json=$("$orca_bin" plugin list --json 2>/dev/null || true)
+                if ! printf '%s' "$list_json" | ${jqBin} -e '.ok == true' >/dev/null 2>&1; then
+                  msg=$(printf '%s' "$list_json" | ${jqBin} -r '.error.message // "plugin list failed"' 2>/dev/null || echo "plugin list failed")
+                  echo "orca.plugins: skip ($msg). Needs desktop Electron Orca; headless orcad has no plugin service."
+                else
+                  $DRY_RUN_CMD "$orca_bin" plugin system on --json >/dev/null 2>&1 || true
 
-              list_json=$("$orca_bin" plugin list --json 2>/dev/null || true)
-              if ! printf '%s' "$list_json" | ${jqBin} -e '.ok == true' >/dev/null 2>&1; then
-                msg=$(printf '%s' "$list_json" | ${jqBin} -r '.error.message // "plugin list failed"' 2>/dev/null || echo "plugin list failed")
-                echo "orca.plugins: skip ($msg). Needs desktop Electron Orca; headless orcad has no plugin service."
-                exit 0
-              fi
-
-              $DRY_RUN_CMD "$orca_bin" plugin system on --json >/dev/null 2>&1 || true
-
-              for id in ${lib.escapeShellArgs cfg.plugins}; do
-                installed=$(printf '%s' "$list_json" | ${jqBin} -r --arg id "$id" '
-                  [.result.plugins[]?
-                    | select(.id == $id or .pluginKey == $id or .key == $id or .plugin_id == $id)
-                    | .id // .pluginKey // .key // empty
-                  ] | first // empty
-                ')
-                if [ -n "$installed" ]; then
-                  echo "orca.plugins: $id already installed"
-                  continue
+                  for id in ${lib.escapeShellArgs cfg.plugins}; do
+                    installed=$(printf '%s' "$list_json" | ${jqBin} -r --arg id "$id" '
+                      [.result.plugins[]?
+                        | select(.id == $id or .pluginKey == $id or .key == $id or .plugin_id == $id)
+                        | .id // .pluginKey // .key // empty
+                      ] | first // empty
+                    ')
+                    if [ -n "$installed" ]; then
+                      echo "orca.plugins: $id already installed"
+                      continue
+                    fi
+                    echo "orca.plugins: installing $id"
+                    # Soft-fail: do not abort home-manager activation if Orca rejects install.
+                    $DRY_RUN_CMD "$orca_bin" plugin install "$id" --json \
+                      || echo "orca.plugins: failed to install $id" >&2
+                    list_json=$("$orca_bin" plugin list --json 2>/dev/null || printf '%s' "$list_json")
+                  done
                 fi
-                echo "orca.plugins: installing $id"
-                # Soft-fail: do not abort home-manager activation if Orca rejects install.
-                $DRY_RUN_CMD "$orca_bin" plugin install "$id" --json \
-                  || echo "orca.plugins: failed to install $id" >&2
-                list_json=$("$orca_bin" plugin list --json 2>/dev/null || printf '%s' "$list_json")
-              done
+              fi
             '';
           };
       })
