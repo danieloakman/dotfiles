@@ -168,8 +168,14 @@ in
     homebrew.brews = [ "mlx-lm" ];
 
     home-manager.users.${env.user} = { lib, ... }: {
-      # llmfit (and similar clients) probe MLX_LM_HOST; default is :8080.
-      home.sessionVariables.MLX_LM_HOST = "http://127.0.0.1:${toString cfg.port}";
+      # Prefer zsh initContent over home.sessionVariables: on this host,
+      # .zprofile/.zshenv pin a stale hm-session-vars store path, so new
+      # sessionVariables never reach interactive shells (same reason
+      # PASSWORD_STORE_* is exported from programs.zsh.initContent).
+      programs.zsh.initContent = lib.mkOrder 500 ''
+        # llmfit probes MLX_LM_HOST; its default is :8080.
+        export MLX_LM_HOST="http://127.0.0.1:${toString cfg.port}"
+      '';
 
       # brew services would start a second mlx_lm.server; this module's launchd agent owns it.
       home.activation.stopBrewMlxLm = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
