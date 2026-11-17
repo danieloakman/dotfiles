@@ -105,6 +105,7 @@ let
     runtimeInputs = with pkgs; [
       coreutils
       curl
+      hostname
       jq
       util-linux
       vulnix
@@ -296,6 +297,7 @@ $body$extra"
     runtimeInputs = with pkgs; [
       coreutils
       curl
+      hostname
       jq
       util-linux
       python3
