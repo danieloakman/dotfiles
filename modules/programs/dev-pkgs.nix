@@ -187,6 +187,8 @@ in
           delve
 
           llmfit # CLI tool to find what LLMs can run on our hardware
+          # llmfit MLX pulls shell out to `hf download` (huggingface_hub CLI).
+          python3Packages.huggingface-hub
           libnotify # Add `notify-send` command
           ghostscript
           tesseract
