@@ -1,4 +1,4 @@
-# Guest-mode Telegram bot for the couple DM.
+# Guest-mode Telegram bot for the couple DM (family / expenses / calendar).
 #
 # The bot is not a member of the chat. A mention (@bot …) arrives as a
 # guest_message; answerGuestQuery posts the confirmation into that DM.
@@ -6,18 +6,27 @@
 # Slash commands parse locally. Anything else goes through the interpreter,
 # which is cursor-agent today and replaceable behind the same request type.
 # Create the bot in @BotFather, enable Guest Mode, and put its token in sops
-# as telegram_bot_token before turning this on.
+# as fam_telegram_bot_token before turning this on.
+#
+# Agent notify/ask traffic belongs in my.services.agent-telegram-bot, not here.
 { config, lib, pkgs, env, gws, system, ... }@args:
 let
-  cfg = config.my.services.telegram-bot;
+  cfg = config.my.services.fam-telegram-bot;
 in
 {
-  options.my.services.telegram-bot = {
+  imports = [
+    (lib.mkRenamedOptionModule
+      [ "my" "services" "telegram-bot" ]
+      [ "my" "services" "fam-telegram-bot" ]
+    )
+  ];
+
+  options.my.services.fam-telegram-bot = {
     enable = lib.mkEnableOption ''
-      Long-poll a Telegram bot. Private chats and guest mentions get a
+      Long-poll the family Telegram bot. Private chats and guest mentions get a
       confirmation, and a Confirm tap appends an expense through
       expenses-spreadsheet, or inserts a calendar event or task through gws.
-      Requires the sops secret telegram_bot_token, Guest Mode in BotFather,
+      Requires the sops secret fam_telegram_bot_token, Guest Mode in BotFather,
       and my.programs.cursor.agent.enable.
     '';
 
@@ -108,13 +117,13 @@ in
   config = lib.mkIf cfg.enable (env.selectPlatform {
     linux =
       let
-        telegramBot = pkgs.callPackage ./telegram-bot/_package.nix { };
+        famTelegramBot = pkgs.callPackage ./fam-telegram-bot/_package.nix { };
         expensesSpreadsheet = lib.getExe' (pkgs.callPackage ../programs/bun-scripts.linux/_package.nix {
           bun2nix = args.bun2nix;
         }) "expenses-spreadsheet";
         gwsExe = lib.getExe gws.packages.${system}.default;
         cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
-        settings = pkgs.writeText "telegram-bot-settings.json" (builtins.toJSON {
+        settings = pkgs.writeText "fam-telegram-bot-settings.json" (builtins.toJSON {
           inherit (cfg) tasklist timezone;
           calendarId = cfg.calendar-id;
           allowedChatIds = cfg.allowed-chat-ids;
@@ -125,21 +134,21 @@ in
             telegramId = payer.telegram-id;
           }) cfg.payers;
         });
-        tokenPath = config.sops.secrets.telegram_bot_token.path;
+        tokenPath = config.sops.secrets.fam_telegram_bot_token.path;
       in
       {
         assertions = [
           {
             assertion = config.my.programs.gws.enable;
-            message = "my.services.telegram-bot.enable requires my.programs.gws.enable.";
+            message = "my.services.fam-telegram-bot.enable requires my.programs.gws.enable.";
           }
           {
             assertion = config.my.programs.cursor.agent.enable;
-            message = "my.services.telegram-bot.enable requires my.programs.cursor.agent.enable.";
+            message = "my.services.fam-telegram-bot.enable requires my.programs.cursor.agent.enable.";
           }
         ];
 
-        sops.secrets.telegram_bot_token = {
+        sops.secrets.fam_telegram_bot_token = {
           owner = env.user;
           group = "secrets";
           mode = "0440";
@@ -147,16 +156,16 @@ in
 
         users.users.${env.user}.linger = true;
 
-        home-manager.users.${env.user}.systemd.user.services.telegram-bot = {
+        home-manager.users.${env.user}.systemd.user.services.fam-telegram-bot = {
           Unit = {
-            Description = "Telegram guest bot for couple-chat admin";
+            Description = "Family Telegram guest bot (expenses / calendar / tasks)";
             After = [ "network-online.target" ];
           };
           Service = {
-            ExecStart = lib.getExe telegramBot;
+            ExecStart = lib.getExe famTelegramBot;
             Restart = "on-failure";
             RestartSec = 5;
-            StateDirectory = "telegram-bot";
+            StateDirectory = "fam-telegram-bot";
             Environment = [
               "TELEGRAM_BOT_TOKEN_FILE=${tokenPath}"
               "TELEGRAM_BOT_SETTINGS=${settings}"

@@ -1,8 +1,8 @@
 { rustPlatform }:
 rustPlatform.buildRustPackage {
-  pname = "telegram-bot";
+  pname = "agent-telegram-bot";
   version = "0.1.0";
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;
-  meta.mainProgram = "telegram-bot";
+  meta.mainProgram = "agent-telegram-bot";
 }

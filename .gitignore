@@ -9,3 +9,4 @@ dist
 .goutputstream*
 .direnv
 .playwright-cli
+modules/services/*/target/

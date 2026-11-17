@@ -935,7 +935,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "telegram-bot"
+name = "fam-telegram-bot"
 version = "0.1.0"
 dependencies = [
  "chrono",

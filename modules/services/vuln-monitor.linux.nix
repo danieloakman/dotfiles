@@ -1,16 +1,27 @@
 # Periodic vulnix system scan + optional human-signal feed poller.
-# Notifies on new high/critical findings via Telegram Bot API (reuses telegram_bot_token).
+# New findings go through cursor-agent triage before notify (when enabled).
+# Notify prefers my.services.agent-telegram-bot send.
 { config, lib, pkgs, env, ... }:
 let
   cfg = config.my.services.vuln-monitor;
   notifyCfg = cfg.notify.telegram;
   feedsCfg = cfg.feeds;
+  triageCfg = cfg.triage;
 
   stateDir = "/var/lib/vuln-monitor";
   seenFile = "${stateDir}/seen.json";
   errorFlag = "${stateDir}/error-notified";
   feedsSeenFile = "${stateDir}/feeds-seen.json";
   feedsErrorFlag = "${stateDir}/feeds-error-notified";
+  triageInboxDir = "${stateDir}/triage-inbox";
+
+  agentsOn = config.my.programs.agents.enable;
+  cursorAgentOn = config.my.programs.cursor.agent.enable;
+  hasGhToken = builtins.hasAttr "main_gh_token" (config.sops.secrets or { });
+
+  cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
+  dotfilesDir = triageCfg.repo;
+  worktreeDir = triageCfg.worktree;
 
   severityFloor =
     {
@@ -21,7 +32,6 @@ let
     }
     .${cfg.min-severity};
 
-  # vulnix TOML whitelist from package/CVE ignore lists.
   whitelistToml =
     let
       cveLines = map (cve: ''  "${cve}",'') cfg.ignore-cves;
@@ -43,13 +53,8 @@ let
       lib.concatStringsSep "\n" ([ starSection ] ++ pkgSections ++ [ cfg.extra-whitelist ])
     );
 
-  tokenPath =
-    if notifyCfg.token-file != null then
-      notifyCfg.token-file
-    else
-      config.sops.secrets.telegram_bot_token.path;
-
-  chatIdsJson = builtins.toJSON notifyCfg.chat-ids;
+  agentTelegramBotExe = lib.getExe config.my.services.agent-telegram-bot.package;
+  agentTelegramEnabled = config.my.services.agent-telegram-bot.enable;
 
   sourcesJsonFile = pkgs.writeText "vuln-monitor-sources.json" (
     builtins.toJSON (
@@ -61,29 +66,53 @@ let
 
   keywordsJsonFile = pkgs.writeText "vuln-monitor-keywords.json" (builtins.toJSON feedsCfg.keywords);
 
+  triageSkill = pkgs.runCommand "vuln-monitor-triage-skill" { } ''
+    mkdir -p $out
+    substitute ${./vuln-monitor-triage/reference.md} $out/reference.md \
+      --subst-var-by repo ${lib.escapeShellArg dotfilesDir} \
+      --subst-var-by worktree ${lib.escapeShellArg worktreeDir}
+    cp ${./vuln-monitor-triage/SKILL.md} $out/SKILL.md
+  '';
+
+  # Prefer agent-telegram-bot bridge; optional legacy curl path via token-file.
   notifyScript =
-    if notifyCfg.enable then
+    if notifyCfg.enable && agentTelegramEnabled then
       pkgs.writeShellScript "vuln-monitor-notify" ''
         set -euo pipefail
-        # Args: message text. Sends to every configured chat id. Soft-fails on HTTP errors.
         msg=$1
-        token_file=${lib.escapeShellArg tokenPath}
-        if [ ! -r "$token_file" ]; then
-          ${pkgs.util-linux}/bin/logger -t vuln-monitor "notify skipped: token file not readable"
-          exit 0
-        fi
-        token=$(${pkgs.coreutils}/bin/tr -d '\n' < "$token_file")
-        if [ -z "$token" ]; then
-          ${pkgs.util-linux}/bin/logger -t vuln-monitor "notify skipped: empty token"
-          exit 0
-        fi
-        # Telegram limit is 4096; keep headroom.
         if [ "''${#msg}" -gt 3500 ]; then
           msg="''${msg:0:3400}
 
 …truncated…"
         fi
-        for chat_id in $(${pkgs.jq}/bin/jq -r '.[]' <<<${lib.escapeShellArg chatIdsJson}); do
+        RUN_USER=${lib.escapeShellArg env.user}
+        HOME_DIR=${lib.escapeShellArg env.home}
+        if ! ${pkgs.util-linux}/bin/runuser -u "$RUN_USER" -- \
+          env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
+          ${agentTelegramBotExe} send --role vuln-monitor "$msg"; then
+          ${pkgs.util-linux}/bin/logger -t vuln-monitor "agent-telegram-bot send failed"
+        fi
+      ''
+    else if notifyCfg.enable && notifyCfg.token-file != null then
+      pkgs.writeShellScript "vuln-monitor-notify" ''
+        set -euo pipefail
+        msg=$1
+        token_file=${lib.escapeShellArg notifyCfg.token-file}
+        if [ ! -r "$token_file" ]; then
+          ${pkgs.util-linux}/bin/logger -t vuln-monitor "notify skipped: token file not readable"
+          exit 0
+        fi
+        token=$(${pkgs.coreutils}/bin/tr -d '\n' < "$token_file")
+        if [ -z "$token" ] || [ "$token" = "REPLACE_ME" ]; then
+          ${pkgs.util-linux}/bin/logger -t vuln-monitor "notify skipped: empty or REPLACE_ME token"
+          exit 0
+        fi
+        if [ "''${#msg}" -gt 3500 ]; then
+          msg="''${msg:0:3400}
+
+…truncated…"
+        fi
+        for chat_id in $(${pkgs.jq}/bin/jq -r '.[]' <<<${lib.escapeShellArg (builtins.toJSON notifyCfg.chat-ids)}); do
           if ! ${pkgs.curl}/bin/curl -sf --max-time 20 \
             -X POST "https://api.telegram.org/bot''${token}/sendMessage" \
             --data-urlencode "chat_id=''${chat_id}" \
@@ -99,6 +128,185 @@ let
         ${pkgs.util-linux}/bin/logger -t vuln-monitor "notify disabled: $1"
       '';
 
+  # Prepare isolated worktree, run cursor-agent as env.user, gate Telegram.
+  # Args: <kind> <inbox.json> <raw_telegram_body>
+  triageScript = pkgs.writeShellApplication {
+    name = "vuln-monitor-triage";
+    runtimeInputs = with pkgs; [
+      coreutils
+      git
+      gh
+      hostname
+      jq
+      util-linux
+    ];
+    text = ''
+      set -euo pipefail
+
+      log() { logger -t vuln-monitor-triage "$*"; }
+
+      KIND=$1
+      INBOX=$2
+      RAW_BODY=$3
+
+      HOST=$(hostname -s)
+      REPO=${lib.escapeShellArg dotfilesDir}
+      WORKTREE=${lib.escapeShellArg worktreeDir}
+      CURSOR_AGENT=${lib.escapeShellArg cursorAgentExe}
+      TIMEOUT_SEC=${lib.escapeShellArg (toString triageCfg.timeout-sec)}
+      RUN_USER=${lib.escapeShellArg env.user}
+      HOME_DIR=${lib.escapeShellArg env.home}
+      GH_TOKEN_FILE=${lib.escapeShellArg (
+        if hasGhToken then config.sops.secrets.main_gh_token.path else ""
+      )}
+
+      if [ ! -f "$INBOX" ]; then
+        log "inbox missing: $INBOX"
+        ${notifyScript} "⚠️ vuln-monitor-triage ($HOST): inbox missing; raw findings:
+
+$RAW_BODY"
+        exit 0
+      fi
+
+      item_count=$(jq '.items | length' "$INBOX")
+      stamp=$(date -u +%Y%m%dT%H%M%SZ)
+      short=$(jq -r '.items[0].key // "item"' "$INBOX" | tr -c 'a-zA-Z0-9._-' '_' | cut -c1-40)
+      branch="vuln-monitor/''${stamp}-''${short}"
+
+      # All git ops as RUN_USER so the interactive repo's .git stays user-owned.
+      as_user() {
+        runuser -u "$RUN_USER" -- env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" "$@"
+      }
+
+      prepare_worktree() {
+        as_user mkdir -p "$(dirname "$WORKTREE")"
+        if [ ! -d "$REPO/.git" ] && [ ! -f "$REPO/.git" ]; then
+          log "repo missing or not a git checkout: $REPO"
+          return 1
+        fi
+        as_user git -C "$REPO" worktree prune >/dev/null 2>&1 || true
+        if [ -d "$WORKTREE" ]; then
+          if ! as_user git -C "$WORKTREE" fetch origin main >/dev/null 2>&1; then
+            log "git fetch failed in worktree"
+            return 1
+          fi
+          if ! as_user git -C "$WORKTREE" checkout -B "$branch" origin/main >/dev/null 2>&1 \
+            || ! as_user git -C "$WORKTREE" reset --hard origin/main >/dev/null 2>&1 \
+            || ! as_user git -C "$WORKTREE" clean -fd >/dev/null 2>&1; then
+            log "git reset failed; recreating worktree"
+            as_user git -C "$REPO" worktree remove --force "$WORKTREE" >/dev/null 2>&1 \
+              || as_user rm -rf "$WORKTREE"
+          fi
+        fi
+        if [ ! -d "$WORKTREE" ]; then
+          if ! as_user git -C "$REPO" fetch origin main >/dev/null 2>&1; then
+            log "git fetch failed in repo"
+            return 1
+          fi
+          if ! as_user git -C "$REPO" worktree add -B "$branch" "$WORKTREE" origin/main >/dev/null 2>&1; then
+            log "git worktree add failed"
+            return 1
+          fi
+        fi
+        return 0
+      }
+
+      if ! prepare_worktree; then
+        log "worktree prepare failed; notifying raw findings"
+        ${notifyScript} "⚠️ vuln-monitor ($HOST): triage worktree failed ($item_count item(s))
+
+$RAW_BODY"
+        exit 0
+      fi
+
+      out=$(mktemp)
+      err=$(mktemp)
+      trap 'rm -f "$out" "$err"' EXIT
+
+      gh_token=""
+      if [ -n "$GH_TOKEN_FILE" ] && [ -r "$GH_TOKEN_FILE" ]; then
+        gh_token=$(tr -d '\n' < "$GH_TOKEN_FILE")
+      fi
+
+      # Inbox lives under StateDirectory (root); make it readable to the agent user.
+      chmod a+rX "$INBOX" "$(dirname "$INBOX")" 2>/dev/null || true
+
+      # Run agent as the interactive user so CURSOR_API_KEY wrapper, gh, and git creds work.
+      set +e
+      timeout --signal=KILL "$TIMEOUT_SEC" \
+        runuser -u "$RUN_USER" -- \
+        env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
+          VULN_INBOX="$INBOX" VULN_KIND="$KIND" VULN_HOST="$HOST" \
+          VULN_WORKTREE="$WORKTREE" VULN_REPO="$REPO" \
+          GH_TOKEN="$gh_token" GH_HOST=github.com \
+        "$CURSOR_AGENT" -p --force --trust --workspace "$WORKTREE" \
+          "Follow the vuln-monitor-triage skill. Inbox: $INBOX. Kind: $KIND. Host: $HOST. Auto-apply only for easy_fix via the PR worktree at $WORKTREE. Never modify $REPO." \
+        >"$out" 2>"$err"
+      agent_rc=$?
+      set -e
+
+      if [ "$agent_rc" -ne 0 ]; then
+        err_head=$(head -c 800 "$err" || true)
+        log "cursor-agent failed rc=$agent_rc: $err_head"
+        ${notifyScript} "⚠️ vuln-monitor ($HOST): triage failed (rc=$agent_rc); $item_count raw item(s)
+
+$RAW_BODY"
+        exit 0
+      fi
+
+      # Last line that looks like a JSON object (skill requires final-line JSON).
+      verdict_json=$(${pkgs.gnugrep}/bin/grep -E '^[[:space:]]*\{' "$out" | tail -n1 || true)
+
+      if [ -z "$verdict_json" ] || ! jq -e '.verdict' >/dev/null 2>&1 <<<"$verdict_json"; then
+        log "failed to parse verdict JSON from agent stdout"
+        ${notifyScript} "⚠️ vuln-monitor ($HOST): triage produced no verdict; $item_count raw item(s)
+
+$RAW_BODY"
+        exit 0
+      fi
+
+      verdict=$(jq -r '.verdict' <<<"$verdict_json")
+      summary=$(jq -r '.summary // empty' <<<"$verdict_json")
+      pr_url=$(jq -r '.pr_url // empty' <<<"$verdict_json")
+      log "verdict=$verdict pr_url=''${pr_url:-none} summary=$(printf '%s' "$summary" | head -c 200)"
+
+      case "$verdict" in
+        not_affected)
+          log "suppressing Telegram: $summary"
+          ;;
+        easy_fix)
+          if [ -z "$pr_url" ] || [ "$pr_url" = "null" ]; then
+            ${notifyScript} "🔐 vuln-monitor ($HOST): easy_fix without pr_url — needs review
+
+$summary
+
+$RAW_BODY"
+          else
+            ${notifyScript} "🔧 vuln-monitor ($HOST): easy_fix PR opened
+
+$summary
+
+$pr_url"
+          fi
+          ;;
+        needs_review)
+          ${notifyScript} "🔐 vuln-monitor ($HOST): needs review
+
+$summary
+
+$RAW_BODY"
+          ;;
+        *)
+          log "unknown verdict=$verdict"
+          ${notifyScript} "⚠️ vuln-monitor ($HOST): unknown verdict '$verdict'
+
+$summary
+
+$RAW_BODY"
+          ;;
+      esac
+    '';
+  };
 
   scanScript = pkgs.writeShellApplication {
     name = "vuln-monitor-scan";
@@ -118,15 +326,16 @@ let
       STATE_DIR=${lib.escapeShellArg stateDir}
       SEEN_FILE=${lib.escapeShellArg seenFile}
       ERROR_FLAG=${lib.escapeShellArg errorFlag}
+      INBOX_DIR=${lib.escapeShellArg triageInboxDir}
       MIN_CVSS=${lib.escapeShellArg (toString severityFloor)}
       WHITELIST=${lib.escapeShellArg whitelistToml}
       CACHE_DIR="''${STATE_DIR}/vulnix-cache"
       HOST=$(hostname -s)
+      TRIAGE=${lib.boolToString triageCfg.enable}
 
-      mkdir -p "$STATE_DIR" "$CACHE_DIR"
+      mkdir -p "$STATE_DIR" "$CACHE_DIR" "$INBOX_DIR"
       cd "$STATE_DIR"
 
-      # Absent seen file ⇒ first successful run baselines without notifying.
       baseline=0
       if [ ! -f "$SEEN_FILE" ]; then
         baseline=1
@@ -153,7 +362,6 @@ $err"
       fi
       rm -f "$ERROR_FLAG"
 
-      # Flatten to unique pname:cve keys at/above floor.
       findings=$(jq -c --argjson min "$MIN_CVSS" '
         [
           .[] as $pkg
@@ -171,7 +379,6 @@ $err"
       ' "$tmp")
 
       total=$(jq 'length' <<<"$findings")
-      # First successful run: seed baseline without notifying (avoid historical flood).
       if [ "$baseline" -eq 1 ]; then
         jq -c '[.[].key] | unique | sort' <<<"$findings" >"$SEEN_FILE.tmp"
         mv "$SEEN_FILE.tmp" "$SEEN_FILE"
@@ -196,13 +403,20 @@ $err"
         if [ "$new_count" -gt 15 ]; then
           extra=$(printf '\n…and %s more' "$((new_count - 15))")
         fi
-        ${notifyScript} "🔐 vuln-monitor ($HOST): $new_count new ≥$MIN_CVSS finding(s)
+        raw="🔐 vuln-monitor ($HOST): $new_count new ≥$MIN_CVSS finding(s)
 
 $body$extra"
-        log "notified $new_count new finding(s)"
+
+        if [ "$TRIAGE" = "true" ]; then
+          inbox="$INBOX_DIR/vulnix-$(date -u +%Y%m%dT%H%M%SZ).json"
+          jq -c --arg host "$HOST" '{kind:"vulnix",host:$host,items:.}' <<<"$new" >"$inbox"
+          ${lib.getExe triageScript} vulnix "$inbox" "$raw"
+        else
+          ${notifyScript} "$raw"
+          log "notified $new_count new finding(s)"
+        fi
       fi
 
-      # Persist union of previous seen + current keys (never re-notify).
       jq -c --argjson seen "$seen" '
         (($seen + [.[].key]) | unique | sort)
       ' <<<"$findings" >"$SEEN_FILE.tmp"
@@ -310,9 +524,11 @@ $body$extra"
       STATE_DIR=${lib.escapeShellArg stateDir}
       SEEN_FILE=${lib.escapeShellArg feedsSeenFile}
       ERROR_FLAG=${lib.escapeShellArg feedsErrorFlag}
+      INBOX_DIR=${lib.escapeShellArg triageInboxDir}
       HOST=$(hostname -s)
+      TRIAGE=${lib.boolToString triageCfg.enable}
 
-      mkdir -p "$STATE_DIR"
+      mkdir -p "$STATE_DIR" "$INBOX_DIR"
       baseline=0
       seen_input=$SEEN_FILE
       if [ ! -f "$SEEN_FILE" ]; then
@@ -342,7 +558,6 @@ $errs"
       new_count=$(jq '.hits | length' <<<"$result")
       log "new filtered feed hits: $new_count"
 
-      # First run: record current matches as seen without notifying.
       if [ "$baseline" -eq 1 ]; then
         jq -c '[.hits[].key] | unique | sort' <<<"$result" >"$SEEN_FILE.tmp"
         mv "$SEEN_FILE.tmp" "$SEEN_FILE"
@@ -359,9 +574,18 @@ $errs"
         if [ "$new_count" -gt 10 ]; then
           extra=$(printf '\n…and %s more' "$((new_count - 10))")
         fi
-        ${notifyScript} "📰 vuln-monitor-feeds ($HOST): $new_count new item(s)
+        raw="📰 vuln-monitor-feeds ($HOST): $new_count new item(s)
 
 $body$extra"
+
+        if [ "$TRIAGE" = "true" ]; then
+          inbox="$INBOX_DIR/feeds-$(date -u +%Y%m%dT%H%M%SZ).json"
+          jq -c --arg host "$HOST" '{kind:"feeds",host:$host,items:.hits}' <<<"$result" >"$inbox"
+          ${lib.getExe triageScript} feeds "$inbox" "$raw"
+        else
+          ${notifyScript} "$raw"
+        fi
+
         seen=$(cat "$SEEN_FILE")
         jq -c --argjson seen "$seen" '
           (($seen + [.hits[].key]) | unique | sort)
@@ -432,11 +656,39 @@ in
       '';
     };
 
+    triage = {
+      enable = lib.mkEnableOption ''
+        Run cursor-agent on new findings before Telegram. Suppresses not_affected
+        alerts; opens a PR for easy_fix; otherwise sends a needs_review verdict.
+      '';
+
+      timeout-sec = lib.mkOption {
+        type = lib.types.ints.positive;
+        default = 600;
+        description = "Hard kill timeout (seconds) for the cursor-agent triage process.";
+      };
+
+      repo = lib.mkOption {
+        type = lib.types.str;
+        default = "${env.home}/repos/personal/dotfiles";
+        description = "Interactive git checkout (read-only reference; never modified by triage).";
+      };
+
+      worktree = lib.mkOption {
+        type = lib.types.str;
+        default = "${env.home}/.local/share/vuln-monitor/git-worktree";
+        description = "Isolated git worktree used for easy_fix commits and PRs.";
+      };
+    };
+
     notify.telegram = {
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Send alerts via Telegram Bot API using telegram_bot_token.";
+        description = ''
+          Send alerts via my.services.agent-telegram-bot (preferred) or a legacy
+          curl path when `token-file` is set and the agent bridge is disabled.
+        '';
       };
 
       chat-ids = lib.mkOption {
@@ -444,16 +696,18 @@ in
         default = [ ];
         example = [ 8348310754 ];
         description = ''
-          Telegram chat or user ids to receive alerts. Private-chat user ids work
-          once that user has started the bot.
+          Legacy curl notify only. Prefer agent-telegram-bot.chat-ids when the
+          agent bridge is enabled.
         '';
       };
 
       token-file = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default = null;
-        defaultText = lib.literalExpression "config.sops.secrets.telegram_bot_token.path";
-        description = "Path to bot token file. Defaults to the sops telegram_bot_token secret.";
+        description = ''
+          Legacy Bot API token file for curl notify when agent-telegram-bot is
+          disabled. Unused when the agent bridge is enabled.
+        '';
       };
     };
 
@@ -533,69 +787,91 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = notifyCfg.enable -> notifyCfg.chat-ids != [ ];
-        message = "my.services.vuln-monitor.notify.telegram.chat-ids must be non-empty when Telegram notify is enabled.";
-      }
-    ];
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion =
+            !notifyCfg.enable
+            || agentTelegramEnabled
+            || (notifyCfg.token-file != null && notifyCfg.chat-ids != [ ]);
+          message = ''
+            my.services.vuln-monitor.notify.telegram.enable requires
+            my.services.agent-telegram-bot.enable, or a legacy token-file + chat-ids.
+          '';
+        }
+      ];
 
-    # Reuse the same sops key as telegram-bot (owner/mode match that module).
-    sops.secrets.telegram_bot_token = lib.mkIf notifyCfg.enable {
-      owner = env.user;
-      group = "secrets";
-      mode = "0440";
-    };
-
-    systemd.services.vuln-monitor = {
-      description = "vulnix system CVE scan + notify on new high/critical findings";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = lib.getExe scanScript;
-        StateDirectory = "vuln-monitor";
-        # Root can read sops token; scanning the system store needs broad read.
-        Nice = 10;
-        IOSchedulingClass = "best-effort";
-        IOSchedulingPriority = 6;
+      systemd.services.vuln-monitor = {
+        description = "vulnix system CVE scan + notify on new high/critical findings";
+        after = [ "network-online.target" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = lib.getExe scanScript;
+          StateDirectory = "vuln-monitor";
+          Nice = 10;
+          IOSchedulingClass = "best-effort";
+          IOSchedulingPriority = 6;
+        };
       };
-    };
 
-    systemd.timers.vuln-monitor = {
-      description = "vulnix CVE scan timer";
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnCalendar = cfg.schedule;
-        Persistent = true;
-        RandomizedDelaySec = "30min";
-        Unit = "vuln-monitor.service";
+      systemd.timers.vuln-monitor = {
+        description = "vulnix CVE scan timer";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = cfg.schedule;
+          Persistent = true;
+          RandomizedDelaySec = "30min";
+          Unit = "vuln-monitor.service";
+        };
       };
-    };
+    }
 
-    systemd.services.vuln-monitor-feeds = lib.mkIf feedsCfg.enable {
-      description = "Security feed poller (keyword-filtered) for vuln-monitor";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = lib.getExe feedsScript;
-        StateDirectory = "vuln-monitor";
-        Nice = 10;
+    (lib.mkIf feedsCfg.enable {
+      systemd.services.vuln-monitor-feeds = {
+        description = "Security feed poller (keyword-filtered) for vuln-monitor";
+        after = [ "network-online.target" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = lib.getExe feedsScript;
+          StateDirectory = "vuln-monitor";
+          Nice = 10;
+        };
       };
-    };
 
-    systemd.timers.vuln-monitor-feeds = lib.mkIf feedsCfg.enable {
-      description = "Security feed poller timer";
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnBootSec = "20min";
-        OnUnitActiveSec = feedsCfg.interval;
-        Persistent = true;
-        RandomizedDelaySec = "10min";
-        Unit = "vuln-monitor-feeds.service";
+      systemd.timers.vuln-monitor-feeds = {
+        description = "Security feed poller timer";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnBootSec = "20min";
+          OnUnitActiveSec = feedsCfg.interval;
+          Persistent = true;
+          RandomizedDelaySec = "10min";
+          Unit = "vuln-monitor-feeds.service";
+        };
       };
-    };
-  };
+    })
+
+    (lib.mkIf triageCfg.enable {
+      assertions = [
+        {
+          assertion = agentsOn;
+          message = "my.services.vuln-monitor.triage.enable requires my.programs.agents.enable.";
+        }
+        {
+          assertion = cursorAgentOn;
+          message = "my.services.vuln-monitor.triage.enable requires my.programs.cursor.agent.enable.";
+        }
+      ];
+
+      my.programs.agents.skill-dirs.vuln-monitor-triage = lib.mkIf agentsOn triageSkill;
+
+      # Root oneshots call runuser; ensure worktree parent exists and is user-owned.
+      systemd.tmpfiles.rules = [
+        "d ${env.home}/.local/share/vuln-monitor 0755 ${env.user} users -"
+      ];
+    })
+  ]);
 }
