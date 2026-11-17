@@ -46,6 +46,15 @@ impl Service {
     }
 
     pub fn run(&mut self) -> Result<(), String> {
+        match self.telegram.sync_commands(crate::commands::MENU_COMMANDS) {
+            Ok(telegram::CommandSync::Unchanged) => {
+                log::info!("telegram commands already match; skipping setMyCommands");
+            }
+            Ok(telegram::CommandSync::Updated { from, to }) => {
+                log::info!("telegram commands synced ({from} -> {to})");
+            }
+            Err(err) => log::error!("telegram command sync failed: {err}"),
+        }
         log::info!("polling private chats and guest mentions");
         loop {
             if let Err(err) = self.poll_once() {

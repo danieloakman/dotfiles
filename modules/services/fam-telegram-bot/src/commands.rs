@@ -24,6 +24,55 @@ impl CommandKind {
     }
 }
 
+/// Slash commands advertised in Telegram's command menu via `setMyCommands`.
+/// Parser aliases like `/calendar` stay local and are not listed here.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct MenuCommand {
+    pub command: &'static str,
+    pub description: &'static str,
+}
+
+pub const MENU_COMMANDS: &[MenuCommand] = &[
+    MenuCommand {
+        command: "expense",
+        description: "e.g. 15 coffee · trotty paid 40 lunch · Kmart Amex",
+    },
+    MenuCommand {
+        command: "task",
+        description: "e.g. buy milk · buy milk tomorrow",
+    },
+    MenuCommand {
+        command: "cal",
+        description: "e.g. 2026-10-25 15:00 dentist · or free-form",
+    },
+    MenuCommand {
+        command: "help",
+        description: "show usage examples",
+    },
+    MenuCommand {
+        command: "start",
+        description: "show usage examples",
+    },
+];
+
+/// True when Telegram's current list already matches the desired menu.
+/// Order and exact descriptions matter; ephemeral flags are ignored.
+pub fn commands_match<C, D>(current: &[(C, D)], desired: &[MenuCommand]) -> bool
+where
+    C: AsRef<str>,
+    D: AsRef<str>,
+{
+    if current.len() != desired.len() {
+        return false;
+    }
+    current
+        .iter()
+        .zip(desired.iter())
+        .all(|((command, description), want)| {
+            command.as_ref() == want.command && description.as_ref() == want.description
+        })
+}
+
 pub fn timezone(name: &str) -> Result<Tz, String> {
     name.parse().map_err(|_| format!("unknown timezone {name}"))
 }
@@ -242,6 +291,77 @@ fn parse_calendar(args: &str, timezone_name: &str) -> Result<Action, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn menu_commands_match_is_order_and_description_sensitive() {
+        let current = vec![
+            ("expense", "15 coffee"),
+            ("task", "buy milk"),
+        ];
+        assert!(commands_match(
+            &current,
+            &[
+                MenuCommand {
+                    command: "expense",
+                    description: "15 coffee",
+                },
+                MenuCommand {
+                    command: "task",
+                    description: "buy milk",
+                },
+            ],
+        ));
+        assert!(!commands_match(
+            &current,
+            &[
+                MenuCommand {
+                    command: "task",
+                    description: "buy milk",
+                },
+                MenuCommand {
+                    command: "expense",
+                    description: "15 coffee",
+                },
+            ],
+        ));
+        assert!(!commands_match(
+            &current,
+            &[
+                MenuCommand {
+                    command: "expense",
+                    description: "different",
+                },
+                MenuCommand {
+                    command: "task",
+                    description: "buy milk",
+                },
+            ],
+        ));
+        assert!(commands_match(&Vec::<(&str, &str)>::new(), &[]));
+    }
+
+    #[test]
+    fn menu_commands_cover_the_slash_handlers() {
+        let names: Vec<&str> = MENU_COMMANDS.iter().map(|c| c.command).collect();
+        assert!(names.contains(&"expense"));
+        assert!(names.contains(&"task"));
+        assert!(names.contains(&"cal"));
+        assert!(names.contains(&"help"));
+        assert!(names.contains(&"start"));
+        assert!(!names.contains(&"calendar"));
+        for command in MENU_COMMANDS {
+            assert!(
+                (1..=256).contains(&command.description.len()),
+                "{} description length",
+                command.command
+            );
+            assert!(
+                !command.description.is_empty(),
+                "{} needs a helpful description",
+                command.command
+            );
+        }
+    }
 
     #[test]
     fn expense_amount_is_any_number_and_the_rest_is_the_description() {
