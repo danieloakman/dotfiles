@@ -15,7 +15,6 @@ let
   mlxLmCfg = config.my.services.mlx-lm or {
     enable = false;
     port = 11345;
-    discover-models = false;
     models = { };
   };
 
@@ -114,7 +113,7 @@ let
   cursorProxyPluginDir = "${env.home}/.config/opencode/plugins/cursor-proxy-local";
   cursorProxyScript = "${cursorProxyPlugin}/cursor-proxy.cjs";
 
-  mlxDiscoverModels = mlxLmCfg.discover-models or false;
+  mlxDiscoverModels = cfg.providers.mlx.discover-models;
   mlxModelsDiscoveryPluginDir =
     "${env.home}/.config/opencode/plugins/mlx-models-discovery";
 
@@ -193,7 +192,7 @@ let
         })
         (lib.mkIf (cfg.providers.mlx.enable && mlxLmCfg.enable) {
           # Declared models are optional overlays (short ids / context). With
-          # my.services.mlx-lm.discover-models the local plugin merges
+          # providers.mlx.discover-models the local plugin merges
           # mlx_lm.server /v1/models at OpenCode startup. Omit `models` when
           # empty so the provider is not a zero-model stub before the hook.
           mlx =
@@ -250,18 +249,29 @@ in
         automatically; requires `my.services.llama-cpp.enable = true` on this host.
       '';
 
-      mlx.enable = lib.mkEnableOption ''
-        Expose the local mlx-lm OpenAI API in OpenCode.
+      mlx = {
+        enable = lib.mkEnableOption ''
+          Expose the local mlx-lm OpenAI API in OpenCode.
 
-        Reads `my.services.mlx-lm.port` and `my.services.mlx-lm.models`
-        automatically; requires `my.services.mlx-lm.enable = true` on this host.
-        Each model may set `path` (local MLX dir), `repo` (Hugging Face id), or
-        use the attribute name as the Hugging Face id.
+          Reads `my.services.mlx-lm.port` and `my.services.mlx-lm.models`
+          automatically; requires `my.services.mlx-lm.enable = true` on this host.
+          Each model may set `path` (local MLX dir), `repo` (Hugging Face id), or
+          use the attribute name as the Hugging Face id.
+        '';
 
-        With `my.services.mlx-lm.discover-models = true`, OpenCode also lists
-        whatever `mlx_lm.server` exposes on `/v1/models` (HF cache); declared
-        `models` become optional overlays.
-      '';
+        discover-models = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = ''
+            At OpenCode startup, list models from `mlx_lm.server`'s `/v1/models`
+            (Hugging Face cache) via a local plugin. Newly downloaded MLX weights
+            then show up without editing Nix.
+
+            Declared `my.services.mlx-lm.models` entries remain optional overlays
+            (short ids, display names, context limits, default).
+          '';
+        };
+      };
     };
 
     web = {
@@ -314,7 +324,7 @@ in
             !cfg.providers.mlx.enable
             || mlxDiscoverModels
             || mlxLmCfg.models != { };
-          message = "my.programs.opencode.providers.mlx.enable requires my.services.mlx-lm.models or my.services.mlx-lm.discover-models.";
+          message = "my.programs.opencode.providers.mlx.enable requires my.services.mlx-lm.models or providers.mlx.discover-models.";
         }
         {
           assertion =

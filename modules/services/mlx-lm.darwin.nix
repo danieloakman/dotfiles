@@ -71,21 +71,6 @@ in
       description = "Extra arguments appended to `mlx_lm.server`.";
     };
 
-    discover-models = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        When OpenCode's mlx provider is enabled, discover models from
-        `mlx_lm.server`'s `/v1/models` (Hugging Face cache) at OpenCode
-        startup instead of requiring every model in `models`.
-
-        Declared `models` entries still work as overlays (short ids, display
-        names, context limits, default). Path-based entries are optional once
-        this is on — download with `hf download` / llmfit and OpenCode picks
-        them up on the next launch.
-      '';
-    };
-
     models = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {

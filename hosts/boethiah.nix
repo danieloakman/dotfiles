@@ -16,12 +16,10 @@
         enable = true;
         # Nemotron tokenizers ship custom code; mlx-lm's OpenCode gist uses this model.
         trust-remote-code = true;
-        # OpenCode lists whatever mlx_lm.server exposes from the HF cache.
-        discover-models = true;
         models = {
           # Optional overlays only (short OpenCode ids / context limits / default).
-          # With discover-models, path/repo entries are unnecessary for picking
-          # up newly downloaded MLX weights — prefer `hf download` / llmfit.
+          # With opencode.providers.mlx.discover-models, path/repo entries are
+          # unnecessary for newly downloaded MLX weights — prefer hf/llmfit.
           #
           # "TinyLlama-1.1B" = {
           #   path = "${env.home}/.cache/huggingface/hub/models--KrorngAI--TinyLlama-1.1B-Chat-v1.0-mlx-4bit/snapshots/c603ea76ecdc2e84c5283eed410b79606e773539";
@@ -55,7 +53,11 @@
       playwright-cli.enable = false;
       opencode = {
         enable = true;
-        providers.mlx.enable = true;
+        providers.mlx = {
+          enable = true;
+          # List HF-cache MLX models from mlx_lm.server /v1/models at startup.
+          discover-models = true;
+        };
       };
     };
   };
