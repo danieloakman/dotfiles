@@ -171,11 +171,21 @@ $RAW_BODY"
       item_count=$(jq '.items | length' "$INBOX")
       stamp=$(date -u +%Y%m%dT%H%M%SZ)
       short=$(jq -r '.items[0].key // "item"' "$INBOX" | tr -c 'a-zA-Z0-9._-' '_' | cut -c1-40)
+      # Suggested name for easy_fix PRs only; triage itself stays on detached HEAD.
       branch="vuln-monitor/''${stamp}-''${short}"
 
       # All git ops as RUN_USER so the interactive repo's .git stays user-owned.
       as_user() {
         runuser -u "$RUN_USER" -- env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" "$@"
+      }
+
+      # Drop leftover local vuln-monitor/* refs from older runs (remote PR branches stay).
+      prune_stale_vuln_branches() {
+        local b
+        while IFS= read -r b; do
+          [ -n "$b" ] || continue
+          as_user git -C "$REPO" branch -D "$b" >/dev/null 2>&1 || true
+        done < <(as_user git -C "$REPO" branch --list 'vuln-monitor/*' --format='%(refname:short)' 2>/dev/null || true)
       }
 
       prepare_worktree() {
@@ -190,7 +200,8 @@ $RAW_BODY"
             log "git fetch failed in worktree"
             return 1
           fi
-          if ! as_user git -C "$WORKTREE" checkout -B "$branch" origin/main >/dev/null 2>&1 \
+          # Detached at origin/main — no named branch unless the agent creates one for a PR.
+          if ! as_user git -C "$WORKTREE" checkout --detach origin/main >/dev/null 2>&1 \
             || ! as_user git -C "$WORKTREE" reset --hard origin/main >/dev/null 2>&1 \
             || ! as_user git -C "$WORKTREE" clean -fd >/dev/null 2>&1; then
             log "git reset failed; recreating worktree"
@@ -203,11 +214,12 @@ $RAW_BODY"
             log "git fetch failed in repo"
             return 1
           fi
-          if ! as_user git -C "$REPO" worktree add -B "$branch" "$WORKTREE" origin/main >/dev/null 2>&1; then
+          if ! as_user git -C "$REPO" worktree add --detach "$WORKTREE" origin/main >/dev/null 2>&1; then
             log "git worktree add failed"
             return 1
           fi
         fi
+        prune_stale_vuln_branches
         return 0
       }
 
@@ -237,10 +249,10 @@ $RAW_BODY"
         runuser -u "$RUN_USER" -- \
         env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
           VULN_INBOX="$INBOX" VULN_KIND="$KIND" VULN_HOST="$HOST" \
-          VULN_WORKTREE="$WORKTREE" VULN_REPO="$REPO" \
+          VULN_WORKTREE="$WORKTREE" VULN_REPO="$REPO" VULN_BRANCH="$branch" \
           GH_TOKEN="$gh_token" GH_HOST=github.com \
         "$CURSOR_AGENT" -p --force --trust --workspace "$WORKTREE" \
-          "Follow the vuln-monitor-triage skill. Inbox: $INBOX. Kind: $KIND. Host: $HOST. Auto-apply only for easy_fix via the PR worktree at $WORKTREE. Never modify $REPO." \
+          "Follow the vuln-monitor-triage skill. Inbox: $INBOX. Kind: $KIND. Host: $HOST. Worktree at $WORKTREE is detached on origin/main; create branch \$VULN_BRANCH only for easy_fix PRs. Never modify $REPO." \
         >"$out" 2>"$err"
       agent_rc=$?
       set -e

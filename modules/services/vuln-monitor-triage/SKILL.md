@@ -20,7 +20,8 @@ stdout. The systemd wrapper parses that line and decides Telegram / PR follow-up
 | `VULN_INBOX` | Path to inbox JSON (required) |
 | `VULN_KIND` | `feeds` or `vulnix` |
 | `VULN_HOST` | Short hostname that raised the alert (usually `mara`) |
-| `VULN_WORKTREE` | Isolated git worktree for easy_fix only |
+| `VULN_WORKTREE` | Isolated git worktree (detached at `origin/main` for triage) |
+| `VULN_BRANCH` | Branch name to create **only** for an `easy_fix` PR |
 | `VULN_REPO` | Interactive checkout path (read reference only; never commit here) |
 
 Read the inbox once. Shape:
@@ -73,8 +74,10 @@ When several items arrive together: pick the **strictest** overall verdict
    repo over guesses.
 3. Choose the overall `verdict`.
 4. If `easy_fix`:
-   - Work only in `$VULN_WORKTREE` (already on a fresh `vuln-monitor/…` branch
-     from `origin/main`). Leave `$VULN_REPO` untouched.
+   - Work only in `$VULN_WORKTREE`. Leave `$VULN_REPO` untouched.
+   - Create the PR branch from the current detached `origin/main`:
+     `git checkout -B "$VULN_BRANCH"`. Do **not** create a branch for
+     `not_affected` / `needs_review`.
    - Apply the minimal change. Run `just check-host` when the change is Nix
      eval–relevant; if check fails, stop and switch to `needs_review` (no PR).
    - Commit with a concise why-focused message. Push and
@@ -103,6 +106,7 @@ When several items arrive together: pick the **strictest** overall verdict
 ## Guardrails
 
 - Commit and push only inside `$VULN_WORKTREE`.
+- Create a git branch only for `easy_fix` (use `$VULN_BRANCH`); triage stays detached.
 - Do not run `just switch` / `nh os switch` / reboot.
 - Do not edit sops secrets or `/run/secrets`.
 - Do not force-push or amend remote history.
