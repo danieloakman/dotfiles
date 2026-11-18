@@ -16,22 +16,33 @@
         enable = true;
         # Nemotron tokenizers ship custom code; mlx-lm's OpenCode gist uses this model.
         trust-remote-code = true;
+        # OpenCode lists whatever mlx_lm.server exposes from the HF cache.
+        discover-models = true;
         models = {
-          # Attr name = short OpenCode id. Use `path` for an already-downloaded
-          # MLX directory (like llama-cpp), or `repo` / bare attr name for HF.
-          "TinyLlama-1.1B" = {
-            path = "${env.home}/.cache/huggingface/hub/models--KrorngAI--TinyLlama-1.1B-Chat-v1.0-mlx-4bit/snapshots/c603ea76ecdc2e84c5283eed410b79606e773539";
-            display-name = "TinyLlama 1.1B";
-            context-size = 2048; # TinyLlama native max_position_embeddings
-            default = true;
-          };
-          "Nemotron-3-Nano" = {
-            repo = "mlx-community/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
-            # path = "${env.home}/models/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
-            display-name = "Nemotron 3 Nano";
-            # Native window is 256k (max 1M); keep this lower for unified-memory KV cache.
-            context-size = 32768;
-          };
+          # Optional overlays only (short OpenCode ids / context limits / default).
+          # With discover-models, path/repo entries are unnecessary for picking
+          # up newly downloaded MLX weights — prefer `hf download` / llmfit.
+          #
+          # "TinyLlama-1.1B" = {
+          #   path = "${env.home}/.cache/huggingface/hub/models--KrorngAI--TinyLlama-1.1B-Chat-v1.0-mlx-4bit/snapshots/c603ea76ecdc2e84c5283eed410b79606e773539";
+          #   display-name = "TinyLlama 1.1B";
+          #   context-size = 2048; # TinyLlama native max_position_embeddings
+          #   default = true;
+          # };
+          # "DeepSeek-R1-8B" = {
+          #   path = "${env.home}/.cache/huggingface/hub/models--lmstudio-community--deepseek-r1-0528-qwen3-8b-mlx-4bit/snapshots/1b6065ad0cd7256f662c9ef6fd0ed2dfd06e286f";
+          #   display-name = "DeepSeek R1 8B (MLX 4bit)";
+          #   # Native window is 131k; keep this lower for unified-memory KV cache.
+          #   context-size = 32768;
+          #   default = true;
+          # };
+          # "Nemotron-3-Nano" = {
+          #   repo = "mlx-community/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
+          #   # path = "${env.home}/models/NVIDIA-Nemotron-3-Nano-30B-A3B-MLX-4Bit";
+          #   display-name = "Nemotron 3 Nano";
+          #   # Native window is 256k (max 1M); keep this lower for unified-memory KV cache.
+          #   context-size = 32768;
+          # };
         };
       };
     };

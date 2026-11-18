@@ -15,6 +15,7 @@ let
   mlxLmCfg = config.my.services.mlx-lm or {
     enable = false;
     port = 11345;
+    discover-models = false;
     models = { };
   };
 
@@ -113,6 +114,10 @@ let
   cursorProxyPluginDir = "${env.home}/.config/opencode/plugins/cursor-proxy-local";
   cursorProxyScript = "${cursorProxyPlugin}/cursor-proxy.cjs";
 
+  mlxDiscoverModels = mlxLmCfg.discover-models or false;
+  mlxModelsDiscoveryPluginDir =
+    "${env.home}/.config/opencode/plugins/mlx-models-discovery";
+
   webHostname = "127.0.0.1";
   webTailscaleService = "opencode";
 
@@ -149,7 +154,10 @@ let
 
   opencodePlugins =
     lib.optionals cfg.providers.claude.enable [ "opencode-claude-auth@latest" ]
-    ++ lib.optionals cfg.providers.cursor.enable [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ];
+    ++ lib.optionals cfg.providers.cursor.enable [ "${cursorProxyPluginDir}/cursor-proxy-plugin.mjs" ]
+    ++ lib.optionals (cfg.providers.mlx.enable && mlxLmCfg.enable && mlxDiscoverModels) [
+      "${mlxModelsDiscoveryPluginDir}/mlx-models-discovery.mjs"
+    ];
 
   opencodeSettings = lib.mkMerge [
     (lib.mkIf (opencodePlugins != [ ]) {
@@ -184,16 +192,23 @@ let
           };
         })
         (lib.mkIf (cfg.providers.mlx.enable && mlxLmCfg.enable) {
-          mlx = {
-            npm = "@ai-sdk/openai-compatible";
-            name = "MLX (local)";
-            options = {
-              baseURL = mlxUrl;
-              apiKey = "none";
-              includeUsage = true;
+          # Declared models are optional overlays (short ids / context). With
+          # my.services.mlx-lm.discover-models the local plugin merges
+          # mlx_lm.server /v1/models at OpenCode startup. Omit `models` when
+          # empty so the provider is not a zero-model stub before the hook.
+          mlx =
+            {
+              npm = "@ai-sdk/openai-compatible";
+              name = "MLX (local)";
+              options = {
+                baseURL = mlxUrl;
+                apiKey = "none";
+                includeUsage = true;
+              };
+            }
+            // lib.optionalAttrs (mlxModelsFromService != { }) {
+              models = mlxModelsFromService;
             };
-            models = mlxModelsFromService;
-          };
         })
       ];
     }
@@ -242,6 +257,10 @@ in
         automatically; requires `my.services.mlx-lm.enable = true` on this host.
         Each model may set `path` (local MLX dir), `repo` (Hugging Face id), or
         use the attribute name as the Hugging Face id.
+
+        With `my.services.mlx-lm.discover-models = true`, OpenCode also lists
+        whatever `mlx_lm.server` exposes on `/v1/models` (HF cache); declared
+        `models` become optional overlays.
       '';
     };
 
@@ -291,8 +310,11 @@ in
           message = "my.programs.opencode.providers.mlx.enable requires my.services.mlx-lm.enable on this host.";
         }
         {
-          assertion = !cfg.providers.mlx.enable || mlxLmCfg.models != { };
-          message = "my.programs.opencode.providers.mlx.enable requires at least one model in my.services.mlx-lm.models.";
+          assertion =
+            !cfg.providers.mlx.enable
+            || mlxDiscoverModels
+            || mlxLmCfg.models != { };
+          message = "my.programs.opencode.providers.mlx.enable requires my.services.mlx-lm.models or my.services.mlx-lm.discover-models.";
         }
         {
           assertion =
@@ -310,6 +332,12 @@ in
         # (e.g. Boethiah) unless the Cursor provider is actually enabled.
         home.file.".config/opencode/plugins/cursor-proxy-local" = lib.mkIf cfg.providers.cursor.enable {
           source = cursorProxyPlugin;
+        };
+
+        home.file.".config/opencode/plugins/mlx-models-discovery" = lib.mkIf (
+          cfg.providers.mlx.enable && mlxLmCfg.enable && mlxDiscoverModels
+        ) {
+          source = ./mlx-models-discovery;
         };
 
         home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
