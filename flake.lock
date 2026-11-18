@@ -20,6 +20,29 @@
         "type": "github"
       }
     },
+    "agent-telegram-bot": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795026582,
+        "narHash": "sha256-RYmaplox1wLlnkwKuiU846ZqZoE7F22+neOFpVwYpAQ=",
+        "owner": "danieloakman",
+        "repo": "agent-telegram-bot",
+        "rev": "4e110b50f816edf06cae37d6f409a274ab2a8c37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "danieloakman",
+        "repo": "agent-telegram-bot",
+        "type": "github"
+      }
+    },
     "ags": {
       "inputs": {
         "astal": "astal",
@@ -739,6 +762,7 @@
     "root": {
       "inputs": {
         "agent-sandbox": "agent-sandbox",
+        "agent-telegram-bot": "agent-telegram-bot",
         "ags": "ags",
         "android-nixpkgs": "android-nixpkgs",
         "astal": "astal_2",

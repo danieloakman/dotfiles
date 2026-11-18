@@ -4,10 +4,13 @@
 #   agent-telegram-bot send --role vuln-monitor "…"
 #   agent-telegram-bot ask  --role vuln-monitor --timeout 600 "…"
 #
+# Package comes from github:danieloakman/agent-telegram-bot.
 # Separate from fam-telegram-bot (couple expenses/calendar guest bot).
-{ config, lib, pkgs, env, ... }:
+{ config, lib, pkgs, env, inputs, ... }:
 let
   cfg = config.my.services.agent-telegram-bot;
+  agentTelegramBotPackage =
+    inputs.agent-telegram-bot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   options.my.services.agent-telegram-bot = {
@@ -37,8 +40,8 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.callPackage ./agent-telegram-bot/_package.nix { };
-      defaultText = lib.literalExpression "pkgs.callPackage ./agent-telegram-bot/_package.nix { }";
+      default = agentTelegramBotPackage;
+      defaultText = lib.literalExpression "inputs.agent-telegram-bot.packages.\${pkgs.stdenv.hostPlatform.system}.default";
       description = "agent-telegram-bot package.";
     };
   };
