@@ -1,10 +1,8 @@
-# Multipurpose Telegram bridge for agents: notify (send) and ask (blocking reply).
+# Dotfiles glue for github:danieloakman/agent-telegram-bot.
 #
-# Long-poll daemon + unix control socket. CLI:
-#   agent-telegram-bot send --role vuln-monitor "…"
-#   agent-telegram-bot ask  --role vuln-monitor --timeout 600 "…"
+# Host values (chat-ids, allowed-user-ids) and sops stay here; the systemd user
+# unit and HM options live in the upstream homeManagerModules.default.
 #
-# Package comes from github:danieloakman/agent-telegram-bot.
 # Separate from fam-telegram-bot (couple expenses/calendar guest bot).
 { config, lib, pkgs, env, inputs, ... }:
 let
@@ -48,13 +46,6 @@ in
 
   config = lib.mkIf cfg.enable (env.selectPlatform {
     linux = {
-      assertions = [
-        {
-          assertion = cfg.chat-ids != [ ];
-          message = "my.services.agent-telegram-bot.chat-ids must be non-empty.";
-        }
-      ];
-
       sops.secrets.agent_telegram_bot_token = {
         owner = env.user;
         group = "secrets";
@@ -66,29 +57,14 @@ in
       environment.systemPackages = [ cfg.package ];
 
       home-manager.users.${env.user} = {
-        home.packages = [ cfg.package ];
+        imports = [ inputs.agent-telegram-bot.homeManagerModules.default ];
 
-        systemd.user.services.agent-telegram-bot = {
-          Unit = {
-            Description = "Agent Telegram bridge (notify + ask)";
-            After = [ "network-online.target" ];
-          };
-          Service = {
-            ExecStart = "${lib.getExe cfg.package} daemon";
-            Restart = "on-failure";
-            RestartSec = 5;
-            StateDirectory = "agent-telegram-bot";
-            Environment = [
-              "AGENT_TELEGRAM_BOT_TOKEN_FILE=${config.sops.secrets.agent_telegram_bot_token.path}"
-              "AGENT_TELEGRAM_BOT_SETTINGS=${
-                pkgs.writeText "agent-telegram-bot-settings.json" (builtins.toJSON {
-                  chatIds = cfg.chat-ids;
-                  allowedUserIds = cfg.allowed-user-ids;
-                })
-              }"
-            ];
-          };
-          Install.WantedBy = [ "default.target" ];
+        services.agent-telegram-bot = {
+          enable = true;
+          package = cfg.package;
+          chatIds = cfg.chat-ids;
+          allowedUserIds = cfg.allowed-user-ids;
+          tokenFile = config.sops.secrets.agent_telegram_bot_token.path;
         };
       };
     };
