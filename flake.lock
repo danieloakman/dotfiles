@@ -30,11 +30,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795027448,
-        "narHash": "sha256-Sma1+fIuXwxCTiHnR6HN0D/mlsOK4uoMccA52vOSi+k=",
+        "lastModified": 1795059760,
+        "narHash": "sha256-sEl+yFHMWzQbNX0zNyTTIHjnfHgcFbuAM+3Ks+8tqrE=",
         "owner": "danieloakman",
         "repo": "agent-telegram-bot",
-        "rev": "e8d720c2b9f96130e7a6ee82d23db9c9732bc4ba",
+        "rev": "feed948baa9e24ee65b8ba45d447c6e15819172e",
         "type": "github"
       },
       "original": {
