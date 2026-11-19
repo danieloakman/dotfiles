@@ -15,13 +15,14 @@ let
   feedsErrorFlag = "${stateDir}/feeds-error-notified";
   triageInboxDir = "${stateDir}/triage-inbox";
 
-  agentsOn = config.my.programs.agents.enable;
   cursorAgentOn = config.my.programs.cursor.agent.enable;
   hasGhToken = builtins.hasAttr "main_gh_token" (config.sops.secrets or { });
 
   cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
   dotfilesDir = triageCfg.repo;
   worktreeDir = triageCfg.worktree;
+  # Private to vuln-monitor (not ~/.claude/skills) so interactive agents stay clean.
+  triageSkillHome = "${env.home}/.local/share/vuln-monitor/triage-skill";
 
   severityFloor =
     {
@@ -152,6 +153,7 @@ let
       HOST=$(hostname -s)
       REPO=${lib.escapeShellArg dotfilesDir}
       WORKTREE=${lib.escapeShellArg worktreeDir}
+      SKILL_DIR=${lib.escapeShellArg triageSkillHome}
       CURSOR_AGENT=${lib.escapeShellArg cursorAgentExe}
       TIMEOUT_SEC=${lib.escapeShellArg (toString triageCfg.timeout-sec)}
       RUN_USER=${lib.escapeShellArg env.user}
@@ -250,9 +252,10 @@ $RAW_BODY"
         env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
           VULN_INBOX="$INBOX" VULN_KIND="$KIND" VULN_HOST="$HOST" \
           VULN_WORKTREE="$WORKTREE" VULN_REPO="$REPO" VULN_BRANCH="$branch" \
+          VULN_SKILL="$SKILL_DIR" \
           GH_TOKEN="$gh_token" GH_HOST=github.com \
         "$CURSOR_AGENT" -p --force --trust --workspace "$WORKTREE" \
-          "Follow the vuln-monitor-triage skill. Inbox: $INBOX. Kind: $KIND. Host: $HOST. Worktree at $WORKTREE is detached on origin/main; create branch \$VULN_BRANCH only for easy_fix PRs. Never modify $REPO." \
+          "Read \$VULN_SKILL/SKILL.md and follow that skill exactly (not a global ~/.claude skill). Inbox: $INBOX. Kind: $KIND. Host: $HOST. Worktree at $WORKTREE is detached on origin/main; create branch \$VULN_BRANCH only for easy_fix PRs. Never modify $REPO." \
         >"$out" 2>"$err"
       agent_rc=$?
       set -e
@@ -869,16 +872,14 @@ in
     (lib.mkIf triageCfg.enable {
       assertions = [
         {
-          assertion = agentsOn;
-          message = "my.services.vuln-monitor.triage.enable requires my.programs.agents.enable.";
-        }
-        {
           assertion = cursorAgentOn;
           message = "my.services.vuln-monitor.triage.enable requires my.programs.cursor.agent.enable.";
         }
       ];
 
-      my.programs.agents.skill-dirs.vuln-monitor-triage = lib.mkIf agentsOn triageSkill;
+      # Keep this skill out of ~/.claude/skills / Cursor slash stubs — timer-only.
+      home-manager.users.${env.user}.home.file.".local/share/vuln-monitor/triage-skill".source =
+        triageSkill;
 
       # Root oneshots call runuser; ensure worktree parent exists and is user-owned.
       systemd.tmpfiles.rules = [

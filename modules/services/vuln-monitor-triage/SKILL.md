@@ -3,8 +3,10 @@ name: vuln-monitor-triage
 description: >-
   Triage vuln-monitor feed hits and vulnix findings against this flake: pick
   not_affected, easy_fix (PR), or needs_review; emit a final JSON verdict.
-  Use when the vuln-monitor timer launches cursor-agent, or when classifying
-  whether a security advisory needs a Nix/dotfiles change on these hosts.
+  Timer-only skill (installed under ~/.local/share/vuln-monitor/triage-skill,
+  not global ~/.claude/skills). Use when the vuln-monitor timer launches
+  cursor-agent, or when classifying whether a security advisory needs a
+  Nix/dotfiles change on these hosts.
 ---
 
 # vuln-monitor-triage
@@ -20,6 +22,7 @@ stdout. The systemd wrapper parses that line and decides Telegram / PR follow-up
 | `VULN_INBOX` | Path to inbox JSON (required) |
 | `VULN_KIND` | `feeds` or `vulnix` |
 | `VULN_HOST` | Short hostname that raised the alert (usually `mara`) |
+| `VULN_SKILL` | This skill directory (`…/triage-skill`; not under `~/.claude/skills`) |
 | `VULN_WORKTREE` | Isolated git worktree (detached at `origin/main` for triage) |
 | `VULN_BRANCH` | Branch name to create **only** for an `easy_fix` PR |
 | `VULN_REPO` | Interactive checkout path (read reference only; never commit here) |
