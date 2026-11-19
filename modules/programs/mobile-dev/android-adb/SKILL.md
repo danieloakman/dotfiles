@@ -2,7 +2,7 @@
 name: android-adb
 description: >-
   Drive a physical Android phone over ADB with android-adb-* wrappers (unlock,
-  lock, info, screenshot, clear, launch, log, grant, screen-awake). Invoke with
+  lock, info, screenshot, clear, launch, log, grant, screen-awake, connect). Invoke with
   /android-adb for on-device testing or remote device control — not ambient chat.
 disable-model-invocation: true
 ---
@@ -23,6 +23,25 @@ android-adb-screen-awake true    # Stay awake while charging (dev option); false
 ```
 
 PIN comes from the user/env for the run — do not hardcode it in the skill or commit it.
+
+## Wireless
+
+Pairing persists, but Wireless debugging's port rotates every time it's toggled on/off and the phone's LAN IP can change. An IP:port from old docs, notes, or shell history is **not** a live endpoint — never reuse one. Check first; only ask the user for the current IP:port if nothing's already connected.
+
+```bash
+adb devices -l                    # already attached? use that serial, export ANDROID_SERIAL, skip the rest
+android-adb-connect                # no device: lists `adb mdns services` candidates
+android-adb-connect <host:port>    # connect using the IP:port on the phone's Wireless debugging screen
+```
+
+If `android-adb-connect` reports unauthorized (new/expired pairing), pair first — the **pairing dialog's** port (6-digit code screen) is different from the **main Wireless debugging screen's** connect port:
+
+```bash
+adb pair <host:pair-port>          # enter the 6-digit code shown on the phone
+android-adb-connect <host:port>    # then connect on the main screen's IP:port
+```
+
+Once connected, resume the usual preflight (`android-adb-info`, unlock if locked).
 
 ## Test loop
 
@@ -52,6 +71,7 @@ android-adb-lock
 | `android-adb-log <pkg> [--follow] [--lines N]` | logcat for package PID (default dump 200 lines) |
 | `android-adb-grant <pkg> <perm…>` | Short names (`CAMERA`) → `android.permission.CAMERA` |
 | `android-adb-screen-awake [true|false]` | Developer “Stay awake” while charging; no args = query |
+| `android-adb-connect [host:port]` | Wireless debugging connect; no args lists mdns candidates |
 
 ## Observe
 
