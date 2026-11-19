@@ -157,6 +157,12 @@ in
       # Enable KVM for virtualization (needed for Android emulator)
       virtualisation.libvirtd.enable = false; # We don't need libvirtd, just KVM modules
       boot.kernelModules = [ "kvm-intel" ]; # Load KVM module for Intel CPUs
+      # Undisclosed SCTP LPE chained by nginx2root (CVE-2026-64564); none of these
+      # hosts need SCTP — block autoload and explicit modprobe until a kernel fix.
+      boot.blacklistedKernelModules = [ "sctp" ];
+      boot.extraModprobeConfig = ''
+        install sctp /bin/true
+      '';
 
       # List packages installed in system profile. To search, run:
       # $ nix search wget
