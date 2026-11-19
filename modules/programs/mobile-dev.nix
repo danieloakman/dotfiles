@@ -367,10 +367,15 @@ in
               # for until this connects one.
               adb connect "$target"
 
-              serial="$(adb devices -l | grep -F "$target" | awk '{print $1}' || true)"
-              if [[ -z "$serial" ]]; then
-                echo "android-adb-connect: $target did not attach as a device (unauthorized or port rotated)" >&2
-                echo "android-adb-connect: if unauthorized, pair first: adb pair <host:pair-port>" >&2
+              line="$(adb devices -l | grep -F "$target" || true)"
+              serial="$(awk '{print $1}' <<< "$line")"
+              state="$(awk '{print $2}' <<< "$line")"
+
+              if [[ "$state" == "unauthorized" ]]; then
+                echo "android-adb-connect: $target is unauthorized; pair first: adb pair <host:pair-port>" >&2
+                exit 1
+              elif [[ "$state" != "device" ]]; then
+                echo "android-adb-connect: $target did not attach as a device (state: '$state'; offline or port rotated)" >&2
                 exit 1
               fi
 
