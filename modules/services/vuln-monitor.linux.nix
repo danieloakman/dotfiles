@@ -88,8 +88,9 @@ let
         fi
         RUN_USER=${lib.escapeShellArg env.user}
         HOME_DIR=${lib.escapeShellArg env.home}
+        # Drop inherited STATE_DIRECTORY so the CLI uses the user daemon socket.
         if ! ${pkgs.util-linux}/bin/runuser -u "$RUN_USER" -- \
-          env HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
+          env -u STATE_DIRECTORY HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
           ${agentTelegramBotExe} send --role vuln-monitor "$msg"; then
           ${pkgs.util-linux}/bin/logger -t vuln-monitor "agent-telegram-bot send failed"
         fi
