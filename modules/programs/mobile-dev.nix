@@ -344,6 +344,41 @@ in
             '';
           };
 
+          androidAdbConnect = pkgs.writeShellApplication {
+            name = "android-adb-connect";
+            runtimeInputs = [ pkgs.android-tools pkgs.gnugrep pkgs.gawk pkgs.coreutils ];
+            text = ''
+              set -euo pipefail
+              # Usage: android-adb-connect [host:port]
+              # No args: list current `adb mdns services` candidates (no fixed IP guessing —
+              # wireless debugging's port rotates on toggle and the LAN IP can change, so a
+              # host:port from old docs/shell history may no longer be live).
+              # With host:port: adb connect, verify it attached, print the serial to export.
+
+              if [[ $# -lt 1 ]]; then
+                echo "android-adb-connect: no host:port given; current mdns candidates:" >&2
+                adb mdns services || true
+                echo "usage: android-adb-connect <host:port>" >&2
+                exit 1
+              fi
+              target="$1"
+
+              # No adbSetup here: that waits-for-device, but there's no device to wait
+              # for until this connects one.
+              adb connect "$target"
+
+              serial="$(adb devices -l | grep -F "$target" | awk '{print $1}' || true)"
+              if [[ -z "$serial" ]]; then
+                echo "android-adb-connect: $target did not attach as a device (unauthorized or port rotated)" >&2
+                echo "android-adb-connect: if unauthorized, pair first: adb pair <host:pair-port>" >&2
+                exit 1
+              fi
+
+              echo "android-adb-connect: connected $serial"
+              echo "export ANDROID_SERIAL=$serial"
+            '';
+          };
+
           androidAdbPackages = [
             pkgs.android-tools
             androidAdbUnlock
@@ -355,6 +390,7 @@ in
             androidAdbLog
             androidAdbGrant
             androidAdbScreenAwake
+            androidAdbConnect
           ];
         in
         {
