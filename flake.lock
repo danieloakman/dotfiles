@@ -389,6 +389,26 @@
         "type": "gitlab"
       }
     },
+    "grok-bot": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795002908,
+        "narHash": "sha256-6N0mWe0EdgJ/oQeV+gmD1QKbDSqYc2xwCYaTmIbuNHE=",
+        "owner": "jordangarrison",
+        "repo": "grok-bot-flake",
+        "rev": "64747e220762ec548341166e2c1eafdf6ca0449b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jordangarrison",
+        "repo": "grok-bot-flake",
+        "type": "github"
+      }
+    },
     "guake": {
       "locked": {
         "lastModified": 1714750952,
@@ -769,6 +789,7 @@
         "bun2nix": "bun2nix",
         "copyparty": "copyparty",
         "flake-utils": "flake-utils_2",
+        "grok-bot": "grok-bot",
         "guake": "guake",
         "gws": "gws",
         "home-manager": "home-manager",

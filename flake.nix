@@ -116,6 +116,10 @@
         flake-utils.follows = "flake-utils";
       };
     };
+    grok-bot = {
+      url = "github:jordangarrison/grok-bot-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
