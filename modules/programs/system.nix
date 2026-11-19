@@ -159,6 +159,7 @@ in
       boot.kernelModules = [ "kvm-intel" ]; # Load KVM module for Intel CPUs
       # Undisclosed SCTP LPE chained by nginx2root (CVE-2026-64564); none of these
       # hosts need SCTP — block autoload and explicit modprobe until a kernel fix.
+      # See https://github.com/danieloakman/dotfiles/pull/61
       boot.blacklistedKernelModules = [ "sctp" ];
       boot.extraModprobeConfig = ''
         install sctp /bin/true
