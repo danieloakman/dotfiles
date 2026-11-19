@@ -2,9 +2,9 @@
 name: paperless-manage
 description: >-
   Run Paperless-ngx admin tasks via the NixOS paperless-manage wrapper
-  (export/import, reindex, retag, sanity check, mail fetch, superuser). Use when
-  the user mentions paperless-manage, paperless-ngx maintenance, document export,
-  search index, or Paperless CLI on this host.
+  (export/import, reindex, retag, sanity check, mail fetch, superuser).
+  Invoke with /paperless-manage for ops on this host — not ambient Paperless chat.
+disable-model-invocation: true
 ---
 
 # paperless-manage

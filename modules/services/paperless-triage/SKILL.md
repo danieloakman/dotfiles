@@ -3,8 +3,9 @@ name: paperless-triage
 description: >-
   Auto-classify Paperless-ngx documents tagged triage: set title, document
   type, correspondent, and tags via the REST API, then remove the triage tag.
-  Use when triaging Paperless inbox/triage docs, classifying scanned documents,
-  or when the paperless-triage timer launches cursor-agent.
+  Invoke with /paperless-triage or when the paperless-triage timer launches
+  cursor-agent — do not auto-run from ambient Paperless chat.
+disable-model-invocation: true
 ---
 
 # paperless-triage

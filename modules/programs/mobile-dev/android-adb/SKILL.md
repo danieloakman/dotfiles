@@ -2,9 +2,9 @@
 name: android-adb
 description: >-
   Drive a physical Android phone over ADB with android-adb-* wrappers (unlock,
-  lock, info, screenshot, clear, launch, log, grant, screen-awake). Use for
-  on-device mobile app testing, agent phone loops, or remote device control
-  when not at the desk.
+  lock, info, screenshot, clear, launch, log, grant, screen-awake). Invoke with
+  /android-adb for on-device testing or remote device control — not ambient chat.
+disable-model-invocation: true
 ---
 
 # android-adb
