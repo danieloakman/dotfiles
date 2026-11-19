@@ -111,9 +111,10 @@ let
 
       echo "paperless-triage: ''${reason}; starting cursor-agent"
       export PAPERLESS_URL PAPERLESS_TOKEN_FILE="$TOKEN_FILE"
+      # Skill is disable-model-invocation; name it by path so the agent still loads it.
       exec "$CURSOR_AGENT" -p --force --trust \
         --workspace "$DOTFILES_DIR" \
-        "Follow the paperless-triage skill. Auto-apply. Process documents with the ''${TAG_NAME} tag (queue count was ''${count}). Prefer http://127.0.0.1 for PAPERLESS_URL if on this host. Token file: \$PAPERLESS_TOKEN_FILE."
+        "Read \$HOME/.claude/skills/paperless-triage/SKILL.md and follow that skill exactly. Auto-apply. Process documents with the ''${TAG_NAME} tag (queue count was ''${count}). Prefer http://127.0.0.1 for PAPERLESS_URL if on this host. Token file: \$PAPERLESS_TOKEN_FILE."
     '';
   };
 in
