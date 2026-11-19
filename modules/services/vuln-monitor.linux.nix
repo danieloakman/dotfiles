@@ -21,8 +21,6 @@ let
   cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
   dotfilesDir = triageCfg.repo;
   worktreeDir = triageCfg.worktree;
-  # Private to vuln-monitor (not ~/.claude/skills) so interactive agents stay clean.
-  triageSkillHome = "${env.home}/.local/share/vuln-monitor/triage-skill";
 
   severityFloor =
     {
@@ -154,7 +152,7 @@ let
       HOST=$(hostname -s)
       REPO=${lib.escapeShellArg dotfilesDir}
       WORKTREE=${lib.escapeShellArg worktreeDir}
-      SKILL_DIR=${lib.escapeShellArg triageSkillHome}
+      SKILL_DIR=${lib.escapeShellArg triageSkill}
       CURSOR_AGENT=${lib.escapeShellArg cursorAgentExe}
       TIMEOUT_SEC=${lib.escapeShellArg (toString triageCfg.timeout-sec)}
       RUN_USER=${lib.escapeShellArg env.user}
@@ -878,10 +876,7 @@ in
         }
       ];
 
-      # Keep this skill out of ~/.claude/skills / Cursor slash stubs — timer-only.
-      home-manager.users.${env.user}.home.file.".local/share/vuln-monitor/triage-skill".source =
-        triageSkill;
-
+      # Timer-only: agent Reads $VULN_SKILL/SKILL.md from the store (not skill-dirs).
       # Root oneshots call runuser; ensure worktree parent exists and is user-owned.
       systemd.tmpfiles.rules = [
         "d ${env.home}/.local/share/vuln-monitor 0755 ${env.user} users -"
