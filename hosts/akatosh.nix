@@ -56,7 +56,7 @@ in
         ];
         hyprpaper.wallpaper = wallpaperPath;
       };
-      ui-shell = "noctalia-v5";
+      ui-shell = "ags";
       noctalia-v5 = {
         bar.monitors = [ "DP-2" ];
         location.address = "Sydney";
