@@ -6,6 +6,10 @@ default:
 fmt:
     nixpkgs-fmt . && nix shell 'nixpkgs#statix' -c statix fix .
 
+# Fail if formatting would change files (used by CI).
+fmt-check:
+    nixpkgs-fmt --check .
+
 lint:
     nix shell 'nixpkgs#statix' -c statix check .
 
@@ -35,6 +39,31 @@ check-host *host:
     host="${1:-$(hostname)}"
     nix eval --raw ".#darwinConfigurations.${host}.system.drvPath"
     echo
+
+# Evaluate every Linux host (drvPath only; no build). Used by CI.
+[linux]
+check-hosts:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for host in akatosh azura mara installer; do
+      echo "==> ${host}"
+      nix eval --raw ".#nixosConfigurations.${host}.config.system.build.toplevel.drvPath"
+      echo
+    done
+
+# Evaluate every Darwin host (drvPath only; no build). Used by CI.
+[macos]
+check-hosts:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for host in boethiah; do
+      echo "==> ${host}"
+      nix eval --raw ".#darwinConfigurations.${host}.system.drvPath"
+      echo
+    done
+
+# What CI runs locally for this platform (fmt + lint + all host evals).
+ci: fmt-check lint check-hosts
 
 update:
     sudo nix flake update --flake .
