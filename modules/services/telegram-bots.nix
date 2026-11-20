@@ -224,7 +224,7 @@ in
           imports = [ inputs.telegram-bots.homeManagerModules.default ];
 
           services.telegram-bots = {
-            package = cfg.package;
+            inherit (cfg) package;
             instances = lib.mapAttrs
               (name: inst: {
                 enable = true;
@@ -233,12 +233,12 @@ in
                 allowedUserIds = inst.allowed-user-ids;
                 allowedChatIds = inst.allowed-chat-ids;
                 guestMode = inst.guest-mode;
-                timezone = inst.timezone;
-                context = inst.context;
+                inherit (inst) timezone;
+                inherit (inst) context;
                 features.builtinHelp = inst.features.builtinHelp;
-                extraEnvironment = inst.extraEnvironment;
-                defaultCommand = inst.defaultCommand;
-                commands = inst.commands;
+                inherit (inst) extraEnvironment;
+                inherit (inst) defaultCommand;
+                inherit (inst) commands;
               })
               enabledInstances;
           };
