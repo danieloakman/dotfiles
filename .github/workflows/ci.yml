@@ -27,7 +27,8 @@ jobs:
         run: nix shell nixpkgs#just -c just check-hosts
 
   nix-darwin:
-    runs-on: macos-14
+    # macos-14 retired 2026-11-02; use arm64 macos-15 (same M1 class).
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
