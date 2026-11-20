@@ -78,11 +78,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795195706,
-        "narHash": "sha256-8CQH5uHsf57J6i9Ym+gbhIJaO3DPg/LfZGOYAczxHO8=",
+        "lastModified": 1795197089,
+        "narHash": "sha256-/ybJ8oRuTCzgpOuaHLel6aNSP4lnETITaF3T83o28Bs=",
         "owner": "danieloakman",
         "repo": "ags-desktop-shell",
-        "rev": "1e2d9e2cbb3f1b11fa10ee6f76cbbc5b876f6624",
+        "rev": "532768beb38239daf76f404874b6279b8ec16e11",
         "type": "github"
       },
       "original": {
