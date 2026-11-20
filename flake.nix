@@ -109,8 +109,9 @@
         bun2nix.follows = "bun2nix";
       };
     };
-    agent-telegram-bot = {
-      url = "github:danieloakman/agent-telegram-bot";
+    # Renamed crate lives on this branch until the GitHub repo is renamed to telegram-bots.
+    telegram-bots = {
+      url = "github:danieloakman/agent-telegram-bot/feat/telegram-bots";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

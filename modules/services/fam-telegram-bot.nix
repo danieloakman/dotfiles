@@ -8,7 +8,7 @@
 # Create the bot in @BotFather, enable Guest Mode, and put its token in sops
 # as fam_telegram_bot_token before turning this on.
 #
-# Agent notify/ask traffic belongs in my.services.agent-telegram-bot, not here.
+# Agent notify/ask traffic belongs in my.services.telegram-bots.instances, not here.
 { config, lib, pkgs, env, gws, system, ... }@args:
 let
   cfg = config.my.services.fam-telegram-bot;

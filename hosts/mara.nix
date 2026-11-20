@@ -107,7 +107,7 @@
       # Weekly vulnix scan + optional security-feed poller → Telegram (Dan).
       vuln-monitor = {
         enable = true;
-        # Notify via agent-telegram-bot (chat-ids configured there).
+        # Notify via telegram-bots instance agent (chat-ids configured there).
         feeds.enable = true;
         triage.enable = true;
       };
@@ -152,10 +152,13 @@
           }
         ];
       };
-      agent-telegram-bot = {
-        enable = true;
-        chat-ids = [ 8348310754 ]; # Dan
-        allowed-user-ids = [ 8348310754 ];
+      telegram-bots.instances = {
+        agent = {
+          enable = true;
+          token-secret = "agent_telegram_bot_token";
+          chat-ids = [ 8348310754 ]; # Dan
+          allowed-user-ids = [ 8348310754 ];
+        };
       };
       # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
