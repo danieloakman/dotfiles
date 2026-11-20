@@ -937,16 +937,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1795199022,
-        "narHash": "sha256-IwE4FcTWJF2cpKoO55YlpIPbJqfvFeCdFXugzv2rx1E=",
+        "lastModified": 1795201928,
+        "narHash": "sha256-vizut3EZS3hejB5L36P5N+7V/Ltj3qkaheYfGajW/kI=",
         "owner": "danieloakman",
         "repo": "telegram-bots",
-        "rev": "67b26a2399674fac868fcbea402b508f85a44853",
+        "rev": "b6ce9900ec43678effae3201733a70664a5642a4",
         "type": "github"
       },
       "original": {
         "owner": "danieloakman",
-        "ref": "feat/telegram-bots",
         "repo": "telegram-bots",
         "type": "github"
       }

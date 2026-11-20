@@ -106,7 +106,7 @@
       };
     };
     telegram-bots = {
-      url = "github:danieloakman/telegram-bots/feat/telegram-bots";
+      url = "github:danieloakman/telegram-bots";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

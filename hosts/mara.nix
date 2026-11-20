@@ -173,27 +173,28 @@ in
             workspace = "${env.home}/repos/personal/dotfiles";
             payers = brownFamPayers;
           };
+          # timeoutSec must exceed ask wait (default 600s) + gws/spreadsheet work.
           commands = {
             expense = {
               description = "e.g. 15 coffee · trotty paid 40 lunch · Kmart Amex";
               package = bf.expense;
-              timeoutSec = 180;
+              timeoutSec = 660;
             };
             task = {
               description = "e.g. buy milk · buy milk tomorrow";
               package = bf.task;
-              timeoutSec = 180;
+              timeoutSec = 660;
             };
             cal = {
               description = "e.g. 2026-10-25 15:00 dentist · or free-form";
               aliases = [ "calendar" ];
               package = bf.cal;
-              timeoutSec = 180;
+              timeoutSec = 660;
             };
           };
           defaultCommand = {
             package = bf.default;
-            timeoutSec = 180;
+            timeoutSec = 660;
             env.WORKSPACE = "${env.home}/repos/personal/dotfiles";
           };
         };
