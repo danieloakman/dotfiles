@@ -51,81 +51,81 @@ in
         hl = import ../_lua-lib.nix { inherit lib; };
       in
       {
-      # add the home manager module
-      imports = [ inputs.ags.homeManagerModules.default ];
+        # add the home manager module
+        imports = [ inputs.ags.homeManagerModules.default ];
 
-      wayland.windowManager.hyprland = {
-        settings = {
-          on = [
-            # We're running it directly from here so we get access to node_modules
-            # It'd be possible to package an ags derivation ourselves that installs and includes node_modules, but for now
-            # it's too much work.
-            (hl.onStart [ (lib.getExe agsStart) ])
-          ];
+        wayland.windowManager.hyprland = {
+          settings = {
+            on = [
+              # We're running it directly from here so we get access to node_modules
+              # It'd be possible to package an ags derivation ourselves that installs and includes node_modules, but for now
+              # it's too much work.
+              (hl.onStart [ (lib.getExe agsStart) ])
+            ];
 
-          bind = [
-            (hl.bind (hl.key "Q") (hl.exec "ags request toggle password-search"))
-            # Open app launcher. TODO: use the AGS app launcher instead.
-            (hl.bind (hl.key "space") (hl.exec "rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"))
-            (hl.bind (hl.key "S") (hl.exec "rofi-google-search"))
-          ];
+            bind = [
+              (hl.bind (hl.key "Q") (hl.exec "ags request toggle password-search"))
+              # Open app launcher. TODO: use the AGS app launcher instead.
+              (hl.bind (hl.key "space") (hl.exec "rofi -show combi -combi-modi \"window,drun\" -modi combi -show-icons"))
+              (hl.bind (hl.key "S") (hl.exec "rofi-google-search"))
+            ];
+          };
+        };
+
+        programs.cava.enable = true; # Audio visualizer
+
+        programs.ags = {
+          enable = true; # Still need this to include ags bin, even though the dir it creates isn't being run atm
+
+          # symlink to ~/.config/ags
+          configDir = ./.;
+
+          # additional packages and executables to add to gjs's runtime
+          extraPackages = with pkgs; (with astalPkgs; [
+            hyprland
+            wireplumber
+            network
+            notifd # Has a gvfs error when starting up
+            mpris # Adds support for spotify and other mpris compatible apps
+            apps # Adds an api for apps specifed as .desktop files
+            tray # Adds an api for desktop tray items
+            cava # Audio visualizer cli
+            # TODO: include these once we know it's working
+            # powerprofiles
+          ]);
+        };
+
+        xdg.desktopEntries = {
+          # System management:
+          shutdown = {
+            name = "Shutdown";
+            exec = "shutdown -P now";
+            categories = [ "System" ];
+            icon = "system-shutdown";
+            startupNotify = true;
+          };
+          reboot = {
+            name = "Reboot";
+            exec = "reboot";
+            categories = [ "System" ];
+            icon = "system-reboot";
+            startupNotify = true;
+          };
+          suspend = {
+            name = "Suspend";
+            exec = "systemctl suspend";
+            categories = [ "System" ];
+            icon = "preferences-system";
+            startupNotify = true;
+          };
+          logout = {
+            name = "Logout";
+            exec = "logout";
+            categories = [ "System" ];
+            icon = "system-log-out";
+            startupNotify = true;
+          };
         };
       };
-
-      programs.cava.enable = true; # Audio visualizer
-
-      programs.ags = {
-        enable = true; # Still need this to include ags bin, even though the dir it creates isn't being run atm
-
-        # symlink to ~/.config/ags
-        configDir = ./.;
-
-        # additional packages and executables to add to gjs's runtime
-        extraPackages = with pkgs; (with astalPkgs; [
-          hyprland
-          wireplumber
-          network
-          notifd # Has a gvfs error when starting up
-          mpris # Adds support for spotify and other mpris compatible apps
-          apps # Adds an api for apps specifed as .desktop files
-          tray # Adds an api for desktop tray items
-          cava # Audio visualizer cli
-          # TODO: include these once we know it's working
-          # powerprofiles
-        ]);
-      };
-
-      xdg.desktopEntries = {
-        # System management:
-        shutdown = {
-          name = "Shutdown";
-          exec = "shutdown -P now";
-          categories = [ "System" ];
-          icon = "system-shutdown";
-          startupNotify = true;
-        };
-        reboot = {
-          name = "Reboot";
-          exec = "reboot";
-          categories = [ "System" ];
-          icon = "system-reboot";
-          startupNotify = true;
-        };
-        suspend = {
-          name = "Suspend";
-          exec = "systemctl suspend";
-          categories = [ "System" ];
-          icon = "preferences-system";
-          startupNotify = true;
-        };
-        logout = {
-          name = "Logout";
-          exec = "logout";
-          categories = [ "System" ];
-          icon = "system-log-out";
-          startupNotify = true;
-        };
-      };
-    };
   };
 }

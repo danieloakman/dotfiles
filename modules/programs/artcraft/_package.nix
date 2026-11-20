@@ -4,18 +4,18 @@
 # Prefetch after a version bump (hex digests are also in each release's SHA256SUMS):
 #   nix hash convert --hash-algo sha256 --to sri HEX
 #   # or: nix store prefetch-file URL
-{
-  lib,
-  stdenv,
-  fetchurl,
-  makeWrapper,
-  autoPatchelfHook,
-  autoAddDriverRunpath,
-  alsa-lib,
-  libxkbcommon,
-  wayland,
-  vulkan-loader,
-  xorg,
+{ lib
+, stdenv
+, fetchurl
+, makeWrapper
+, autoPatchelfHook
+, autoAddDriverRunpath
+, alsa-lib
+, libxkbcommon
+, wayland
+, vulkan-loader
+, xorg
+,
 }:
 let
   inherit (stdenv.hostPlatform) system;
@@ -24,8 +24,7 @@ let
     {
       x86_64-linux = "x86_64";
       aarch64-linux = "aarch64";
-    }
-    .${system} or (throw "artcraft: unsupported system ${system}");
+    }.${system} or (throw "artcraft: unsupported system ${system}");
 
   # Libraries the apps dlopen at runtime (wgpu / winit). Same set as upstream
   # lightcraft's nix/package.nix wrapper.
@@ -154,11 +153,11 @@ let
 
   mkCraftApp =
     pname:
-    {
-      version,
-      description,
-      homepage,
-      hashes,
+    { version
+    , description
+    , homepage
+    , hashes
+    ,
     }:
     let
       archiveStem = "${pname}-${version}-linux-${linuxArch}";

@@ -61,7 +61,7 @@ in
 
         services.agent-telegram-bot = {
           enable = true;
-          package = cfg.package;
+          inherit (cfg) package;
           chatIds = cfg.chat-ids;
           allowedUserIds = cfg.allowed-user-ids;
           tokenFile = config.sops.secrets.agent_telegram_bot_token.path;

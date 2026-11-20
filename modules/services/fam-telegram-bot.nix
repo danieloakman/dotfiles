@@ -118,9 +118,10 @@ in
     linux =
       let
         famTelegramBot = pkgs.callPackage ./fam-telegram-bot/_package.nix { };
-        expensesSpreadsheet = lib.getExe' (pkgs.callPackage ../programs/bun-scripts.linux/_package.nix {
-          bun2nix = args.bun2nix;
-        }) "expenses-spreadsheet";
+        expensesSpreadsheet = lib.getExe'
+          (pkgs.callPackage ../programs/bun-scripts.linux/_package.nix {
+            inherit (args) bun2nix;
+          }) "expenses-spreadsheet";
         gwsExe = lib.getExe gws.packages.${system}.default;
         cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
         settings = pkgs.writeText "fam-telegram-bot-settings.json" (builtins.toJSON {
@@ -129,10 +130,12 @@ in
           allowedChatIds = cfg.allowed-chat-ids;
           allowedUserIds = cfg.allowed-user-ids;
           workspace = cfg.interpreter.workspace;
-          payers = map (payer: {
-            inherit (payer) name aliases;
-            telegramId = payer.telegram-id;
-          }) cfg.payers;
+          payers = map
+            (payer: {
+              inherit (payer) name aliases;
+              telegramId = payer.telegram-id;
+            })
+            cfg.payers;
         });
         tokenPath = config.sops.secrets.fam_telegram_bot_token.path;
       in

@@ -188,47 +188,47 @@ in
         noctaliaMsg = "noctalia msg";
       in
       {
-      imports = [ inputs.noctalia.homeModules.default ];
+        imports = [ inputs.noctalia.homeModules.default ];
 
-      programs.noctalia = {
-        enable = true;
-        # Launched via Hyprland on start below; set true to use the systemd user service instead.
-        systemd.enable = false;
-        settings = finalSettings;
-      };
+        programs.noctalia = {
+          enable = true;
+          # Launched via Hyprland on start below; set true to use the systemd user service instead.
+          systemd.enable = false;
+          settings = finalSettings;
+        };
 
-      home.packages = [
-        pkgs.wl-clipboard
-        pkgs.wtype # Required for local/pass auto-paste after copy
-        dumpSettings
-      ];
+        home.packages = [
+          pkgs.wl-clipboard
+          pkgs.wtype # Required for local/pass auto-paste after copy
+          dumpSettings
+        ];
 
-      wayland.windowManager.hyprland = {
-        settings = {
-          on = [
-            (hl.onStart [ "noctalia" ])
-          ];
+        wayland.windowManager.hyprland = {
+          settings = {
+            on = [
+              (hl.onStart [ "noctalia" ])
+            ];
 
-          bind = [
-            (hl.bind (hl.key "space") (hl.exec "${noctaliaMsg} panel-toggle launcher"))
-            (hl.bind (hl.key "Q") (hl.exec "${noctaliaMsg} panel-toggle launcher '/pass '"))
-            (hl.bind (hl.key "S") (hl.exec "${noctaliaMsg} panel-toggle launcher '/web '"))
-            (hl.bind (hl.key "G") (hl.exec "${noctaliaMsg} panel-toggle launcher /emo"))
+            bind = [
+              (hl.bind (hl.key "space") (hl.exec "${noctaliaMsg} panel-toggle launcher"))
+              (hl.bind (hl.key "Q") (hl.exec "${noctaliaMsg} panel-toggle launcher '/pass '"))
+              (hl.bind (hl.key "S") (hl.exec "${noctaliaMsg} panel-toggle launcher '/web '"))
+              (hl.bind (hl.key "G") (hl.exec "${noctaliaMsg} panel-toggle launcher /emo"))
 
-            (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaMsg} brightness-up"))
-            (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaMsg} brightness-down"))
-            (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaMsg} volume-up"))
-            (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaMsg} volume-down"))
-            (hl.bindl "ALT + F7" (hl.exec "${noctaliaMsg} volume-up"))
-            (hl.bindl "ALT + F6" (hl.exec "${noctaliaMsg} volume-down"))
-            (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaMsg} mic-mute"))
-            (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaMsg} volume-mute"))
-            (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaMsg} media toggle"))
-            (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaMsg} media previous"))
-            (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaMsg} media next"))
-          ];
+              (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaMsg} brightness-up"))
+              (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaMsg} brightness-down"))
+              (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaMsg} volume-up"))
+              (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaMsg} volume-down"))
+              (hl.bindl "ALT + F7" (hl.exec "${noctaliaMsg} volume-up"))
+              (hl.bindl "ALT + F6" (hl.exec "${noctaliaMsg} volume-down"))
+              (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaMsg} mic-mute"))
+              (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaMsg} volume-mute"))
+              (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaMsg} media toggle"))
+              (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaMsg} media previous"))
+              (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaMsg} media next"))
+            ];
+          };
         };
       };
-    };
   };
 }

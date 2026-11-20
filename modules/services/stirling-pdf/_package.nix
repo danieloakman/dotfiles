@@ -1,11 +1,11 @@
 # unoserver is not in nixpkgs (request: NixOS/nixpkgs#386056). Stirling-PDF 1.5.0
 # shells out to `unoconvert` and talks to a running `unoserver` on port 2003.
-{
-  lib,
-  python3Packages,
-  fetchFromGitHub,
-  libreoffice,
-  libreoffice-unwrapped,
+{ lib
+, python3Packages
+, fetchFromGitHub
+, libreoffice
+, libreoffice-unwrapped
+,
 }:
 
 let
