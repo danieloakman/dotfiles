@@ -52,18 +52,22 @@ in
         '';
       };
     }
-    // lib.mapAttrs (
-      _name: description: {
-        enable = lib.mkEnableOption description;
-      }
-    ) craftApps;
+    // lib.mapAttrs
+      (
+        _name: description: {
+          enable = lib.mkEnableOption description;
+        }
+      )
+      craftApps;
 
   config = lib.mkMerge [
     {
       # `enable` turns on all crafting apps that have Linux packages.
-      my.programs.artcraft = lib.mapAttrs (_: _: {
-        enable = lib.mkDefault cfg.enable;
-      }) craftApps;
+      my.programs.artcraft = lib.mapAttrs
+        (_: _: {
+          enable = lib.mkDefault cfg.enable;
+        })
+        craftApps;
     }
     (lib.mkIf anyEnabled (
       env.selectPlatform {

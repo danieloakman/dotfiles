@@ -26,19 +26,21 @@ let
 
   slugFromHost = host: builtins.head (lib.splitString "." host);
 
-  profilesBySlug = lib.mapAttrs' (
-    name: p:
-    let
-      parsed = parseRemote p.remote;
-    in
-    lib.nameValuePair (slugFromHost parsed.host) (
-      parsed
-      // {
-        inherit name;
-        id = p.id;
-      }
+  profilesBySlug = lib.mapAttrs'
+    (
+      name: p:
+        let
+          parsed = parseRemote p.remote;
+        in
+        lib.nameValuePair (slugFromHost parsed.host) (
+          parsed
+          // {
+            inherit name;
+            inherit (p) id;
+          }
+        )
     )
-  ) piaProfiles;
+    piaProfiles;
 
   vpnProfile = cfg.vpn.profile;
   vpnEndpoint = profilesBySlug.${vpnProfile};

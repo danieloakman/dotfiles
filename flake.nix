@@ -52,12 +52,8 @@
     };
     # Still needed by modules/gnome.linux/guake.nix; drop with unused-shells cleanup (#34).
     guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
-    astal = {
-      url = "github:aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    ags = {
-      url = "github:aylur/ags";
+    ags-desktop-shell = {
+      url = "github:danieloakman/ags-desktop-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # zen-browser.url = "github:MarceColl/zen-browser-flake";
@@ -194,8 +190,8 @@
             else if builtins.isFloat selected then
               selected + (cfg.any or 0.0)
             else if builtins.isBool selected then
-              # `||` means any=true forces true even when the platform arm is false.
-              # Prefer omitting `any` for bools, or use attrs + mkMerge if you need overrides.
+            # `||` means any=true forces true even when the platform arm is false.
+            # Prefer omitting `any` for bools, or use attrs + mkMerge if you need overrides.
               selected || (cfg.any or false)
             else
               cfg.any or { };

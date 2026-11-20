@@ -113,7 +113,7 @@ in
     home-manager.users.${env.user} = {
       programs.herdr = {
         enable = true;
-        package = cfg.package;
+        inherit (cfg) package;
         # https://herdr.dev/docs/configuration/#_top
         settings = {
           onboarding = false;

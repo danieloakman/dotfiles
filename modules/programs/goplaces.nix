@@ -20,25 +20,25 @@ let
       let
         base = "https://github.com/openclaw/goplaces/releases/download/v${version}";
       in
-      {
-        x86_64-linux = pkgs.fetchurl {
-          url = "${base}/goplaces_${version}_linux_amd64.tar.gz";
-          hash = "sha256-oLajAHaeUyECovZS+imBOibEVgjqQNg2/Zfq2Msl5lo=";
-        };
-        aarch64-linux = pkgs.fetchurl {
-          url = "${base}/goplaces_${version}_linux_arm64.tar.gz";
-          hash = "sha256-Rfwk7QDYk+7yGH6/9j4Vk/yyHLgqCTt67s142y4hpac=";
-        };
-        aarch64-darwin = pkgs.fetchurl {
-          url = "${base}/goplaces_${version}_darwin_arm64.tar.gz";
-          hash = "sha256-k4eJbIGuxHBlEO/WDdlY+99QVuapaN3eoQrU+XI5QCg=";
-        };
-        x86_64-darwin = pkgs.fetchurl {
-          url = "${base}/goplaces_${version}_darwin_amd64.tar.gz";
-          hash = "sha256-WuGUDysXJKNToHFmQQ3v2kLAdqwej4KEyB3t6SleSsU=";
-        };
-      }.${pkgs.stdenv.hostPlatform.system}
-        or (throw "my.programs.goplaces: unsupported system ${pkgs.stdenv.hostPlatform.system}");
+        {
+          x86_64-linux = pkgs.fetchurl {
+            url = "${base}/goplaces_${version}_linux_amd64.tar.gz";
+            hash = "sha256-oLajAHaeUyECovZS+imBOibEVgjqQNg2/Zfq2Msl5lo=";
+          };
+          aarch64-linux = pkgs.fetchurl {
+            url = "${base}/goplaces_${version}_linux_arm64.tar.gz";
+            hash = "sha256-Rfwk7QDYk+7yGH6/9j4Vk/yyHLgqCTt67s142y4hpac=";
+          };
+          aarch64-darwin = pkgs.fetchurl {
+            url = "${base}/goplaces_${version}_darwin_arm64.tar.gz";
+            hash = "sha256-k4eJbIGuxHBlEO/WDdlY+99QVuapaN3eoQrU+XI5QCg=";
+          };
+          x86_64-darwin = pkgs.fetchurl {
+            url = "${base}/goplaces_${version}_darwin_amd64.tar.gz";
+            hash = "sha256-WuGUDysXJKNToHFmQQ3v2kLAdqwej4KEyB3t6SleSsU=";
+          };
+        }.${pkgs.stdenv.hostPlatform.system}
+          or (throw "my.programs.goplaces: unsupported system ${pkgs.stdenv.hostPlatform.system}");
 
     # Upstream archive is a single `goplaces` binary (no directories).
     dontUnpack = true;

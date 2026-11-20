@@ -1,0 +1,4 @@
+# NixOS modules commonly use dotted attr paths (services.foo / services.bar);
+# merging those into one nested attrset is optional style, not a real bug.
+disabled = ["repeated_keys"]
+ignore = [".direnv"]
