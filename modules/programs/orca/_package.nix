@@ -7,41 +7,41 @@
 # Bump version + both hashes together (and the skills source hash in default.nix):
 #   nix store prefetch-file "https://github.com/stablyai/orca/releases/download/vVERSION/orca-linux.AppImage"
 #   nix store prefetch-file "https://github.com/stablyai/orca/releases/download/vVERSION/orca-linux-arm64.AppImage"
-{
-  lib,
-  stdenv,
-  fetchurl,
-  appimageTools,
-  autoPatchelfHook,
-  makeWrapper,
-  wrapGAppsHook3,
-  alsa-lib,
-  at-spi2-atk,
-  at-spi2-core,
-  cairo,
-  cups,
-  dbus,
-  expat,
-  glib,
-  gtk3,
-  libdrm,
-  libgbm,
-  libGL,
-  libxkbcommon,
-  mesa,
-  nspr,
-  nss,
-  pango,
-  udev,
-  vulkan-loader,
-  libx11,
-  libxcomposite,
-  libxdamage,
-  libxext,
-  libxfixes,
-  libxrandr,
-  libxcb,
-  version ? "1.4.258",
+{ lib
+, stdenv
+, fetchurl
+, appimageTools
+, autoPatchelfHook
+, makeWrapper
+, wrapGAppsHook3
+, alsa-lib
+, at-spi2-atk
+, at-spi2-core
+, cairo
+, cups
+, dbus
+, expat
+, glib
+, gtk3
+, libdrm
+, libgbm
+, libGL
+, libxkbcommon
+, mesa
+, nspr
+, nss
+, pango
+, udev
+, vulkan-loader
+, libx11
+, libxcomposite
+, libxdamage
+, libxext
+, libxfixes
+, libxrandr
+, libxcb
+, version ? "1.4.258"
+,
 }:
 let
   pname = "orca-ide";
@@ -57,9 +57,8 @@ let
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux-arm64.AppImage";
           hash = "sha256-wb4w6gcH5Fw1Xiu9mAlzmPB9D9ioMqbevFTcOBb1f4k=";
         };
-      }
-      .${stdenv.hostPlatform.system}
-      or (throw "orca-ide: unsupported system ${stdenv.hostPlatform.system}");
+      }.${stdenv.hostPlatform.system}
+        or (throw "orca-ide: unsupported system ${stdenv.hostPlatform.system}");
 
   appimageContents = appimageTools.extract { inherit pname version src; };
 

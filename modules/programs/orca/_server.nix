@@ -7,11 +7,11 @@
 # Bump version + both hashes together (and AppImage / skills hashes in sibling files):
 #   nix store prefetch-file "https://github.com/stablyai/orca/releases/download/vVERSION/orca-server-linux-x64.tar.gz"
 #   nix store prefetch-file "https://github.com/stablyai/orca/releases/download/vVERSION/orca-server-linux-arm64.tar.gz"
-{
-  lib,
-  stdenv,
-  fetchurl,
-  version ? "1.4.258",
+{ lib
+, stdenv
+, fetchurl
+, version ? "1.4.258"
+,
 }:
 let
   pname = "orca-server";
@@ -27,9 +27,8 @@ let
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-server-linux-arm64.tar.gz";
           hash = "sha256-oSeZI3ABlujM2UlS/qA59tmPXU+Uha/KApXt3qjMsDM=";
         };
-      }
-      .${stdenv.hostPlatform.system}
-      or (throw "orca-server: unsupported system ${stdenv.hostPlatform.system}");
+      }.${stdenv.hostPlatform.system}
+        or (throw "orca-server: unsupported system ${stdenv.hostPlatform.system}");
 in
 stdenv.mkDerivation {
   inherit pname version src;

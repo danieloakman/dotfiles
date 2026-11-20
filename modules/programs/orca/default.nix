@@ -11,7 +11,7 @@
 }:
 let
   cfg = config.my.programs.orca;
-  serve = cfg.serve;
+  inherit (cfg) serve;
 
   # Keep in sync with `_package.nix` / `_server.nix` defaults and skills source rev.
   version = "1.4.258";
@@ -233,10 +233,12 @@ in
 
       (lib.mkIf (cfg.skills != [ ]) {
         my.programs.agents.skill-dirs = lib.listToAttrs (
-          map (name: {
-            inherit name;
-            value = "${orcaSkillsSrc}/skills/${name}";
-          }) cfg.skills
+          map
+            (name: {
+              inherit name;
+              value = "${orcaSkillsSrc}/skills/${name}";
+            })
+            cfg.skills
         );
       })
 

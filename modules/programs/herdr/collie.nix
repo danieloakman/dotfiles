@@ -8,7 +8,7 @@
 }:
 let
   cfg = config.my.programs.herdr;
-  collie = cfg.collie;
+  inherit (cfg) collie;
   herdrBin = lib.getExe cfg.package;
 
   colliePluginId = "herdr.collie";

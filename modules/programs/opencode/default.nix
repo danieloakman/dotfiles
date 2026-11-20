@@ -344,11 +344,13 @@ in
           source = cursorProxyPlugin;
         };
 
-        home.file.".config/opencode/plugins/mlx-models-discovery" = lib.mkIf (
-          cfg.providers.mlx.enable && mlxLmCfg.enable && mlxDiscoverModels
-        ) {
-          source = ./mlx-models-discovery;
-        };
+        home.file.".config/opencode/plugins/mlx-models-discovery" = lib.mkIf
+          (
+            cfg.providers.mlx.enable && mlxLmCfg.enable && mlxDiscoverModels
+          )
+          {
+            source = ./mlx-models-discovery;
+          };
 
         home.sessionVariables = lib.mkIf cfg.providers.cursor.enable {
           CURSOR_AGENT_BIN = "${lib.getExe cursorAgentPackage}";

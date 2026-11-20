@@ -8,7 +8,7 @@
 }:
 let
   cfg = config.my.programs.herdr;
-  gui = cfg.gui;
+  inherit (cfg) gui;
   guiPackage = pkgs.callPackage ./_package-gui.nix { };
   guiBin = lib.getExe gui.package;
 

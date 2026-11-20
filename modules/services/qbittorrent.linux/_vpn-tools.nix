@@ -1,18 +1,20 @@
 # Host CLIs for switching the qBittorrent container's PIA OpenVPN remote
 # and probing/searching apibay through the tunnel.
-{
-  pkgs,
-  lib,
-  profilesBySlug,
-  vpnRemotePath,
-  defaultProfile,
-  containerName ? "qbittorrent",
+{ pkgs
+, lib
+, profilesBySlug
+, vpnRemotePath
+, defaultProfile
+, containerName ? "qbittorrent"
+,
 }:
 let
   profilesJson = builtins.toJSON (
-    lib.mapAttrs (_slug: p: {
-      inherit (p) host port proto id name;
-    }) profilesBySlug
+    lib.mapAttrs
+      (_slug: p: {
+        inherit (p) host port proto id name;
+      })
+      profilesBySlug
   );
   profilesFile = pkgs.writeText "qbittorrent-vpn-profiles.json" profilesJson;
 

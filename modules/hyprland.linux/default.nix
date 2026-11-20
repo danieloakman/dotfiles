@@ -229,13 +229,17 @@ in
             files = hl.var "nautilus";
             browser = hl.var browserCmd;
 
-            monitor = map (m: {
-              inherit (m) output mode position scale;
-            }) cfg.monitors;
+            monitor = map
+              (m: {
+                inherit (m) output mode position scale;
+              })
+              cfg.monitors;
 
-            workspace_rule = map (w: {
-              inherit (w) workspace monitor;
-            }) cfg.workspaces;
+            workspace_rule = map
+              (w: {
+                inherit (w) workspace monitor;
+              })
+              cfg.workspaces;
 
             window_rule = cfg.window-rules;
 

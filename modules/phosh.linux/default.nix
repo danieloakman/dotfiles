@@ -8,7 +8,7 @@ in
   config = lib.mkIf cfg.enable {
     services.xserver.desktopManager.phosh = {
       enable = true;
-      user = env.user;
+      inherit (env) user;
       group = "users";
     };
   };

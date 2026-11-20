@@ -10,23 +10,27 @@ let
   serveApplyScript =
     let
       lines = lib.concatLists (
-        lib.mapAttrsToList (
-          name: svc:
-          lib.mapAttrsToList (
-            endpoint: target:
-            let
-              port = lib.removePrefix "tcp:" endpoint;
-            in
-            assert lib.hasPrefix "tcp:" endpoint;
-            ''
-              ${ts} serve clear ${lib.escapeShellArg "svc:${name}"} >/dev/null 2>&1 || true
-              ${ts} serve --bg --service=${lib.escapeShellArg "svc:${name}"} --https=${port} ${lib.escapeShellArg target}
-              ${lib.optionalString (svc.advertised == false) ''
-                ${ts} serve drain ${lib.escapeShellArg "svc:${name}"} || true
-              ''}
-            ''
-          ) svc.endpoints
-        ) serveCfg.services
+        lib.mapAttrsToList
+          (
+            name: svc:
+              lib.mapAttrsToList
+                (
+                  endpoint: target:
+                    let
+                      port = lib.removePrefix "tcp:" endpoint;
+                    in
+                    assert lib.hasPrefix "tcp:" endpoint;
+                    ''
+                      ${ts} serve clear ${lib.escapeShellArg "svc:${name}"} >/dev/null 2>&1 || true
+                      ${ts} serve --bg --service=${lib.escapeShellArg "svc:${name}"} --https=${port} ${lib.escapeShellArg target}
+                      ${lib.optionalString (svc.advertised == false) ''
+                        ${ts} serve drain ${lib.escapeShellArg "svc:${name}"} || true
+                      ''}
+                    ''
+                )
+                svc.endpoints
+          )
+          serveCfg.services
       );
     in
     pkgs.writeShellScript "tailscale-serve-https-apply" ''
