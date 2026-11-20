@@ -105,8 +105,8 @@
         bun2nix.follows = "bun2nix";
       };
     };
-    agent-telegram-bot = {
-      url = "github:danieloakman/agent-telegram-bot";
+    telegram-bots = {
+      url = "github:danieloakman/telegram-bots";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";

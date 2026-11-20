@@ -20,29 +20,6 @@
         "type": "github"
       }
     },
-    "agent-telegram-bot": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1795059760,
-        "narHash": "sha256-sEl+yFHMWzQbNX0zNyTTIHjnfHgcFbuAM+3Ks+8tqrE=",
-        "owner": "danieloakman",
-        "repo": "agent-telegram-bot",
-        "rev": "feed948baa9e24ee65b8ba45d447c6e15819172e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "danieloakman",
-        "repo": "agent-telegram-bot",
-        "type": "github"
-      }
-    },
     "ags": {
       "inputs": {
         "astal": [
@@ -807,7 +784,6 @@
     "root": {
       "inputs": {
         "agent-sandbox": "agent-sandbox",
-        "agent-telegram-bot": "agent-telegram-bot",
         "ags-desktop-shell": "ags-desktop-shell",
         "android-nixpkgs": "android-nixpkgs",
         "bun2nix": "bun2nix",
@@ -832,6 +808,7 @@
         "stirling-pdf": "stirling-pdf",
         "stylix": "stylix",
         "systems": "systems_3",
+        "telegram-bots": "telegram-bots",
         "wrapper-modules": "wrapper-modules"
       }
     },
@@ -947,6 +924,29 @@
         "owner": "nix-systems",
         "ref": "future-26.11",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "telegram-bots": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795206748,
+        "narHash": "sha256-k6I4wQLOmOV6Bhs3BcfDNqyulw94NrGF1ggb5ix/BSE=",
+        "owner": "danieloakman",
+        "repo": "telegram-bots",
+        "rev": "de60e117594e3911bb1efde41e563da83a0815f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "danieloakman",
+        "repo": "telegram-bots",
         "type": "github"
       }
     },

@@ -1,6 +1,6 @@
 # Periodic vulnix system scan + optional human-signal feed poller.
 # New findings go through cursor-agent triage before notify (when enabled).
-# Notify prefers my.services.agent-telegram-bot send.
+# Notify prefers my.services.telegram-bots.instances.agent notify.
 { config, lib, pkgs, env, ... }:
 let
   cfg = config.my.services.vuln-monitor;
@@ -53,8 +53,9 @@ let
       lib.concatStringsSep "\n" ([ starSection ] ++ pkgSections ++ [ cfg.extra-whitelist ])
     );
 
-  agentTelegramBotExe = lib.getExe config.my.services.agent-telegram-bot.package;
-  agentTelegramEnabled = config.my.services.agent-telegram-bot.enable;
+  telegramBotsExe = lib.getExe config.my.services.telegram-bots.package;
+  agentTelegramEnabled =
+    lib.attrByPath [ "instances" "agent" "enable" ] false config.my.services.telegram-bots;
 
   sourcesJsonFile = pkgs.writeText "vuln-monitor-sources.json" (
     builtins.toJSON (
@@ -76,7 +77,7 @@ let
     cp ${./vuln-monitor-triage/SKILL.md} $out/SKILL.md
   '';
 
-  # Prefer agent-telegram-bot bridge; optional legacy curl path via token-file.
+  # Prefer telegram-bots bridge; optional legacy curl path via token-file.
   notifyScript =
     if notifyCfg.enable && agentTelegramEnabled then
       pkgs.writeShellScript "vuln-monitor-notify" ''
@@ -92,8 +93,8 @@ let
                 # Drop inherited STATE_DIRECTORY so the CLI uses the user daemon socket.
                 if ! ${pkgs.util-linux}/bin/runuser -u "$RUN_USER" -- \
                   env -u STATE_DIRECTORY HOME="$HOME_DIR" USER="$RUN_USER" LOGNAME="$RUN_USER" \
-                  ${agentTelegramBotExe} send --role vuln-monitor "$msg"; then
-                  ${pkgs.util-linux}/bin/logger -t vuln-monitor "agent-telegram-bot send failed"
+                  ${telegramBotsExe} --instance agent notify --role vuln-monitor "$msg"; then
+                  ${pkgs.util-linux}/bin/logger -t vuln-monitor "telegram-bots notify failed"
                 fi
       ''
     else if notifyCfg.enable && notifyCfg.token-file != null then
@@ -703,7 +704,7 @@ in
         type = lib.types.bool;
         default = true;
         description = ''
-          Send alerts via my.services.agent-telegram-bot (preferred) or a legacy
+          Send alerts via telegram-bots instance agent (preferred) or a legacy
           curl path when `token-file` is set and the agent bridge is disabled.
         '';
       };
@@ -713,7 +714,7 @@ in
         default = [ ];
         example = [ 8348310754 ];
         description = ''
-          Legacy curl notify only. Prefer agent-telegram-bot.chat-ids when the
+          Legacy curl notify only. Prefer telegram-bots.instances.agent.chat-ids when the
           agent bridge is enabled.
         '';
       };
@@ -722,7 +723,7 @@ in
         type = lib.types.nullOr lib.types.path;
         default = null;
         description = ''
-          Legacy Bot API token file for curl notify when agent-telegram-bot is
+          Legacy Bot API token file for curl notify when telegram-bots agent is
           disabled. Unused when the agent bridge is enabled.
         '';
       };
@@ -814,7 +815,7 @@ in
             || (notifyCfg.token-file != null && notifyCfg.chat-ids != [ ]);
           message = ''
             my.services.vuln-monitor.notify.telegram.enable requires
-            my.services.agent-telegram-bot.enable, or a legacy token-file + chat-ids.
+            telegram-bots.instances.agent.enable, or a legacy token-file + chat-ids.
           '';
         }
       ];

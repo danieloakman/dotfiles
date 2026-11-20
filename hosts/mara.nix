@@ -1,4 +1,23 @@
-{ config, lib, modulesPath, ... }:
+{ config, lib, modulesPath, env, ... }:
+let
+  bf = config.my.services.telegram-bots.brownFamScripts;
+  brownFamUsers = [
+    8348310754 # Dan
+    8789816198 # Sheridan / Trotty
+  ];
+  brownFamPayers = [
+    {
+      name = "Dan";
+      telegramId = 8348310754;
+      aliases = [ "Dan" "Daniel" ];
+    }
+    {
+      name = "Trotty";
+      telegramId = 8789816198;
+      aliases = [ "Trotty" "Sheridan" ];
+    }
+  ];
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -107,7 +126,7 @@
       # Weekly vulnix scan + optional security-feed poller → Telegram (Dan).
       vuln-monitor = {
         enable = true;
-        # Notify via agent-telegram-bot (chat-ids configured there).
+        # Notify via telegram-bots instance agent (chat-ids configured there).
         feeds.enable = true;
         triage.enable = true;
       };
@@ -132,30 +151,53 @@
         use-routing-features = "server";
       };
       tandoor.enable = false;
-      fam-telegram-bot = {
-        enable = true;
+      telegram-bots.instances = {
+        agent = {
+          enable = true;
+          token-secret = "agent_telegram_bot_token";
+          chat-ids = [ 8348310754 ]; # Dan
+          allowed-user-ids = [ 8348310754 ];
+        };
+        # Family guest bot (expenses / calendar / tasks). Token: fam_telegram_bot_token.
         # Telegram first names are Daniel / Sheridan; sheet columns stay Dan / Trotty.
-        allowed-user-ids = [
-          8348310754 # Dan
-          8789816198 # Sheridan / Trotty
-        ];
-        payers = [
-          {
-            name = "Dan";
-            telegram-id = 8348310754;
-            aliases = [ "Dan" "Daniel" ];
-          }
-          {
-            name = "Trotty";
-            telegram-id = 8789816198;
-            aliases = [ "Trotty" "Sheridan" ];
-          }
-        ];
-      };
-      agent-telegram-bot = {
-        enable = true;
-        chat-ids = [ 8348310754 ]; # Dan
-        allowed-user-ids = [ 8348310754 ];
+        brown-fam = {
+          enable = true;
+          token-secret = "fam_telegram_bot_token";
+          guest-mode = true;
+          timezone = "Australia/Sydney";
+          chat-ids = brownFamUsers;
+          allowed-user-ids = brownFamUsers;
+          context = {
+            calendarId = "primary";
+            tasklist = "@default";
+            workspace = "${env.home}/repos/personal/dotfiles";
+            payers = brownFamPayers;
+          };
+          # timeoutSec must exceed ask wait (default 600s) + gws/spreadsheet work.
+          commands = {
+            expense = {
+              description = "e.g. 15 coffee · trotty paid 40 lunch · Kmart Amex";
+              package = bf.expense;
+              timeoutSec = 660;
+            };
+            task = {
+              description = "e.g. buy milk · buy milk tomorrow";
+              package = bf.task;
+              timeoutSec = 660;
+            };
+            cal = {
+              description = "e.g. 2026-10-25 15:00 dentist · or free-form";
+              aliases = [ "calendar" ];
+              package = bf.cal;
+              timeoutSec = 660;
+            };
+          };
+          defaultCommand = {
+            package = bf.default;
+            timeoutSec = 660;
+            env.WORKSPACE = "${env.home}/repos/personal/dotfiles";
+          };
+        };
       };
       # uptime-kuma.enable = true;
       # wakeonlan.enable = true; # TODO: try this out
