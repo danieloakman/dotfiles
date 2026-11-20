@@ -7,11 +7,11 @@ let
   # and copy the printed hash into sha256.
   mattpocockSkills =
     (pkgs.fetchFromGitHub {
-      # https://github.com/mattpocock/skills/tree/4ae2317ddb22b046e26455e4f9c9b3aaaf62212d/skills
+      # https://github.com/mattpocock/skills/tree/abeeaf95660ba9e8b7c753eb38f441ca707a8823/skills
       owner = "mattpocock";
       repo = "skills";
-      rev = "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d";
-      sha256 = "sha256-3vhd77xfZjKUYJsIwPFevIZPUAzUgZXr0RYj5NQrBwk=";
+      rev = "abeeaf95660ba9e8b7c753eb38f441ca707a8823";
+      sha256 = "sha256-fc5+qmchp1IQ/rQP1olWKC1eC4VdYhaB7YYzC3+JBe0=";
     })
     + "/skills";
   # Other skill repos that could be added in the future:
@@ -24,8 +24,8 @@ in
         token-efficient =
           (builtins.readFile (
             builtins.fetchurl {
-              url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/702e423f98d0d8963d1b76ac74a66a4f2eed67e8/CLAUDE.md";
-              sha256 = "oqokm0Bi63OGF2F/+BvNx40zvlQWqBpYxPm3KbYAgCo=";
+              url = "https://raw.githubusercontent.com/drona23/claude-token-efficient/0d30a6db75af983b8ababf585f28faefdfc87895/CLAUDE.md";
+              sha256 = "ZlYSXytPd32ctBSbKsw7AoGqtOjY691N3Nsa6SdOglM=";
             }
           ))
           + ''
@@ -63,7 +63,6 @@ in
         '';
       };
       skills = {
-        grill-me = mattpocockSkills + "/productivity/grill-me/SKILL.md";
         # caveman = mattpocockSkills + "/productivity/caveman/SKILL.md"; # not really using this atm
         handoff = mattpocockSkills + "/productivity/handoff/SKILL.md";
       };
@@ -71,6 +70,7 @@ in
         # Full dirs so sibling refs resolve (e.g. writing-for-agents → SKILL-MECHANICS.md).
         # write-a-skill was removed upstream; writing-for-agents is the replacement and
         # a dependency of retro.
+        grilling = mattpocockSkills + "/productivity/grilling";
         retro = mattpocockSkills + "/engineering/retro";
         writing-for-agents = mattpocockSkills + "/productivity/writing-for-agents";
         "ui-design-brain" = pkgs.fetchFromGitHub {
