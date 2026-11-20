@@ -537,6 +537,17 @@ bf_handle_forced() {
   local args="$*"
   local parsed err action_json interpreted
 
+  args="$(printf '%s' "$args" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  if [ -z "$args" ]; then
+    case "$kind" in
+      expense) echo "expected \`/expense <amount> <description>\` (e.g. /expense 15 coffee)" ;;
+      task) echo "expected \`/task <title>\` (e.g. /task buy milk)" ;;
+      calendar) echo "expected \`/cal YYYY-MM-DD HH:MM <summary>\`" ;;
+      *) echo "expected arguments for /${kind}" ;;
+    esac
+    return 0
+  fi
+
   local err_file
   err_file="$(mktemp)"
   set +e
