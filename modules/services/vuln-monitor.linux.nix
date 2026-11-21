@@ -363,15 +363,33 @@ let
             trap 'rm -f "$tmp"' EXIT
 
             log "starting vulnix --system (min CVSS $MIN_CVSS)"
-            if ! HOME="$STATE_DIR" vulnix --system --json \
+            # vulnix exits 2 when any non-whitelisted CVE is present — that is
+            # success with findings, not a scanner failure (stderr stays empty).
+            set +e
+            HOME="$STATE_DIR" vulnix --system --json \
               --cache-dir "$CACHE_DIR" \
               -w "$WHITELIST" \
-              >"$tmp" 2>vulnix.err; then
+              >"$tmp" 2>vulnix.err
+            vulnix_rc=$?
+            set -e
+            if [ "$vulnix_rc" -ne 0 ] && [ "$vulnix_rc" -ne 2 ]; then
               err=$(head -c 500 vulnix.err || true)
-              log "vulnix failed: $err"
+              log "vulnix failed rc=$vulnix_rc: $err"
               if ${lib.boolToString cfg.notify-on-error}; then
                 if [ ! -f "$ERROR_FLAG" ]; then
-                  ${notifyScript} "⚠️ vuln-monitor ($HOST): vulnix scan failed
+                  ${notifyScript} "⚠️ vuln-monitor ($HOST): vulnix scan failed (rc=$vulnix_rc)
+      $err"
+                  touch "$ERROR_FLAG"
+                fi
+              fi
+              exit 0
+            fi
+            if ! jq -e 'type == "array"' "$tmp" >/dev/null 2>&1; then
+              err=$(head -c 500 vulnix.err || true)
+              log "vulnix produced non-JSON output rc=$vulnix_rc: $err"
+              if ${lib.boolToString cfg.notify-on-error}; then
+                if [ ! -f "$ERROR_FLAG" ]; then
+                  ${notifyScript} "⚠️ vuln-monitor ($HOST): vulnix scan failed (bad JSON, rc=$vulnix_rc)
       $err"
                   touch "$ERROR_FLAG"
                 fi
