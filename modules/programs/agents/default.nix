@@ -66,23 +66,28 @@ let
   # User-level ~/.cursor/commands/<name>.md still inject, so stub every installed
   # skill to Read its SKILL.md. Names match what we symlink under ~/.claude/skills.
   skillNamesFromDirs = lib.concatLists (
-    lib.mapAttrsToList (
-      name: dir:
-      if builtins.pathExists "${dir}/SKILL.md" then
-        [ name ]
-      else if builtins.pathExists dir then
-        lib.concatLists (
-          lib.mapAttrsToList (
-            skillName: type:
-            if type == "directory" && builtins.pathExists "${dir}/${skillName}/SKILL.md" then
-              [ skillName ]
-            else
-              [ ]
-          ) (builtins.readDir dir)
-        )
-      else
-        [ ]
-    ) cfg.skill-dirs
+    lib.mapAttrsToList
+      (
+        name: dir:
+          if builtins.pathExists "${dir}/SKILL.md" then
+            [ name ]
+          else if builtins.pathExists dir then
+            lib.concatLists
+              (
+                lib.mapAttrsToList
+                  (
+                    skillName: type:
+                      if type == "directory" && builtins.pathExists "${dir}/${skillName}/SKILL.md" then
+                        [ skillName ]
+                      else
+                        [ ]
+                  )
+                  (builtins.readDir dir)
+              )
+          else
+            [ ]
+      )
+      cfg.skill-dirs
   );
 
   cursorSlashSkillNames = lib.unique (skillNamesFromDirs ++ lib.attrNames cfg.skills);
@@ -226,13 +231,15 @@ in
         # Cursor `/name` stubs for all installed skills (see cursor-slash-stubs / #52).
         // lib.optionalAttrs cfg.cursor-slash-stubs (
           lib.listToAttrs (
-            map (name: {
-              name = ".cursor/commands/${name}.md";
-              value = {
-                text = cursorSlashCommandText name;
-                force = true;
-              };
-            }) cursorSlashSkillNames
+            map
+              (name: {
+                name = ".cursor/commands/${name}.md";
+                value = {
+                  text = cursorSlashCommandText name;
+                  force = true;
+                };
+              })
+              cursorSlashSkillNames
           )
         );
 

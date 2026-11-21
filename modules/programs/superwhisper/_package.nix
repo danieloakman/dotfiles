@@ -4,32 +4,32 @@
 #
 # Upstream's Nix flake (github:superultrainc/superwhisper-linux) is not public yet;
 # bump version + hashes here from stable.json when updating.
-{
-  lib,
-  stdenv,
-  fetchurl,
-  autoPatchelfHook,
-  autoAddDriverRunpath,
-  makeWrapper,
-  makeDesktopItem,
-  copyDesktopItems,
-  vulkan-loader,
-  gtk4,
-  gtk4-layer-shell,
-  gdk-pixbuf,
-  cairo,
-  graphene,
-  glib,
-  fontconfig,
-  libxkbcommon,
-  wayland,
-  xorg,
-  python3,
-  wl-clipboard,
-  libnotify,
-  ffmpeg,
-  at-spi2-core,
-  fcitx5,
+{ lib
+, stdenv
+, fetchurl
+, autoPatchelfHook
+, autoAddDriverRunpath
+, makeWrapper
+, makeDesktopItem
+, copyDesktopItems
+, vulkan-loader
+, gtk4
+, gtk4-layer-shell
+, gdk-pixbuf
+, cairo
+, graphene
+, glib
+, fontconfig
+, libxkbcommon
+, wayland
+, xorg
+, python3
+, wl-clipboard
+, libnotify
+, ffmpeg
+, at-spi2-core
+, fcitx5
+,
 }:
 let
   inherit (stdenv.hostPlatform) system;
@@ -40,8 +40,7 @@ let
     {
       x86_64-linux = "x86_64";
       aarch64-linux = "aarch64";
-    }
-    .${system} or (throw "superwhisper: unsupported system ${system}");
+    }.${system} or (throw "superwhisper: unsupported system ${system}");
 
   hashes = {
     x86_64-linux = "sha256-RkpzLKbJKNPyuLuUaHF2p1yisJwYYzPTTZTQUcy18OQ=";

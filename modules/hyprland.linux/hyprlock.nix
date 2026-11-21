@@ -71,7 +71,7 @@
           }
         ];
       };
-      }; */
+        }; */
         wayland.windowManager.hyprland.settings.on = [
           (hl.onStart [ "hyprlock || hyprctl dispatch exit" ])
         ];

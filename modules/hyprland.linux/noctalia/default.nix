@@ -358,39 +358,39 @@ in
         noctaliaIpc = "${noctaliaCmd} ipc call";
       in
       {
-      # Store the plugin in the nix store (can't debug):
-      xdg.configFile."noctalia/plugins/pass-menu".source = ./plugins/pass-menu;
+        # Store the plugin in the nix store (can't debug):
+        xdg.configFile."noctalia/plugins/pass-menu".source = ./plugins/pass-menu;
 
-      # Point at the git checkout (not a store copy) so plugin sources can be edited live.
-      # xdg.configFile."noctalia/plugins/pass-menu".source =
-      #   config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/personal/dotfiles/modules/hyprland.linux/noctalia/plugins/pass-menu";
+        # Point at the git checkout (not a store copy) so plugin sources can be edited live.
+        # xdg.configFile."noctalia/plugins/pass-menu".source =
+        #   config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/repos/personal/dotfiles/modules/hyprland.linux/noctalia/plugins/pass-menu";
 
-      wayland.windowManager.hyprland = {
-        settings = {
-          on = [
-            (hl.onStart [ noctaliaCmd ])
-          ];
+        wayland.windowManager.hyprland = {
+          settings = {
+            on = [
+              (hl.onStart [ noctaliaCmd ])
+            ];
 
-          bind = [
-            (hl.bind (hl.key "space") (hl.exec "${noctaliaIpc} launcher toggle"))
-            (hl.bind (hl.key "Q") (hl.exec "${noctaliaIpc} plugin:pass-menu toggle"))
-            (hl.bind (hl.key "S") (hl.exec "${noctaliaIpc} plugin:web-search toggle"))
-            (hl.bind (hl.key "G") (hl.exec "${noctaliaIpc} launcher emoji"))
+            bind = [
+              (hl.bind (hl.key "space") (hl.exec "${noctaliaIpc} launcher toggle"))
+              (hl.bind (hl.key "Q") (hl.exec "${noctaliaIpc} plugin:pass-menu toggle"))
+              (hl.bind (hl.key "S") (hl.exec "${noctaliaIpc} plugin:web-search toggle"))
+              (hl.bind (hl.key "G") (hl.exec "${noctaliaIpc} launcher emoji"))
 
-            (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaIpc} brightness increase"))
-            (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaIpc} brightness decrease"))
-            (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaIpc} volume increase"))
-            (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaIpc} volume decrease"))
-            (hl.bindl "ALT + F7" (hl.exec "${noctaliaIpc} volume increase"))
-            (hl.bindl "ALT + F6" (hl.exec "${noctaliaIpc} volume decrease"))
-            (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaIpc} volume muteInput"))
-            (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaIpc} volume muteOutput"))
-            (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaIpc} media playPause"))
-            (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaIpc} media previous"))
-            (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaIpc} media next"))
-          ];
+              (hl.bindl "XF86MonBrightnessUp" (hl.exec "${noctaliaIpc} brightness increase"))
+              (hl.bindl "XF86MonBrightnessDown" (hl.exec "${noctaliaIpc} brightness decrease"))
+              (hl.bindl "XF86AudioRaiseVolume" (hl.exec "${noctaliaIpc} volume increase"))
+              (hl.bindl "XF86AudioLowerVolume" (hl.exec "${noctaliaIpc} volume decrease"))
+              (hl.bindl "ALT + F7" (hl.exec "${noctaliaIpc} volume increase"))
+              (hl.bindl "ALT + F6" (hl.exec "${noctaliaIpc} volume decrease"))
+              (hl.bindl "XF86AudioMicMute" (hl.exec "${noctaliaIpc} volume muteInput"))
+              (hl.bindl "XF86AudioMute" (hl.exec "${noctaliaIpc} volume muteOutput"))
+              (hl.bindl "XF86AudioPlay" (hl.exec "${noctaliaIpc} media playPause"))
+              (hl.bindl "XF86AudioPrev" (hl.exec "${noctaliaIpc} media previous"))
+              (hl.bindl "XF86AudioNext" (hl.exec "${noctaliaIpc} media next"))
+            ];
+          };
         };
       };
-    };
   };
 }

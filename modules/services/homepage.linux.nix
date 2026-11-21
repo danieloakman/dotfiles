@@ -21,13 +21,13 @@ let
       byGroup = lib.foldlAttrs
         (
           acc: name: service:
-          let
-            g = service.group;
-          in
-          acc
-          // {
-            ${g} = (acc.${g} or [ ]) ++ [ (serviceEntry name service) ];
-          }
+            let
+              g = service.group;
+            in
+            acc
+            // {
+              ${g} = (acc.${g} or [ ]) ++ [ (serviceEntry name service) ];
+            }
         )
         { }
         cfg.services;
