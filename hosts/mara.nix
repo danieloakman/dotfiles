@@ -219,6 +219,9 @@
   # Configure console keymap
   console.keyMap = "us";
 
+  # Small root NVMe + frequent rebuilds: tighter GC than the shared 14d/3 policy.
+  programs.nh.clean.extraArgs = lib.mkForce "--keep-since 5d --keep 3";
+
   # Prefer akatosh when available; local max-jobs stay auto so solo rebuilds stay fast.
   nix = {
     distributedBuilds = true;
