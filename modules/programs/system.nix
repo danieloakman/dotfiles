@@ -52,12 +52,12 @@ in
 
         # Network utilities
         wakeonlan
-        (pkgs.writeShellScriptBin "wake-akatosh" ''
-          ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
-        '')
-        (pkgs.writeShellScriptBin "wake-mara" ''
-          ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
-        '')
+        # (pkgs.writeShellScriptBin "wake-akatosh" ''
+        #   ${lib.getExe wakeonlan} 4c:ed:fb:96:ee:3d
+        # '')
+        # (pkgs.writeShellScriptBin "wake-mara" ''
+        #   ${lib.getExe wakeonlan} f8:b4:6a:b3:02:ce
+        # '')
 
         # Nix specific
         nil

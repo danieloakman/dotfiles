@@ -213,7 +213,7 @@ in
           jre8
 
           # Fly.io control:
-          flyctl
+          # flyctl
 
           port-ls # List processes listening on a port, with full executable + args
 
