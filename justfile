@@ -87,7 +87,9 @@ build:
 boot:
     nh os boot {{ repo }}
 
-# Schedule `nh os boot` once at HH:MM (asks sudo now; runs as root later — no second prompt).
+# Schedule `nh os boot` once at HH:MM as your user (not root — nh refuses root).
+# Overnight the build can finish; elevation may fail without a TTY. Re-run `just boot`
+# in the morning to reuse the store and enter your password.
 # Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
 [linux, positional-arguments]
 boot-at *when:
@@ -115,10 +117,9 @@ boot-at *when:
     else
       calendar="$(date -d "${today} ${when}" '+%F %T')"
     fi
-    # Ask for sudo now so the timer can run unattended as root.
-    sudo systemctl stop "${unit}.timer" 2>/dev/null || true
-    sudo systemctl stop "${unit}.service" 2>/dev/null || true
-    sudo systemd-run \
+    systemctl --user stop "${unit}.timer" 2>/dev/null || true
+    systemctl --user stop "${unit}.service" 2>/dev/null || true
+    systemd-run --user \
       --collect \
       --unit="$unit" \
       --description="Scheduled nh os boot (${repo})" \
@@ -126,12 +127,12 @@ boot-at *when:
       --property='Environment=PATH=/run/wrappers/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin' \
       --on-calendar="$calendar" \
       "$nh" os boot "$repo"
-    echo "Scheduled nh os boot for ${calendar} (local). Cancel: just boot-at-cancel"
+    echo "Scheduled nh os boot for ${calendar} (local, user). Cancel: just boot-at-cancel"
 
 [linux]
 boot-at-cancel:
-    sudo systemctl stop dotfiles-nh-boot.timer 2>/dev/null || true
-    sudo systemctl stop dotfiles-nh-boot.service 2>/dev/null || true
+    systemctl --user stop dotfiles-nh-boot.timer 2>/dev/null || true
+    systemctl --user stop dotfiles-nh-boot.service 2>/dev/null || true
     @echo "Cancelled scheduled nh os boot (if any)."
 
 [linux]
