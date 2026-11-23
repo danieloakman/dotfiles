@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.my.services.streaming;
   jellyfinPort = 8096;
@@ -8,6 +8,29 @@ let
   # transmissionPort = 9091;
   # prowlarrPort = 9696;
   # flaresolverrPort = 8191;
+
+  # X-Emby-Token / ?api_key= return 401 on this deploy; MediaBrowser Token works.
+  jellyfinScan = pkgs.writeShellApplication {
+    name = "jellyfin-scan";
+    runtimeInputs = [ pkgs.curl pkgs.coreutils ];
+    text = ''
+      set -euo pipefail
+      key_file=/run/secrets/jellyfin_api_key
+      if [[ ! -r "$key_file" ]]; then
+        echo "error: cannot read $key_file (need root / sops secret)" >&2
+        exit 1
+      fi
+      key=$(tr -d '\n' <"$key_file")
+      code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+        -H "Authorization: MediaBrowser Token=\"$key\"" \
+        "http://127.0.0.1:${toString jellyfinPort}/Library/Refresh")
+      if [[ "$code" != "204" && "$code" != "200" ]]; then
+        echo "error: Library/Refresh returned HTTP $code" >&2
+        exit 1
+      fi
+      echo "jellyfin library refresh requested (HTTP $code)"
+    '';
+  };
 in
 {
   options.my.services.streaming = {
@@ -17,6 +40,8 @@ in
   };
 
   config = {
+    environment.systemPackages = lib.mkIf cfg.jellyfin.enable [ jellyfinScan ];
+
     services.tailscale.serve.services.jellyfin = lib.mkIf cfg.jellyfin.enable {
       endpoints."tcp:443" = "http://127.0.0.1:${toString jellyfinPort}";
     };
