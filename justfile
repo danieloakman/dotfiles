@@ -87,6 +87,53 @@ build:
 boot:
     nh os boot {{ repo }}
 
+# Schedule `nh os boot` once at HH:MM (asks sudo now; runs as root later — no second prompt).
+# Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
+[linux, positional-arguments]
+boot-at *when:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$#" -ne 1 ]]; then
+      echo "usage: just boot-at <HH:MM>" >&2
+      exit 1
+    fi
+    when="$1"
+    if [[ "$when" =~ ^[0-9]{1,2}:[0-9]{2}$ ]]; then
+      when="${when}:00"
+    elif [[ ! "$when" =~ ^[0-9]{1,2}:[0-9]{2}:[0-9]{2}$ ]]; then
+      echo "usage: just boot-at <HH:MM>" >&2
+      exit 1
+    fi
+    unit=dotfiles-nh-boot
+    repo='{{ repo }}'
+    nh="$(command -v nh)"
+    today="$(date +%F)"
+    target_ts="$(date -d "${today} ${when}" +%s)"
+    now_ts="$(date +%s)"
+    if (( target_ts <= now_ts )); then
+      calendar="$(date -d "tomorrow ${when}" '+%F %T')"
+    else
+      calendar="$(date -d "${today} ${when}" '+%F %T')"
+    fi
+    # Ask for sudo now so the timer can run unattended as root.
+    sudo systemctl stop "${unit}.timer" 2>/dev/null || true
+    sudo systemctl stop "${unit}.service" 2>/dev/null || true
+    sudo systemd-run \
+      --collect \
+      --unit="$unit" \
+      --description="Scheduled nh os boot (${repo})" \
+      --working-directory="$repo" \
+      --property='Environment=PATH=/run/wrappers/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin' \
+      --on-calendar="$calendar" \
+      "$nh" os boot "$repo"
+    echo "Scheduled nh os boot for ${calendar} (local). Cancel: just boot-at-cancel"
+
+[linux]
+boot-at-cancel:
+    sudo systemctl stop dotfiles-nh-boot.timer 2>/dev/null || true
+    sudo systemctl stop dotfiles-nh-boot.service 2>/dev/null || true
+    @echo "Cancelled scheduled nh os boot (if any)."
+
 [linux]
 switch:
     nh os switch {{ repo }}
