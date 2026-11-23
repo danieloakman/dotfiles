@@ -86,10 +86,10 @@ build:
 [linux]
 boot:
     nh os boot {{ repo }}
+    rm -f {{ repo }}/result
 
-# Schedule `nh os boot` once at HH:MM as your user (not root — nh refuses root).
-# Overnight the build can finish; elevation may fail without a TTY. Re-run `just boot`
-# in the morning to reuse the store and enter your password.
+# Schedule `nh os build` once at HH:MM (user timer; no sudo). Pins GC via repo `result`.
+# Morning: `just boot` reuses the store and prompts for your password to set the boot default.
 # Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
 [linux, positional-arguments]
 boot-at *when:
@@ -106,7 +106,7 @@ boot-at *when:
       echo "usage: just boot-at <HH:MM>" >&2
       exit 1
     fi
-    unit=dotfiles-nh-boot
+    unit=dotfiles-nh-build
     repo='{{ repo }}'
     nh="$(command -v nh)"
     today="$(date +%F)"
@@ -117,36 +117,40 @@ boot-at *when:
     else
       calendar="$(date -d "${today} ${when}" '+%F %T')"
     fi
-    systemctl --user stop "${unit}.timer" 2>/dev/null || true
-    systemctl --user stop "${unit}.service" 2>/dev/null || true
+    # Drop prior build timer and the old boot-unit name if present.
+    systemctl --user stop "${unit}.timer" "${unit}.service" \
+      dotfiles-nh-boot.timer dotfiles-nh-boot.service 2>/dev/null || true
     systemd-run --user \
       --collect \
       --unit="$unit" \
-      --description="Scheduled nh os boot (${repo})" \
+      --description="Scheduled nh os build (${repo})" \
       --working-directory="$repo" \
       --property='Environment=PATH=/run/wrappers/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin' \
       --on-calendar="$calendar" \
-      "$nh" os boot "$repo"
-    echo "Scheduled nh os boot for ${calendar} (local, user). Cancel: just boot-at-cancel"
+      "$nh" os build "$repo" -o "$repo/result"
+    echo "Scheduled nh os build for ${calendar} (local, user). Cancel: just boot-at-cancel"
 
 [linux]
 boot-at-cancel:
-    systemctl --user stop dotfiles-nh-boot.timer 2>/dev/null || true
-    systemctl --user stop dotfiles-nh-boot.service 2>/dev/null || true
-    @echo "Cancelled scheduled nh os boot (if any)."
+    systemctl --user stop dotfiles-nh-build.timer dotfiles-nh-build.service \
+      dotfiles-nh-boot.timer dotfiles-nh-boot.service 2>/dev/null || true
+    @echo "Cancelled scheduled nh os build (if any)."
 
 [linux]
 switch:
     nh os switch {{ repo }}
+    rm -f {{ repo }}/result
 
 [macos]
 switch:
     # sudo darwin-rebuild switch --flake .
     nh darwin switch {{ repo }}
+    rm -f {{ repo }}/result
 
 [linux]
 test:
     nh os test {{ repo }}
+    rm -f {{ repo }}/result
 
 [linux]
 gen-ls:
