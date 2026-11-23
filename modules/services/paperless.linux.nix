@@ -10,7 +10,7 @@ let
   agentsOn = config.my.programs.agents.enable;
   cursorAgentOn = config.my.programs.cursor.agent.enable;
   tokenPath = config.sops.secrets.paperless_api_token.path or "/run/secrets/paperless_api_token";
-  cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
+  cursorAgentExe = lib.getExe config.my.programs.cursor.agent.apiKeyPackage;
   dotfilesDir = "${env.home}/repos/personal/dotfiles";
 
   paperlessManageSkill = pkgs.runCommand "paperless-manage-skill" { } ''
@@ -240,6 +240,10 @@ in
         {
           assertion = cursorAgentOn;
           message = "my.services.paperless.triage.enable requires my.programs.cursor.agent.enable.";
+        }
+        {
+          assertion = config.my.programs.cursor.agent.hasApiKey;
+          message = "my.services.paperless.triage.enable requires cursor_api_key (apiKeyPackage).";
         }
         {
           assertion = hasApiToken;

@@ -17,7 +17,12 @@ let
   cursorApiKeyPath =
     if hasCursorApiKeyLinux then config.sops.secrets.cursor_api_key.path else null;
 
-  agentPackage = pkgs.writeShellScriptBin "cursor-agent" (
+  # Bare CLI for interactive use (Orca / shell). Login auth only — no CURSOR_API_KEY.
+  agentPackage = pkgs.cursor-cli;
+
+  # Key-injecting wrapper for headless modules. Not installed on PATH; consumers
+  # pin lib.getExe config.my.programs.cursor.agent.apiKeyPackage.
+  apiKeyPackage = pkgs.writeShellScriptBin "cursor-agent" (
     env.selectPlatform {
       linux =
         if hasCursorApiKeyLinux then
@@ -36,6 +41,8 @@ let
       '';
     }
   );
+
+  agentBin = lib.getExe agentPackage;
 in
 {
   options.my.programs.cursor = {
@@ -43,8 +50,9 @@ in
 
     agent = {
       enable = lib.mkEnableOption ''
-        Install the wrapped `cursor-agent` CLI that injects `CURSOR_API_KEY`
-        before delegating to `pkgs.cursor-cli`.
+        Install the Cursor CLI (`cursor-agent` / `agent`) for interactive login
+        auth. Does not inject `CURSOR_API_KEY`. Headless modules that need the
+        key should use `apiKeyPackage` via its store path.
       '';
 
       cli-config = {
@@ -74,21 +82,34 @@ in
         type = lib.types.package;
         readOnly = true;
         visible = false;
-        description = "Wrapped cursor-agent package for use by other modules.";
+        description = "Bare pkgs.cursor-cli (login auth) installed on PATH.";
+      };
+
+      apiKeyPackage = lib.mkOption {
+        type = lib.types.package;
+        readOnly = true;
+        visible = false;
+        description = ''
+          cursor-agent wrapper that exports CURSOR_API_KEY (Linux sops /
+          Darwin pass). Not on PATH — pin with lib.getExe for headless use.
+        '';
+      };
+
+      hasApiKey = lib.mkOption {
+        type = lib.types.bool;
+        readOnly = true;
+        visible = false;
+        description = "Whether apiKeyPackage can resolve a key on this host.";
       };
     };
   };
 
   config = lib.mkMerge [
     {
-      assertions = [
-        {
-          assertion = !cfg.agent.enable || env.platform == "darwin" || hasCursorApiKeyLinux;
-          message = "my.programs.cursor.agent.enable on Linux requires the cursor_api_key sops secret.";
-        }
-      ];
-
       my.programs.cursor.agent.package = agentPackage;
+      my.programs.cursor.agent.apiKeyPackage = apiKeyPackage;
+      # Darwin uses pass at runtime; treat as available when agent is relevant.
+      my.programs.cursor.agent.hasApiKey = env.platform == "darwin" || hasCursorApiKeyLinux;
 
       my.programs.cursor.agent.enable = lib.mkDefault (
         cfg.enable
@@ -108,17 +129,16 @@ in
         {
           home.packages = [ agentPackage ];
 
-          # Cursor's updater drops `agent` / `cursor-agent` into ~/.local/bin (ahead of
-          # nix-profile) without CURSOR_API_KEY. Own those names so every switch puts
-          # our wrapper back, and prepend the store bin so it still wins if Cursor
-          # overwrites the symlinks between switches.
+          # Cursor's updater drops `agent` / `cursor-agent` into ~/.local/bin
+          # (ahead of nix-profile). Own those names with the bare CLI so login
+          # auth wins, and prepend the store bin if Cursor overwrites symlinks.
           home.sessionPath = lib.mkBefore [ "${agentPackage}/bin" ];
           home.file.".local/bin/cursor-agent" = {
-            source = "${agentPackage}/bin/cursor-agent";
+            source = agentBin;
             force = true;
           };
           home.file.".local/bin/agent" = {
-            source = "${agentPackage}/bin/cursor-agent";
+            source = agentBin;
             force = true;
           };
 
