@@ -18,7 +18,7 @@ let
   cursorAgentOn = config.my.programs.cursor.agent.enable;
   hasGhToken = builtins.hasAttr "main_gh_token" (config.sops.secrets or { });
 
-  cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
+  cursorAgentExe = lib.getExe config.my.programs.cursor.agent.apiKeyPackage;
   dotfilesDir = triageCfg.repo;
   worktreeDir = triageCfg.worktree;
 
@@ -248,7 +248,7 @@ let
             # Inbox lives under StateDirectory (root); make it readable to the agent user.
             chmod a+rX "$INBOX" "$(dirname "$INBOX")" 2>/dev/null || true
 
-            # Run agent as the interactive user so CURSOR_API_KEY wrapper, gh, and git creds work.
+            # Run agent as the interactive user so apiKeyPackage, gh, and git creds work.
             set +e
             timeout --signal=KILL "$TIMEOUT_SEC" \
               runuser -u "$RUN_USER" -- \
@@ -895,6 +895,10 @@ in
         {
           assertion = cursorAgentOn;
           message = "my.services.vuln-monitor.triage.enable requires my.programs.cursor.agent.enable.";
+        }
+        {
+          assertion = config.my.programs.cursor.agent.hasApiKey;
+          message = "my.services.vuln-monitor.triage.enable requires cursor_api_key (apiKeyPackage).";
         }
       ];
 

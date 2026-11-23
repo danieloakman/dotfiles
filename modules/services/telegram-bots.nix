@@ -140,7 +140,7 @@ let
               inherit bun2nix;
             }) "expenses-spreadsheet";
           gwsExe = lib.getExe gws.packages.${system}.default;
-          cursorAgentExe = lib.getExe config.my.programs.cursor.agent.package;
+          cursorAgentExe = lib.getExe config.my.programs.cursor.agent.apiKeyPackage;
           telegramBotsExe = lib.getExe cfg.package;
           credentialsFile = "${env.home}/Sync/secrets/google/gws_credentials.json";
         }
@@ -203,6 +203,10 @@ in
           {
             assertion = config.my.programs.cursor.agent.enable;
             message = "my.services.telegram-bots.instances.brown-fam.enable requires my.programs.cursor.agent.enable.";
+          }
+          {
+            assertion = config.my.programs.cursor.agent.hasApiKey;
+            message = "my.services.telegram-bots.instances.brown-fam.enable requires cursor_api_key (apiKeyPackage).";
           }
         ];
 

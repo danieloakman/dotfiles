@@ -104,7 +104,7 @@ let
     else if builtins.length ids == 1 then lib.head ids
     else null;
 
-  cursorAgentPackage = config.my.programs.cursor.agent.package;
+  cursorAgentPackage = config.my.programs.cursor.agent.apiKeyPackage;
 
   # Both plugin files must live in the same store path; separate home.file entries
   # break __dirname (each file gets its own /nix/store/...-hm_* path).
@@ -222,7 +222,7 @@ in
       cursor = {
         enable = lib.mkEnableOption ''
           Use Cursor models in OpenCode via a patched local cursor-proxy plugin
-          and a wrapped `cursor-agent` that reads `CURSOR_API_KEY`.
+          and `my.programs.cursor.agent.apiKeyPackage` (CURSOR_API_KEY injection).
         '';
         default-model = lib.mkOption {
           type = lib.types.str;
@@ -306,6 +306,10 @@ in
         {
           assertion = !cfg.providers.cursor.enable || config.my.programs.cursor.agent.enable;
           message = "my.programs.opencode.providers.cursor.enable requires my.programs.cursor.agent.enable.";
+        }
+        {
+          assertion = !cfg.providers.cursor.enable || config.my.programs.cursor.agent.hasApiKey;
+          message = "my.programs.opencode.providers.cursor.enable requires cursor_api_key / pass (apiKeyPackage).";
         }
         {
           assertion =
