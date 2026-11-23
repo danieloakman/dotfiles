@@ -232,8 +232,12 @@ let
         pkgs.jq
         pkgs.curl
       ];
-      # jq programs intentionally use single quotes so bash does not expand $vars.
-      excludeShellChecks = [ "SC2016" ];
+      # SC2016: jq programs intentionally use single quotes so bash does not expand $vars.
+      # SC2329: shared preamble defines helpers not every tool calls.
+      excludeShellChecks = [
+        "SC2016"
+        "SC2329"
+      ];
       text = commonPreamble + text;
     };
 
