@@ -13,7 +13,7 @@ let
 
   sbx = inputs.agent-sandbox.lib.${pkgs.stdenv.hostPlatform.system};
 
-  cursorAgentPkg = config.my.programs.cursor.agent.package;
+  cursorAgentPkg = config.my.programs.cursor.agent.apiKeyPackage;
 
   cursorApiKeyPath =
     if env.platform == "linux" && builtins.hasAttr "cursor_api_key" (config.sops.secrets or { }) then
@@ -198,6 +198,10 @@ in
         {
           assertion = !cfg.agents.cursor.enable || config.my.programs.cursor.agent.enable;
           message = "my.programs.agents.sandbox.agents.cursor.enable requires my.programs.cursor.agent.enable.";
+        }
+        {
+          assertion = !cfg.agents.cursor.enable || config.my.programs.cursor.agent.hasApiKey;
+          message = "my.programs.agents.sandbox.agents.cursor.enable requires cursor_api_key / pass (apiKeyPackage).";
         }
       ];
     }
