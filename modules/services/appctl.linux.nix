@@ -40,6 +40,7 @@ let
 Usage:
   appctl list
   appctl status [name]
+  appctl summary
   appctl <name|all> on|off
 
 Control registered non-vital app services (see my.services.appctl.services).
@@ -204,10 +205,54 @@ EOF
         done < <(names)
       }
 
+      # JSON summary for Homepage customapi (and scripts).
+      cmd_summary() {
+        need_registry
+        ensure_state
+        local name scope user desired u desired_on=0 desired_off=0 units_active=0 units_total=0 mode
+        while IFS= read -r name; do
+          desired=$(desired_get "$name")
+          if [[ $desired == off ]]; then
+            desired_off=$((desired_off + 1))
+          else
+            desired_on=$((desired_on + 1))
+          fi
+          scope=$(jq -r --arg n "$name" '.[$n].scope' "$REGISTRY")
+          user=$(jq -r --arg n "$name" '.[$n].user // empty' "$REGISTRY")
+          while IFS= read -r u; do
+            units_total=$((units_total + 1))
+            if sc "$scope" "$user" is-active --quiet "$u" 2>/dev/null; then
+              units_active=$((units_active + 1))
+            fi
+          done < <(jq -r --arg n "$name" '.[$n].units[]' "$REGISTRY")
+        done < <(names)
+        if [[ $desired_off -gt 0 ]]; then
+          mode=lean
+        else
+          mode=normal
+        fi
+        jq -n \
+          --arg mode "$mode" \
+          --argjson desired_on "$desired_on" \
+          --argjson desired_off "$desired_off" \
+          --argjson units_active "$units_active" \
+          --argjson units_total "$units_total" \
+          --arg units "$units_active/$units_total" \
+          '{
+            mode: $mode,
+            desired_on: $desired_on,
+            desired_off: $desired_off,
+            units_active: $units_active,
+            units_total: $units_total,
+            units: $units
+          }'
+      }
+
       case "''${1:-}" in
         ""|-h|--help) usage ;;
         list) cmd_list ;;
         status) shift; cmd_status "''${1:-}" ;;
+        summary) cmd_summary ;;
         apply) cmd_apply ;;
         all)
           if [[ ''${#} -lt 2 ]]; then usage >&2; exit 1; fi
@@ -218,6 +263,61 @@ EOF
           cmd_set "$1" "$2"
           ;;
       esac
+    '';
+  };
+
+  # Keep Python at column 0 — leading indent from the Nix string would SyntaxError.
+  appctlStatusHttpdPy = pkgs.writeText "appctl-status-httpd.py" ''
+import os
+import subprocess
+import sys
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+PORT = int(sys.argv[1])
+APPCTL = os.environ["APPCTL_BIN"]
+
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        path = self.path.split("?", 1)[0]
+        if path not in ("/", "/summary", "/health"):
+            self.send_error(404)
+            return
+        try:
+            body = subprocess.check_output([APPCTL, "summary"], stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            body = b'{"error":"appctl summary failed"}'
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            sys.stderr.write(exc.output.decode("utf-8", "replace"))
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, fmt, *args):
+        return
+
+
+ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
+  '';
+
+  appctlStatusHttpd = pkgs.writeShellApplication {
+    name = "appctl-status-httpd";
+    runtimeInputs = [
+      appctl
+      pkgs.python3
+    ];
+    text = ''
+      set -euo pipefail
+      port="''${1:-${toString cfg.statusPort}}"
+      export APPCTL_BIN=${lib.getExe appctl}
+      exec python3 ${appctlStatusHttpdPy} "$port"
     '';
   };
 
@@ -344,6 +444,12 @@ in
         systemd RuntimeWatchdogSec (hardware watchdog pet interval). Set null to leave unset.
       '';
     };
+
+    statusPort = lib.mkOption {
+      type = lib.types.port;
+      default = 19192;
+      description = "Loopback port for appctl summary JSON (Homepage customapi).";
+    };
   };
 
   config = lib.mkIf active {
@@ -375,6 +481,18 @@ in
           };
         };
       }
+      (lib.mkIf config.my.services.homepage.enable {
+        appctl-status = {
+          description = "appctl summary JSON for Homepage";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            ExecStart = "${lib.getExe appctlStatusHttpd} ${toString cfg.statusPort}";
+            Restart = "on-failure";
+            RestartSec = "2s";
+          };
+        };
+      })
     ];
 
     systemd.user.services = userServiceDropins;
@@ -387,6 +505,40 @@ in
 
     systemd.settings.Manager = lib.mkIf (cfg.runtimeWatchdog != null) {
       RuntimeWatchdogSec = cfg.runtimeWatchdog;
+    };
+
+    my.services.homepage.services = lib.mkIf config.my.services.homepage.enable {
+      appctl = {
+        description = "Non-vital app services (lean mode)";
+        href = "http://127.0.0.1:${toString cfg.statusPort}/";
+        group = "Monitoring";
+        icon = "mdi-pause-circle";
+        widget = {
+          type = "customapi";
+          url = "http://127.0.0.1:${toString cfg.statusPort}/";
+          refreshInterval = 10000;
+          mappings = [
+            {
+              field = "mode";
+              label = "Mode";
+            }
+            {
+              field = "desired_on";
+              label = "Desired on";
+              format = "number";
+            }
+            {
+              field = "desired_off";
+              label = "Desired off";
+              format = "number";
+            }
+            {
+              field = "units";
+              label = "Units active";
+            }
+          ];
+        };
+      };
     };
   };
 }
