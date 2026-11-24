@@ -107,7 +107,7 @@ in
         units = [ "headroom.service" ];
         scope = "user";
         user = env.user;
-        memoryHigh = "1G";
+        memoryHigh = "2G";
         oomScoreAdjust = 300;
       };
 
