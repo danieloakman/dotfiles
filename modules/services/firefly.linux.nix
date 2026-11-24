@@ -13,5 +13,15 @@ in
         APP_KEY_FILE = "/home/${env.user}/Sync/secrets/firefly-3/app-key.txt";
       };
     };
+
+    my.services.appctl.services.firefly = {
+      description = "Firefly III";
+      units = [
+        "phpfpm-firefly-iii.service"
+        "firefly-iii-cron.service"
+      ];
+      memoryHigh = "1G";
+      oomScoreAdjust = 300;
+    };
   };
 }

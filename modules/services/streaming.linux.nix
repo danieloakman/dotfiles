@@ -92,6 +92,13 @@ in
       #   comment = "Meta-indexer for automatically downloading TV shows and movies";
       # };
     };
+    my.services.appctl.services.jellyfin = lib.mkIf cfg.jellyfin.enable {
+      description = "Jellyfin media server";
+      units = [ "jellyfin.service" ];
+      memoryHigh = "2G";
+      oomScoreAdjust = 350;
+    };
+
     services = {
       jellyfin = lib.mkIf cfg.jellyfin.enable {
         enable = true;

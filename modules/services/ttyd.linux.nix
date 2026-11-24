@@ -35,5 +35,12 @@ in
       group = "Admin";
       icon = "mdi-console";
     };
+
+    my.services.appctl.services.ttyd = {
+      description = "ttyd web terminal";
+      units = [ "ttyd.service" ];
+      memoryHigh = "512M";
+      oomScoreAdjust = 300;
+    };
   };
 }

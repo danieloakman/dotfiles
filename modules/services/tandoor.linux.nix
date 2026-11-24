@@ -38,5 +38,12 @@ in
     services.tailscale.serve.services.tandoor = {
       endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
     };
+
+    my.services.appctl.services.tandoor = {
+      description = "Tandoor Recipes";
+      units = [ "tandoor-recipes.service" ];
+      memoryHigh = "1G";
+      oomScoreAdjust = 300;
+    };
   };
 }

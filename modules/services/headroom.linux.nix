@@ -102,6 +102,15 @@ in
         };
       };
 
+      my.services.appctl.services.headroom = {
+        description = "Headroom LLM proxy";
+        units = [ "headroom.service" ];
+        scope = "user";
+        user = env.user;
+        memoryHigh = "1G";
+        oomScoreAdjust = 300;
+      };
+
       my.services.homepage.services."Headroom" = {
         description = "LLM context compression proxy";
         href = "http://${config.networking.hostName}:${portStr}/dashboard";

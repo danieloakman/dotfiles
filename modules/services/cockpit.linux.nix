@@ -69,5 +69,12 @@ in
       group = "Admin";
       icon = "cockpit.png";
     };
+
+    # Socket-activated; stopping the socket prevents new sessions.
+    my.services.appctl.services.cockpit = {
+      description = "Cockpit";
+      units = [ "cockpit.socket" ];
+      oomScoreAdjust = null;
+    };
   };
 }

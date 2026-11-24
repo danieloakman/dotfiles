@@ -76,6 +76,13 @@ in
     # Start after sops-nix so secrets are available
     systemd.services.copyparty.after = [ "sops-nix.service" ];
 
+    my.services.appctl.services.copyparty = {
+      description = "Copyparty file sharing";
+      units = [ "copyparty.service" ];
+      memoryHigh = "1G";
+      oomScoreAdjust = 300;
+    };
+
     my.services.homepage.services."Copyparty" = {
       description = "File System UI";
       href = "https://copyparty.dinosaur-crocodile.ts.net";

@@ -94,5 +94,15 @@ in
       group = "Documents";
       icon = "mdi-file-pdf-box";
     };
+
+    my.services.appctl.services.stirling-pdf = {
+      description = "Stirling PDF";
+      units = [
+        "stirling-pdf.service"
+        "unoserver.service"
+      ];
+      memoryHigh = "2G";
+      oomScoreAdjust = 400;
+    };
   };
 }

@@ -862,6 +862,13 @@ in
           Unit = "vuln-monitor.service";
         };
       };
+
+      my.services.appctl.services.vuln-monitor = {
+        description = "vuln-monitor timers";
+        units = [ "vuln-monitor.timer" ]
+          ++ lib.optional feedsCfg.enable "vuln-monitor-feeds.timer";
+        oomScoreAdjust = null;
+      };
     }
 
     (lib.mkIf feedsCfg.enable {

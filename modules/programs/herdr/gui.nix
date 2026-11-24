@@ -179,6 +179,15 @@ in
         group = "AI";
         icon = "mdi-view-dashboard";
       };
+
+      my.services.appctl.services.herdr-gui = {
+        description = "herdr-gui";
+        scope = "user";
+        user = env.user;
+        units = [ "herdr-gui.service" ];
+        memoryHigh = "512M";
+        oomScoreAdjust = 300;
+      };
     }))
   ];
 }

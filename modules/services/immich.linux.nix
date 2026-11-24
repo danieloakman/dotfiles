@@ -162,6 +162,17 @@ in
           ];
         };
       };
+
+      my.services.appctl.services.immich = {
+        description = "Immich photo/video";
+        units = [
+          "immich-server.service"
+          "immich-machine-learning.service"
+          "redis-immich.service"
+        ];
+        memoryHigh = "4G";
+        oomScoreAdjust = 400;
+      };
     })
   ];
 }

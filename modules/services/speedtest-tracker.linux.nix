@@ -61,5 +61,16 @@ in
         ];
       };
     };
+
+    my.services.appctl.services.speedtest-tracker = {
+      description = "Speedtest Tracker";
+      units = [
+        "phpfpm-speedtest-tracker.service"
+        "speedtest-tracker-scheduler.service"
+        "speedtest-tracker-queue-worker.service"
+      ];
+      memoryHigh = "1G";
+      oomScoreAdjust = 300;
+    };
   };
 }

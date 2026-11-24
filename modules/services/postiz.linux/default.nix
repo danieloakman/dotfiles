@@ -112,6 +112,13 @@ in
           TimeoutStartSec = 0;
         };
       };
+
+      my.services.appctl.services.postiz = {
+        description = "Postiz";
+        units = [ "postiz-docker-compose.service" ];
+        memoryHigh = "2G";
+        oomScoreAdjust = 350;
+      };
     }
     (lib.mkIf cfg.open-firewall {
       networking.firewall.allowedTCPPorts = [ cfg.port ];

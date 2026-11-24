@@ -118,6 +118,13 @@ in
       };
     };
 
+    my.services.appctl.services.llama-cpp = {
+      description = "llama-swap";
+      units = [ "llama-swap.service" ];
+      memoryHigh = "6G";
+      oomScoreAdjust = 400;
+    };
+
     my = {
       services.homepage.services."Llama Swap" = {
         description = "Llama Chat";

@@ -59,5 +59,15 @@ in
       group = "AI";
       icon = "ollama.png";
     };
+
+    my.services.appctl.services.ollama = {
+      description = "Ollama + UI";
+      units = [
+        "ollama.service"
+        "nextjs-ollama-llm-ui.service"
+      ];
+      memoryHigh = "4G";
+      oomScoreAdjust = 400;
+    };
   };
 }

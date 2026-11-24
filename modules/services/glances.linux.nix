@@ -34,5 +34,12 @@ in
       group = "Monitoring";
       icon = "glances.png";
     };
+
+    my.services.appctl.services.glances = {
+      description = "Glances metrics";
+      units = [ "glances.service" ];
+      memoryHigh = "256M";
+      oomScoreAdjust = 300;
+    };
   };
 }

@@ -50,5 +50,12 @@ in
             ];
           };
     };
+
+    my.services.appctl.services.uptime-kuma = {
+      description = "Uptime Kuma";
+      units = [ "uptime-kuma.service" ];
+      memoryHigh = "512M";
+      oomScoreAdjust = 300;
+    };
   };
 }

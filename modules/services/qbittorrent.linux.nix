@@ -207,6 +207,13 @@ in
         "d ${enginesDir} 0755 qbittorrent qbittorrent -"
       ];
 
+      my.services.appctl.services.qbittorrent = {
+        description = "qBittorrent";
+        units = [ "container@qbittorrent.service" ];
+        memoryHigh = "1G";
+        oomScoreAdjust = 350;
+      };
+
       my.services.homepage.services."qBittorrent" = {
         description = "BitTorrent download manager";
         href = "https://qbittorrent.dinosaur-crocodile.ts.net";
