@@ -183,7 +183,7 @@ in
       my.services.appctl.services.herdr-gui = {
         description = "herdr-gui";
         scope = "user";
-        user = env.user;
+        inherit (env) user;
         units = [ "herdr-gui.service" ];
         memoryHigh = "512M";
         oomScoreAdjust = 300;

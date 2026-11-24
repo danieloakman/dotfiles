@@ -401,7 +401,7 @@ in
       my.services.appctl.services.opencode-web = {
         description = "OpenCode web UI";
         scope = "user";
-        user = env.user;
+        inherit (env) user;
         units = [ "opencode-web.service" ];
         memoryHigh = "1G";
         oomScoreAdjust = 300;

@@ -251,7 +251,7 @@ in
         my.services.appctl.services.telegram-bots = {
           description = "Telegram bots";
           scope = "user";
-          user = env.user;
+          inherit (env) user;
           units = map (name: "telegram-bots-${name}.service") (lib.attrNames enabledInstances);
           memoryHigh = "512M";
           oomScoreAdjust = 300;

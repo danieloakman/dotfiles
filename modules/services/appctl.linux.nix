@@ -14,10 +14,11 @@ let
 
   servicesJson = pkgs.writeText "appctl-services.json" (
     builtins.toJSON (
-      lib.mapAttrs (_name: svc: {
-        inherit (svc) description units scope;
-        user = svc.user;
-      }) cfg.services
+      lib.mapAttrs
+        (_name: svc: {
+          inherit (svc) description units scope user;
+        })
+        cfg.services
     )
   );
 
@@ -36,15 +37,14 @@ let
       DESIRED="$STATE_DIR/desired.json"
 
       usage() {
-        cat <<'EOF'
-Usage:
-  appctl list
-  appctl status [name]
-  appctl summary
-  appctl <name|all> on|off
-
-Control registered non-vital app services (see my.services.appctl.services).
-EOF
+        printf '%s\n' \
+          'Usage:' \
+          '  appctl list' \
+          '  appctl status [name]' \
+          '  appctl summary' \
+          '  appctl <name|all> on|off' \
+          "" \
+          'Control registered non-vital app services (see my.services.appctl.services).'
       }
 
       need_registry() {
@@ -266,46 +266,9 @@ EOF
     '';
   };
 
-  # Keep Python at column 0 — leading indent from the Nix string would SyntaxError.
-  appctlStatusHttpdPy = pkgs.writeText "appctl-status-httpd.py" ''
-import os
-import subprocess
-import sys
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-
-PORT = int(sys.argv[1])
-APPCTL = os.environ["APPCTL_BIN"]
-
-
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        path = self.path.split("?", 1)[0]
-        if path not in ("/", "/summary", "/health"):
-            self.send_error(404)
-            return
-        try:
-            body = subprocess.check_output([APPCTL, "summary"], stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as exc:
-            body = b'{"error":"appctl summary failed"}'
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
-            sys.stderr.write(exc.output.decode("utf-8", "replace"))
-            return
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def log_message(self, fmt, *args):
-        return
-
-
-ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
-  '';
+  appctlStatusHttpdPy = pkgs.writeText "appctl-status-httpd.py" (
+    builtins.readFile ./appctl-status-httpd.py
+  );
 
   appctlStatusHttpd = pkgs.writeShellApplication {
     name = "appctl-status-httpd";
@@ -341,36 +304,42 @@ ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
 
   systemServiceDropins = lib.mkMerge (
     lib.concatLists (
-      lib.mapAttrsToList (
-        _name: svc:
-        lib.optionals (svc.scope == "system") (map (unit: unitDropin unit svc) svc.units)
-      ) cfg.services
+      lib.mapAttrsToList
+        (
+          _name: svc:
+            lib.optionals (svc.scope == "system") (map (unit: unitDropin unit svc) svc.units)
+        )
+        cfg.services
     )
   );
 
   userServiceDropins = lib.mkMerge (
     lib.concatLists (
-      lib.mapAttrsToList (
-        _name: svc:
-        lib.optionals (svc.scope == "user") (map (unit: unitDropin unit svc) svc.units)
-      ) cfg.services
+      lib.mapAttrsToList
+        (
+          _name: svc:
+            lib.optionals (svc.scope == "user") (map (unit: unitDropin unit svc) svc.units)
+        )
+        cfg.services
     )
   );
 
   vitalDropins = lib.mkMerge (
-    map (
-      unit:
-      let
-        base = unitBase unit;
-      in
-      {
-        ${base}.serviceConfig = {
-          ManagedOOMPreference = "avoid";
-          OOMScoreAdjust = -500;
-          MemoryMin = "64M";
-        };
-      }
-    ) cfg.vitalUnits
+    map
+      (
+        unit:
+        let
+          base = unitBase unit;
+        in
+        {
+          ${base}.serviceConfig = {
+            ManagedOOMPreference = "avoid";
+            OOMScoreAdjust = -500;
+            MemoryMin = "64M";
+          };
+        }
+      )
+      cfg.vitalUnits
   );
 in
 {
@@ -453,14 +422,18 @@ in
   };
 
   config = lib.mkIf active {
-    assertions = lib.mapAttrsToList (name: svc: {
-      assertion = svc.scope != "user" || svc.user != null;
-      message = "my.services.appctl.services.${name}: scope=user requires user to be set.";
-    }) cfg.services
-    ++ lib.mapAttrsToList (name: svc: {
-      assertion = svc.units != [ ];
-      message = "my.services.appctl.services.${name}: units must be non-empty.";
-    }) cfg.services;
+    assertions = lib.mapAttrsToList
+      (name: svc: {
+        assertion = svc.scope != "user" || svc.user != null;
+        message = "my.services.appctl.services.${name}: scope=user requires user to be set.";
+      })
+      cfg.services
+    ++ lib.mapAttrsToList
+      (name: svc: {
+        assertion = svc.units != [ ];
+        message = "my.services.appctl.services.${name}: units must be non-empty.";
+      })
+      cfg.services;
 
     environment.systemPackages = [ appctl ];
     environment.etc."appctl/services.json".source = servicesJson;

@@ -335,7 +335,7 @@ in
             description = "Orca headless runtime";
             units = [ "orca-serve.service" ];
             scope = "user";
-            user = env.user;
+            inherit (env) user;
             memoryHigh = "2G";
             oomScoreAdjust = 350;
           };

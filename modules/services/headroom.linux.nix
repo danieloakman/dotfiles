@@ -106,7 +106,7 @@ in
         description = "Headroom LLM proxy";
         units = [ "headroom.service" ];
         scope = "user";
-        user = env.user;
+        inherit (env) user;
         memoryHigh = "2G";
         oomScoreAdjust = 300;
       };

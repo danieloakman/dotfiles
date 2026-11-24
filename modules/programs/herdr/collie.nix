@@ -478,7 +478,7 @@ in
       my.services.appctl.services.collie = {
         description = "Collie (Herdr bridge)";
         scope = "user";
-        user = env.user;
+        inherit (env) user;
         units = [ "collie.service" ];
         memoryHigh = "1G";
         oomScoreAdjust = 350;
