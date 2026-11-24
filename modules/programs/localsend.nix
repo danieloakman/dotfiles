@@ -8,7 +8,10 @@ let
   # (3) upload route caps the body at 1 GiB and buffers it in RAM, so larger
   # files fail with HTTP 413; (4) download_dir is snapshotted to
   # ~/jocalsend-downloads in the toml on first launch.
+  # aws-lc: cargoSetupHook sets AWS_LC_SYS_USE_SYSTEM=1; without system aws-lc
+  # the build panics (nixpkgs#585542 — not yet in this flake's nixpkgs pin).
   jocalsend = pkgs.jocalsend.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.aws-lc ];
     patches = (old.patches or [ ]) ++ [
       ./patches/jocalsend-mtls-client-cert.patch
       ./patches/jocalsend-stream-uploads.patch
