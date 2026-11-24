@@ -28,11 +28,23 @@ python3Packages.buildPythonApplication rec {
   # Server needs LibreOffice's `uno` module; client (`unoconvert`) is XML-RPC only.
   # `--host-location remote` makes the client send file bytes instead of local
   # paths, so Stirling (DynamicUser) and unoserver can run as different users.
+  # makeWrapperArgs must be separate argv tokens (make-shell-wrapper no longer
+  # word-splits a single "--prefix PATH : …" string).
   makeWrapperArgs = [
-    "--prefix PATH : ${lib.makeBinPath [ libreoffice ]}"
-    "--prefix PYTHONPATH : ${loProgram}"
-    "--set-default UNO_PATH ${loProgram}"
-    "--set-default URE_BOOTSTRAP vnd.sun.star.pathname:${loProgram}/fundamentalrc"
+    "--prefix"
+    "PATH"
+    ":"
+    (lib.makeBinPath [ libreoffice ])
+    "--prefix"
+    "PYTHONPATH"
+    ":"
+    loProgram
+    "--set-default"
+    "UNO_PATH"
+    loProgram
+    "--set-default"
+    "URE_BOOTSTRAP"
+    "vnd.sun.star.pathname:${loProgram}/fundamentalrc"
   ];
 
   postFixup = ''

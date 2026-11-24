@@ -804,7 +804,6 @@
         "openvpn24": "openvpn24",
         "pia": "pia",
         "sops-nix": "sops-nix",
-        "stirling-pdf": "stirling-pdf",
         "stylix": "stylix",
         "systems": "systems_3",
         "telegram-bots": "telegram-bots",
@@ -828,22 +827,6 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
-        "type": "github"
-      }
-    },
-    "stirling-pdf": {
-      "locked": {
-        "lastModified": 1771861243,
-        "narHash": "sha256-mz05b1VyLWoTkNg8iJr3yXFJF7HDlwIUKI3ln39RacY=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "80d901ec0377e19ac3f7bb8c035201e2e098cc97",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "80d901ec0377e19ac3f7bb8c035201e2e098cc97",
         "type": "github"
       }
     },
