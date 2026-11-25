@@ -11,6 +11,18 @@ let
   # choice; a busy 3773 makes the app move and this rule miss it.
   tailnetPort = 3773;
   desktopSettings = "${env.home}/.t3/userdata/desktop-settings.json";
+  # cargoSetupHook now forces system libs (aws-lc, oniguruma, sqlite, zstd).
+  # Missing any of them fails the codex build (nixpkgs#585124). Fixed on
+  # nixpkgs master; not yet in this flake's weekly pin (f4a03c0).
+  codex = pkgs.codex.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [
+      pkgs.aws-lc
+      pkgs.oniguruma
+      pkgs.sqlite
+      pkgs.zstd
+    ];
+  });
+  t3code = pkgs.t3code.override { inherit codex; };
   # lib.hm exists only inside the Home Manager module, not NixOS lib.
   networkAccessActivation = ''
     settings=${lib.escapeShellArg desktopSettings}
@@ -48,7 +60,10 @@ in
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
       home-manager.users.${env.user} = { lib, ... }: {
-        programs.t3code.enable = true;
+        programs.t3code = {
+          enable = true;
+          package = t3code;
+        };
 
         home.activation = lib.mkIf cfg.tailnet.enable {
           t3codeNetworkAccess = lib.hm.dag.entryAfter [ "writeBoundary" ] networkAccessActivation;
