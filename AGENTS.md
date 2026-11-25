@@ -27,3 +27,9 @@ Port/endpoint collisions and silent unit failures only show up this way; eval al
 Interactive agent skills go through `my.programs.agents.skill-dirs` (per-file symlinks under `~/.claude/skills`). Do not hand-roll `home.file.".claude/skills/…"`.
 
 If activation fails with `Read-only file system` while moving/linking under `~/.claude/skills/<name>`, that path is almost certainly a **whole-dir** store symlink left from an older install. Remove it (`rm` the directory symlink — not files inside the store), then re-switch.
+
+## Gotchas
+
+### Nixpkgs pin / Rust system-lib carries
+
+After a nixpkgs bump, if a Rust package fails with `AWS_LC_SYS_USE_SYSTEM`, missing `libzstd` / oniguruma / sqlite via pkg-config, or similar — treat it as a **system-lib carry**. `cargoSetupHook` forces those system libs; the first panic is rarely the full set. Look up the nixpkgs issue/PR (or master `package.nix`) for the complete `buildInputs` list before rebuilding. Local exemplars: `modules/programs/t3code.nix`, `modules/programs/localsend.nix`.
