@@ -6,6 +6,7 @@
 , vpnRemotePath
 , defaultProfile
 , containerName ? "qbittorrent"
+, webuiUrl ? "http://10.233.2.2:8080"
 ,
 }:
 let
@@ -48,6 +49,7 @@ let
     VPN_REMOTE_CONF=${lib.escapeShellArg vpnRemotePath}
     CONTAINER=${lib.escapeShellArg containerName}
     DEFAULT_PROFILE=${lib.escapeShellArg defaultProfile}
+    WEBUI_URL=${lib.escapeShellArg webuiUrl}
     CURL=${lib.getExe pkgs.curl}
     JQ=${lib.getExe pkgs.jq}
     NIXOS_CONTAINER=/run/current-system/sw/bin/nixos-container
@@ -61,6 +63,19 @@ let
 
     container_run() {
       "$NIXOS_CONTAINER" run "$CONTAINER" -- "$@"
+    }
+
+    container_up() {
+      "$NIXOS_CONTAINER" status "$CONTAINER" >/dev/null 2>&1
+    }
+
+    # True when the container has a tun device (OpenVPN unit "active" alone is not enough).
+    tunnel_up() {
+      container_run /bin/sh -c 'for d in /sys/class/net/tun*; do [ -e "$d" ] && exit 0; done; exit 1'
+    }
+
+    openvpn_unit_active() {
+      container_run systemctl is-active --quiet openvpn-pia.service
     }
 
     profile_field() {
@@ -107,15 +122,13 @@ let
     wait_tunnel() {
       local attempts=0
       while (( attempts < 45 )); do
-        if container_run systemctl is-active --quiet openvpn-pia.service; then
-          # Give tun a moment after ActiveState=active.
-          sleep 2
+        if openvpn_unit_active && tunnel_up; then
           return 0
         fi
         sleep 1
         attempts=$((attempts + 1))
       done
-      echo "error: openvpn-pia did not become active" >&2
+      echo "error: PIA tunnel did not come up (openvpn unit and/or tun missing)" >&2
       return 1
     }
 
@@ -133,6 +146,78 @@ let
       fi
       printf '%s' "$body" | "$JQ" -e 'type == "array"' >/dev/null 2>&1
     }
+
+    probe_webui() {
+      local code
+      code=$("$CURL" -sS -o /dev/null -w '%{http_code}' --max-time 5 "$WEBUI_URL/" 2>/dev/null || echo "000")
+      printf '%s' "$code"
+    }
+
+    print_status() {
+      local slug unit_state tun_state qbit_state webui_code exit_ip host_ip
+      slug=$(current_profile)
+      echo "profile: $slug"
+      if [[ -f "$VPN_REMOTE_CONF" ]]; then
+        echo "config:  $VPN_REMOTE_CONF"
+        grep -E '^(proto|remote) ' "$VPN_REMOTE_CONF" | sed 's/^/  /' || true
+      else
+        echo "config:  (missing — will be seeded on next openvpn start)"
+      fi
+
+      echo -n "webui:   "
+      webui_code=$(probe_webui)
+      echo "$webui_code ($WEBUI_URL)"
+
+      if [[ "$(id -u)" -ne 0 ]]; then
+        echo "(run as root for container/tunnel checks)"
+        return 0
+      fi
+
+      if ! container_up; then
+        echo "container: down"
+        return 0
+      fi
+      echo "container: up"
+
+      echo -n "qbit:    "
+      qbit_state=$(container_run systemctl is-active qbittorrent.service 2>/dev/null || echo "unknown")
+      echo "$qbit_state"
+
+      echo -n "openvpn: "
+      unit_state=$(container_run systemctl is-active openvpn-pia.service 2>/dev/null || echo "unknown")
+      echo "$unit_state"
+
+      echo -n "tunnel:  "
+      if tunnel_up; then
+        tun_state=up
+        echo "up"
+      else
+        tun_state=down
+        if [[ "$unit_state" == "active" ]]; then
+          echo "down (unit active, no tun — not connected)"
+        else
+          echo "down"
+        fi
+      fi
+
+      echo -n "apibay:  "
+      if probe_apibay; then
+        echo "ok"
+      else
+        echo "unreachable"
+      fi
+
+      echo -n "exit ip: "
+      exit_ip=$(container_run "$CURL" -fsS --max-time 8 https://ifconfig.me/ip 2>/dev/null || echo "unknown")
+      host_ip=$("$CURL" -fsS --max-time 8 https://ifconfig.me/ip 2>/dev/null || echo "")
+      if [[ "$tun_state" != "up" ]]; then
+        echo "$exit_ip (LEAK — no tun; traffic via host NAT)"
+      elif [[ -n "$host_ip" && "$exit_ip" == "$host_ip" ]]; then
+        echo "$exit_ip (LEAK — matches host public IP)"
+      else
+        echo "$exit_ip"
+      fi
+    }
   '';
 
   mkTool =
@@ -147,8 +232,12 @@ let
         pkgs.jq
         pkgs.curl
       ];
-      # jq programs intentionally use single quotes so bash does not expand $vars.
-      excludeShellChecks = [ "SC2016" ];
+      # SC2016: jq programs intentionally use single quotes so bash does not expand $vars.
+      # SC2329: shared preamble defines helpers not every tool calls.
+      excludeShellChecks = [
+        "SC2016"
+        "SC2329"
+      ];
       text = commonPreamble + text;
     };
 
@@ -157,29 +246,14 @@ let
   '';
 
   statusTool = mkTool "qbittorrent-vpn-status" ''
-    slug=$(current_profile)
-    echo "profile: $slug"
-    if [[ -f "$VPN_REMOTE_CONF" ]]; then
-      echo "config:  $VPN_REMOTE_CONF"
-      grep -E '^(proto|remote) ' "$VPN_REMOTE_CONF" | sed 's/^/  /' || true
-    else
-      echo "config:  (missing — will be seeded on next openvpn start)"
-    fi
-    if [[ "$(id -u)" -eq 0 ]] && "$NIXOS_CONTAINER" status "$CONTAINER" >/dev/null 2>&1; then
-      echo -n "tunnel:  "
-      container_run systemctl is-active openvpn-pia.service 2>/dev/null || echo "unknown"
-      echo -n "apibay:  "
-      if probe_apibay; then
-        echo "ok"
-      else
-        echo "unreachable"
-      fi
-      echo -n "exit ip: "
-      container_run "$CURL" -fsS --max-time 8 https://ifconfig.me/ip 2>/dev/null || echo "unknown"
-    else
-      echo "(run as root for tunnel/apibay checks)"
-    fi
+    print_status
   '';
+
+  # Same probe under the name that matches "is qBittorrent up?" debugging.
+  statusAlias = mkTool "qbittorrent-status" ''
+    print_status
+  '';
+
   switchTool = mkTool "qbittorrent-vpn-switch" ''
     if [[ $# -ne 1 ]]; then
       echo "usage: qbittorrent-vpn-switch <profile-slug>" >&2
@@ -295,6 +369,7 @@ pkgs.symlinkJoin {
   paths = [
     listTool
     statusTool
+    statusAlias
     switchTool
     testTool
     searchTool

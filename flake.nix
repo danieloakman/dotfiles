@@ -86,7 +86,6 @@
       };
     };
     llama-cpp.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 8069 (d5dfc33)
-    stirling-pdf.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # v1.5.0, v2 changed a lot and broke a lot. Try it again in the future.
     lazyvim = {
       url = "github:pfassina/lazyvim-nix";
       inputs = {
@@ -129,7 +128,6 @@
     , gws
     , android-nixpkgs
     , import-tree
-    , stirling-pdf
     , ...
     }@inputs:
     let
@@ -253,7 +251,6 @@
               home = "/home/dano";
               inherit deviceType isOnWayland hasGPU;
             };
-            stirlingPdfPackage = stirling-pdf.legacyPackages.${linuxSystem}.stirling-pdf;
           };
           modules = [
             inputs.home-manager.nixosModules.home-manager

@@ -122,7 +122,10 @@ in
         jwt-secret-file = config.sops.secrets.postiz_jwt_secret.path;
       };
       # Soft-remediate internet/Tailscale failures; reboot up to 3 times then stay up.
-      connectivity-watchdog.enable = true;
+      connectivity-watchdog = {
+        enable = true;
+        check-interval = "15min";
+      };
       # Weekly vulnix scan + optional security-feed poller → Telegram (Dan).
       vuln-monitor = {
         enable = true;

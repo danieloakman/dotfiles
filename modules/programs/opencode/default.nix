@@ -398,6 +398,14 @@ in
         group = "AI";
         icon = "mdi-code-braces";
       };
+      my.services.appctl.services.opencode-web = {
+        description = "OpenCode web UI";
+        scope = "user";
+        inherit (env) user;
+        units = [ "opencode-web.service" ];
+        memoryHigh = "1G";
+        oomScoreAdjust = 300;
+      };
     }))
   ];
 }

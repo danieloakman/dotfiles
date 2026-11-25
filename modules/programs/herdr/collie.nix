@@ -473,6 +473,16 @@ in
         group = "AI";
         icon = "mdi-robot";
       };
+
+      # Unit is installed by Herdr's collie plugin (collie-ctl), not Nix.
+      my.services.appctl.services.collie = {
+        description = "Collie (Herdr bridge)";
+        scope = "user";
+        inherit (env) user;
+        units = [ "collie.service" ];
+        memoryHigh = "1G";
+        oomScoreAdjust = 350;
+      };
     }))
   ];
 }

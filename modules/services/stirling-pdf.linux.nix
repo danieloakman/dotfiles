@@ -1,4 +1,4 @@
-{ lib, pkgs, config, stirlingPdfPackage, ... }:
+{ lib, pkgs, config, ... }:
 let
   cfg = config.my.services.stirling-pdf;
   inherit (cfg) port;
@@ -42,7 +42,6 @@ in
     services = {
       stirling-pdf = {
         enable = true;
-        package = stirlingPdfPackage;
         environment = {
           SERVER_PORT = portStr;
           SYSTEM_ENABLEANALYTICS = "false";
@@ -50,9 +49,9 @@ in
       };
     };
 
-    # Stirling-PDF 1.5.0 execs `unoconvert` (not the deprecated `unoconv` that
-    # the NixOS module puts on PATH). It also treats Python as implying
-    # unoconvert is available, so it never falls back to `soffice`.
+    # Stirling-PDF prefers `unoconvert` over the deprecated `unoconv` that the
+    # NixOS module puts on PATH, and treats Python as implying unoconvert is
+    # available, so it never falls back to `soffice`.
     systemd.services.unoserver = {
       description = "LibreOffice UNO conversion server for Stirling PDF";
       wantedBy = [ "multi-user.target" ];
@@ -93,6 +92,16 @@ in
       href = "https://stirling-pdf.dinosaur-crocodile.ts.net";
       group = "Documents";
       icon = "mdi-file-pdf-box";
+    };
+
+    my.services.appctl.services.stirling-pdf = {
+      description = "Stirling PDF";
+      units = [
+        "stirling-pdf.service"
+        "unoserver.service"
+      ];
+      memoryHigh = "2G";
+      oomScoreAdjust = 400;
     };
   };
 }

@@ -209,6 +209,20 @@ in
         endpoints."tcp:443" = "http://${hostname}:${toString port}";
       };
 
+      my.services.appctl.services.paperless = {
+        description = "Paperless document management";
+        units = [
+          "paperless-web.service"
+          "paperless-consumer.service"
+          "paperless-scheduler.service"
+          "paperless-task-queue.service"
+          "redis-paperless.service"
+          "gotenberg.service"
+        ];
+        memoryHigh = "2G";
+        oomScoreAdjust = 350;
+      };
+
       my.services.homepage.services."Paperless" = {
         description = "Document management";
         href = "https://paperless.dinosaur-crocodile.ts.net";

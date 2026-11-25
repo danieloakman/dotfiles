@@ -86,19 +86,71 @@ build:
 [linux]
 boot:
     nh os boot {{ repo }}
+    rm -f {{ repo }}/result
+
+# Schedule `nh os build` once at HH:MM (user timer; no sudo). Pins GC via repo `result`.
+# Morning: `just boot` reuses the store and prompts for your password to set the boot default.
+# Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
+[linux, positional-arguments]
+boot-at *when:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$#" -ne 1 ]]; then
+      echo "usage: just boot-at <HH:MM>" >&2
+      exit 1
+    fi
+    when="$1"
+    if [[ "$when" =~ ^[0-9]{1,2}:[0-9]{2}$ ]]; then
+      when="${when}:00"
+    elif [[ ! "$when" =~ ^[0-9]{1,2}:[0-9]{2}:[0-9]{2}$ ]]; then
+      echo "usage: just boot-at <HH:MM>" >&2
+      exit 1
+    fi
+    unit=dotfiles-nh-build
+    repo='{{ repo }}'
+    nh="$(command -v nh)"
+    today="$(date +%F)"
+    target_ts="$(date -d "${today} ${when}" +%s)"
+    now_ts="$(date +%s)"
+    if (( target_ts <= now_ts )); then
+      calendar="$(date -d "tomorrow ${when}" '+%F %T')"
+    else
+      calendar="$(date -d "${today} ${when}" '+%F %T')"
+    fi
+    # Drop prior build timer and the old boot-unit name if present.
+    systemctl --user stop "${unit}.timer" "${unit}.service" \
+      dotfiles-nh-boot.timer dotfiles-nh-boot.service 2>/dev/null || true
+    systemd-run --user \
+      --collect \
+      --unit="$unit" \
+      --description="Scheduled nh os build (${repo})" \
+      --working-directory="$repo" \
+      --property='Environment=PATH=/run/wrappers/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin' \
+      --on-calendar="$calendar" \
+      "$nh" os build "$repo" -o "$repo/result"
+    echo "Scheduled nh os build for ${calendar} (local, user). Cancel: just boot-at-cancel"
+
+[linux]
+boot-at-cancel:
+    systemctl --user stop dotfiles-nh-build.timer dotfiles-nh-build.service \
+      dotfiles-nh-boot.timer dotfiles-nh-boot.service 2>/dev/null || true
+    @echo "Cancelled scheduled nh os build (if any)."
 
 [linux]
 switch:
     nh os switch {{ repo }}
+    rm -f {{ repo }}/result
 
 [macos]
 switch:
     # sudo darwin-rebuild switch --flake .
     nh darwin switch {{ repo }}
+    rm -f {{ repo }}/result
 
 [linux]
 test:
     nh os test {{ repo }}
+    rm -f {{ repo }}/result
 
 [linux]
 gen-ls:

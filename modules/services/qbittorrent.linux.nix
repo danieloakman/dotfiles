@@ -87,9 +87,12 @@ let
 
   # Python search plugins need writable+executable memory pages + an explicit interpreter
   # (systemd hardening can leave auto-detect failing even when qbittorrent-nox wraps PATH).
+  # Restart=always: a clean exit ~1s after start previously left WebUI dead for days.
   qbittorrentSearchServiceConfig = {
     MemoryDenyWriteExecute = lib.mkForce false;
     ExecStartPre = [ "+${installSearchPlugins}" ];
+    Restart = "always";
+    RestartSec = "5";
     Environment = [
       "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
       "NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -104,6 +107,11 @@ let
   vpnTools = pkgs.callPackage ./qbittorrent.linux/_vpn-tools.nix {
     inherit profilesBySlug vpnRemotePath;
     defaultProfile = vpnProfile;
+    webuiUrl =
+      if cfg.vpn.enable then
+        "http://${cfg.vpn.local-address}:${portStr}"
+      else
+        "http://127.0.0.1:${portStr}";
   };
 
   # Stable IDs so host bind-mounts (downloads + profile) match the container user.
@@ -198,6 +206,13 @@ in
         "d ${profileDir}/qBittorrent/data/nova3 0755 qbittorrent qbittorrent -"
         "d ${enginesDir} 0755 qbittorrent qbittorrent -"
       ];
+
+      my.services.appctl.services.qbittorrent = {
+        description = "qBittorrent";
+        units = [ "container@qbittorrent.service" ];
+        memoryHigh = "1G";
+        oomScoreAdjust = 350;
+      };
 
       my.services.homepage.services."qBittorrent" = {
         description = "BitTorrent download manager";

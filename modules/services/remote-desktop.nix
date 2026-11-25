@@ -40,6 +40,13 @@ in
       environment.systemPackages = with pkgs; [
         vivaldi
       ];
+
+      my.services.appctl.services.remote-desktop = {
+        description = "xrdp remote desktop";
+        units = [ "xrdp.service" ];
+        memoryHigh = "2G";
+        oomScoreAdjust = 350;
+      };
     };
     # Darwin not supported yet.
   });

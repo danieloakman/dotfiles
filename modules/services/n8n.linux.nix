@@ -64,6 +64,13 @@ in
       endpoints."tcp:443" = "http://127.0.0.1:${toString cfg.port}";
     };
 
+    my.services.appctl.services.n8n = {
+      description = "n8n automation";
+      units = [ "n8n.service" ];
+      memoryHigh = "1G";
+      oomScoreAdjust = 350;
+    };
+
     my = {
       services.homepage.services."N8N" = {
         description = "Automation platform";

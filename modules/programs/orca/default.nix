@@ -330,6 +330,15 @@ in
               Install.WantedBy = [ "default.target" ];
             };
           };
+
+          my.services.appctl.services.orca = {
+            description = "Orca headless runtime";
+            units = [ "orca-serve.service" ];
+            scope = "user";
+            inherit (env) user;
+            memoryHigh = "2G";
+            oomScoreAdjust = 350;
+          };
         };
       }))
     ]
