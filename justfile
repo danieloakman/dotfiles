@@ -16,8 +16,69 @@ lint:
 edit-secrets:
     nix shell 'nixpkgs#sops' -c sops '{{ repo }}/secrets/secrets.yaml'
 
+# Nix GC via nh (gens + gcroots + store). Prefer these over bare
+# `nix-collect-garbage`: that only deletes unreachable store paths; with `-d`
+# it also drops old profile gens it knows about, but misses direnv/auto
+# gcroots and never removes a repo `result` symlink (which pins a closure).
+# Use gc-hard when / is nearly full before a large rebuild.
+
+# Keep 2 gens / last 3d; drop repo result; print df before/after.
+[linux]
 gc:
-    nix-collect-garbage -d
+    #!/usr/bin/env bash
+    set -euo pipefail
+    df -h / | tail -1
+    rm -f '{{ repo }}/result'
+    sudo nh clean all --keep-since 3d --keep 2
+    df -h / | tail -1
+
+# Keep 3 gens / last 5d (same policy as mara nh.clean timer).
+[linux]
+gc-soft:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    df -h / | tail -1
+    rm -f '{{ repo }}/result'
+    sudo nh clean all --keep-since 5d --keep 3
+    df -h / | tail -1
+
+# Current gen only + journal vacuum to 200M. No rollback room.
+[linux]
+gc-hard:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    df -h / | tail -1
+    rm -f '{{ repo }}/result'
+    sudo nh clean all --keep 1
+    sudo journalctl --vacuum-size=200M
+    df -h / | tail -1
+
+# Dry-run of default `just gc`.
+[linux]
+gc-dry:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    df -h / | tail -1
+    if [[ -e '{{ repo }}/result' ]]; then
+      echo "would remove {{ repo }}/result (pins a build closure)"
+    fi
+    sudo nh clean all --keep-since 3d --keep 2 --dry
+
+# Keep 2 gens / last 3d (user profiles).
+[macos]
+gc:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    rm -f '{{ repo }}/result'
+    nh clean user --keep-since 3d --keep 2
+
+# Current user gen only.
+[macos]
+gc-hard:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    rm -f '{{ repo }}/result'
+    nh clean user --keep 1
 
 [positional-arguments]
 check *args:
@@ -170,10 +231,6 @@ gen-rm *gens:
         exit 1
     fi
     sudo nix-env -p /nix/var/nix/profiles/system --delete-generations "$@"
-
-[linux]
-clean:
-    nh clean all -a --keep 1
 
 # Rank profile packages by least-recent binary access; hint modules/hosts refs.
 # Examples: `just unused-bins` | `just unused-bins --limit 20` | `just unused-bins --all`
