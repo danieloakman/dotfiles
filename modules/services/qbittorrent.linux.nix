@@ -45,29 +45,89 @@ let
   vpnProfile = cfg.vpn.profile;
   vpnEndpoint = profilesBySlug.${vpnProfile};
 
-  # Official nova3 Pirate Bay plugin (searches apibay.org).
-  # apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits),
-  # so lowercase the query before requesting.
-  piratebayPlugin =
-    pkgs.runCommand "piratebay.py"
-      {
-        src = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/qbittorrent/search-plugins/62f296ed47010ab0ea9dbd43257a1a20025d1d1a/nova3/engines/piratebay.py";
-          hash = "sha256-hnlIXWchrs27Z/+VxUXG6fZlG7vJg5IS8Zz6LQzjAJc=";
-        };
-      }
-      ''
+  # Official nova3 engines from qbittorrent/search-plugins.
+  # To refresh: bump searchPluginsRev, set each hash = lib.fakeHash, rebuild, paste the reported hashes.
+  searchPluginsRev = "c14617f72528a8fce7ab8f769b9593757d36cfea";
+
+  mkOfficialSearchPlugin =
+    { name
+    , hash
+    , patch ? null
+    ,
+    }:
+    let
+      src = pkgs.fetchurl {
+        url = "https://raw.githubusercontent.com/qbittorrent/search-plugins/${searchPluginsRev}/nova3/engines/${name}.py";
+        inherit hash;
+      };
+    in
+    {
+      inherit name;
+      path =
+        if patch == null then
+          src
+        else
+          pkgs.runCommand "${name}.py" { inherit src; } patch;
+    };
+
+  officialSearchPlugins = map mkOfficialSearchPlugin [
+    {
+      name = "piratebay";
+      hash = "sha256-s38T0h/18i/yFUpJfNPtLXJ3hAJNCdOTwb6tiOQ42rU=";
+      # apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits).
+      patch = ''
         ${pkgs.gnused}/bin/sed 's/what = unquote(what)/what = unquote(what).lower()/' "$src" > "$out"
         ${pkgs.gnugrep}/bin/grep -q 'unquote(what).lower()' "$out"
       '';
+    }
+    {
+      name = "eztv";
+      hash = "sha256-IqBRrp3mQDpXNVQMB0t41OskfenWNm74ltx1C4xRxLs=";
+    }
+    {
+      name = "limetorrents";
+      hash = "sha256-rKP7xJVpcEdKZilfXmHwJTK831OZrpfBRL+CanyP3c4=";
+    }
+    {
+      name = "solidtorrents";
+      hash = "sha256-4Q4DmwLGdfvq5lA0gvH7Emg7uhw59UJOfCcp3ETRKnE=";
+    }
+    {
+      name = "torlock";
+      hash = "sha256-uEgZBlZTSnipgMuSWhTfDWGRT/dpy1xxlz4E5Sd3hHc=";
+    }
+    {
+      name = "torrentproject";
+      hash = "sha256-ZJYLuNfr3oKbVf21pmn5bLBpTY1JzIeq+WDx8drnk/A=";
+    }
+    {
+      name = "torrentscsv";
+      hash = "sha256-fHyKVCSeXyziN99kIac1pcG9es79EwTXNu6Pkl/WAxs=";
+    }
+  ];
 
-  # Run as root (`+`) so we can fix ownership if tmpfiles created parents as root.
+  managedSearchPluginFiles = lib.concatMapStringsSep " " (p: "${p.name}.py") officialSearchPlugins;
+
+  # Run as root (`+`) so we can fix ownership if tmpfiles created the dir as root.
   installSearchPlugins = pkgs.writeShellScript "qbittorrent-install-search-plugins" ''
     set -euo pipefail
     ${pkgs.coreutils}/bin/mkdir -p "${enginesDir}"
-    ${pkgs.coreutils}/bin/chown -R qbittorrent:qbittorrent "${profileDir}/qBittorrent/data/nova3"
-    ${pkgs.coreutils}/bin/install -o qbittorrent -g qbittorrent -m644 ${piratebayPlugin} \
-      "${enginesDir}/piratebay.py"
+    ${pkgs.coreutils}/bin/chown qbittorrent:qbittorrent "${enginesDir}"
+    ${lib.concatMapStringsSep "\n" (
+      plugin: ''
+        ${pkgs.coreutils}/bin/install -o qbittorrent -g qbittorrent -m644 ${plugin.path} \
+          "${enginesDir}/${plugin.name}.py"
+      ''
+    ) officialSearchPlugins}
+    # Drop engines removed from officialSearchPlugins (also clears manual installs).
+    shopt -s nullglob
+    for f in "${enginesDir}"/*.py; do
+      base=$(${pkgs.coreutils}/bin/basename "$f")
+      case " ${managedSearchPluginFiles} " in
+        *" $base "*) ;;
+        *) ${pkgs.coreutils}/bin/rm -f "$f" ;;
+      esac
+    done
   '';
 
   # Seed runtime OpenVPN remote only when missing (CLI switches own the file after that).
@@ -435,7 +495,7 @@ in
             };
 
             # Kill switch: qBittorrent only runs while the PIA tunnel unit is up.
-            # Also install the Pirate Bay search plugin (Python needs MDWE off).
+            # Also install official nova3 search plugins (Python needs MDWE off).
             systemd.services.qbittorrent = {
               after = [ "openvpn-pia.service" ];
               requires = [ "openvpn-pia.service" ];
