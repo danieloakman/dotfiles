@@ -26,14 +26,16 @@ nh os switch .      # Linux
 nh darwin switch .  # macOS
 ```
 
-To deploy another Linux host over SSH from this machine (for example Azura from Mara):
+To deploy another NixOS host over SSH from this machine (for example Azura from Mara):
 
 ```bash
 just boot-remote azura    # set the boot default; takes effect on next reboot
 just switch-remote azura  # switch now
+# optional SSH target override:
+just boot-remote azura dano@azura
 ```
 
-These pass `nh --use-substitutes` so the target downloads missing store paths from binary caches instead of copying the whole closure over SSH.
+The host must exist in this flake's `nixosConfigurations`. The default target is `dano@<host>.dinosaur-crocodile.ts.net`. These pass `nh --use-substitutes` so the target downloads missing store paths from binary caches instead of copying the whole closure over SSH. `nh darwin` has `--build-host` but no `--target-host`, so remote activation of nix-darwin hosts is not supported here.
 
 ## Installer ISO
 
