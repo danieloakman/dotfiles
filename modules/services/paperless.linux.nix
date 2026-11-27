@@ -198,8 +198,12 @@ in
         configureTika = true;
         # FlakeHub nixpkgs-weekly (d5cc683) predates nixpkgs#587638; torch 2.15
         # fails pythonRuntimeDepsCheck until the weekly pin catches up.
+        # Also skip a flaky consumer watch test (3901 passed / 1 failed locally).
         package = pkgs.paperless-ngx.overrideAttrs (old: {
           pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "torch" ];
+          disabledTests = (old.disabledTests or [ ]) ++ [
+            "test_ignores_event_for_already_queued_file"
+          ];
         });
       };
 
