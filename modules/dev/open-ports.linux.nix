@@ -1,12 +1,12 @@
-# Open common local-dev server ports on workstation firewalls.
-# Classification: flake `deviceType` (desktop/laptop vs server), not
-# `my.profiles.dev-workstation` (mara enables that profile but is a server).
+# Open common local-dev server ports when the dev-workstation profile is on.
+# Default follows `my.profiles.dev-workstation.enable` (akatosh, azura, mara on
+# Linux; boethiah is Darwin and has no NixOS firewall).
 #
 # Exposure is limited to:
 #   1. tailscale0 (interface-scoped allow lists)
 #   2. packets whose IPv4 source is in trustedSubnets (source-based, not
 #      interface-based — laptop Wi-Fi may also join public networks)
-{ config, lib, env, ... }:
+{ config, lib, ... }:
 let
   cfg = config.my.dev.openPorts;
 
@@ -72,10 +72,10 @@ in
   options.my.dev.openPorts = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = env.deviceType != "server";
+      default = config.my.profiles.dev-workstation.enable;
       description = ''
         Open common development-server TCP (and a few UDP) ports for local
-        tooling. Defaults on for desktop/laptop hosts and off for servers.
+        tooling. Defaults to `my.profiles.dev-workstation.enable`.
 
         Ports are not opened on all interfaces: only on `tailscale0`, and from
         IPv4 sources in `trustedSubnets` (home LAN by subnet, not interface).
