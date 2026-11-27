@@ -149,6 +149,18 @@ boot:
     nh os boot {{ repo }}
     rm -f {{ repo }}/result
 
+# Build here, then set a remote NixOS host's boot default over SSH.
+# `--use-substitutes` lets the target pull missing store paths from
+# binary caches instead of copying the whole closure from this machine.
+# Host must exist in the flake's nixosConfigurations.
+# Default target: dano@<host>.dinosaur-crocodile.ts.net
+# Example: `just boot-remote azura` or `just boot-remote azura dano@azura`
+[linux, positional-arguments]
+boot-remote *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just --justfile "{{ justfile() }}" _remote-os boot "$@"
+
 # Schedule `nh os build` once at HH:MM (user timer; no sudo). Pins GC via repo `result`.
 # Morning: `just boot` reuses the store and prompts for your password to set the boot default.
 # Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
@@ -201,6 +213,43 @@ boot-at-cancel:
 switch:
     nh os switch {{ repo }}
     rm -f {{ repo }}/result
+
+# Like `just switch`, but deploy a remote NixOS host over SSH.
+# Example: `just switch-remote azura` or `just switch-remote azura dano@azura`
+[linux, positional-arguments]
+switch-remote *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just --justfile "{{ justfile() }}" _remote-os switch "$@"
+
+# Shared remote NixOS deploy. cmd is boot or switch.
+# Usage: just _remote-os <boot|switch> <host> [target]
+[linux, positional-arguments, private]
+_remote-os *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cmd="${1:-}"
+    if [[ "$#" -lt 2 || "$#" -gt 3 || ! "$cmd" =~ ^(boot|switch)$ ]]; then
+      echo "usage: just ${cmd:-boot}-remote <host> [target]" >&2
+      exit 1
+    fi
+    host="$2"
+    target="${3:-dano@${host}.dinosaur-crocodile.ts.net}"
+    repo='{{ repo }}'
+    hosts_json="$(nix eval "${repo}#nixosConfigurations" --apply builtins.attrNames --json)"
+    case "$hosts_json" in
+      *'"'"$host"'"'*) ;;
+      *)
+        echo "unknown NixOS host: ${host}" >&2
+        echo "  valid: ${hosts_json}" >&2
+        exit 1
+        ;;
+    esac
+    nh os "$cmd" "$repo" \
+      -H "$host" \
+      --target-host "$target" \
+      --use-substitutes
+    rm -f "$repo/result"
 
 [macos]
 switch:

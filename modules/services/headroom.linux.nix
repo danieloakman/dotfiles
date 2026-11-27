@@ -151,6 +151,10 @@ in
       my.programs.claude-code.managed-settings.env = {
         ANTHROPIC_BASE_URL = baseUrl;
         ENABLE_TOOL_SEARCH = "true";
+        # Headroom rewrites request bodies/responses, so auto mode's server-side
+        # review (verdicts ride the normal model request) yields "no verdict" and
+        # every action is denied. Use Claude Code's own classifier requests instead.
+        CLAUDE_CODE_AUTO_MODE_SERVER = "0";
       };
 
       # Claude-only: CCR retrieve after proxy compression. Not via agents.mcp —
