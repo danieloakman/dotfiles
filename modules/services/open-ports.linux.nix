@@ -57,16 +57,20 @@ let
     );
 
   lanIptablesStart = lib.concatMapStringsSep "\n" (iptablesSpecsForSubnet "A") cfg.trustedSubnets;
-  lanIptablesStop = lib.concatMapStringsSep "\n" (
-    subnet: lib.concatMapStringsSep "\n" (line: "${line} || true") (
-      lib.splitString "\n" (iptablesSpecsForSubnet "D" subnet)
+  lanIptablesStop = lib.concatMapStringsSep "\n"
+    (
+      subnet: lib.concatMapStringsSep "\n" (line: "${line} || true") (
+        lib.splitString "\n" (iptablesSpecsForSubnet "D" subnet)
+      )
     )
-  ) cfg.trustedSubnets;
+    cfg.trustedSubnets;
 
-  lanNftRules = lib.concatMapStrings (subnet: ''
-    ip saddr ${subnet} tcp dport { ${nftTcpSet} } accept comment "my.services.open-ports trusted subnet"
-    ip saddr ${subnet} udp dport { ${nftUdpSet} } accept comment "my.services.open-ports trusted subnet"
-  '') cfg.trustedSubnets;
+  lanNftRules = lib.concatMapStrings
+    (subnet: ''
+      ip saddr ${subnet} tcp dport { ${nftTcpSet} } accept comment "my.services.open-ports trusted subnet"
+      ip saddr ${subnet} udp dport { ${nftUdpSet} } accept comment "my.services.open-ports trusted subnet"
+    '')
+    cfg.trustedSubnets;
 in
 {
   options.my.services.open-ports = {
