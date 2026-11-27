@@ -71,8 +71,26 @@ in
       # Open explicitly on tailscale0 so exposure survives a change to trustedInterfaces.
       networking.firewall.interfaces."tailscale0".allowedTCPPorts = [ cfg.port ];
 
-      home-manager.users.${env.user} = {
+      home-manager.users.${env.user} = { lib, ... }: {
         home.packages = [ cfg.package ];
+
+        # `headroom mcp install` writes a user-scope entry into ~/.claude.json that
+        # points at a uv cache venv (~/.cache/uv/archive-v0/…/bin/headroom). Once uv
+        # prunes that venv the shebang python is gone and the server dies with
+        # "Connection closed". It also shadows the managed (Nix-pinned) entry.
+        # Drop only entries that point into the uv cache.
+        home.activation.removeStaleHeadroomMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          f="$HOME/.claude.json"
+          if [ -f "$f" ] && ${pkgs.jq}/bin/jq -e \
+            '.mcpServers.headroom.command // "" | test("/\\.cache/uv/archive-v0/")' "$f" >/dev/null 2>&1; then
+            tmp="$(mktemp "$f.XXXXXX")"
+            if ${pkgs.jq}/bin/jq 'del(.mcpServers.headroom)' "$f" > "$tmp"; then
+              chmod --reference="$f" "$tmp" && mv "$tmp" "$f"
+            else
+              rm -f "$tmp"
+            fi
+          fi
+        '';
 
         # Runs as ${env.user}, so HOME=~ resolves the workspace to ~/.headroom —
         # shared with `headroom learn` and the CLI (no cross-user profile sync).
