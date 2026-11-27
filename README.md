@@ -26,6 +26,15 @@ nh os switch .      # Linux
 nh darwin switch .  # macOS
 ```
 
+To deploy another Linux host over SSH from this machine (for example Azura from Mara):
+
+```bash
+just boot-remote azura    # set the boot default; takes effect on next reboot
+just switch-remote azura  # switch now
+```
+
+These pass `nh --use-substitutes` so the target downloads missing store paths from binary caches instead of copying the whole closure over SSH.
+
 ## Installer ISO
 
 One live USB for every Linux host. The host (`akatosh`, `azura`, or `mara`) is chosen in the install command. The image has flakes, `git`, `neovim`, your SSH keys (console user `nixos`, or SSH as `root` / `nixos`), and a snapshot of this repo at `/etc/dotfiles`. Rebuild the ISO after you change the repo. `just iso` also copies your age key onto a partition labeled `NIXOSDATA`. The live system mounts that partition at `/nixosdata` and prints the next steps when the console shell starts.

@@ -149,6 +149,33 @@ boot:
     nh os boot {{ repo }}
     rm -f {{ repo }}/result
 
+# Build here, then set a remote host's boot default over SSH.
+# `--use-substitutes` lets the target pull missing store paths from
+# binary caches instead of copying the whole closure from this machine.
+# Example: `just boot-remote azura`
+[linux, positional-arguments]
+boot-remote *host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$#" -ne 1 ]]; then
+      echo "usage: just boot-remote <host>" >&2
+      echo "  host: akatosh, azura, or mara" >&2
+      exit 1
+    fi
+    host="$1"
+    case "$host" in
+      akatosh|azura|mara) ;;
+      *)
+        echo "unknown host: ${host} (expected akatosh, azura, or mara)" >&2
+        exit 1
+        ;;
+    esac
+    nh os boot '{{ repo }}' \
+      -H "$host" \
+      --target-host "dano@${host}.dinosaur-crocodile.ts.net" \
+      --use-substitutes
+    rm -f '{{ repo }}'/result
+
 # Schedule `nh os build` once at HH:MM (user timer; no sudo). Pins GC via repo `result`.
 # Morning: `just boot` reuses the store and prompts for your password to set the boot default.
 # Example: `just boot-at 12:00`  |  cancel: `just boot-at-cancel`
@@ -201,6 +228,31 @@ boot-at-cancel:
 switch:
     nh os switch {{ repo }}
     rm -f {{ repo }}/result
+
+# Like `just switch`, but deploy a remote Linux host over SSH.
+# Example: `just switch-remote azura`
+[linux, positional-arguments]
+switch-remote *host:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "$#" -ne 1 ]]; then
+      echo "usage: just switch-remote <host>" >&2
+      echo "  host: akatosh, azura, or mara" >&2
+      exit 1
+    fi
+    host="$1"
+    case "$host" in
+      akatosh|azura|mara) ;;
+      *)
+        echo "unknown host: ${host} (expected akatosh, azura, or mara)" >&2
+        exit 1
+        ;;
+    esac
+    nh os switch '{{ repo }}' \
+      -H "$host" \
+      --target-host "dano@${host}.dinosaur-crocodile.ts.net" \
+      --use-substitutes
+    rm -f '{{ repo }}'/result
 
 [macos]
 switch:
