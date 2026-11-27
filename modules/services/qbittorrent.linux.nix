@@ -45,7 +45,8 @@ let
   vpnProfile = cfg.vpn.profile;
   vpnEndpoint = profilesBySlug.${vpnProfile};
 
-  # Official nova3 engines from qbittorrent/search-plugins (jackett deferred).
+  # Official nova3 engines from qbittorrent/search-plugins.
+  # To refresh: bump searchPluginsRev, set each hash = lib.fakeHash, rebuild, paste the reported hashes.
   searchPluginsRev = "c14617f72528a8fce7ab8f769b9593757d36cfea";
 
   mkOfficialSearchPlugin =
@@ -69,12 +70,11 @@ let
           pkgs.runCommand "${name}.py" { inherit src; } patch;
     };
 
-  # piratebay: apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits),
-  # so lowercase the query before requesting.
   officialSearchPlugins = map mkOfficialSearchPlugin [
     {
       name = "piratebay";
       hash = "sha256-s38T0h/18i/yFUpJfNPtLXJ3hAJNCdOTwb6tiOQ42rU=";
+      # apibay is case-sensitive ("Game of Thrones" → empty; "game of thrones" → hits).
       patch = ''
         ${pkgs.gnused}/bin/sed 's/what = unquote(what)/what = unquote(what).lower()/' "$src" > "$out"
         ${pkgs.gnugrep}/bin/grep -q 'unquote(what).lower()' "$out"
@@ -106,17 +106,28 @@ let
     }
   ];
 
-  # Run as root (`+`) so we can fix ownership if tmpfiles created parents as root.
+  managedSearchPluginFiles = lib.concatMapStringsSep " " (p: "${p.name}.py") officialSearchPlugins;
+
+  # Run as root (`+`) so we can fix ownership if tmpfiles created the dir as root.
   installSearchPlugins = pkgs.writeShellScript "qbittorrent-install-search-plugins" ''
     set -euo pipefail
     ${pkgs.coreutils}/bin/mkdir -p "${enginesDir}"
-    ${pkgs.coreutils}/bin/chown -R qbittorrent:qbittorrent "${profileDir}/qBittorrent/data/nova3"
+    ${pkgs.coreutils}/bin/chown qbittorrent:qbittorrent "${enginesDir}"
     ${lib.concatMapStringsSep "\n" (
       plugin: ''
         ${pkgs.coreutils}/bin/install -o qbittorrent -g qbittorrent -m644 ${plugin.path} \
           "${enginesDir}/${plugin.name}.py"
       ''
     ) officialSearchPlugins}
+    # Drop engines removed from officialSearchPlugins (also clears manual installs).
+    shopt -s nullglob
+    for f in "${enginesDir}"/*.py; do
+      base=$(${pkgs.coreutils}/bin/basename "$f")
+      case " ${managedSearchPluginFiles} " in
+        *" $base "*) ;;
+        *) ${pkgs.coreutils}/bin/rm -f "$f" ;;
+      esac
+    done
   '';
 
   # Seed runtime OpenVPN remote only when missing (CLI switches own the file after that).
