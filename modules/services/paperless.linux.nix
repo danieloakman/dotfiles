@@ -196,6 +196,11 @@ in
         address = hostname;
         inherit (cfg) domain;
         configureTika = true;
+        # FlakeHub nixpkgs-weekly (d5cc683) predates nixpkgs#587638; torch 2.15
+        # fails pythonRuntimeDepsCheck until the weekly pin catches up.
+        package = pkgs.paperless-ngx.overrideAttrs (old: {
+          pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "torch" ];
+        });
       };
 
       # Default Gotenberg :3000 collides with Docker Grafana on mara
