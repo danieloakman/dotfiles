@@ -3,7 +3,7 @@
 `src/agent-usage.ts` prints current AI coding usage for Claude Code and Cursor.
 JSON by default, `--table` for humans, optional provider args (`agent-usage cursor`).
 Read-only; tokens are read from the tools' own on-disk creds, kept in memory, sent only to the provider, never printed.
-Tokens are NOT refreshed (refresh tokens rotate; writing/using them could log the real client out). Expired token => clear error.
+Claude tokens are NOT refreshed (refresh tokens rotate; could log the real client out); expired => clear error. Cursor needs no refresh: a fresh accessToken is exchanged from the API key on every run.
 
 ## Claude (Pro subscription): works
 
@@ -20,7 +20,8 @@ Tokens are NOT refreshed (refresh tokens rotate; writing/using them could log th
 
 ## Cursor: works
 
-- Creds: `~/.config/cursor/auth.json` (cursor-agent) `accessToken` (JWT, short TTL ~10min, kept fresh by cursor-agent/app). `apiKey` field is NOT accepted by these endpoints.
+- Creds: the same API key the wrapped `cursor-agent` uses (`modules/programs/cursor.nix`): `$CURSOR_API_KEY`, else `/run/secrets/cursor_api_key` (sops), else `pass api_keys/personal/cursor_ai`.
+- Auth flow (read from cursor-agent bundle): `POST https://api2.cursor.sh/auth/exchange_user_api_key` with `Bearer <api key>` and body `{}` -> `{accessToken, refreshToken}`. Use the accessToken as Bearer below. Held in memory only; works without the app/login. The raw key is NOT accepted by the dashboard endpoints (401).
 - Connect-JSON RPC at `https://api2.cursor.sh/aiserver.v1.DashboardService/<Method>` (POST `{}`, `Authorization: Bearer`, `Connect-Protocol-Version: 1`):
   - `GetCurrentPeriodUsage`: billingCycleStart/End (ms), `planUsage.totalPercentUsed`/`autoPercentUsed`, `spendLimitUsage`, displayMessage.
   - `GetPlanInfo`: planName, `includedUsagePeriod` (this plan is WEEKLY), `includedUsageResetsAt`, monthly billingCycleEnd.
@@ -29,7 +30,6 @@ Tokens are NOT refreshed (refresh tokens rotate; writing/using them could log th
 - `GET https://api2.cursor.sh/auth/full_stripe_profile`: membership, subscription status.
 - Doesn't work: the cursor.com web endpoints (`/api/usage-summary`, `/api/usage`, `/api/dashboard/*`) 401/307 with the `WorkosCursorSessionToken=<id>::<jwt>` cookie built from this token (that needs the browser session JWT of type `web`, not cli `api_key_token`). Not needed given api2.
 - Gap: on-demand dollars spent are not in `GetCurrentPeriodUsage` for this account (`spendLimitUsage` only has `limitType`); would need summing `chargedCents` from `GetFilteredUsageEvents` where usageType is on-demand.
-- Token-refresh: `auth.json` refreshToken could mint a new access token at the WorkOS/api2 oauth endpoint; deliberately not implemented (rotation risk).
 
 ## Ideas / next
 

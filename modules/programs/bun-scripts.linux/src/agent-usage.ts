@@ -164,24 +164,45 @@ async function claude(): Promise<ProviderUsage> {
 
 // ---------- Cursor ----------
 
-async function cursor(): Promise<ProviderUsage> {
-	const authPath = join(
-		process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config'),
-		'cursor',
-		'auth.json'
-	);
-	if (!existsSync(authPath)) return { provider: 'cursor', ok: false, error: `no ${authPath}` };
-	const { accessToken } = JSON.parse(readFileSync(authPath, 'utf8'));
-	if (!accessToken) return { provider: 'cursor', ok: false, error: 'no accessToken in auth.json' };
+/** Same sources as the cursor-agent wrapper (modules/programs/cursor.nix): env, sops secret, then pass. */
+function cursorApiKey(): string | null {
+	const env = process.env.CURSOR_API_KEY?.trim();
+	if (env) return env;
+	const sops = '/run/secrets/cursor_api_key';
 	try {
-		const exp = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString()).exp;
-		if (exp && exp * 1000 < Date.now())
-			return {
-				provider: 'cursor',
-				ok: false,
-				error: 'access token expired (~10min TTL); run `cursor-agent status` to refresh auth.json'
-			};
+		const k = readFileSync(sops, 'utf8').trim();
+		if (k) return k;
 	} catch {}
+	const r = Bun.spawnSync(['pass', 'api_keys/personal/cursor_ai'], { stderr: 'ignore' });
+	return r.exitCode === 0 ? r.stdout.toString().trim() || null : null;
+}
+
+async function cursor(): Promise<ProviderUsage> {
+	const apiKey = cursorApiKey();
+	if (!apiKey)
+		return {
+			provider: 'cursor',
+			ok: false,
+			error:
+				'no Cursor API key (CURSOR_API_KEY, /run/secrets/cursor_api_key, or pass api_keys/personal/cursor_ai)'
+		};
+	// Same exchange cursor-agent does for --api-key; the result is held in memory only.
+	let accessToken: string;
+	try {
+		const ex = await getJson('https://api2.cursor.sh/auth/exchange_user_api_key', {
+			method: 'POST',
+			headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+			body: '{}'
+		});
+		accessToken = ex.accessToken;
+		if (!accessToken) throw new Error('no accessToken in exchange response');
+	} catch (err) {
+		return {
+			provider: 'cursor',
+			ok: false,
+			error: `API key exchange failed: ${err instanceof Error ? err.message : err}`
+		};
+	}
 	const headers = {
 		Authorization: `Bearer ${accessToken}`,
 		'Content-Type': 'application/json',
