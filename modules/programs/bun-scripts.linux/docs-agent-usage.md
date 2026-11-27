@@ -20,7 +20,7 @@ Claude tokens are NOT refreshed (refresh tokens rotate; could log the real clien
 
 ## Cursor: works
 
-- Creds: the same API key the wrapped `cursor-agent` uses (`modules/programs/cursor.nix`): `$CURSOR_API_KEY`, else `/run/secrets/cursor_api_key` (sops), else `pass api_keys/personal/cursor_ai`.
+- Creds: the same API key the wrapped `cursor-agent` uses (`modules/programs/cursor.nix`): `$CURSOR_API_KEY`, else the platform source the wrapper uses: Linux sops file `/run/secrets/cursor_api_key`, Darwin `pass api_keys/personal/cursor_ai`. The wrapper can't be invoked directly (it exec's cursor-cli, which has no usage command), so the CLI mirrors its key lookup.
 - Auth flow (read from cursor-agent bundle): `POST https://api2.cursor.sh/auth/exchange_user_api_key` with `Bearer <api key>` and body `{}` -> `{accessToken, refreshToken}`. Use the accessToken as Bearer below. Held in memory only; works without the app/login. The raw key is NOT accepted by the dashboard endpoints (401).
 - Connect-JSON RPC at `https://api2.cursor.sh/aiserver.v1.DashboardService/<Method>` (POST `{}`, `Authorization: Bearer`, `Connect-Protocol-Version: 1`):
   - `GetCurrentPeriodUsage`: billingCycleStart/End (ms), `planUsage.totalPercentUsed`/`autoPercentUsed`, `spendLimitUsage`, displayMessage.

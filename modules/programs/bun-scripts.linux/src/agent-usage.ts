@@ -164,17 +164,23 @@ async function claude(): Promise<ProviderUsage> {
 
 // ---------- Cursor ----------
 
-/** Same sources as the cursor-agent wrapper (modules/programs/cursor.nix): env, sops secret, then pass. */
+/**
+ * Mirrors the key source of the cursor-agent wrapper (`apiKeyPackage` in modules/programs/cursor.nix):
+ * Linux reads the sops secret file, Darwin runs `pass`. CURSOR_API_KEY overrides (what the wrapper exports).
+ * The wrapper itself can't be reused directly: it exec's cursor-cli, which has no usage command.
+ */
 function cursorApiKey(): string | null {
 	const env = process.env.CURSOR_API_KEY?.trim();
 	if (env) return env;
-	const sops = '/run/secrets/cursor_api_key';
+	if (process.platform === 'darwin') {
+		const r = Bun.spawnSync(['pass', 'api_keys/personal/cursor_ai'], { stderr: 'ignore' });
+		return r.exitCode === 0 ? r.stdout.toString().trim() || null : null;
+	}
 	try {
-		const k = readFileSync(sops, 'utf8').trim();
-		if (k) return k;
-	} catch {}
-	const r = Bun.spawnSync(['pass', 'api_keys/personal/cursor_ai'], { stderr: 'ignore' });
-	return r.exitCode === 0 ? r.stdout.toString().trim() || null : null;
+		return readFileSync('/run/secrets/cursor_api_key', 'utf8').trim() || null;
+	} catch {
+		return null;
+	}
 }
 
 async function cursor(): Promise<ProviderUsage> {
@@ -184,7 +190,7 @@ async function cursor(): Promise<ProviderUsage> {
 			provider: 'cursor',
 			ok: false,
 			error:
-				'no Cursor API key (CURSOR_API_KEY, /run/secrets/cursor_api_key, or pass api_keys/personal/cursor_ai)'
+				'no Cursor API key (CURSOR_API_KEY, or sops secret /run/secrets/cursor_api_key on Linux)'
 		};
 	// Same exchange cursor-agent does for --api-key; the result is held in memory only.
 	let accessToken: string;
