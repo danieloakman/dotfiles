@@ -1,6 +1,6 @@
-# Open common local-dev server ports when the dev-workstation profile is on.
-# Default follows `my.profiles.dev-workstation.enable` (akatosh, azura, mara on
-# Linux; boethiah is Darwin and has no NixOS firewall).
+# Open common local-dev server ports (Expo/Metro, Vite, etc.).
+# Enabled by `my.profiles.dev-workstation` via mkDefault; Linux-only (Darwin
+# has no NixOS firewall).
 #
 # Exposure is limited to:
 #   1. tailscale0 (interface-scoped allow lists)
@@ -8,7 +8,7 @@
 #      interface-based — laptop Wi-Fi may also join public networks)
 { config, lib, ... }:
 let
-  cfg = config.my.dev.openPorts;
+  cfg = config.my.services.open-ports;
 
   tcpPorts = [
     4173 # Vite preview
@@ -64,23 +64,18 @@ let
   ) cfg.trustedSubnets;
 
   lanNftRules = lib.concatMapStrings (subnet: ''
-    ip saddr ${subnet} tcp dport { ${nftTcpSet} } accept comment "my.dev.openPorts trusted subnet"
-    ip saddr ${subnet} udp dport { ${nftUdpSet} } accept comment "my.dev.openPorts trusted subnet"
+    ip saddr ${subnet} tcp dport { ${nftTcpSet} } accept comment "my.services.open-ports trusted subnet"
+    ip saddr ${subnet} udp dport { ${nftUdpSet} } accept comment "my.services.open-ports trusted subnet"
   '') cfg.trustedSubnets;
 in
 {
-  options.my.dev.openPorts = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = config.my.profiles.dev-workstation.enable;
-      description = ''
-        Open common development-server TCP (and a few UDP) ports for local
-        tooling. Defaults to `my.profiles.dev-workstation.enable`.
+  options.my.services.open-ports = {
+    enable = lib.mkEnableOption ''
+      Open common development-server TCP (and a few UDP) ports for local tooling.
 
-        Ports are not opened on all interfaces: only on `tailscale0`, and from
-        IPv4 sources in `trustedSubnets` (home LAN by subnet, not interface).
-      '';
-    };
+      Ports are not opened on all interfaces: only on `tailscale0`, and from
+      IPv4 sources in `trustedSubnets` (home LAN by subnet, not interface).
+    '';
 
     trustedSubnets = lib.mkOption {
       type = lib.types.listOf lib.types.str;

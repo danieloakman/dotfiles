@@ -39,6 +39,7 @@ in
               kitty.enable = lib.mkDefault true;
             };
             programs.bun-scripts.enable = lib.mkDefault true;
+            services.open-ports.enable = lib.mkDefault true;
           };
         };
       })
