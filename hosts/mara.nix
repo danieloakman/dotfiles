@@ -228,7 +228,8 @@ in
     };
     "/run/media/HDD_1" = {
       device = "/dev/disk/by-uuid/567A58A4260BD810";
-      fsType = "ntfs";
+      # Kernel driver; avoids ntfs-3g (heap OOB / LPE fixed only in 2026.11.23, not in nixpkgs yet).
+      fsType = "ntfs3";
     };
   };
   systemd.tmpfiles.rules = [
