@@ -43,14 +43,6 @@ in
         pass
         pinentry_mac
       ];
-
-      home-manager.users.${env.user} = {
-        home.file.".gnupg/gpg-agent.conf".text = ''
-          default-cache-ttl 604800
-          max-cache-ttl 604800
-          pinentry-program ${lib.getExe pkgs.pinentry_mac}
-        '';
-      };
     };
   };
 }
