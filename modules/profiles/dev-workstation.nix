@@ -22,6 +22,7 @@ in
           obsidian.enable = lib.mkDefault true;
           orca.enable = lib.mkDefault true;
           nebula.enable = lib.mkDefault true;
+          grok-bot.enable = lib.mkDefault (env.deviceType != "server");
           micro = {
             enable = lib.mkDefault true;
             is-default-editor = lib.mkDefault true;
