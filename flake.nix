@@ -1,136 +1,29 @@
 {
   description = "Unified Linux and Darwin system flake";
 
+  # Inputs are pinned with tack (.tack/pins.toml, locked in .tack/pins.lock.json), not flake.lock.
   # Map package versions → nixpkgs commits:
   #   https://www.nixhub.io/packages/
   #   https://lazamar.co.uk/nix-versions/
   #   https://history.nix-packages.com/
   # Package search (often shows the nixpkgs revision): https://search.nixos.org/
-  inputs = {
-    # nixpkgsStable.url = "github:nixos/nixpkgs/nixos-23.11";
-    # Weekly nixpkgs snapshots via FlakeHub (Determinate Systems).
-    # https://docs.determinate.systems/guides/advanced-installation/#nixos
-    nixpkgs.url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1";
-    nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    import-tree.url = "github:vic/import-tree";
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules"; # https://birdeehub.github.io/nix-wrapper-modules
-    # Noctalia v5 (native rewrite). No nixpkgs.follows so the Cachix binary cache stays usable.
-    # https://docs.noctalia.dev/v5/getting-started/nixos/
-    noctalia.url = "github:noctalia-dev/noctalia";
-    # https://docs.noctalia.dev/v5/greeter/
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # devenv.url = "github:cachix/devenv";
-    openvpn24.url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003";
-    # Shared systems list without x86_64-darwin (Nixpkgs 26.05 deprecation warning).
-    # future-26.11 drops Intel macOS; replaces the old local bun2nix-systems flake.
-    systems.url = "github:nix-systems/default/future-26.11";
-    flake-utils = {
-      url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
-      inputs.systems.follows = "systems";
-    };
-    stylix = {
-      url = "github:danth/stylix";
-      inputs.systems.follows = "systems";
-    };
-    # Still needed by modules/gnome.linux/guake.nix; drop with unused-shells cleanup (#34).
-    guake.url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"; # v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
-    ags-desktop-shell = {
-      url = "github:danieloakman/ags-desktop-shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # zen-browser.url = "github:MarceColl/zen-browser-flake";
-    pia = {
-      url = "github:Fuwn/pia.nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    copyparty.url = "github:9001/copyparty";
-    # No nixpkgs.follows so nix-community.cachix.org can serve prebuilt
-    # cache-entry-creator (Zig) instead of compiling it against our nixpkgs.
-    bun2nix = {
-      url = "github:nix-community/bun2nix";
-      inputs.systems.follows = "systems";
-    };
-    gws = {
-      url = "github:googleworkspace/cli";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    android-nixpkgs = {
-      url = "github:tadfisher/android-nixpkgs";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    llama-cpp.url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"; # Version 8069 (d5dfc33)
-    lazyvim = {
-      url = "github:pfassina/lazyvim-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    agent-sandbox = {
-      url = "github:archie-judd/agent-sandbox.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    hunk = {
-      url = "github:modem-dev/hunk";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        bun2nix.follows = "bun2nix";
-      };
-    };
-    telegram-bots = {
-      url = "github:danieloakman/telegram-bots";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    grok-bot = {
-      url = "github:jordangarrison/grok-bot-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
+  inputs = { };
 
   outputs =
-    { self
-    , nixpkgs
-    , nix-darwin
-    , home-manager
-    , pia
-    , copyparty
-    , bun2nix
-    , gws
-    , android-nixpkgs
-    , import-tree
-    , ...
-    }@inputs:
+    { self, ... }:
     let
+      inputs = import ./.tack { };
+      inherit (inputs)
+        nixpkgs
+        nix-darwin
+        home-manager
+        pia
+        copyparty
+        bun2nix
+        gws
+        android-nixpkgs
+        import-tree
+        ;
       createNixCache = _: {
         nix = {
           registry = {

@@ -126,24 +126,13 @@ check-hosts:
 # What CI runs locally for this platform (fmt + lint + all host evals).
 ci: fmt-check lint check-hosts
 
-update: && tack-update
-    sudo nix flake update --flake .
-
-# Show upstream drift for tack pins (no-op without a .tack dir).
-tack-look:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd '{{ repo }}'
-    [[ -d .tack ]] || { echo "no .tack dir; run 'tack init' to start"; exit 0; }
-    tack look
-
-# Fetch tack pins and rewrite the lock (no-op without a .tack dir).
-tack-update:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd '{{ repo }}'
-    [[ -d .tack ]] || { echo "no .tack dir; skipping tack update"; exit 0; }
+# Fetch all tack pins and rewrite .tack/pins.lock.json (replaces flake.lock).
+update:
     tack update
+
+# Show upstream drift for tack pins without writing the lock.
+tack-look:
+    tack look
 
 # Build the installer ISO and write it to a USB disk (prompts for the device).
 [linux]
