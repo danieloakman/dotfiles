@@ -142,19 +142,20 @@ in
     };
     "/run/media/HDD_1" = {
       device = "/dev/disk/by-uuid/8C48AC3148AC1BC8";
-      fsType = "ntfs";
+      # Kernel driver; avoids ntfs-3g (heap OOB / LPE, fixed only in 2026.11.23).
+      fsType = "ntfs3";
     };
     "/run/media/HDD_2" = {
       device = "/dev/disk/by-uuid/5608D2D708D2B4E9";
-      fsType = "ntfs";
+      fsType = "ntfs3";
     };
     "/run/media/HDD_3" = {
       device = "/dev/disk/by-uuid/1874480F7447EE56";
-      fsType = "ntfs";
+      fsType = "ntfs3";
     };
     "/run/media/HDD_4" = {
       device = "/dev/disk/by-uuid/788189FD487EDAE2";
-      fsType = "ntfs";
+      fsType = "ntfs3";
     };
   };
 
