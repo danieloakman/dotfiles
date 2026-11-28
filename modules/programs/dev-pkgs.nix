@@ -179,6 +179,7 @@ in
           uv # Package manager; can install packages and run them adhoc
           pandoc # Document converter
           rtk # More efficient token usage for LLMs
+          tack # TOML-based nix pins (manic-systems/tack); `tack init` scaffolds .tack/
           defuddle # Extract clean HTML/markdown/metadata from web pages
 
           # Golang & related tools:
