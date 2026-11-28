@@ -14,7 +14,7 @@ let
   inherit (cfg) serve;
 
   # Keep in sync with `_package.nix` / `_server.nix` defaults and skills source rev.
-  version = "1.4.258";
+  version = "1.4.281";
 
   orcaSkillNames = [
     "orca-cli"
@@ -41,7 +41,7 @@ let
     repo = "orca";
     rev = "v${version}";
     sparseCheckout = [ "skills" ];
-    hash = "sha256-yEeRd1VZuvDsqOpzI/xk5I0LUtOJkn+8M3QihfANeLs=";
+    hash = "sha256-zOy7+2PrXQe/IqmX6mBwq/np7fd69grjhNZAnXnNp94=";
   };
 
   # Desktop package autoPatchelfs the AppImage (no bwrap), so agent PTYs keep
