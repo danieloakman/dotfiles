@@ -64,7 +64,7 @@ install-host akatosh
 
 ## Development or making changes
 
-- When updating the flake, i.e. the `flake.lock` file, always make a new branch for those changes.
+- When updating pins, i.e. `.tack/pins.lock.json` (`just update`; inputs live in `.tack/pins.toml`, there is no `flake.lock`), always make a new branch for those changes.
 - Small changes can be made directly to the `main` branch.
 - Otherwise large features should have a new branch.
 - Modules live in `./modules`. Files named `*.linux.nix` or `*.darwin.nix` are only imported on that platform; other modules are shared. Files matching `*/_*.nix` and `flake.nix` are skipped.

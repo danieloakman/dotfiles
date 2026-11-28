@@ -126,8 +126,13 @@ check-hosts:
 # What CI runs locally for this platform (fmt + lint + all host evals).
 ci: fmt-check lint check-hosts
 
+# Fetch all tack pins and rewrite .tack/pins.lock.json (replaces flake.lock).
 update:
-    sudo nix flake update --flake .
+    tack update
+
+# Show upstream drift for tack pins without writing the lock.
+tack-look:
+    tack look
 
 # Build the installer ISO and write it to a USB disk (prompts for the device).
 [linux]

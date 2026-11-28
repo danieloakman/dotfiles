@@ -1,0 +1,132 @@
+# tack pins
+# edit by hand or with tack add / rm / alias
+# nix reads pins.lock.json
+# this file drives tack update
+
+# shorturl schemes
+# scheme rest expands rest into {path}
+[shorturls]
+# gh = "github:{path}"
+
+# all_follow maps input names to the top-level pin they follow
+# opt out per-input with exclude_follow
+[all_follow]
+# nixpkgs = "nixpkgs"
+# nixpkgs = ["nixpkgs-stable", "nixpkgs-unstable"]
+
+# inputs.<name> fields
+#   url             required, shorturl ok, ?rev=<sha> pins an exact commit
+#   type            flake (default), fetch, or fixed
+#   flake           legacy false means type = "fetch"
+#   follows         { child = "pin" } override map
+#   exclude_follow  all_follow names to skip
+#   dir             subdir holding flake.nix
+#   submodules      fetch git submodules
+#   unpack          fixed-only tarball or file
+
+# Weekly nixpkgs snapshots via FlakeHub (Determinate Systems).
+# https://docs.determinate.systems/guides/advanced-installation/#nixos
+[inputs.nixpkgs]
+url = "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1.tar.gz"
+
+[inputs.nix-darwin]
+url = "github:nix-darwin/nix-darwin/master"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.home-manager]
+url = "github:nix-community/home-manager"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.nix-index-database]
+url = "github:nix-community/nix-index-database"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.import-tree]
+url = "github:vic/import-tree"
+
+# https://birdeehub.github.io/nix-wrapper-modules
+[inputs.wrapper-modules]
+url = "github:BirdeeHub/nix-wrapper-modules"
+
+# Noctalia v5 (native rewrite). No nixpkgs follows so the Cachix binary cache stays usable.
+# https://docs.noctalia.dev/v5/getting-started/nixos/
+[inputs.noctalia]
+url = "github:noctalia-dev/noctalia"
+
+# https://docs.noctalia.dev/v5/greeter/
+[inputs.noctalia-greeter]
+url = "github:noctalia-dev/noctalia-greeter"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.sops-nix]
+url = "github:Mic92/sops-nix"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.openvpn24]
+url = "github:nixos/nixpkgs/2d38b664b4400335086a713a0036aafaa002c003"
+
+# Shared systems list without x86_64-darwin (Nixpkgs 26.05 deprecation warning).
+[inputs.systems]
+url = "github:nix-systems/default/future-26.11"
+
+[inputs.flake-utils]
+url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b"
+follows = { systems = "systems" }
+
+[inputs.stylix]
+url = "github:danth/stylix"
+follows = { systems = "systems" }
+
+# Still needed by modules/gnome.linux/guake.nix; drop with unused-shells cleanup (#34).
+# v3.9.0 works. v3.10 doesn't seem to appear in path or desktop apps.
+[inputs.guake]
+url = "github:nixos/nixpkgs/5fd8536a9a5932d4ae8de52b7dc08d92041237fc"
+
+[inputs.ags-desktop-shell]
+url = "github:danieloakman/ags-desktop-shell"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.pia]
+url = "github:Fuwn/pia.nix"
+follows = { nixpkgs = "nixpkgs", flake-utils = "flake-utils" }
+
+[inputs.copyparty]
+url = "github:9001/copyparty"
+
+# No nixpkgs follows so nix-community.cachix.org can serve prebuilt
+# cache-entry-creator (Zig) instead of compiling it against our nixpkgs.
+[inputs.bun2nix]
+url = "github:nix-community/bun2nix"
+follows = { systems = "systems" }
+
+[inputs.gws]
+url = "github:googleworkspace/cli"
+follows = { nixpkgs = "nixpkgs", flake-utils = "flake-utils" }
+
+[inputs.android-nixpkgs]
+url = "github:tadfisher/android-nixpkgs"
+follows = { nixpkgs = "nixpkgs", flake-utils = "flake-utils" }
+
+# Version 8069 (d5dfc33)
+[inputs.llama-cpp]
+url = "github:nixos/nixpkgs/80d901ec0377e19ac3f7bb8c035201e2e098cc97"
+
+[inputs.lazyvim]
+url = "github:pfassina/lazyvim-nix"
+follows = { nixpkgs = "nixpkgs", flake-utils = "flake-utils" }
+
+[inputs.agent-sandbox]
+url = "github:archie-judd/agent-sandbox.nix"
+follows = { nixpkgs = "nixpkgs" }
+
+[inputs.hunk]
+url = "github:modem-dev/hunk"
+follows = { nixpkgs = "nixpkgs", bun2nix = "bun2nix" }
+
+[inputs.telegram-bots]
+url = "github:danieloakman/telegram-bots"
+follows = { nixpkgs = "nixpkgs", flake-utils = "flake-utils" }
+
+[inputs.grok-bot]
+url = "github:jordangarrison/grok-bot-flake"
+follows = { nixpkgs = "nixpkgs" }
