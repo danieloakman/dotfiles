@@ -176,6 +176,8 @@ in
       enable = true;
       efiSupport = true;
       useOSProber = true;
+      # 511M /boot; each kernel+initrd is ~137M and the new one is copied before old ones are pruned.
+      configurationLimit = 2;
     };
   };
 
