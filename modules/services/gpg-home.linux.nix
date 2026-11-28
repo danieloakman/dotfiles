@@ -5,8 +5,8 @@
       gpg-agent = {
         enable = true;
         enableZshIntegration = true;
-        defaultCacheTtl = 604800; # 1 week
-        maxCacheTtl = 604800;
+        defaultCacheTtl = 34560000; # 400 days
+        maxCacheTtl = 34560000;
         # pinentryPackage = pkgs.pinentry;
       };
 
