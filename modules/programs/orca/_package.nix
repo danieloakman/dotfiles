@@ -40,7 +40,7 @@
 , libxfixes
 , libxrandr
 , libxcb
-, version ? "1.4.258"
+, version ? "1.4.281"
 ,
 }:
 let
@@ -51,11 +51,11 @@ let
       {
         x86_64-linux = {
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux.AppImage";
-          hash = "sha256-bXi+zAbqjqas4tDq5U8ZnSYWDVhMHnR/POOHXAv9eOc=";
+          hash = "sha256-TPdIy1s2Ch9TKEWtiPz1SpkEUnSumU/E2RS3Opi52JM=";
         };
         aarch64-linux = {
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux-arm64.AppImage";
-          hash = "sha256-wb4w6gcH5Fw1Xiu9mAlzmPB9D9ioMqbevFTcOBb1f4k=";
+          hash = "sha256-MPblEfc3P7xhi67xNlZVrYcfmthBovaoggCqONDEjG4=";
         };
       }.${stdenv.hostPlatform.system}
         or (throw "orca-ide: unsupported system ${stdenv.hostPlatform.system}");

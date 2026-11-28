@@ -10,7 +10,7 @@
 { lib
 , stdenv
 , fetchurl
-, version ? "1.4.258"
+, version ? "1.4.281"
 ,
 }:
 let
@@ -21,11 +21,11 @@ let
       {
         x86_64-linux = {
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-server-linux-x64.tar.gz";
-          hash = "sha256-/X8j9ftv5D+ymC0XQ413L6x8xlyCCKIS0P+yJLUE4xE=";
+          hash = "sha256-UHbkbVXUIh5V0rPuwwe+N8H1WmRbZTW7Sy/vN4p1liA=";
         };
         aarch64-linux = {
           url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-server-linux-arm64.tar.gz";
-          hash = "sha256-oSeZI3ABlujM2UlS/qA59tmPXU+Uha/KApXt3qjMsDM=";
+          hash = "sha256-re5cgumMPEK3I3iujLOsxVoHbDmCIS980xyaquoQPUo=";
         };
       }.${stdenv.hostPlatform.system}
         or (throw "orca-server: unsupported system ${stdenv.hostPlatform.system}");
