@@ -202,7 +202,7 @@ in
       seahorse.enable = true; # optional GUI tool for Gnome keyring
     };
 
-    # TODO: see if we can disable this in favour of gpg-home.linux.ni
+    # TODO: see if we can disable this in favour of gpg-home.nix
     # Enable GNOME Keyring so applications can store and retrieve secrets.
     services.gnome.gnome-keyring.enable = true;
 
