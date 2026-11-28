@@ -284,6 +284,30 @@ async function cursor(): Promise<ProviderUsage> {
 
 // ---------- output ----------
 
+const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+
+/** e.g. "Thu 3 Dec 5:00am AEDT" in the system time zone. */
+function fmtLocal(iso: string | null) {
+	if (!iso) return '?';
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return iso;
+	const parts = Object.fromEntries(
+		new Intl.DateTimeFormat('en-AU', {
+			weekday: 'short',
+			day: 'numeric',
+			month: 'short',
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true,
+			timeZoneName: 'short'
+		})
+			.formatToParts(d)
+			.map((p) => [p.type, p.value])
+	);
+	const ampm = String(parts.dayPeriod).toLowerCase().replace(/\./g, '');
+	return `${parts.weekday} ${parts.day} ${parts.month} ${parts.hour}:${parts.minute}${ampm} ${parts.timeZoneName}`;
+}
+
 function until(iso: string | null) {
 	if (!iso) return '';
 	const mins = Math.round((Date.parse(iso) - Date.now()) / 60_000);
@@ -303,13 +327,19 @@ function printTable(results: ProviderUsage[]) {
 		for (const w of r.windows ?? []) {
 			const pct = w.percentUsed == null ? '?' : `${w.percentUsed.toFixed(1)}%`;
 			console.log(
-				`  ${w.name.padEnd(30)} ${pct.padStart(6)} used   resets ${w.resetsAt ?? '?'}${until(w.resetsAt)}`
+				`  ${w.name.padEnd(30)} ${pct.padStart(6)} used   resets ${fmtLocal(w.resetsAt)}${until(w.resetsAt)}`
 			);
 		}
 		if (r.overage) console.log(`  overage: ${JSON.stringify(r.overage)}`);
 		for (const [k, v] of Object.entries(r.extra ?? {})) {
 			if (k === 'limits' || v == null) continue;
-			console.log(`  ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`);
+			const val =
+				typeof v === 'string' && ISO_RE.test(v)
+					? `${fmtLocal(v)}${Date.parse(v) > Date.now() ? until(v) : ""}`
+					: typeof v === 'object'
+						? JSON.stringify(v)
+						: v;
+			console.log(`  ${k}: ${val}`);
 		}
 		console.log();
 	}
