@@ -7,6 +7,7 @@ let
     pass-checkup
     pass-audit
   ]);
+  cacheTtl = if env.deviceType == "server" then 34560000 else 604800;
 in
 {
   config = env.selectPlatform {
@@ -46,8 +47,8 @@ in
 
       home-manager.users.${env.user} = {
         home.file.".gnupg/gpg-agent.conf".text = ''
-          default-cache-ttl 34560000
-          max-cache-ttl 34560000
+          default-cache-ttl ${toString cacheTtl}
+          max-cache-ttl ${toString cacheTtl}
           pinentry-program ${lib.getExe pkgs.pinentry_mac}
         '';
       };
