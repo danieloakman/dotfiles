@@ -167,6 +167,7 @@ stdenv.mkDerivation {
       "''${gappsWrapperArgs[@]}" \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs}:$out/lib/${pname} \
       --add-flags --no-sandbox \
+      --add-flags --ozone-platform-hint=auto \
       --inherit-argv0
   '';
 
