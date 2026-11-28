@@ -72,19 +72,6 @@ install-host akatosh
 - Always-on / baseline files (no `my.*` options) start with `# Baseline (always on).`
 - Profiles (`my.profiles.*`) and other aggregators set child `enable`s with `lib.mkDefault` so a host can override with a plain `enable = false`. Hyprland may bundle companions the same way.
 
-## Tack pins
-
-[tack](https://github.com/manic-systems/tack) manages TOML nix pins in `.tack/` (`pins.toml` + `pins.lock.json`), alongside `flake.lock`.
-
-```sh
-tack init          # scaffold .tack/ (once)
-tack add ...       # add a pin
-just tack-look     # show upstream drift, no lock write
-just tack-update   # fetch pins, rewrite lock (also run by `just update`)
-```
-
-Both `just` recipes no-op while `.tack/` does not exist.
-
 ## Secrets
 
 #### See https://www.youtube.com/watch?v=G5f6GC7SnhU for more info if needed.
