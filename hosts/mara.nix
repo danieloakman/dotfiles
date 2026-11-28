@@ -35,7 +35,6 @@ in
           claude.enable = true;
         };
       };
-      t3code.enable = true;
       orca.serve = {
         enable = true;
         # Tailscale MagicDNS — clients (akatosh, phone) dial this, not localhost.
